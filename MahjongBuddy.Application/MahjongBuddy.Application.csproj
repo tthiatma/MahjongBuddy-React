@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MahjongBuddy.Core\MahjongBuddy.Core.csproj" />
+    <ProjectReference Include="..\MahjongBuddy.EntityFramework\MahjongBuddy.EntityFramework.csproj" />
+  </ItemGroup>
+
+</Project>
