@@ -1,9 +1,11 @@
-﻿namespace MahjongBuddy.Core
+﻿using System;
+
+namespace MahjongBuddy.Core
 {
     public class Game
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Title { get; set; }
     }
 }
