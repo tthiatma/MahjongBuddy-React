@@ -10,6 +10,8 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         }
         public DbSet<Tile> Tiles { get; set; }
 
+        public DbSet<Game> Games { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Tile>()

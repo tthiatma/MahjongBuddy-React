@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using MahjongBuddy.Application.Tiles;
 using MahjongBuddy.Core;
-using MahjongBuddy.EntityFramework.EntityFramework;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace MahjongBuddy.API.Controllers
 {
@@ -11,25 +11,17 @@ namespace MahjongBuddy.API.Controllers
     [ApiController]
     public class TilesController : ControllerBase
     {
-        private readonly MahjongBuddyDbContext _context;
+        private readonly IMediator _mediator;
 
-        public TilesController(MahjongBuddyDbContext context)
+        public TilesController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tile>>> Get()
+        public async Task<ActionResult<List<Tile>>> List()
         {
-            var tiles = await _context.Tiles.ToListAsync();
-            return Ok(tiles);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Tile>> Get(int id)
-        {
-            var tile = await _context.Tiles.FindAsync(id);
-            return Ok(tile);
+            return await _mediator.Send(new List.Query());
         }
     }
 }

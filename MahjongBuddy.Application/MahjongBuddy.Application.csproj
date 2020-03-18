@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MahjongBuddy.Core\MahjongBuddy.Core.csproj" />
     <ProjectReference Include="..\MahjongBuddy.EntityFramework\MahjongBuddy.EntityFramework.csproj" />
   </ItemGroup>
