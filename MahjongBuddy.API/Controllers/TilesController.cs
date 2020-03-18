@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MahjongBuddy.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class TilesController : ControllerBase
     {
         private readonly MahjongBuddyDbContext _context;
