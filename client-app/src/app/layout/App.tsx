@@ -3,20 +3,20 @@ import { Container } from "semantic-ui-react";
 import NavBar from "../../features/nav/NavBar";
 import { observer } from "mobx-react-lite";
 import { Route, withRouter, RouteComponentProps } from "react-router-dom";
-import homePage from "../../features/home/homePage";
 import GameDashboard from "../../features/games/dashboard/GameDashboard";
+import HomePage from "../../features/home/HomePage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   return (
     <Fragment>
-      <Route exact path="/" component={homePage} />
+      <Route exact path="/" component={HomePage} />
       <Route
         path={"/(.+)"}
         render={() => (
           <Fragment>
             <NavBar />
             <Container style={{ marginTop: "7em" }}>
-            <Route exact path="/activities" component={GameDashboard} />
+            <Route exact path="/games" component={GameDashboard} />
             </Container>
           </Fragment>
         )}
