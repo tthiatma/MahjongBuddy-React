@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { ITile } from '../models/tile';
+import { IGame } from '../models/game';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
@@ -17,12 +18,21 @@ const request = {
 
 const Tiles ={
     list: ():Promise<ITile[]> => request.get('/tiles'),
-    details: (id:string) => request.get(`/tiles/${id}`),
+    detail: (id:string) => request.get(`/tiles/${id}`),
     create: (tile: ITile) => request.post('tiles', tile),
     update: (tile: ITile) => request.put(`/tiles/${tile.id}`, tile),
     delete: (id:string) => request.del(`/tiles/${id}`)
 }
 
+const Games = {
+    list: ():Promise<IGame[]> => request.get('/games'),
+    detail: (id:string) => request.get(`/games/${id}`),
+    create: (game: IGame) => request.post('games', game),
+    update: (game: IGame) => request.put(`/games/${game.id}`, game),
+    delete: (id:string) => request.del(`/games/${id}`)
+}
+
 export default {
-    Tiles
+    Tiles, 
+    Games
 }

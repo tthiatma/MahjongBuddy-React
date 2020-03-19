@@ -19,6 +19,12 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                     new Tile { Id = 1, Name = "Tile 1"},
                     new Tile { Id = 2, Name = "Tile 2" }
                 );
+
+            builder.Entity<Game>()
+                .HasData(
+                    new Game { Id = 1, Title = "Game 1" },
+                    new Game { Id = 2, Title = "Game 2" }
+                );
         }
     }
 }

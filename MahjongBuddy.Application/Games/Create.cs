@@ -16,7 +16,7 @@ namespace MahjongBuddy.Application.Games
             public string Title { get; set; }
 
         }
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command> 
         {
             private readonly MahjongBuddyDbContext _context;
 
