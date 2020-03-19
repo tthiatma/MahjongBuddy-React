@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MahjongBuddy.EntityFramework.Migrations
 {
@@ -6,6 +7,19 @@ namespace MahjongBuddy.EntityFramework.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Games",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Games", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Tiles",
                 columns: table => new
@@ -18,15 +32,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_Tiles", x => x.Id);
                 });
-
-            migrationBuilder.InsertData(
-                table: "Tiles",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 1, "Tile 1" });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Games");
+
             migrationBuilder.DropTable(
                 name: "Tiles");
         }

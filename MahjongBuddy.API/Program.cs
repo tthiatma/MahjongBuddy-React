@@ -21,7 +21,7 @@ namespace MahjongBuddy.API
                 {
                     var context = services.GetRequiredService<MahjongBuddyDbContext>();
                     context.Database.Migrate();
-
+                    Seed.SeedData(context);
                 }
                 catch (Exception ex)
                 {

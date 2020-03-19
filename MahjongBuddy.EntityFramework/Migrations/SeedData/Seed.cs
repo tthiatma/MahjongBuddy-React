@@ -28,7 +28,6 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
                 context.Games.AddRange(games);
                 context.SaveChanges();
-
             }
         }
     }

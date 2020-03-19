@@ -13,8 +13,4 @@
     <ProjectReference Include="..\MahjongBuddy.Core\MahjongBuddy.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\SeedData\" />
-  </ItemGroup>
-
 </Project>
