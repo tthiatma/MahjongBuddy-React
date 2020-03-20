@@ -18,7 +18,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         render={() => (
           <Fragment>
             <NavBar />
-            <Container style={{ marginTop: "7em" }}>
+            <Container style={{ marginTop: "5em" }}>
             <Route exact path="/games" component={GameDashboard} />
             <Route path="/games/:id" component={GameOn} />
             <Route path="/lobby/:id" component={GameLobby} />

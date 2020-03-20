@@ -29,25 +29,38 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({
       <Grid.Row>
         <Grid.Column width={3} />
         <Grid.Column width={10}>
-          <Label>Top Player</Label>
+        <TileList
+            tileStyleName="tileHorizontal"
+            containerStyleName="tileHorizontalContainer"
+          />
         </Grid.Column>
         <Grid.Column width={3} />
       </Grid.Row>
 
       <Grid.Row>
         {/* Left Player */}
-        <Grid.Column width={3}>
-          <Label>Left Player</Label>
+        <Grid.Column width={1}></Grid.Column>
+        <Grid.Column width={1}></Grid.Column>
+        <Grid.Column width={1}>
+          <TileList
+            tileStyleName="tileVertical"
+            containerStyleName="tileVerticalContainer rotate90"
+          />
         </Grid.Column>
 
         {/* Board */}
-        <Grid.Column>
+        <Grid.Column width={10}>
           <Label>Board</Label>
         </Grid.Column>
 
         {/* Right Player */}
-        <Grid.Column width={3}>
-          <Label>Right Player</Label>
+        <Grid.Column width={1}>
+          <TileList
+            tileStyleName="tileVertical"
+            containerStyleName="tileVerticalContainer rotateMinus90"
+          />
+        <Grid.Column width={1}></Grid.Column>
+        <Grid.Column width={1}></Grid.Column>
         </Grid.Column>
       </Grid.Row>
 
@@ -55,7 +68,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({
       <Grid.Row>
         <Grid.Column width={3} />
         <Grid.Column width={10}>
-          <Label>Main Player</Label>
+          <TileList
+            tileStyleName="tileHorizontal"
+            containerStyleName="tileHorizontalContainer"
+          />
         </Grid.Column>
         <Grid.Column width={3} />
       </Grid.Row>

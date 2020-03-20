@@ -40,4 +40,60 @@ body {
   font-weight: normal;
 }
 
+.tileVerticalContainer {
+  height:30px;
+  display:inline-block
+}
+.tileVerticalContainerMobile {
+  height:30px;
+  display:inline-block
+}
+
+.tileVertical {
+  margin: -100% 0 -100% 0;
+  transform-origin: 100% 100%;
+  display:list-item;
+}
+
+.tileHorizontal {
+  margin: 0 -100% 0 -100%;
+  overflow:hidden
+}
+
+.tileHorizontalContainer {
+  width:34px;
+  height:50px;
+  display:inline-block;
+}
+
+.rotate180 {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+
+.rotate90 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+  white-space: nowrap;
+  display: inline-block;
+  white-space: nowrap;
+  transform-origin: 0 0;
+}
+.rotateMinus90 {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  display: inline-block;
+  white-space: nowrap;
+  transform-origin: 100% 0;
+}
+
 /*end home page styles*/
