@@ -1,8 +1,4 @@
-﻿using MahjongBuddy.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿using MahjongBuddy.EntityFramework.Migrations.SeedData;
 
 namespace MahjongBuddy.EntityFramework.EntityFramework
 {
@@ -10,25 +6,11 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
     {
         public static void SeedData(MahjongBuddyDbContext context)
         {
-            if (!context.Games.Any())
-            {
-                var games = new List<Game>
-                {
-                    new Game
-                    {
-                        Title = "Game 1",
-                        Date = DateTime.Now.AddMonths(-2),
-                    },
-                    new Game
-                    {
-                        Title = "Game 2",
-                        Date = DateTime.Now.AddMonths(-1),
-                    }
-                };
+            new DefaultGameBuilder(context).Build();
+            new DefaultTileBuilder(context).Build();
+            new DefaulrGameTileBuilder(context).Build();
 
-                context.Games.AddRange(games);
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
     }
 }

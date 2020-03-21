@@ -8,9 +8,11 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         public MahjongBuddyDbContext(DbContextOptions options) : base(options)
         {
         }
+        public DbSet<Game> Games { get; set; }
+
         public DbSet<Tile> Tiles { get; set; }
 
-        public DbSet<Game> Games { get; set; }
+        public DbSet<GameTile> GameTiles { get; set; }
         
     }
 }
