@@ -8,7 +8,7 @@ namespace MahjongBuddy.Core
 
         public Tile Tile { get; set; }
 
-        public Game Game { get; set; }
+        public int GameId { get; set; }
 
         public string Owner { get; set; }
         

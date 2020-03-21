@@ -21,6 +21,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
             {
                 var games = CreateGames();
                 _context.Games.AddRange(games);
+                _context.SaveChanges();
             }
         }
         private IEnumerable<Game> CreateGames()

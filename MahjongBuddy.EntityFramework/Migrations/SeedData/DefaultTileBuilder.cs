@@ -20,6 +20,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                 var tiles = CreateTiles();
 
                 _context.Tiles.AddRange(tiles);
+                _context.SaveChanges();
             }
         }
         private IEnumerable<Tile> CreateTiles()

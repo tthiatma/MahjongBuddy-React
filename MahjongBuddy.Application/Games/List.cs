@@ -23,7 +23,7 @@ namespace MahjongBuddy.Application.Games
 
             public async Task<List<Game>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var games = await _context.Games.ToListAsync();
+                var games = await _context.Games.Include(g=> g.GameTiles).ThenInclude(gt => gt.Tile).ToListAsync();
 
                 return games;
             }
