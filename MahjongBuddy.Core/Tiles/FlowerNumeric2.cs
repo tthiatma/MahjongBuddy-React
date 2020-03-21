@@ -4,9 +4,10 @@
     {
         public FlowerNumeric2()
         {
-            Type = TileType.Flower;
-            Value = TileValue.FlowerNumericTwo;
-            Name = "FlowerNumericTwo";
+            Id = 52;
+            TileType = TileType.Flower;
+            TileValue = TileValue.FlowerNumericTwo;
+            Title = "FlowerNumericTwo";
             Image = "/assets/tiles/64px/flower/flower2.png";
             ImageSmall = "/assets/tiles/50px/flower/flower2.png";
         }

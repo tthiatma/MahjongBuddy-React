@@ -4,9 +4,10 @@
     {
         public FlowerRoman1()
         {
-            Type = TileType.Flower;
-            Value = TileValue.FlowerRomanOne;
-            Name = "FlowerRomanOne";
+            Id = 61;
+            TileType = TileType.Flower;
+            TileValue = TileValue.FlowerRomanOne;
+            Title = "FlowerRomanOne";
             Image = "/assets/tiles/64px/flower/flower1a.png";
             ImageSmall = "/assets/tiles/50px/flower/flower1a.png";
         }

@@ -4,9 +4,10 @@
     {
         public Money9()
         {
-            Type = TileType.Money;
-            Value = TileValue.Nine;
-            Name = "MoneyNine";
+            Id = 9;
+            TileType = TileType.Money;
+            TileValue = TileValue.Nine;
+            Title = "MoneyNine";
             Image = "/assets/tiles/64px/man/man9.png";
             ImageSmall = "/assets/tiles/50px/man/man9.png";
         }

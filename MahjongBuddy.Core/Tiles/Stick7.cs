@@ -4,9 +4,10 @@
     {
         public Stick7()
         {
-            Type = TileType.Stick;
-            Value = TileValue.Seven;
-            Name = "StickSeven";
+            Id = 27;
+            TileType = TileType.Stick;
+            TileValue = TileValue.Seven;
+            Title = "StickSeven";
             Image = "/assets/tiles/64px/bamboo/bamboo7.png";
             ImageSmall = "/assets/tiles/50px/bamboo/bamboo7.png";
         }

@@ -4,9 +4,10 @@
     {
         public Round8()
         {
-            Type = TileType.Round;
-            Value = TileValue.Eight;
-            Name = "RoundEight";
+            Id = 18;
+            TileType = TileType.Round;
+            TileValue = TileValue.Eight;
+            Title = "RoundEight";
             Image = "/assets/tiles/64px/pin/pin8.png";
             ImageSmall = "/assets/tiles/50px/pin/pin8.png";
         }

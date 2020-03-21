@@ -4,9 +4,10 @@
     {
         public Round1()
         {
-            Type = TileType.Round;
-            Value = TileValue.One;
-            Name = "RoundOne";
+            Id = 11;
+            TileType = TileType.Round;
+            TileValue = TileValue.One;
+            Title = "RoundOne";
             Image = "/assets/tiles/64px/pin/pin1.png";
             ImageSmall = "/assets/tiles/50px/pin/pin1.png";
         }

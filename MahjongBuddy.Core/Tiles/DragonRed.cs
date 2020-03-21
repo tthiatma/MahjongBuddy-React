@@ -4,9 +4,10 @@
     {
         public DragonRed()
         {
-            Type = TileType.Dragon;
-            Value = TileValue.DragonRed;
-            Name = "DragonRed";
+            Id = 32;
+            TileType = TileType.Dragon;
+            TileValue = TileValue.DragonRed;
+            Title = "DragonRed";
             Image = "/assets/tiles/64px/dragon/dragon-chun.png";
             ImageSmall = "/assets/tiles/50px/dragon/dragon-chun.png";
         }
