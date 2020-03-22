@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahjongBuddy.API", "MahjongBuddy.API\MahjongBuddy.API.csproj", "{9D780CF3-91D4-461B-8F18-FF8D15012037}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MahjongBuddy.API", "MahjongBuddy.API\MahjongBuddy.API.csproj", "{9D780CF3-91D4-461B-8F18-FF8D15012037}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahjongBuddy.Application", "MahjongBuddy.Application\MahjongBuddy.Application.csproj", "{4A4478ED-ECC5-453F-8D58-C7AEC9045CB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MahjongBuddy.Application", "MahjongBuddy.Application\MahjongBuddy.Application.csproj", "{4A4478ED-ECC5-453F-8D58-C7AEC9045CB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahjongBuddy.EntityFramework", "MahjongBuddy.EntityFramework\MahjongBuddy.EntityFramework.csproj", "{3EBCD2D0-3A8C-4F51-97FC-111518BE1617}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MahjongBuddy.EntityFramework", "MahjongBuddy.EntityFramework\MahjongBuddy.EntityFramework.csproj", "{3EBCD2D0-3A8C-4F51-97FC-111518BE1617}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahjongBuddy.Core", "MahjongBuddy.Core\MahjongBuddy.Core.csproj", "{D6AB00A8-F4BF-4D33-A8BF-A441DA2F6E89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MahjongBuddy.Core", "MahjongBuddy.Core\MahjongBuddy.Core.csproj", "{D6AB00A8-F4BF-4D33-A8BF-A441DA2F6E89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,9 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9D780CF3-91D4-461B-8F18-FF8D15012037}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -72,5 +69,11 @@ Global
 		{D6AB00A8-F4BF-4D33-A8BF-A441DA2F6E89}.Release|x64.Build.0 = Release|Any CPU
 		{D6AB00A8-F4BF-4D33-A8BF-A441DA2F6E89}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6AB00A8-F4BF-4D33-A8BF-A441DA2F6E89}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6206A32E-6621-47D4-9FD7-57C58F4363F2}
 	EndGlobalSection
 EndGlobal
