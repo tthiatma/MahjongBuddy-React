@@ -24,7 +24,7 @@ namespace MahjongBuddy.API.Controllers
         [HttpGet]
         public async Task<ActionResult<User>> CurrentUser()
         {
-            return await Mediator.Send(new CurrentUser.Query);
+            return await Mediator.Send(new CurrentUser.Query());
         }
     }
 }
