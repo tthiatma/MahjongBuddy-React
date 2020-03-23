@@ -1,7 +1,9 @@
-﻿using MahjongBuddy.Core;
+﻿using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 namespace MahjongBuddy.Application.Games
@@ -25,6 +27,9 @@ namespace MahjongBuddy.Application.Games
             public async Task<Game> Handle(Query request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.FindAsync(request.Id);
+
+                if (game == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { game = "Not Found" });
 
                 return game;
             }

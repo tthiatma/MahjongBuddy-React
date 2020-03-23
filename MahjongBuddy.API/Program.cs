@@ -1,6 +1,8 @@
 using System;
+using MahjongBuddy.Core.AppUsers;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,7 +23,9 @@ namespace MahjongBuddy.API
                 {
                     var context = services.GetRequiredService<MahjongBuddyDbContext>();
                     context.Database.Migrate();
-                    Seed.SeedData(context);
+
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    Seed.SeedData(context, userManager).Wait();
                 }
                 catch (Exception ex)
                 {

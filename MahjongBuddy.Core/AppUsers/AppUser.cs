@@ -7,6 +7,6 @@ namespace MahjongBuddy.Core.AppUsers
 {
     public class AppUser : IdentityUser
     {
-        public string DIsplayName { get; set; }
+        public string DisplayName { get; set; }
     }
 }
