@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { ITile } from '../models/tile';
 import { IGame } from '../models/game';
+import { IUser, IUserFormValues } from '../models/user';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
@@ -32,7 +33,14 @@ const Games = {
     delete: (id:string) => request.del(`/games/${id}`)
 }
 
+const User = {
+    current: (): Promise<IUser> => request.get('/user'),
+    login: (user: IUserFormValues) : Promise<IUser> => request.post(`/user/login/`, user),
+    register: (user: IUserFormValues) : Promise<IUser> => request.post(`/user/register/`, user)
+}
+
 export default {
     Tiles, 
-    Games
+    Games,
+    User
 }

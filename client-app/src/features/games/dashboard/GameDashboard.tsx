@@ -2,16 +2,18 @@ import React, { useContext, useEffect } from "react";
 import { Grid } from "semantic-ui-react";
 import GameList from "./GameList";
 import { observer } from "mobx-react-lite";
-import GameStore from "../../../app/stores/gameStore";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const GameDashboard: React.FC = () => {
-  const gameStore = useContext(GameStore);
-  useEffect(() => {
-    gameStore.loadGames();
-  }, [gameStore]);
+  const rootStore = useContext(RootStoreContext);
+  const {loadGames, loadingInitial} = rootStore.gameStore;
 
-  if (gameStore.loadingInitial)
+  useEffect(() => {
+    loadGames();
+  }, [loadGames]);
+
+  if (loadingInitial)
     return <LoadingComponent content="Loading games..." />;
     
   return (

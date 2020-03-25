@@ -11,7 +11,7 @@ namespace MahjongBuddy.API.Controllers
 {
     public class GamesController : BaseController
     {
-        //[Authorize]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<List<Game>>> List()
         {

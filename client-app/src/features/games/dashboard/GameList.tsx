@@ -3,10 +3,11 @@ import { Item, Label } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import GameStore from "../../../app/stores/gameStore";
 import GameListItem from "./GameListItem";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const GameList: React.FC = () => {
-  const gameStore = useContext(GameStore);
-  const { gamesByDate } = gameStore;
+  const rootStore = useContext(RootStoreContext);
+  const { gamesByDate } = rootStore.gameStore;
   return (
     <Fragment>
       {gamesByDate.map(([group, games]) => (

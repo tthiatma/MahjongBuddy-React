@@ -2,10 +2,18 @@ import { observable, action, computed, configure, runInAction } from "mobx";
 import { createContext, SyntheticEvent } from "react";
 import { IGame } from "../models/game";
 import agent from "../api/agent";
+import { RootStore } from "./rootStore";
 
 configure({ enforceActions: "always" });
 
-export class GameStore {
+export default class GameStore {
+
+  rootStore: RootStore;
+  
+  constructor(rootStore: RootStore) {
+    this.rootStore = rootStore;
+  }
+
   @observable gameRegistry = new Map();
   @observable loadingInitial = false;
   @observable game: IGame | null = null;
@@ -130,5 +138,3 @@ export class GameStore {
     }
   };
 }
-
-export default createContext(new GameStore());

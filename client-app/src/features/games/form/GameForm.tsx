@@ -5,6 +5,7 @@ import { v4 as uuid } from "uuid";
 import GameStore from "../../../app/stores/gameStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 interface DetailParams {
   id: string;
@@ -13,7 +14,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
   history
 }) => {
-  const gameStore = useContext(GameStore);
+  const rootStore = useContext(RootStoreContext);
   const {
     createGame,
     editGame,
@@ -21,7 +22,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
     game: initialFormState,
     loadGame,
     clearGame
-  } = gameStore;
+  } = rootStore.gameStore;
 
   const [game, setGame] = useState<IGame>({
     id: "",

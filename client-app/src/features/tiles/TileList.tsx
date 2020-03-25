@@ -3,9 +3,10 @@ import { Item, Label, Grid, Image } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import GameStore from "../../app/stores/gameStore";
 import _ from "lodash";
+import { RootStoreContext } from "../../app/stores/rootStore";
 
 const TileList: React.FC<{containerStyleName : string, tileStyleName: string}> = ({containerStyleName, tileStyleName}) => {
-  const gameStore = useContext(GameStore);
+  const rootStore = useContext(RootStoreContext);
   
   return (
     <Fragment>
