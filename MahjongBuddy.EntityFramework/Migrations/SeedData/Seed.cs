@@ -15,7 +15,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
             new DefaultTileBuilder(context).Build();
             new DefaulrGameTileBuilder(context).Build();
 
-            if (userManager.Users.Any())
+            if (!userManager.Users.Any())
             {
                 var users = new List<AppUser>
                 {
@@ -53,6 +53,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 {
                    await userManager.CreateAsync(user, "Pa$$w0rd");
                 }
+                context.SaveChanges();
             }
         }
     }

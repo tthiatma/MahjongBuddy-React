@@ -2,7 +2,6 @@ import React, { useState, FormEvent, useContext, useEffect } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
 import { IGame } from "../../../app/models/game";
 import { v4 as uuid } from "uuid";
-import GameStore from "../../../app/stores/gameStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
 import { RootStoreContext } from "../../../app/stores/rootStore";

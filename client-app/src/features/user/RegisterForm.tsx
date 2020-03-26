@@ -10,17 +10,19 @@ import { ErrorMessage } from '../../app/common/form/ErrorMessage'
 
 const validate = combineValidators({
   email: isRequired('email'),
+  displayName: isRequired('email'),
+  UserName: isRequired('email'),
   password: isRequired('password')
 })
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const {login} = rootStore.userStore;
+  const {register} = rootStore.userStore;
 
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
-        login(values).catch(error => ({
+        register(values).catch(error => ({
           [FORM_ERROR]: error
         }))
       }
@@ -36,10 +38,12 @@ export const LoginForm = () => {
         <Form onSubmit={handleSubmit} error>
           <Header
             as="h2"
-            content="Login to MahjongBuddy"
+            content="Sign up to MahjongBuddy"
             color="teal"
             textAlign="center"
           />
+          <Field name="userName" component={TextInput} placeholder="UserName" />
+          <Field name="displayName" component={TextInput} placeholder="DisplayName" />
           <Field name="email" component={TextInput} placeholder="Email" />
           <Field
             name="password"
@@ -50,17 +54,15 @@ export const LoginForm = () => {
           {submitError && !dirtySinceLastSubmit && (
             <ErrorMessage
               error={submitError}
-              text="Invalid username or password"
             />
           )}
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}
             loading={submitting}
             color="teal"
-            content="Login"
+            content="Register"
             fluid
           />
-          {/* <pre>{JSON.stringify(form.getState(), null, 2)}</pre> */}
         </Form>
       )}
     />

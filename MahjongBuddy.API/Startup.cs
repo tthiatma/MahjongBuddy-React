@@ -71,7 +71,8 @@ namespace MahjongBuddy.API
                     {
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = key,
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                        ValidateIssuer = false
                     };
                 });
             services.AddScoped<IJwtGenerator, JwtGenerator>();
@@ -79,7 +80,7 @@ namespace MahjongBuddy.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) 
         {
             app.UseMiddleware<ErrorHandlingMiddleware>();
 

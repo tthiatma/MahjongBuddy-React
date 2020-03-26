@@ -1,7 +1,6 @@
 import React, { useContext, Fragment } from "react";
 import { Item, Label } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
-import GameStore from "../../../app/stores/gameStore";
 import GameListItem from "./GameListItem";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 

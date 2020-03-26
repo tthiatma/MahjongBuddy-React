@@ -1,10 +1,8 @@
-import { observable, action, computed, configure, runInAction } from "mobx";
-import { createContext, SyntheticEvent } from "react";
+import { observable, action, computed, runInAction } from "mobx";
+import { SyntheticEvent } from "react";
 import { IGame } from "../models/game";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
-
-configure({ enforceActions: "always" });
 
 export default class GameStore {
 

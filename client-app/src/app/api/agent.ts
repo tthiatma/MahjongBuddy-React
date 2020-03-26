@@ -1,9 +1,36 @@
 import axios, { AxiosResponse } from 'axios';
 import { ITile } from '../models/tile';
+import { history } from '../..';
 import { IGame } from '../models/game';
 import { IUser, IUserFormValues } from '../models/user';
+import { toast } from 'react-toastify';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
+
+axios.interceptors.request.use((config) => {
+    const token = window.localStorage.getItem('jwt');
+    if(token) config.headers.Authorization = `Bearer ${token}`;
+    return config
+}, error => {
+    return Promise.reject(error);
+})
+
+axios.interceptors.response.use(undefined, error => {
+    if (error.message === 'Network Error' && !error.response) {
+        toast.error('Network error - make sure API is running!')
+    }
+    const {status, data, config} = error.response;
+    if (status === 404) {
+        history.push('/notfound')
+    }
+    if (status === 400 && config.method === 'get' && data.errors.hasOwnProperty('id')) {
+        history.push('/notfound')
+    }
+    if (status === 500) {
+        toast.error('Server error - check the terminal for more info!')
+    }
+    throw error.response;
+})
 
 const responseBody = (Response: AxiosResponse) => Response.data;
 
