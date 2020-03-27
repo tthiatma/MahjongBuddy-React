@@ -1,10 +1,20 @@
-import React, { useState, FormEvent, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
-import { IGame } from "../../../app/models/game";
+import { GameFormValues } from '../../../app/models/game';
 import { v4 as uuid } from "uuid";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
+import { Form as FinalForm, Field } from 'react-final-form';
 import { RootStoreContext } from "../../../app/stores/rootStore";
+import TextInput from '../../../app/common/form/TextInput';
+import {
+  combineValidators,
+  isRequired
+} from 'revalidate';
+
+const validate = combineValidators({
+  title: isRequired({ message: 'The event title is required' }),
+});
 
 interface DetailParams {
   id: string;
@@ -18,55 +28,35 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
     createGame,
     editGame,
     submitting,
-    game: initialFormState,
     loadGame,
-    clearGame
   } = rootStore.gameStore;
 
-  const [game, setGame] = useState<IGame>({
-    id: "",
-    title: "",
-    date: "",
-    players: []
-  });
+  const [game, setGame] = useState(new GameFormValues());
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (match.params.id && game.id.length === 0) {
-      loadGame(match.params.id).then(
-        () => initialFormState && setGame(initialFormState)
-      );
+    if (match.params.id) {
+      setLoading(true);
+      loadGame(match.params.id)
+        .then(game => {
+          setGame(new GameFormValues(game));
+        })
+        .finally(() => setLoading(false));
     }
-    return () => {
-      clearGame();
-    };
-  }, [
-    loadGame,
-    match.params.id,
-    clearGame,
-    initialFormState,
-    game.id.length
-  ]);
+  }, [loadGame, match.params.id, game]);
 
-  const handleInputChange = (
-    event: FormEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = event.currentTarget;
-    setGame({ ...game, [name]: value });
-  };
-
-  const handleSubmit = () => {
-    if (game.id.length === 0) {
+  const handleFinalFormSubmit = (values: any) => {
+    const dateAndTime = new Date();
+    const { date, time, ...game } = values;
+    game.date = dateAndTime;
+    if (!game.id) {
       let newGame = {
         ...game,
         id: uuid()
       };
-      createGame(newGame).then(() =>
-        history.push(`/games/${newGame.id}`)
-      );
+      createGame(newGame);
     } else {
-      editGame(game).then(() =>
-        history.push(`/games/${game.id}`)
-      );
+      editGame(game);
     }
   };
 
@@ -74,34 +64,40 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
     <Grid>
       <Grid.Column width={10}>
         <Segment clearing>
-          <Form onSubmit={handleSubmit}>
-            <Form.Input
-              onChange={handleInputChange}
-              name="title"
-              placeholder="Title"
-              value={game.title}
-            />
-            <Form.Input
-              onChange={handleInputChange}
-              name="date"
-              type="datetime-local"
-              placeholder="Date"
-              value={game.date}
-            />
-            <Button
-              loading={submitting}
-              floated="right"
-              positive
-              type="submit"
-              content="Submit"
-            />
-            <Button
-              onClick={() => history.push("/games")}
-              floated="right"
-              type="button"
-              content="Cancel"
-            />
-          </Form>
+          <FinalForm
+            validate={validate}
+            initialValues={game}
+            onSubmit={handleFinalFormSubmit}
+            render={({ handleSubmit, invalid, pristine }) => (
+              <Form onSubmit={handleSubmit} loading={loading}>
+                <Field
+                  name='title'
+                  placeholder='Title'
+                  value={game.title}
+                  component={TextInput}
+                />
+                <Button
+                  loading={submitting}
+                  disabled={loading || invalid || pristine}
+                  floated='right'
+                  positive
+                  type='submit'
+                  content='Submit'
+                />
+                <Button
+                  onClick={
+                    game.id
+                      ? () => history.push(`/lobby/${game.id}`)
+                      : () => history.push('/games')
+                  }
+                  disabled={loading}
+                  floated='right'
+                  type='button'
+                  content='Cancel'
+                />
+              </Form>
+            )}
+          />
         </Segment>
       </Grid.Column>
     </Grid>

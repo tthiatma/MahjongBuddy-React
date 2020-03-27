@@ -4,13 +4,18 @@ import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import { RootStoreContext } from "../../../app/stores/rootStore";
+import GameLobbyChat from "./GameLobbyChat";
+import GameLobbyHeader from "./GameLobbyHeader";
+import GameLobbyInfo from "./GameLobbyInfo";
+import GameLobbySidebar from "./GameLobbySidebar";
 
 interface DetailParams {
   id: string;
 }
 
 const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
-  match
+  match,
+  history
 }) => {
   const rootStore = useContext(RootStoreContext);
   const { game, loadGame, loadingInitial } = rootStore.gameStore;
@@ -22,12 +27,18 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   if (loadingInitial || !game)
     return <LoadingComponent content="Loading game..." />;
 
+  if (!game) return <h2>Game not found</h2>;
+
   return (
     <Grid>
       <Grid.Column width={10}>
-          {game.id} - {game.title}
+        <GameLobbyHeader game={game} />
+        <GameLobbyInfo game={game} />
+        <GameLobbyChat />
       </Grid.Column>
       <Grid.Column width={6}>
+      <GameLobbySidebar />
+
       </Grid.Column>
     </Grid>
   );

@@ -3,6 +3,7 @@ import { Item, Button,  Segment, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IGame } from "../../../app/models/game";
 import GameListItemPlayers from "./GameListItemPlayers";
+import {format} from 'date-fns';
 
 const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
   return (
@@ -19,15 +20,15 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
         </Item.Group>
       </Segment>
       <Segment>
-        <Icon name="clock" /> {game.date}
+        <Icon name="clock" /> {format(game.date, 'h:mm a')}
       </Segment>
       <Segment secondary>
         <GameListItemPlayers players={game.players} />
-        </Segment>
+      </Segment>
       <Segment clearing>
         <Button
           as={Link}
-          to={`/games/${game.id}`}
+          to={`/lobby/${game.id}`}
           floated="right"
           content="View"
           color="blue"

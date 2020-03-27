@@ -3,18 +3,19 @@ import { SyntheticEvent } from "react";
 import { IGame } from "../models/game";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
+import { history } from '../..';
+import { toast } from 'react-toastify';
 
 export default class GameStore {
 
   rootStore: RootStore;
-  
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
   }
 
   @observable gameRegistry = new Map();
-  @observable loadingInitial = false;
   @observable game: IGame | null = null;
+  @observable loadingInitial = false;
   @observable submitting = false;
   @observable target = "";
 
@@ -24,10 +25,10 @@ export default class GameStore {
 
   groupGamesByDate(games:IGame[]) {
     const sortedGames = games.sort(
-      (a, b) => Date.parse(a.date) - Date.parse(b.date)
+      (a, b) => a.date.getTime() - b.date.getTime()
     )
     return Object.entries(sortedGames.reduce((games, game) => {
-      const date = game.date.split('T')[0];
+      const date = game.date.toISOString().split('T')[0];
       games[date] = games[date] ? [...games[date], game] : [game];
       return games
     }, {} as {[key: string] : IGame[]}));
@@ -35,27 +36,6 @@ export default class GameStore {
 
   @action clearGame = () => {
     this.game = null;
-  };
-
-  @action loadGame = async (id: string) => {
-    let game = this.getGame(id);
-    if (game) {
-      this.game = game;
-    } else {
-      this.loadingInitial = true;
-      try {
-        game = await agent.Games.detail(id);
-        runInAction("getting game", () => {
-          this.game = game;
-          this.loadingInitial = false;
-        });
-      } catch (error) {
-        runInAction("getting game error", () => {
-          this.loadingInitial = false;
-        });
-        console.log(error);
-      }
-    }
   };
 
   getGame = (id: string) => {
@@ -109,11 +89,38 @@ export default class GameStore {
         this.gameRegistry.set(game.id, game);
         this.submitting = false;
       });
+      history.push(`/lobby/${game.id}`)
     } catch (error) {
       runInAction("creating game error", () => {
         this.submitting = false;
       });
-      console.log(error);
+      toast.error('Problem submitting data');
+      console.log(error.response);
+    }
+  };
+
+  @action loadGame = async (id: string) => {
+    let game = this.getGame(id);
+    if (game) {
+      this.game = game;
+      return game;
+    } else {
+      this.loadingInitial = true;
+      try {
+        game = await agent.Games.detail(id);
+        runInAction("getting game", () => {
+          game.date = new Date(game.date);
+          this.game = game;
+          this.gameRegistry.set(game.id, game);
+          this.loadingInitial = false;
+        });
+        return game;
+      } catch (error) {
+        runInAction("getting game error", () => {
+          this.loadingInitial = false;
+        });
+        console.log(error);
+      }
     }
   };
 
@@ -123,7 +130,7 @@ export default class GameStore {
       const games = await agent.Games.list();
       runInAction("loading games", () => {
         games.forEach(game => {
-          game.date = game.date.split(".")[0];
+          game.date = new Date(game.date);
           this.gameRegistry.set(game.id, game);
         });
         this.loadingInitial = false;
