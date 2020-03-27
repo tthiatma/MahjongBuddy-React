@@ -17,7 +17,5 @@ namespace MahjongBuddy.Core
         public bool CanThrowTile { get; set; }
         public bool CanDoNoFlower { get; set; }
         public int CurrentPoint { get; set; }
-        public List<TileSet> TileSets { get; set; }
-
     }
 }

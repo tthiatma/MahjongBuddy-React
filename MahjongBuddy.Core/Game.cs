@@ -7,7 +7,7 @@ namespace MahjongBuddy.Core
     {
         public int Id { get; set; }
 
-        public ICollection<GameTile> GameTiles { get; set; }
+        public virtual ICollection<GameTile> GameTiles { get; set; }
 
         public virtual ICollection<UserGame> UserGames { get; set; }
 

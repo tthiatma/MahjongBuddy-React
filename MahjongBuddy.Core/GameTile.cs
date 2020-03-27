@@ -6,7 +6,11 @@ namespace MahjongBuddy.Core
     {
         public Guid Id { get; set; }
 
-        public Tile Tile { get; set; }
+        public int TileId { get; set; }
+
+        public virtual Tile Tile { get; set; }
+
+        public virtual Game Game { get; set; }
 
         public int GameId { get; set; }
 

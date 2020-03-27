@@ -7,6 +7,8 @@ namespace MahjongBuddy.Core.AppUsers
     {
         public string DisplayName { get; set; }
 
+        public virtual List<TileSet> TileSets { get; set; }
+
         public virtual ICollection<UserGame> UserGames { get; set; }
     }
 }
