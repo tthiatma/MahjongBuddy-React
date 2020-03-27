@@ -2,6 +2,7 @@ import React from "react";
 import { Item, Button,  Segment, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IGame } from "../../../app/models/game";
+import GameListItemPlayers from "./GameListItemPlayers";
 
 const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
   return (
@@ -20,7 +21,9 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
       <Segment>
         <Icon name="clock" /> {game.date}
       </Segment>
-      <Segment secondary>Attendees will go here</Segment>
+      <Segment secondary>
+        <GameListItemPlayers players={game.players} />
+        </Segment>
       <Segment clearing>
         <Button
           as={Link}

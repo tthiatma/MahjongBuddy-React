@@ -26,7 +26,8 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
   const [game, setGame] = useState<IGame>({
     id: "",
     title: "",
-    date: ""
+    date: "",
+    players: []
   });
 
   useEffect(() => {
