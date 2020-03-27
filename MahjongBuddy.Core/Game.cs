@@ -9,6 +9,8 @@ namespace MahjongBuddy.Core
 
         public ICollection<GameTile> GameTiles { get; set; }
 
+        public virtual ICollection<UserGame> UserGames { get; set; }
+
         public string Title { get; set; }
 
         public DateTime Date { get; set; }

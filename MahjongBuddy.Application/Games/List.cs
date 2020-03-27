@@ -1,4 +1,5 @@
-﻿using MahjongBuddy.Core;
+﻿using AutoMapper;
+using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,22 +11,25 @@ namespace MahjongBuddy.Application.Games
 {
     public class List
     {
-        public class Query : IRequest<List<Game>> { }
+        public class Query : IRequest<List<GameDto>> { }
 
-        public class Handler : IRequestHandler<Query, List<Game>>
+        public class Handler : IRequestHandler<Query, List<GameDto>>
         {
             private readonly MahjongBuddyDbContext _context;
+            private readonly IMapper _mapper;
 
-            public Handler(MahjongBuddyDbContext context)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper)
             {
                 _context = context;
+                _mapper = mapper;
             }
 
-            public async Task<List<Game>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<List<GameDto>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var games = await _context.Games.Include(g=> g.GameTiles).ThenInclude(gt => gt.Tile).ToListAsync();
+                var games = await _context.Games
+                    .ToListAsync();
 
-                return games;
+                return _mapper.Map<List<Game>, List<GameDto>>(games);
             }
         }
     }

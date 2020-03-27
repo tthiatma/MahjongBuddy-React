@@ -18,9 +18,22 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
         public DbSet<GameTile> GameTiles { get; set; }
 
+        public DbSet<UserGame> UserGames { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<UserGame>(x => x.HasKey(ug => new { ug.GameId, ug.AppUserId }));
+            builder.Entity<UserGame>()
+                .HasOne(u => u.AppUser)
+                .WithMany(g => g.UserGames)
+                .HasForeignKey(u => u.AppUserId);
+            builder.Entity<UserGame>()
+                .HasOne(g => g.Game)
+                .WithMany(u => u.UserGames)
+                .HasForeignKey(g => g.GameId);
+
         }
     }
 }

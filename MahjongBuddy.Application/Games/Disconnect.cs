@@ -1,24 +1,24 @@
-﻿using MahjongBuddy.Application.Interfaces;
+﻿using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MahjongBuddy.Application.Games
 {
-    public class Create
+    public class Disconnect : IRequest
     {
         public class Command : IRequest
         {
             public int Id { get; set; }
-
-            public string Title { get; set; }
-
         }
-        public class Handler : IRequestHandler<Command> 
+
+        public class Handler : IRequestHandler<Command>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IUserAccessor _userAccessor;
@@ -28,27 +28,24 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _userAccessor = userAccessor;
             }
-
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = new Game
-                {
-                    Id = request.Id,
-                    Title = request.Title
-                };
+                var game = await _context.Games.FindAsync(request.Id);
 
-                _context.Games.Add(game);
+                if (game == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
 
-                var player = new UserGame
-                {
-                    AppUser = user,
-                    Game = game,
-                    IsHost = true,
-                };
+                var connected = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
-                _context.UserGames.Add(player);
+                if (connected == null)
+                    return Unit.Value;
+
+                if(connected.IsHost)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Game = "You cannot remove yourself as host" });
+
+                _context.UserGames.Remove(connected);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
