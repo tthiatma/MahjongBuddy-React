@@ -2,7 +2,7 @@
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Application.Validators;
-using MahjongBuddy.Core.AppUsers;
+using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

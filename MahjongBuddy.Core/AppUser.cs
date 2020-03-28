@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
-namespace MahjongBuddy.Core.AppUsers
+namespace MahjongBuddy.Core
 {
     public class AppUser : IdentityUser
     {

@@ -1,4 +1,4 @@
-﻿using MahjongBuddy.Core.AppUsers;
+﻿using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.Migrations.SeedData;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;

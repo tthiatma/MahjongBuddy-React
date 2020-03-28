@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200327032100_InitialCreate")]
+    [Migration("20200328175705_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,7 +18,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.2");
 
-            modelBuilder.Entity("MahjongBuddy.Core.AppUsers.AppUser", b =>
+            modelBuilder.Entity("MahjongBuddy.Core.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -373,14 +373,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("MahjongBuddy.Core.TileSet", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.AppUsers.AppUser", null)
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
                         .WithMany("TileSets")
                         .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.UserGame", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.AppUsers.AppUser", "AppUser")
+                    b.HasOne("MahjongBuddy.Core.AppUser", "AppUser")
                         .WithMany("UserGames")
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -404,7 +404,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.AppUsers.AppUser", null)
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -413,7 +413,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.AppUsers.AppUser", null)
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -428,7 +428,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MahjongBuddy.Core.AppUsers.AppUser", null)
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -437,7 +437,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.AppUsers.AppUser", null)
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

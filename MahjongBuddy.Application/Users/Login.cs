@@ -1,5 +1,4 @@
-﻿using MahjongBuddy.Core.AppUsers;
-using MediatR;
+﻿using MediatR;
 using System.Threading.Tasks;
 using System.Threading;
 using FluentValidation;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Net;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
+using MahjongBuddy.Core;
 
 namespace MahjongBuddy.Application.Users
 {

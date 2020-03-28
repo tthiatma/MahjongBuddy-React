@@ -1,7 +1,4 @@
-﻿using MahjongBuddy.Core.AppUsers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MahjongBuddy.Core;
 
 namespace MahjongBuddy.Application.Interfaces
 {

@@ -1,5 +1,5 @@
 ﻿using MahjongBuddy.Application.Interfaces;
-using MahjongBuddy.Core.AppUsers;
+using MahjongBuddy.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;

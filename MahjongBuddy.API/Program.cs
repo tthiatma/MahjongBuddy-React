@@ -1,5 +1,5 @@
 using System;
-using MahjongBuddy.Core.AppUsers;
+using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;

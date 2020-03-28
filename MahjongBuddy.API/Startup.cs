@@ -2,7 +2,6 @@ using FluentValidation.AspNetCore;
 using MahjongBuddy.API.Middleware;
 using MahjongBuddy.Application.Games;
 using MahjongBuddy.Application.Interfaces;
-using MahjongBuddy.Core.AppUsers;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MahjongBuddy.Infrastructure.Security;
 using MediatR;
@@ -19,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
+using MahjongBuddy.Core;
 
 namespace MahjongBuddy.API
 {
