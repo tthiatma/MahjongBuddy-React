@@ -4,7 +4,17 @@ export interface IGame{
     date: Date;
     isHost: boolean;
     isConnected: boolean;
-    players: IPlayer[]
+    players: IPlayer[];
+    chatMsgs: IChatMsg[];
+}
+
+export interface IChatMsg {
+    id: string;
+    createdAt: Date;
+    body: string;
+    userName: string;
+    displayName: string;
+    image: string;
 }
 
 export interface IGameFormValues extends Partial<IGame> {

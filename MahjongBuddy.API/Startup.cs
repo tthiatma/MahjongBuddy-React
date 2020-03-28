@@ -19,6 +19,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
 using MahjongBuddy.Core;
+using MahjongBuddy.API.SignalR;
+using System.Threading.Tasks;
 
 namespace MahjongBuddy.API
 {
@@ -51,15 +53,14 @@ namespace MahjongBuddy.API
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
-
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
                 });
             });
 
 
             services.AddMediatR(typeof(Create.Handler).Assembly);
             services.AddAutoMapper(typeof(Create.Handler));
-
+            services.AddSignalR();
             var builder = services.AddIdentityCore<AppUser>();
 
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
@@ -85,6 +86,20 @@ namespace MahjongBuddy.API
                         IssuerSigningKey = key,
                         ValidateAudience = false,
                         ValidateIssuer = false
+                    };
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+                            var path = context.HttpContext.Request.Path;
+                            if(!string.IsNullOrEmpty(accessToken) 
+                                && (path.StartsWithSegments("/chat")))
+                            {
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
                     };
                 });
             services.AddScoped<IJwtGenerator, JwtGenerator>();
@@ -113,6 +128,7 @@ namespace MahjongBuddy.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }

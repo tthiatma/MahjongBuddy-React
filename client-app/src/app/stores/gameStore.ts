@@ -6,6 +6,7 @@ import { RootStore } from "./rootStore";
 import { history } from '../..';
 import { toast } from 'react-toastify';
 import { setGameProps, createPlayer } from "../common/util/util";
+import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 
 export default class GameStore {
 
@@ -20,6 +21,54 @@ export default class GameStore {
   @observable submitting = false;
   @observable target = "";
   @observable loading = false;
+  @observable.ref hubConnection: HubConnection | null = null;
+
+  @action createHubConnection = (gameId: string) => {
+    this.hubConnection = new HubConnectionBuilder()
+    .withUrl('http://localhost:5000/chat', {
+      accessTokenFactory: () => this.rootStore.commonStore.token!
+    })
+    .configureLogging(LogLevel.Information)
+    .build();
+
+    this.hubConnection
+      .start()
+      .then(() => console.log(this.hubConnection!.state))
+      .then(() => {
+        console.log(`attempting to join group ${gameId}`);
+        if(this.hubConnection!.state === 'Connected')
+          this.hubConnection?.invoke('AddToGroup', gameId);
+      })
+      .catch(error => console.log("Error establishing connection", error));
+
+      this.hubConnection.on("ReceiveChatMsg", chatMsg =>
+        runInAction(() => {
+          this.game!.chatMsgs.push(chatMsg);
+        })
+      );  
+      
+      this.hubConnection.on("Send", message => {
+        toast.info(message);
+      });
+  }
+
+  @action stopHubConnection = () => {
+    this.hubConnection!.invoke("RemoveFromGroup", this.game!.id)
+      .then(() => {
+        this.hubConnection!.stop();
+      })
+      .then(() => console.log("connection stopped"))
+      .catch(error => console.log(error));
+  }
+
+  @action addChatMsg = async (values: any) => {
+    values.gameId = this.game!.id;
+    try{
+      this.hubConnection!.invoke("SendChatMsg", values);
+    }catch (error){
+      console.log(error);
+    }
+  }
 
   @computed get gamesByDate() {
     return this.groupGamesByDate( Array.from(this.gameRegistry.values()));
@@ -92,6 +141,7 @@ export default class GameStore {
       let players = [];
       players.push(player);
       game.players = players;
+      game.chatMsgs = [];
       game.isHost = true;
       game.isConnected = true;
       runInAction("creating games", () => {

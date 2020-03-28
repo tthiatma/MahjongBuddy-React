@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahjongBuddy.Application.ChatMsgs;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -14,5 +15,7 @@ namespace MahjongBuddy.Application.Games
 
         [JsonPropertyName("players")]
         public ICollection<PlayerDto> UserGames { get; set; }
+
+        public ICollection<ChatMsgDto> ChatMsgs { get; set; }
     }
 }
