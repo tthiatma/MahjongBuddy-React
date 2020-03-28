@@ -33,12 +33,53 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = 1,
                     Title = "Game 1",
                     Date = DateTime.Now.AddMonths(-2),
+                    UserGames = new List<UserGame>
+                    {
+                        new UserGame
+                        {
+                            IsHost = true,
+                            AppUserId = "a",
+                        },
+                        new UserGame
+                        {
+                            IsHost = false,
+                            AppUserId = "b",
+                        },
+                        new UserGame
+                        {
+                            IsHost = false,
+                            AppUserId = "c",
+                        },
+                        new UserGame
+                        {
+                            IsHost = false,
+                            AppUserId = "d",
+                        }
+                    }
                 },
                 new Game
                 {
                     Id = 2,
                     Title = "Game 2",
                     Date = DateTime.Now.AddMonths(-1),
+                    UserGames = new List<UserGame>
+                    {
+                        new UserGame
+                        {
+                            IsHost = true,
+                            AppUserId = "a",
+                        },
+                        new UserGame
+                        {
+                            IsHost = false,
+                            AppUserId = "b",
+                        },
+                        new UserGame
+                        {
+                            IsHost = false,
+                            AppUserId = "c",
+                        }
+                    }
                 }
             };
 

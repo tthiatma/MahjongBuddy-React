@@ -37,8 +37,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
         <GameLobbyChat />
       </Grid.Column>
       <Grid.Column width={6}>
-      <GameLobbySidebar />
-
+        <GameLobbySidebar players={game.players} />
       </Grid.Column>
     </Grid>
   );

@@ -57,7 +57,9 @@ const Games = {
     detail: (id:string) => request.get(`/games/${id}`),
     create: (game: IGame) => request.post('games', game),
     update: (game: IGame) => request.put(`/games/${game.id}`, game),
-    delete: (id:string) => request.del(`/games/${id}`)
+    delete: (id:string) => request.del(`/games/${id}`),
+    connect: (id:string) => request.post(`/games/${id}/connect`, {}),
+    disconnect: (id:string) => request.del(`/games/${id}/connect`)
 }
 
 const User = {

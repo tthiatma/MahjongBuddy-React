@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
 
 namespace MahjongBuddy.Infrastructure.Security
 {
@@ -25,7 +26,8 @@ namespace MahjongBuddy.Infrastructure.Security
         {
             var currentUserName = _httpContextAccessor.HttpContext.User?.Claims?.SingleOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            var gameId = (int)_httpContextAccessor.HttpContext.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value;
+            var gameIdString = _httpContextAccessor.HttpContext.Request.RouteValues.SingleOrDefault(x => x.Key == "id").Value;
+            var gameId = Int32.Parse(gameIdString.ToString());
 
             var game = _context.Games.FindAsync(gameId).Result;
 

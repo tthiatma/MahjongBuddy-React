@@ -5,6 +5,7 @@ import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from '../..';
 import { toast } from 'react-toastify';
+import { setGameProps, createPlayer } from "../common/util/util";
 
 export default class GameStore {
 
@@ -18,6 +19,7 @@ export default class GameStore {
   @observable loadingInitial = false;
   @observable submitting = false;
   @observable target = "";
+  @observable loading = false;
 
   @computed get gamesByDate() {
     return this.groupGamesByDate( Array.from(this.gameRegistry.values()));
@@ -85,6 +87,13 @@ export default class GameStore {
     this.submitting = true;
     try {
       await agent.Games.create(game);
+      const player = createPlayer(this.rootStore.userStore.user!);
+      player.isHost = true;
+      let players = [];
+      players.push(player);
+      game.players = players;
+      game.isHost = true;
+      game.isConnected = true;
       runInAction("creating games", () => {
         this.gameRegistry.set(game.id, game);
         this.submitting = false;
@@ -109,7 +118,7 @@ export default class GameStore {
       try {
         game = await agent.Games.detail(id);
         runInAction("getting game", () => {
-          game.date = new Date(game.date);
+          setGameProps(game, this.rootStore.userStore.user!);
           this.game = game;
           this.gameRegistry.set(game.id, game);
           this.loadingInitial = false;
@@ -130,7 +139,7 @@ export default class GameStore {
       const games = await agent.Games.list();
       runInAction("loading games", () => {
         games.forEach(game => {
-          game.date = new Date(game.date);
+          setGameProps(game, this.rootStore.userStore.user!);
           this.gameRegistry.set(game.id, game);
         });
         this.loadingInitial = false;
@@ -142,4 +151,45 @@ export default class GameStore {
       console.log(error);
     }
   };
+
+  @action connectToGame = async () => {
+    const player = createPlayer(this.rootStore.userStore.user!);
+    this.loading = true;
+    try{
+      await agent.Games.connect(this.game!.id);
+      runInAction(() => {
+        if(this.game){
+          this.game.players.push(player);
+          this.game.isConnected = true;
+          this.gameRegistry.set(this.game.id, this.game);
+        }
+        this.loading = false;
+      })
+    }catch(error){
+      runInAction(() =>{
+        this.loading = false
+      })
+      toast.error('problem connecting to game');
+    }
+  }
+
+  @action disconnectFromGame = async () => {
+    this.loading = true;
+    try{
+      await agent.Games.disconnect(this.game!.id);
+      runInAction(() => {
+        if(this.game){
+          this.game.players = this.game.players.filter(p => p.userName !== this.rootStore.userStore.user?.userName)
+          this.game.isConnected = false;
+          this.gameRegistry.set(this.game.id, this.game);
+        }
+        this.loading = false;
+      })
+    }catch(error){
+      runInAction(() =>{
+        this.loading = false
+      })
+      toast.error('problem disconnecting from game');
+    }
+  }
 }

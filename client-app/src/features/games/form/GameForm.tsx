@@ -43,11 +43,11 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
         })
         .finally(() => setLoading(false));
     }
-  }, [loadGame, match.params.id, game]);
+  }, [loadGame, match.params.id]);
 
   const handleFinalFormSubmit = (values: any) => {
     const dateAndTime = new Date();
-    const { date, time, ...game } = values;
+    const { date, ...game } = values;
     game.date = dateAndTime;
     if (!game.id) {
       let newGame = {

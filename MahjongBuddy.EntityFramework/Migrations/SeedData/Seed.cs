@@ -11,16 +11,13 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
     {
         public static async Task SeedData(MahjongBuddyDbContext context, UserManager<AppUser> userManager)
         {
-            new DefaultGameBuilder(context).Build();
-            new DefaultTileBuilder(context).Build();
-            new DefaulrGameTileBuilder(context).Build();
-
             if (!userManager.Users.Any())
             {
                 var users = new List<AppUser>
                 {
                     new AppUser
                     {
+                        Id="a",
                         DisplayName = "MainPlayer",
                         UserName = "MainPlayer",
                         Email = "mainplayer@gmail.com"
@@ -28,6 +25,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                     },
                     new AppUser
                     {
+                        Id="b",
                         DisplayName = "LeftPlayer",
                         UserName = "LeftPlayer",
                         Email = "leftplayergmail.com"
@@ -35,6 +33,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                     },
                     new AppUser
                     {
+                        Id="c",
                         DisplayName = "TopPlayer",
                         UserName = "TopPlayer",
                         Email = "topplayer@gmail.com"
@@ -42,6 +41,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                     },
                     new AppUser
                     {
+                        Id="d",
                         DisplayName = "RightPlayer",
                         UserName = "RightPlayer",
                         Email = "rightplayer@gmail.com"
@@ -54,6 +54,10 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                    await userManager.CreateAsync(user, "Pa$$w0rd");
                 }
                 context.SaveChanges();
+
+                new DefaultGameBuilder(context).Build();
+                new DefaultTileBuilder(context).Build();
+                new DefaulrGameTileBuilder(context).Build();
             }
         }
     }

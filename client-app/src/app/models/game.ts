@@ -2,6 +2,8 @@ export interface IGame{
     id: string;
     title: string;
     date: Date;
+    isHost: boolean;
+    isConnected: boolean;
     players: IPlayer[]
 }
 
