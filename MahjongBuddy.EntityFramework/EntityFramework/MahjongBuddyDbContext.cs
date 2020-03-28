@@ -19,6 +19,8 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
         public DbSet<UserGame> UserGames { get; set; }
 
+        public DbSet<ChatMsg> ChatMsgs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

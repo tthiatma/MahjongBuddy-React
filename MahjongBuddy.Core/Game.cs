@@ -11,6 +11,8 @@ namespace MahjongBuddy.Core
 
         public virtual ICollection<UserGame> UserGames { get; set; }
 
+        public virtual ICollection<ChatMsg> ChatMsgs { get; set; }
+
         public string Title { get; set; }
 
         public DateTime Date { get; set; }

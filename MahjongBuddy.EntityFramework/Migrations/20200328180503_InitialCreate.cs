@@ -206,6 +206,33 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatMsgs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Body = table.Column<string>(nullable: true),
+                    AuthorId = table.Column<string>(nullable: true),
+                    GameId = table.Column<int>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMsgs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMsgs_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChatMsgs_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserGames",
                 columns: table => new
                 {
@@ -309,6 +336,16 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ChatMsgs_AuthorId",
+                table: "ChatMsgs",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMsgs_GameId",
+                table: "ChatMsgs",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GameTiles_GameId",
                 table: "GameTiles",
                 column: "GameId");
@@ -350,6 +387,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ChatMsgs");
 
             migrationBuilder.DropTable(
                 name: "GameTiles");

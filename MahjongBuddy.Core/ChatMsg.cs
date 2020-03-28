@@ -8,10 +8,10 @@ namespace MahjongBuddy.Core
 
         public string Body { get; set; }
 
-        public AppUser Author { get; set; }
+        public virtual AppUser Author { get; set; }
 
-        public Game Game { get; set; }
+        public virtual Game Game { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

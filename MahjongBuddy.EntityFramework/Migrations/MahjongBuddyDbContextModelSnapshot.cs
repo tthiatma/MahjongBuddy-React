@@ -83,6 +83,33 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("MahjongBuddy.Core.ChatMsg", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("GameId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("ChatMsgs");
+                });
+
             modelBuilder.Entity("MahjongBuddy.Core.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -348,6 +375,17 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.ChatMsg", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.AppUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("MahjongBuddy.Core.Game", "Game")
+                        .WithMany("ChatMsgs")
+                        .HasForeignKey("GameId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.GameTile", b =>
