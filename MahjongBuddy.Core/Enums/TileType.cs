@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MahjongBuddy.Core
+﻿namespace MahjongBuddy.Core
 {
     public enum TileType
     {

@@ -2,10 +2,10 @@
 {
     public enum TileSetGroup
     {
+        None,
         Chow,
         Pong,
         Kong,
-        Eye,
-        Mix
+        Eye
     }
 }

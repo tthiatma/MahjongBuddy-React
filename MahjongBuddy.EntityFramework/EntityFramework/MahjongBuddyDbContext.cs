@@ -15,7 +15,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
         public DbSet<Tile> Tiles { get; set; }
 
-        public DbSet<GameTile> GameTiles { get; set; }
+        public DbSet<PlayTile> GameTiles { get; set; }
 
         public DbSet<UserGame> UserGames { get; set; }
 
@@ -35,6 +35,15 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 .WithMany(u => u.UserGames)
                 .HasForeignKey(g => g.GameId);
 
+            builder.Entity<UserRound>(x => x.HasKey(ur => new { ur.RoundId, ur.AppUserId }));
+            builder.Entity<UserRound>()
+                .HasOne(u => u.AppUser)
+                .WithMany(r => r.UserRounds)
+                .HasForeignKey(u => u.AppUserId);
+            builder.Entity<UserRound>()
+                .HasOne(r => r.Round)
+                .WithMany(u => u.UserRounds)
+                .HasForeignKey(r => r.RoundId);
         }
     }
 }
