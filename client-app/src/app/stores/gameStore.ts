@@ -26,7 +26,7 @@ export default class GameStore {
   @action createHubConnection = (gameId: string) => {
     if(!this.hubConnection){
       this.hubConnection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5000/chat', {
+      .withUrl('http://localhost:5000/game', {
         accessTokenFactory: () => this.rootStore.commonStore.token!
       })
       .configureLogging(LogLevel.Information)

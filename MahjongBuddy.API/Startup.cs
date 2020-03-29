@@ -94,7 +94,7 @@ namespace MahjongBuddy.API
                             var accessToken = context.Request.Query["access_token"];
                             var path = context.HttpContext.Request.Path;
                             if(!string.IsNullOrEmpty(accessToken) 
-                                && (path.StartsWithSegments("/chat")))
+                                && (path.StartsWithSegments("/game")))
                             {
                                 context.Token = accessToken;
                             }
@@ -128,7 +128,7 @@ namespace MahjongBuddy.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapHub<GameHub>("/game");
             });
         }
     }
