@@ -24,41 +24,58 @@ export default class GameStore {
   @observable.ref hubConnection: HubConnection | null = null;
 
   @action createHubConnection = (gameId: string) => {
-    this.hubConnection = new HubConnectionBuilder()
-    .withUrl('http://localhost:5000/chat', {
-      accessTokenFactory: () => this.rootStore.commonStore.token!
-    })
-    .configureLogging(LogLevel.Information)
-    .build();
-
-    this.hubConnection
-      .start()
-      .then(() => console.log(this.hubConnection!.state))
-      .then(() => {
-        console.log(`attempting to join group ${gameId}`);
-        if(this.hubConnection!.state === 'Connected')
-          this.hubConnection?.invoke('AddToGroup', gameId);
+    if(!this.hubConnection){
+      this.hubConnection = new HubConnectionBuilder()
+      .withUrl('http://localhost:5000/chat', {
+        accessTokenFactory: () => this.rootStore.commonStore.token!
       })
-      .catch(error => console.log("Error establishing connection", error));
+      .configureLogging(LogLevel.Information)
+      .build();
 
       this.hubConnection.on("ReceiveChatMsg", chatMsg =>
         runInAction(() => {
           this.game!.chatMsgs.push(chatMsg);
         })
       );  
-      
+    
       this.hubConnection.on("Send", message => {
+        console.log(`send is called with message ${message}`);
         toast.info(message);
-      });
+      });  
+    }  
+      console.log(`Initial Connection State = ${this.hubConnection!.state}`)
+      if (this.hubConnection!.state === 'Disconnected')
+      {
+        console.log(`about to start hub connection`);
+        this.hubConnection
+        .start()
+        .then(() => console.log(`Connection State = ${this.hubConnection!.state}`))
+        .then(() => {
+          console.log(`attempting to join group ${gameId}`);
+          if (this.hubConnection!.state === 'Connected')
+            this.hubConnection?.invoke('AddToGroup', gameId)
+            .then(() => console.log(`Added to group`));
+          })
+        .catch(error => console.log("Error establishing connection", error));  
+      }    
   }
 
   @action stopHubConnection = () => {
-    this.hubConnection!.invoke("RemoveFromGroup", this.game!.id)
+    if (this.hubConnection!.state === 'Connected'){
+      this.hubConnection!.invoke("RemoveFromGroup", this.game!.id)
       .then(() => {
-        this.hubConnection!.stop();
+        console.log(`Connection State = ${this.hubConnection!.state}`)
+        console.log(`Calling hubConnection.stop`)
+        this.hubConnection!.stop()
+        .then(() => {
+          console.log(`Connection State = ${this.hubConnection!.state}`)          
+        });
       })
-      .then(() => console.log("connection stopped"))
+      .then(() => {
+        console.log(`Connection State = ${this.hubConnection!.state}`)          
+      })
       .catch(error => console.log(error));
+    }
   }
 
   @action addChatMsg = async (values: any) => {

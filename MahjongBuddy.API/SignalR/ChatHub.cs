@@ -32,18 +32,20 @@ namespace MahjongBuddy.API.SignalR
             return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
 
-        public async Task AddToGroup(string groupName)
+        public async Task AddToGroup(int groupId)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            var groupName = groupId.ToString();
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
             var userName = GetUserName();
-            await Clients.Group(groupName).SendAsync("Send", $"{userName} has joined the group");
+            await Clients.OthersInGroup(groupName).SendAsync("Send", $"{userName} has joined the group");
         }
 
-        public async Task RemoveFromGroup(string groupName)
+        public async Task RemoveFromGroup(int groupId)
         {
+            var groupName = groupId.ToString();
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
             var userName = GetUserName();
-            await Clients.Group(groupName).SendAsync("Send", $"{userName} has left the group");
+            await Clients.OthersInGroup(groupName).SendAsync("Send", $"{userName} has left the group");
         }
     }
 }
