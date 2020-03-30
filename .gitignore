@@ -355,3 +355,5 @@ obj
 .DS_Store
 appsettings.json
 *.db
+*.db-shm
+*.db-wal
