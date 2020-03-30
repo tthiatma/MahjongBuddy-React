@@ -11,15 +11,14 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         public MahjongBuddyDbContext(DbContextOptions options) : base(options)
         {
         }
-        public DbSet<Game> Games { get; set; }
-
-        public DbSet<Tile> Tiles { get; set; }
-
-        public DbSet<PlayTile> GameTiles { get; set; }
-
-        public DbSet<UserGame> UserGames { get; set; }
-
         public DbSet<ChatMsg> ChatMsgs { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<RoundTile> RoundTiles { get; set; }
+        public DbSet<Round> Rounds { get; set; }
+        public DbSet<RoundResult> RoundResults { get; set; }
+        public DbSet<Tile> Tiles { get; set; }
+        public DbSet<UserGame> UserGames { get; set; }
+        public DbSet<UserRound> UserRounds { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

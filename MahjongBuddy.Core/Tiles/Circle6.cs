@@ -1,11 +1,11 @@
 ﻿namespace MahjongBuddy.Core
 {
-    public class Round6 : Tile
+    public class Circle6 : Tile
     {
-        public Round6()
+        public Circle6()
         {
             Id = 16;
-            TileType = TileType.Round;
+            TileType = TileType.Circle;
             TileValue = TileValue.Six;
             Title = "RoundSix";
             Image = "/assets/tiles/64px/pin/pin6.png";

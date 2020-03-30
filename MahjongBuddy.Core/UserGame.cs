@@ -7,7 +7,6 @@
         public int GameId { get; set; }
         public virtual Game Game { get; set; }
         public bool IsHost { get; set; }
-        public bool IsPlaying { get; set; }
         public int CurrentPoint { get; set; }
     }
 }

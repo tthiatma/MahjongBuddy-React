@@ -2,7 +2,7 @@
 {
     public enum TileType
     {
-        Round,
+        Circle,
         Money,
         Stick,
         Wind,

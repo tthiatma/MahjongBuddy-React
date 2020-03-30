@@ -36,15 +36,15 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
             _tiles.Add(new Money8());
             _tiles.Add(new Money9());
 
-            _tiles.Add(new Round1());
-            _tiles.Add(new Round2());
-            _tiles.Add(new Round3());
-            _tiles.Add(new Round4());
-            _tiles.Add(new Round5());
-            _tiles.Add(new Round6());
-            _tiles.Add(new Round7());
-            _tiles.Add(new Round8());
-            _tiles.Add(new Round9());
+            _tiles.Add(new Circle1());
+            _tiles.Add(new Circle2());
+            _tiles.Add(new Circle3());
+            _tiles.Add(new Circle4());
+            _tiles.Add(new Circle5());
+            _tiles.Add(new Circle6());
+            _tiles.Add(new Circle7());
+            _tiles.Add(new Circle8());
+            _tiles.Add(new Circle9());
 
             _tiles.Add(new Stick1());
             _tiles.Add(new Stick2());
