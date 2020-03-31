@@ -226,11 +226,18 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     IsTied = table.Column<bool>(nullable: false),
                     IsWinnerSelfPicked = table.Column<bool>(nullable: false),
                     GameId = table.Column<int>(nullable: false),
-                    PlayerTurnId = table.Column<string>(nullable: true)
+                    DiceThrowerAppUserId = table.Column<string>(nullable: true),
+                    TurnAppUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rounds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rounds_AspNetUsers_DiceThrowerAppUserId",
+                        column: x => x.DiceThrowerAppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Rounds_Games_GameId",
                         column: x => x.GameId,
@@ -238,8 +245,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Rounds_AspNetUsers_PlayerTurnId",
-                        column: x => x.PlayerTurnId,
+                        name: "FK_Rounds_AspNetUsers_TurnAppUserId",
+                        column: x => x.TurnAppUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -421,14 +428,19 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "RoundId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Rounds_DiceThrowerAppUserId",
+                table: "Rounds",
+                column: "DiceThrowerAppUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Rounds_GameId",
                 table: "Rounds",
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rounds_PlayerTurnId",
+                name: "IX_Rounds_TurnAppUserId",
                 table: "Rounds",
-                column: "PlayerTurnId");
+                column: "TurnAppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoundTiles_RoundId",
@@ -498,10 +510,10 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "Rounds");
 
             migrationBuilder.DropTable(
-                name: "Games");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Games");
         }
     }
 }

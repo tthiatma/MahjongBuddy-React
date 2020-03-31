@@ -32,7 +32,8 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                 Index = 1,
                 Wind = WindDirection.East,
                 IsStarted = true,
-                PlayerTurnId = "a",
+                TurnAppUserId = "a",
+                DiceThrowerAppUserId = "a"
             };
             List<Game> games = new List<Game>
             {

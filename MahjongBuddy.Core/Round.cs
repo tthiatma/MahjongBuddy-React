@@ -16,8 +16,11 @@ namespace MahjongBuddy.Core
         public bool IsWinnerSelfPicked { get; set; }
         public int GameId { get; set; }
         public virtual Game Game { get; set; }
-        public virtual AppUser PlayerTurn { get; set; }
-        public virtual string PlayerTurnId { get; set; }
+        public string DiceThrowerAppUserId { get; set; }
+        //the user that is a dice thrower will have 14 tiles initially in hk mahjong
+        public virtual AppUser DiceThrowerAppUser { get; set; }
+        public string TurnAppUserId { get; set; }
+        public virtual AppUser TurnAppUser { get; set; }
         public virtual ICollection<RoundResult> RoundResults { get; set; }
         public virtual ICollection<RoundTile> PlayTiles { get; set; }
         public virtual ICollection<UserRound> UserRounds { get; set; }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200330035037_InitialCreate")]
+    [Migration("20200331052353_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("DiceThrowerAppUserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("GameId")
                         .HasColumnType("INTEGER");
 
@@ -159,7 +162,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("IsWinnerSelfPicked")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("PlayerTurnId")
+                    b.Property<string>("TurnAppUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Wind")
@@ -167,9 +170,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DiceThrowerAppUserId");
+
                     b.HasIndex("GameId");
 
-                    b.HasIndex("PlayerTurnId");
+                    b.HasIndex("TurnAppUserId");
 
                     b.ToTable("Rounds");
                 });
@@ -454,15 +459,19 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>
                 {
+                    b.HasOne("MahjongBuddy.Core.AppUser", "DiceThrowerAppUser")
+                        .WithMany()
+                        .HasForeignKey("DiceThrowerAppUserId");
+
                     b.HasOne("MahjongBuddy.Core.Game", "Game")
                         .WithMany("Rounds")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MahjongBuddy.Core.AppUser", "PlayerTurn")
+                    b.HasOne("MahjongBuddy.Core.AppUser", "TurnAppUser")
                         .WithMany()
-                        .HasForeignKey("PlayerTurnId");
+                        .HasForeignKey("TurnAppUserId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundResult", b =>
