@@ -21,6 +21,7 @@ using AutoMapper;
 using MahjongBuddy.Core;
 using MahjongBuddy.API.SignalR;
 using System.Threading.Tasks;
+using System;
 
 namespace MahjongBuddy.API
 {
@@ -53,7 +54,12 @@ namespace MahjongBuddy.API
             {
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").AllowCredentials();
+                    policy
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithExposedHeaders("WWW-Authenticate")
+                    .WithOrigins("http://localhost:3000")
+                    .AllowCredentials();
                 });
             });
 
@@ -85,7 +91,9 @@ namespace MahjongBuddy.API
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = key,
                         ValidateAudience = false,
-                        ValidateIssuer = false
+                        ValidateIssuer = false,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
                     };
                     opt.Events = new JwtBearerEvents
                     {
@@ -118,6 +126,8 @@ namespace MahjongBuddy.API
 
             //app.UseHttpsRedirection();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseRouting();
             app.UseCors("CorsPolicy");
@@ -129,6 +139,7 @@ namespace MahjongBuddy.API
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<GameHub>("/game");
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }

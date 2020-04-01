@@ -1,4 +1,4 @@
-import { observable, action, computed, runInAction } from "mobx";
+import { observable, action, computed, runInAction, toJS } from "mobx";
 import { SyntheticEvent } from "react";
 import { IGame } from "../models/game";
 import agent from "../api/agent";
@@ -26,7 +26,7 @@ export default class GameStore {
   @action createHubConnection = (gameId: string) => {
     if(!this.hubConnection){
       this.hubConnection = new HubConnectionBuilder()
-      .withUrl('http://localhost:5000/game', {
+      .withUrl(process.env.REACT_APP_API_GAME_URL!, {
         accessTokenFactory: () => this.rootStore.commonStore.token!
       })
       .configureLogging(LogLevel.Information)
@@ -179,7 +179,7 @@ export default class GameStore {
     let game = this.getGame(id);
     if (game) {
       this.game = game;
-      return game;
+      return toJS(game);
     } else {
       this.loadingInitial = true;
       try {

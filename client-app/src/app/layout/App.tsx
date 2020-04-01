@@ -14,6 +14,7 @@ import {ToastContainer} from 'react-toastify';
 import { RootStoreContext } from "../stores/rootStore";
 import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
+import PrivateRoute from "./PrivateRoute";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 
@@ -43,11 +44,11 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <NavBar />
             <Container style={{ marginTop: "5em" }}>
               <Switch>
-                <Route exact path="/games" component={GameDashboard} />
-                <Route path="/games/:id" component={GameOn} />
-                <Route path="/lobby/:id" component={GameLobby} />
-                <Route path="/login" component={LoginForm} />
-                <Route
+                <PrivateRoute exact path="/games" component={GameDashboard} />
+                <PrivateRoute path="/games/:id" component={GameOn} />
+                <PrivateRoute path="/lobby/:id" component={GameLobby} />
+                <PrivateRoute path="/login" component={LoginForm} />
+                <PrivateRoute
                   key={location.key}
                   path={["/createGame", "/manage/:id"]}
                   component={GameForm}
