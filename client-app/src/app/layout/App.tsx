@@ -4,7 +4,6 @@ import NavBar from "../../features/nav/NavBar";
 import { observer } from "mobx-react-lite";
 import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
 import GameDashboard from "../../features/games/dashboard/GameDashboard";
-import HomePage from "../../features/home/HomePage";
 import GameForm from "../../features/games/form/GameForm";
 import GameOn from "../../features/games/play/GameOn";
 import GameLobby from "../../features/games/lobby/GameLobby";
@@ -15,6 +14,7 @@ import { RootStoreContext } from "../stores/rootStore";
 import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import PrivateRoute from "./PrivateRoute";
+import HomePage from "../../features/home/HomePage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 

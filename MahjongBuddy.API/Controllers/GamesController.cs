@@ -23,7 +23,7 @@ namespace MahjongBuddy.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Unit>> Create(Create.Command command)
+        public async Task<ActionResult<GameDto>> Create(Create.Command command)
         {
             return await Mediator.Send(command);
         }
@@ -54,5 +54,11 @@ namespace MahjongBuddy.API.Controllers
         {
             return await Mediator.Send(new Disconnect.Command { Id = id });
         }
+
+        // [HttpPost("{id}/round")]
+        // public async Task<ActionResult> Round()
+        // {
+        //     return await Mediator.Send(new Round.Command);
+        // }
     }
 }

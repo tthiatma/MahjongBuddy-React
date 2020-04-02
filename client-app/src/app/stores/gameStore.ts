@@ -152,20 +152,12 @@ export default class GameStore {
   @action createGame = async (game: IGame) => {
     this.submitting = true;
     try {
-      await agent.Games.create(game);
-      const player = createPlayer(this.rootStore.userStore.user!);
-      player.isHost = true;
-      let players = [];
-      players.push(player);
-      game.players = players;
-      game.chatMsgs = [];
-      game.isHost = true;
-      game.isConnected = true;
+      var newGame : IGame = await agent.Games.create(game);
       runInAction("creating games", () => {
-        this.gameRegistry.set(game.id, game);
+        this.gameRegistry.set(newGame.id, newGame);
         this.submitting = false;
       });
-      history.push(`/lobby/${game.id}`)
+      history.push(`/lobby/${newGame.id}`)
     } catch (error) {
       runInAction("creating game error", () => {
         this.submitting = false;

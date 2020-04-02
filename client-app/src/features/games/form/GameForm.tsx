@@ -52,7 +52,6 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
     if (!game.id) {
       let newGame = {
         ...game,
-        id: uuid()
       };
       createGame(newGame);
     } else {

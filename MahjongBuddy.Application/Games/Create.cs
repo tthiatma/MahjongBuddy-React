@@ -1,4 +1,5 @@
-﻿using MahjongBuddy.Application.Interfaces;
+﻿using AutoMapper;
+using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -11,30 +12,30 @@ namespace MahjongBuddy.Application.Games
 {
     public class Create
     {
-        public class Command : IRequest
+        public class Command : IRequest<GameDto>
         {
-            public int Id { get; set; }
-
             public string Title { get; set; }
 
         }
-        public class Handler : IRequestHandler<Command> 
+        public class Handler : IRequestHandler<Command, GameDto> 
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IUserAccessor _userAccessor;
+            private readonly IMapper _mapper;
 
-            public Handler(MahjongBuddyDbContext context, IUserAccessor userAccessor)
+            public Handler(MahjongBuddyDbContext context, IUserAccessor userAccessor, IMapper mapper)
             {
                 _context = context;
                 _userAccessor = userAccessor;
+                _mapper = mapper;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<GameDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = new Game
                 {
-                    Id = request.Id,
-                    Title = request.Title
+                    Title = request.Title,
+                    Date = DateTime.Now                    
                 };
 
                 _context.Games.Add(game);
@@ -52,7 +53,8 @@ namespace MahjongBuddy.Application.Games
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return Unit.Value;
+                var gameToReturn = _mapper.Map<Game, GameDto>(game);
+                if (success) return gameToReturn;
 
                 throw new Exception("Problem saving changes");
             }
