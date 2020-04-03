@@ -219,37 +219,23 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Index = table.Column<int>(nullable: false),
                     Wind = table.Column<int>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
                     IsHalted = table.Column<bool>(nullable: false),
-                    IsStarted = table.Column<bool>(nullable: false),
                     IsOver = table.Column<bool>(nullable: false),
                     IsPaused = table.Column<bool>(nullable: false),
                     IsTied = table.Column<bool>(nullable: false),
                     IsWinnerSelfPicked = table.Column<bool>(nullable: false),
-                    GameId = table.Column<int>(nullable: false),
-                    DiceThrowerAppUserId = table.Column<string>(nullable: true),
-                    TurnAppUserId = table.Column<string>(nullable: true)
+                    GameId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rounds", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Rounds_AspNetUsers_DiceThrowerAppUserId",
-                        column: x => x.DiceThrowerAppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Rounds_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rounds_AspNetUsers_TurnAppUserId",
-                        column: x => x.TurnAppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -349,9 +335,10 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     AppUserId = table.Column<string>(nullable: false),
                     RoundId = table.Column<int>(nullable: false),
-                    CanPickTile = table.Column<bool>(nullable: false),
-                    CanThrowTile = table.Column<bool>(nullable: false),
-                    CanDoNoFlower = table.Column<bool>(nullable: false)
+                    IsDealer = table.Column<bool>(nullable: false),
+                    IsMyTurn = table.Column<bool>(nullable: false),
+                    CanDoNoFlower = table.Column<bool>(nullable: false),
+                    Wind = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -428,19 +415,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "RoundId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rounds_DiceThrowerAppUserId",
-                table: "Rounds",
-                column: "DiceThrowerAppUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Rounds_GameId",
                 table: "Rounds",
                 column: "GameId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rounds_TurnAppUserId",
-                table: "Rounds",
-                column: "TurnAppUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoundTiles_RoundId",
@@ -507,10 +484,10 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "Tiles");
 
             migrationBuilder.DropTable(
-                name: "Rounds");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Rounds");
 
             migrationBuilder.DropTable(
                 name: "Games");

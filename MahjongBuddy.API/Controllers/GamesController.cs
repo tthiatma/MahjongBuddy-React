@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MahjongBuddy.Application.Games;
+using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,10 +56,11 @@ namespace MahjongBuddy.API.Controllers
             return await Mediator.Send(new Disconnect.Command { Id = id });
         }
 
-        // [HttpPost("{id}/round")]
-        // public async Task<ActionResult> Round()
-        // {
-        //     return await Mediator.Send(new Round.Command);
-        // }
+         [HttpPost("{id}/round")]
+         public async Task<ActionResult<Unit>> Round(int id, CreateRound.Command command)
+         {
+            command.GameId = id;
+            return await Mediator.Send(command);
+         }
     }
 }

@@ -7,5 +7,6 @@
         public bool IsWinner { get; set; }
         public virtual Round Round { get; set; }
         public virtual AppUser AppUser { get; set; }
+        public string  AppUserId { get; set; }
     }
 }

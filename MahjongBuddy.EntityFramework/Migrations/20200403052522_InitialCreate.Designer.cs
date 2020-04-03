@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200331052353_InitialCreate")]
+    [Migration("20200403052522_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,7 +135,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("DiceThrowerAppUserId")
+                    b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GameId")
@@ -153,28 +153,18 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("IsPaused")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsStarted")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsTied")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsWinnerSelfPicked")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("TurnAppUserId")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Wind")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DiceThrowerAppUserId");
-
                     b.HasIndex("GameId");
-
-                    b.HasIndex("TurnAppUserId");
 
                     b.ToTable("Rounds");
                 });
@@ -305,10 +295,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("CanDoNoFlower")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("CanPickTile")
+                    b.Property<bool>("IsDealer")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("CanThrowTile")
+                    b.Property<bool>("IsMyTurn")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Wind")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("RoundId", "AppUserId");
@@ -459,19 +452,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.AppUser", "DiceThrowerAppUser")
-                        .WithMany()
-                        .HasForeignKey("DiceThrowerAppUserId");
-
                     b.HasOne("MahjongBuddy.Core.Game", "Game")
                         .WithMany("Rounds")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("MahjongBuddy.Core.AppUser", "TurnAppUser")
-                        .WithMany()
-                        .HasForeignKey("TurnAppUserId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundResult", b =>
