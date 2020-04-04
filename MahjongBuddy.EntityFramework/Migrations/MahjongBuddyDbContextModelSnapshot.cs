@@ -267,6 +267,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("CurrentPoint")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("InitialSeatWind")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("IsHost")
                         .HasColumnType("INTEGER");
 

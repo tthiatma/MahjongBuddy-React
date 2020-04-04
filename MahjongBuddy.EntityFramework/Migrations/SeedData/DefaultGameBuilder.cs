@@ -45,21 +45,25 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                         {
                             IsHost = true,
                             AppUserId = "a",
+                            InitialSeatWind = WindDirection.East
                         },
                         new UserGame
                         {
                             IsHost = false,
                             AppUserId = "b",
+                            InitialSeatWind = WindDirection.South
                         },
                         new UserGame
                         {
                             IsHost = false,
                             AppUserId = "c",
+                            InitialSeatWind = WindDirection.West
                         },
                         new UserGame
                         {
                             IsHost = false,
                             AppUserId = "d",
+                            InitialSeatWind = WindDirection.North
                         }
                     }
                 },

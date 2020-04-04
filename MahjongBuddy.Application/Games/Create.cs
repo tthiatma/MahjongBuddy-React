@@ -13,7 +13,7 @@ namespace MahjongBuddy.Application.Games
     public class Create
     {
         public class Command : IRequest<GameDto>
-        {
+        {   
             public string Title { get; set; }
 
         }

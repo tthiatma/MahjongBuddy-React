@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200403052522_InitialCreate")]
+    [Migration("20200404063926_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -267,6 +267,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("CurrentPoint")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("InitialSeatWind")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsHost")

@@ -44,16 +44,28 @@ namespace MahjongBuddy.Application.Games
                 if (game == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "Game does not exist" });
 
-                var lastRound = await _context.Rounds.LastOrDefaultAsync(r => r.GameId == game.Id);                
+                var lastRound = _context.Rounds.OrderByDescending(r => r.DateCreated).FirstOrDefault(r => r.GameId == request.GameId);                
 
                 //if(!lastRound.IsOver)
                 //    throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
 
                 var newRound = new Round
                 {
-                    Wind = request.Wind
+                    Wind = request.Wind,
+                    GameId = request.GameId,
+                    DateCreated = DateTime.Now
                 };
 
+                if (lastRound == null)
+                {
+                    //then this is the first game, set the index start with 0
+                    newRound.Index = 1;
+                }else
+                {
+                    newRound.Index = lastRound.Index + 1;
+                }
+
+                //save it first to get the id
                 _context.Rounds.Add(newRound);
 
                 var successCreatingRound = await _context.SaveChangesAsync() > 0;
@@ -61,16 +73,11 @@ namespace MahjongBuddy.Application.Games
                 if(successCreatingRound)
                 {
                     List<UserRound> userRounds = new List<UserRound>();
-                    var player1Round = new UserRound { RoundId = newRound.Id };
-                    var player2Round = new UserRound { RoundId = newRound.Id };
-                    var player3Round = new UserRound { RoundId = newRound.Id };
-                    var player4Round = new UserRound { RoundId = newRound.Id };
-
                     if (lastRound == null)
                     {
                         foreach (var ug in game.UserGames)
                         {
-                            var ur = new UserRound { AppUser = ug.AppUser, RoundId = newRound.Id };
+                            var ur = new UserRound { AppUser = ug.AppUser, RoundId = newRound.Id, Wind = ug.InitialSeatWind };
                             if (ug.AppUserId == dealer.Id)
                             {
                                 ur.IsDealer = true;
