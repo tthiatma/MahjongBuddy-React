@@ -26,7 +26,7 @@ export default class GameStore {
   @action createHubConnection = (gameId: string) => {
     if(!this.hubConnection){
       this.hubConnection = new HubConnectionBuilder()
-      .withUrl(process.env.REACT_APP_API_GAME_URL!, {
+      .withUrl(process.env.REACT_APP_API_GAME_HUB_URL!, {
         accessTokenFactory: () => this.rootStore.commonStore.token!
       })
       .configureLogging(LogLevel.Information)

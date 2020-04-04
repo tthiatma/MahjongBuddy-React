@@ -46,6 +46,9 @@ namespace MahjongBuddy.Application.Games
 
                 var lastRound = await _context.Rounds.LastOrDefaultAsync(r => r.GameId == game.Id);                
 
+                //if(!lastRound.IsOver)
+                //    throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
+
                 var newRound = new Round
                 {
                     Wind = request.Wind

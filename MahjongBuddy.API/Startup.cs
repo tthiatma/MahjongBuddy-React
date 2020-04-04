@@ -138,7 +138,7 @@ namespace MahjongBuddy.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<GameHub>("/game");
+                endpoints.MapHub<GameHub>("/gamehub");
                 endpoints.MapFallbackToController("Index", "Fallback");
             });
         }

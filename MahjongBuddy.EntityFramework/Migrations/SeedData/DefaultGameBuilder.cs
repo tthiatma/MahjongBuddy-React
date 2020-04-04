@@ -39,10 +39,6 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = 1,
                     Title = "Game 1",
                     Date = DateTime.Now.AddMonths(-2),
-                    Rounds = new List<Round>
-                    {
-                        firstRound
-                    },
                     UserGames = new List<UserGame>
                     {
                         new UserGame
