@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
+using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +36,8 @@ namespace MahjongBuddy.Application.Games
                 var game = new Game
                 {
                     Title = request.Title,
-                    Date = DateTime.Now                    
+                    Date = DateTime.Now,
+                    Status = GameStatus.Created
                 };
 
                 _context.Games.Add(game);

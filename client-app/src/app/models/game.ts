@@ -3,6 +3,7 @@ export interface IGame{
     title: string;
     date: Date;
     isHost: boolean;
+    status: number;
     isConnected: boolean;
     players: IPlayer[];
     chatMsgs: IChatMsg[];
