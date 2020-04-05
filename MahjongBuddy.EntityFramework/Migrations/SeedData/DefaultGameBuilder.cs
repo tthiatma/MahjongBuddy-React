@@ -29,7 +29,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
             Round firstRound = new Round
             {
                 Id = 1,
-                Index = 1,
+                Counter = 1,
                 Wind = WindDirection.East
             };
             List<Game> games = new List<Game>

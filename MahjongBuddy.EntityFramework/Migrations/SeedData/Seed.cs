@@ -13,7 +13,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
             await userBuilder.Build();
             new DefaultGameBuilder(context).Build();
             new DefaultTileBuilder(context).Build();
-            new DefaultRoundTileBuilder(context).Build();
+            //new DefaultRoundTileBuilder(context).Build();
         }
     }
 }

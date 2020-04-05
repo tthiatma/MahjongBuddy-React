@@ -1,6 +1,8 @@
 ﻿using MahjongBuddy.Application.ChatMsgs;
+using MahjongBuddy.Application.Games;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,7 +18,18 @@ namespace MahjongBuddy.API.SignalR
             _mediator = mediator;
         }
 
-        public async Task SendChatMsg(Create.Command command)
+        public async Task StartRound(CreateRound.Command command)
+        {
+            try
+            {
+                await _mediator.Send(command);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        public async Task SendChatMsg(CreateChatMsg.Command command)
         {
             string userName = GetUserName();
 
@@ -28,7 +41,7 @@ namespace MahjongBuddy.API.SignalR
         }
 
         private string GetUserName()
-        {
+        {            
             return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
 

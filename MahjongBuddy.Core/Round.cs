@@ -6,7 +6,7 @@ namespace MahjongBuddy.Core
     public class Round
     {
         public int Id { get; set; }
-        public int Index { get; set; }
+        public int Counter { get; set; }
         public WindDirection Wind { get; set; }
         public DateTime DateCreated { get; set; }
         //IsHalted is a short period where all player have brief moment of time to chow or pong or kong
@@ -18,7 +18,7 @@ namespace MahjongBuddy.Core
         public int GameId { get; set; }
         public virtual Game Game { get; set; }
         public virtual ICollection<RoundResult> RoundResults { get; set; }
-        public virtual ICollection<RoundTile> PlayTiles { get; set; }
+        public virtual ICollection<RoundTile> RoundTiles { get; set; }
         public virtual ICollection<UserRound> UserRounds { get; set; }
         public virtual ICollection<UserGame> UserGames { get; set; }
     }

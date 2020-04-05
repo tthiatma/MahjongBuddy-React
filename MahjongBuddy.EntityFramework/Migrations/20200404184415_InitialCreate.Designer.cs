@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200404063926_InitialCreate")]
+    [Migration("20200404184415_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,13 +135,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Counter")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("GameId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Index")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsHalted")
@@ -199,7 +199,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ActiveTileIndex")
+                    b.Property<int>("ActiveTileCounter")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("BoardGraveyardCounter")
@@ -476,7 +476,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
             modelBuilder.Entity("MahjongBuddy.Core.RoundTile", b =>
                 {
                     b.HasOne("MahjongBuddy.Core.Round", "Round")
-                        .WithMany("PlayTiles")
+                        .WithMany("RoundTiles")
                         .HasForeignKey("RoundId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

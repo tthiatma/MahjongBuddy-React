@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MahjongBuddy.Application.ChatMsgs
 {
-    public class Create
+    public class CreateChatMsg
     {
         public class Command : IRequest<ChatMsgDto>
         {

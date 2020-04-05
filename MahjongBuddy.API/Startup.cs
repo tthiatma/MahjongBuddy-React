@@ -124,7 +124,7 @@ namespace MahjongBuddy.API
                 //app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();a
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
