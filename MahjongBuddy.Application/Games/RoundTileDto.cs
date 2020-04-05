@@ -17,6 +17,6 @@ namespace MahjongBuddy.Application.Games
         public bool IsWinner { get; set; }
         public TileSetGroup TileSetGroup { get; set; }
         public TileStatus Status { get; set; }
-        public string TileImagePath { get; set; }
+        public Tile Tile { get; set; }
     }
 }

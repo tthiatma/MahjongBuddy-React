@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200404184415_InitialCreate")]
+    [Migration("20200405071942_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

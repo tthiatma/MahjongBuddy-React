@@ -57,7 +57,7 @@ namespace MahjongBuddy.API.Controllers
         }
 
          [HttpPost("{id}/round")]
-         public async Task<ActionResult<Unit>> Round(int id, CreateRound.Command command)
+         public async Task<ActionResult<List<RoundTileDto>>> Round(int id, CreateRound.Command command)
          {
             command.GameId = id;
             return await Mediator.Send(command);
