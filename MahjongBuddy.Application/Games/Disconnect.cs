@@ -1,6 +1,5 @@
-﻿using MahjongBuddy.Application.Errors;
-using MahjongBuddy.Application.Interfaces;
-using MahjongBuddy.Core;
+﻿using AutoMapper;
+using MahjongBuddy.Application.Errors;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,47 +10,48 @@ using System.Threading.Tasks;
 
 namespace MahjongBuddy.Application.Games
 {
-    public class Disconnect : IRequest
+    public class Disconnect
     {
-        public class Command : IRequest
+        public class Command : IRequest<PlayerDto>
         {
-            public int Id { get; set; }
+            public int GameId { get; set; }
+            public string UserName { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, PlayerDto>
         {
             private readonly MahjongBuddyDbContext _context;
-            private readonly IUserAccessor _userAccessor;
+            private readonly IMapper _mapper;
 
-            public Handler(MahjongBuddyDbContext context, IUserAccessor userAccessor)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper)
             {
                 _context = context;
-                _userAccessor = userAccessor;
+                _mapper = mapper;
             }
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<PlayerDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.Id);
+                var game = await _context.Games.FindAsync(request.GameId);
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
-                var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
+                var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
                 var connected = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
                 if (connected == null)
-                    return Unit.Value;
+                    throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already left the game" });
 
-                if(connected.IsHost)
+                if (connected.IsHost)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "You cannot remove yourself as host" });
 
                 _context.UserGames.Remove(connected);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return Unit.Value;
+                if (success) return _mapper.Map<PlayerDto>(connected);
 
-                throw new Exception("Problem saving changes");
+                throw new Exception("Problem disconnecting from game");
             }
         }
     }

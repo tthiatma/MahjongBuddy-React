@@ -5,7 +5,6 @@ import {Form as FinalForm, Field} from 'react-final-form';
 import { Link } from 'react-router-dom';
 import TextAreaInput from '../../../app/common/form/TextAreaInput';
 import { observer } from 'mobx-react-lite';
-import { formatDistance } from 'date-fns';
 
 const GameLobbyChat = () => {
   const rootStore = useContext(RootStoreContext);

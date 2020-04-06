@@ -17,7 +17,7 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 
 export const setGameProps = (game: IGame, user: IUser) => {
     game.date = new Date(game.date);
-    game.isConnected = game.players.some(
+    game.isCurrentPlayerConnected = game.players.some(
       p => p.userName === user.userName
     )
     game.isHost = game.players.some(

@@ -49,7 +49,7 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
           >
             Manage Event
           </Button>
-        ) : game.isConnected ? (
+        ) : game.isCurrentPlayerConnected ? (
           <Button loading={loading} onClick={disconnectFromGame}>
             Disconnect
           </Button>

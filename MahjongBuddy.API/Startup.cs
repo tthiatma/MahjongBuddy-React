@@ -27,6 +27,7 @@ namespace MahjongBuddy.API
 {
     public class Startup
     {
+        private readonly string hubName = "gameHub";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -102,7 +103,7 @@ namespace MahjongBuddy.API
                             var accessToken = context.Request.Query["access_token"];
                             var path = context.HttpContext.Request.Path;
                             if(!string.IsNullOrEmpty(accessToken) 
-                                && (path.StartsWithSegments("/game")))
+                                && (path.StartsWithSegments($"/{hubName}")))
                             {
                                 context.Token = accessToken;
                             }
@@ -124,7 +125,7 @@ namespace MahjongBuddy.API
                 //app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();a
+            //app.UseHttpsRedirection();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -138,7 +139,7 @@ namespace MahjongBuddy.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<GameHub>("/gamehub");
+                endpoints.MapHub<GameHub>($"/{hubName}");
                 endpoints.MapFallbackToController("Index", "Fallback");
             });
         }

@@ -44,23 +44,11 @@ namespace MahjongBuddy.API.Controllers
             return await Mediator.Send(new Delete.Command { Id = id });
         }
 
-        [HttpPost("{id}/connect")]
-        public async Task<ActionResult<Unit>> Connect(int id)
+        [HttpPost("{id}/round")]
+        public async Task<ActionResult<List<RoundTileDto>>> Round(int id, CreateRound.Command command)
         {
-            return await Mediator.Send(new Connect.Command { Id = id });
+        command.GameId = id;
+        return await Mediator.Send(command);
         }
-
-        [HttpDelete("{id}/connect")]
-        public async Task<ActionResult<Unit>> Disconnect(int id)
-        {
-            return await Mediator.Send(new Disconnect.Command { Id = id });
-        }
-
-         [HttpPost("{id}/round")]
-         public async Task<ActionResult<List<RoundTileDto>>> Round(int id, CreateRound.Command command)
-         {
-            command.GameId = id;
-            return await Mediator.Send(command);
-         }
     }
 }

@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
 import { GameFormValues } from '../../../app/models/game';
-import { v4 as uuid } from "uuid";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from 'react-final-form';

@@ -18,17 +18,36 @@ namespace MahjongBuddy.API.SignalR
             _mediator = mediator;
         }
 
-        public async Task StartRound(CreateRound.Command command)
-        {
-            try
-            {
-                await _mediator.Send(command);
-            }
-            catch (Exception ex)
-            {
+        //public async Task StartRound(CreateRound.Command command)
+        //{
+        //    try
+        //    {
+        //        await _mediator.Send(command);
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-            }
+        //    }
+        //}
+
+        public async Task DisconnectFromGame(Disconnect.Command command)
+        {
+            command.UserName = GetUserName();
+
+            var player = await _mediator.Send(command);
+
+            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerDisconnected", player);
         }
+
+        public async Task ConnectToGame(Connect.Command command)
+        {
+            command.UserName = GetUserName();
+
+            var player = await _mediator.Send(command);
+
+            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerConnected", player);
+        }
+
         public async Task SendChatMsg(CreateChatMsg.Command command)
         {
             string userName = GetUserName();

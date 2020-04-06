@@ -5,7 +5,7 @@ import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from '../..';
 import { toast } from 'react-toastify';
-import { setGameProps, createPlayer } from "../common/util/util";
+import { setGameProps } from "../common/util/util";
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 
 export default class GameStore {
@@ -23,6 +23,11 @@ export default class GameStore {
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
 
+  @computed get gamesByDate() {
+    return this.groupGamesByDate( Array.from(this.gameRegistry.values()));
+  };
+
+  //******************Start Signal R*********************
   @action createHubConnection = (gameId: string) => {
     if(!this.hubConnection){
       this.hubConnection = new HubConnectionBuilder()
@@ -37,28 +42,44 @@ export default class GameStore {
           this.game!.chatMsgs.push(chatMsg);
         })
       );  
-    
+
+      this.hubConnection.on("PlayerDisconnected", (player) =>
+        runInAction(() => {
+          if (this.game) {
+            this.game.players = this.game.players.filter(
+              (p) => p.userName !== player?.userName
+            );
+            this.game.isCurrentPlayerConnected = this.rootStore.userStore.user?.userName !== player.userName;
+            this.gameRegistry.set(this.game.id, this.game);
+          }
+        })
+      );
+
+      this.hubConnection.on("PlayerConnected", player =>
+        runInAction(() => {
+          if(this.game){
+            this.game.players.push(player);
+            this.game.isCurrentPlayerConnected = this.rootStore.userStore.user?.userName === player.userName;
+            this.gameRegistry.set(this.game.id, this.game);
+          }
+        })
+      );
+
       this.hubConnection.on("Send", message => {
-        console.log(`send is called with message ${message}`);
         toast.info(message);
       });  
     }  
-      console.log(`Initial Connection State = ${this.hubConnection!.state}`)
       if (this.hubConnection!.state === 'Disconnected')
       {
-        console.log(`about to start hub connection`);
         this.hubConnection
         .start()
-        .then(() => console.log(`Connection State = ${this.hubConnection!.state}`))
         .then(() => {
-          console.log(`attempting to join group ${gameId}`);
           if (this.hubConnection!.state === 'Connected')
             this.hubConnection?.invoke('AddToGroup', gameId)
-            .then(() => console.log(`Added to group`));
           })
         .catch(error => console.log("Error establishing connection", error));  
       }    
-  }
+  };
 
   @action stopHubConnection = () => {
     if (this.hubConnection!.state === 'Connected'){
@@ -76,7 +97,7 @@ export default class GameStore {
       })
       .catch(error => console.log(error));
     }
-  }
+  };
 
   @action addChatMsg = async (values: any) => {
     values.gameId = this.game!.id;
@@ -85,31 +106,110 @@ export default class GameStore {
     }catch (error){
       console.log(error);
     }
-  }
-
-  @computed get gamesByDate() {
-    return this.groupGamesByDate( Array.from(this.gameRegistry.values()));
-  }
-
-  groupGamesByDate(games:IGame[]) {
-    const sortedGames = games.sort(
-      (a, b) => a.date.getTime() - b.date.getTime()
-    )
-    return Object.entries(sortedGames.reduce((games, game) => {
-      const date = game.date.toISOString().split('T')[0];
-      games[date] = games[date] ? [...games[date], game] : [game];
-      return games
-    }, {} as {[key: string] : IGame[]}));
-  }
-
-  @action clearGame = () => {
-    this.game = null;
   };
 
-  getGame = (id: string) => {
-    return this.gameRegistry.get(id);
+  @action connectToGame = async () => {
+    let values: any = {};
+    values.gameId = this.game!.id;
+    runInAction(() => {
+      this.loading = true;
+    })
+    try{
+      this.hubConnection!.invoke("ConnectToGame", values);
+      runInAction(() =>{
+        this.loading = false
+      })
+    }catch(error){
+      runInAction(() =>{
+        this.loading = false
+      })
+      toast.error('problem connecting to game');
+    }
   };
 
+  @action disconnectFromGame = async () => {
+    let values: any = {};
+    values.gameId = this.game!.id;
+    runInAction(() => {
+      this.loading = true;
+    })
+    try{
+      this.hubConnection!.invoke("DisconnectFromGame", values);
+      runInAction(() => {
+        this.loading = false;
+      })
+    }catch(error){
+      runInAction(() =>{
+        this.loading = false
+      })
+      toast.error('problem disconnecting from game');
+    }
+  };
+  //******************End Signal R***********************
+  
+
+  @action loadGames = async () => {
+    this.loadingInitial = true;
+    try {
+      const games = await agent.Games.list();
+      runInAction("loading games", () => {
+        games.forEach(game => {
+          setGameProps(game, this.rootStore.userStore.user!);
+          this.gameRegistry.set(game.id, game);
+        });
+        this.loadingInitial = false;
+      });
+    } catch (error) {
+      runInAction("load games error", () => {
+        this.loadingInitial = false;
+      });
+      console.log(error);
+    }
+  };
+
+  @action loadGame = async (id: string) => {
+    let game = this.getGame(id);
+    if (game) {
+      this.game = game;
+      return toJS(game);
+    } else {
+      this.loadingInitial = true;
+      try {
+        game = await agent.Games.detail(id);
+        runInAction("getting game", () => {
+          setGameProps(game, this.rootStore.userStore.user!);
+          this.game = game;
+          this.gameRegistry.set(game.id, game);
+          this.loadingInitial = false;
+        });
+        return game;
+      } catch (error) {
+        runInAction("getting game error", () => {
+          this.loadingInitial = false;
+        });
+        console.log(error);
+      }
+    }
+  };
+
+  @action createGame = async (game: IGame) => {
+    this.submitting = true;
+    try {
+      var newGame : IGame = await agent.Games.create(game);
+      runInAction("creating games", () => {
+        this.gameRegistry.set(newGame.id, newGame);
+        this.submitting = false;
+      });
+      history.push(`/lobby/${newGame.id}`)
+    } catch (error) {
+      runInAction("creating game error", () => {
+        this.submitting = false;
+      });
+      toast.error('Problem submitting data');
+      console.log(error.response);
+    }
+  };
+  
   @action editGame = async (game: IGame) => {
     this.submitting = true;
     try {
@@ -149,106 +249,18 @@ export default class GameStore {
     }
   };
 
-  @action createGame = async (game: IGame) => {
-    this.submitting = true;
-    try {
-      var newGame : IGame = await agent.Games.create(game);
-      runInAction("creating games", () => {
-        this.gameRegistry.set(newGame.id, newGame);
-        this.submitting = false;
-      });
-      history.push(`/lobby/${newGame.id}`)
-    } catch (error) {
-      runInAction("creating game error", () => {
-        this.submitting = false;
-      });
-      toast.error('Problem submitting data');
-      console.log(error.response);
-    }
+  getGame = (id: string) => {
+    return this.gameRegistry.get(id);
   };
 
-  @action loadGame = async (id: string) => {
-    let game = this.getGame(id);
-    if (game) {
-      this.game = game;
-      return toJS(game);
-    } else {
-      this.loadingInitial = true;
-      try {
-        game = await agent.Games.detail(id);
-        runInAction("getting game", () => {
-          setGameProps(game, this.rootStore.userStore.user!);
-          this.game = game;
-          this.gameRegistry.set(game.id, game);
-          this.loadingInitial = false;
-        });
-        return game;
-      } catch (error) {
-        runInAction("getting game error", () => {
-          this.loadingInitial = false;
-        });
-        console.log(error);
-      }
-    }
+  groupGamesByDate(games:IGame[]) {
+    const sortedGames = games.sort(
+      (a, b) => a.date.getTime() - b.date.getTime()
+    )
+    return Object.entries(sortedGames.reduce((games, game) => {
+      const date = game.date.toISOString().split('T')[0];
+      games[date] = games[date] ? [...games[date], game] : [game];
+      return games
+    }, {} as {[key: string] : IGame[]}));
   };
-
-  @action loadGames = async () => {
-    this.loadingInitial = true;
-    try {
-      const games = await agent.Games.list();
-      runInAction("loading games", () => {
-        games.forEach(game => {
-          setGameProps(game, this.rootStore.userStore.user!);
-          this.gameRegistry.set(game.id, game);
-        });
-        this.loadingInitial = false;
-      });
-    } catch (error) {
-      runInAction("load games error", () => {
-        this.loadingInitial = false;
-      });
-      console.log(error);
-    }
-  };
-
-  @action connectToGame = async () => {
-    const player = createPlayer(this.rootStore.userStore.user!);
-    this.loading = true;
-    try{
-      await agent.Games.connect(this.game!.id);
-      runInAction(() => {
-        if(this.game){
-          this.game.players.push(player);
-          this.game.isConnected = true;
-          this.gameRegistry.set(this.game.id, this.game);
-        }
-        this.loading = false;
-      })
-    }catch(error){
-      runInAction(() =>{
-        this.loading = false
-      })
-      toast.error('problem connecting to game');
-    }
-  }
-
-  @action disconnectFromGame = async () => {
-    this.loading = true;
-    try{
-      await agent.Games.disconnect(this.game!.id);
-      runInAction(() => {
-        if(this.game){
-          this.game.players = this.game.players.filter(p => p.userName !== this.rootStore.userStore.user?.userName)
-          this.game.isConnected = false;
-          this.gameRegistry.set(this.game.id, this.game);
-        }
-        this.loading = false;
-      })
-    }catch(error){
-      runInAction(() =>{
-        this.loading = false
-      })
-      toast.error('problem disconnecting from game');
-    }
-  }
 }

@@ -4,7 +4,7 @@ export interface IGame{
     date: Date;
     isHost: boolean;
     status: number;
-    isConnected: boolean;
+    isCurrentPlayerConnected: boolean;
     players: IPlayer[];
     chatMsgs: IChatMsg[];
 }

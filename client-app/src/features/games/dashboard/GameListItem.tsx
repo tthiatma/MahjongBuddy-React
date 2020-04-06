@@ -25,7 +25,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
                 />
               </Item.Description>
               }
-              {game.isConnected && !game.isHost && 
+              {game.isCurrentPlayerConnected && !game.isHost && 
               <Item.Description>
                 <Label
                   basic
