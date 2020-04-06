@@ -75,26 +75,50 @@ export default class GameStore {
     }  
       if (this.hubConnection!.state === 'Disconnected')
       {
+        runInAction(() => {
+          this.loading = true;
+        })    
         this.hubConnection
         .start()
         .then(() => {
           if (this.hubConnection!.state === 'Connected')
             this.hubConnection?.invoke('AddToGroup', gameId)
           })
-        .catch(error => console.log("Error establishing connection", error));  
+        .then(() =>{
+          runInAction(() => {
+            this.loading = false;
+          })        
+        })
+        .catch(error => {
+          runInAction(() => {
+            this.loading = false;
+          })        
+          console.log("Error establishing connection", error)
+        });  
       }    
   };
 
   @action stopHubConnection = (gameId: string) => {
     if (this.hubConnection!.state === 'Connected'){
+      runInAction(() => {
+        this.loading = true;
+      })        
       this.hubConnection!.invoke("RemoveFromGroup", gameId)
       .then(() => {
         this.hubConnection!.stop()
         .then(() => {
+          runInAction(() => {
+            this.loading = false;
+          })          
           console.log(`Connection State = ${this.hubConnection!.state}`)          
         });
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        runInAction(() => {
+          this.loading = false;
+        })        
+        console.log(error);
+      });
     }
   };
 
@@ -217,6 +241,7 @@ export default class GameStore {
         this.gameRegistry.set(game.id, game);
         this.game = game;
         this.submitting = false;
+        history.push(`/lobby/${game.id}`)
       });
     } catch (error) {
       runInAction("editing game error", () => {

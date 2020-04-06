@@ -24,6 +24,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     createHubConnection,
     loadGame,
     loadingInitial,
+    loading
   } = rootStore.gameStore;
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     }
   }, [createHubConnection, stopHubConnection, loadGame, match.params.id]);
 
-  if (loadingInitial || !game)
+  if (loadingInitial || !game || loading)
     return <LoadingComponent content="Loading game..." />;
 
   if (!game) return <h2>Game not found</h2>;
