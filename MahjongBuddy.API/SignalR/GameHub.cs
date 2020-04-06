@@ -68,16 +68,12 @@ namespace MahjongBuddy.API.SignalR
         {
             var groupName = groupId.ToString();
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
-            var userName = GetUserName();
-            await Clients.OthersInGroup(groupName).SendAsync("Send", $"{userName} has joined the group");
         }
 
         public async Task RemoveFromGroup(int groupId)
         {
             var groupName = groupId.ToString();
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            var userName = GetUserName();
-            await Clients.OthersInGroup(groupName).SendAsync("Send", $"{userName} has left the group");
         }
     }
 }

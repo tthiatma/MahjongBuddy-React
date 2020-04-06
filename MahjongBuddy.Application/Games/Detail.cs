@@ -3,8 +3,6 @@ using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;

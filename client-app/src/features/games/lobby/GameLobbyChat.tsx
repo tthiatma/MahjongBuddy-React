@@ -5,6 +5,7 @@ import {Form as FinalForm, Field} from 'react-final-form';
 import { Link } from 'react-router-dom';
 import TextAreaInput from '../../../app/common/form/TextAreaInput';
 import { observer } from 'mobx-react-lite';
+import {formatDistance} from 'date-fns';
 
 const GameLobbyChat = () => {
   const rootStore = useContext(RootStoreContext);
@@ -31,7 +32,7 @@ const GameLobbyChat = () => {
         color="teal"
         style={{ border: "none" }}
       >
-        <Header>Chat about this event</Header>
+        <Header>Chat</Header>
       </Segment>
       <Segment attached>
         <Comment.Group>
@@ -41,11 +42,11 @@ const GameLobbyChat = () => {
               <Comment key={cm.id}>
                 <Comment.Avatar src={cm.image || "/assets/user.png"} />
                 <Comment.Content>
-                  <Comment.Author as={Link} to={`/profile/${cm.userName}`}>
+                  <Comment.Author as={Link} to={`/profile/${cm. userName}`}>
                     {cm.displayName}
                   </Comment.Author>
                   <Comment.Metadata>
-                    <div>{cm.createdAt}</div>
+                  <div>{formatDistance(new Date(cm.createdAt), new Date())}</div>
                   </Comment.Metadata>
                   <Comment.Text>{cm.body}</Comment.Text>
                 </Comment.Content>

@@ -51,6 +51,8 @@ export default class GameStore {
             );
             this.game.isCurrentPlayerConnected = this.rootStore.userStore.user?.userName !== player.userName;
             this.gameRegistry.set(this.game.id, this.game);
+            if(this.rootStore.userStore.user?.userName !== player.userName)
+            toast.info(`${player.userName} has left the Game`);
           }
         })
       );
@@ -61,6 +63,8 @@ export default class GameStore {
             this.game.players.push(player);
             this.game.isCurrentPlayerConnected = this.rootStore.userStore.user?.userName === player.userName;
             this.gameRegistry.set(this.game.id, this.game);
+            if(this.rootStore.userStore.user?.userName !== player.userName)
+              toast.info(`${player.userName} has joined the Game`);
           }
         })
       );
@@ -85,15 +89,10 @@ export default class GameStore {
     if (this.hubConnection!.state === 'Connected'){
       this.hubConnection!.invoke("RemoveFromGroup", this.game!.id)
       .then(() => {
-        console.log(`Connection State = ${this.hubConnection!.state}`)
-        console.log(`Calling hubConnection.stop`)
         this.hubConnection!.stop()
         .then(() => {
           console.log(`Connection State = ${this.hubConnection!.state}`)          
         });
-      })
-      .then(() => {
-        console.log(`Connection State = ${this.hubConnection!.state}`)          
       })
       .catch(error => console.log(error));
     }

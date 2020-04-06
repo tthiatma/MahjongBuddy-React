@@ -26,18 +26,6 @@ const GameLobbyInfo: React.FC<{game: IGame}> = ({game}) => {
           </Grid.Column>
         </Grid>
       </Segment>
-      <Segment attached>
-        <Grid verticalAlign='middle'>
-          <Grid.Column width={1}>
-            <Icon name='marker' size='large' color='teal' />
-          </Grid.Column>
-          <Grid.Column width={11}>
-            <span>
-                More iNfo
-            </span>
-          </Grid.Column>
-        </Grid>
-      </Segment>
     </Segment.Group>
   );
 };

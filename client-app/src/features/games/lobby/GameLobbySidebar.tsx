@@ -19,7 +19,7 @@ const GameLobbySidebar: React.FC<IProps> = ({players}) => {
         inverted
         color="teal"
       >
-        {players.length} {players.length === 1 ? "Person" : "People"} Going
+        {players.length} {players.length === 1 ? "Player" : "Players"} Joined
       </Segment>
       <Segment attached>
         <List relaxed divided>
@@ -41,7 +41,6 @@ const GameLobbySidebar: React.FC<IProps> = ({players}) => {
                     {player.displayName}
                   </Link>
                 </Item.Header>
-                <Item.Extra style={{ color: "orange" }}>Following</Item.Extra>
               </Item.Content>
             </Item>
           ))}
