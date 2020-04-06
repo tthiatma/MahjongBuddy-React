@@ -16,13 +16,6 @@ const GameLobbyChat = () => {
     game
   } = rootStore.gameStore;
 
-  useEffect(() => {
-    createHubConnection(game!.id);
-    return () => {
-      stopHubConnection();
-    }
-  }, [createHubConnection, stopHubConnection, game])
-
   return (
     <Fragment>
       <Segment

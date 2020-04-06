@@ -85,9 +85,9 @@ export default class GameStore {
       }    
   };
 
-  @action stopHubConnection = () => {
+  @action stopHubConnection = (gameId: string) => {
     if (this.hubConnection!.state === 'Connected'){
-      this.hubConnection!.invoke("RemoveFromGroup", this.game!.id)
+      this.hubConnection!.invoke("RemoveFromGroup", gameId)
       .then(() => {
         this.hubConnection!.stop()
         .then(() => {

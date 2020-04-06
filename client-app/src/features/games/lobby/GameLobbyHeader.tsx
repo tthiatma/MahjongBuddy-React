@@ -1,10 +1,14 @@
 import React, { useContext } from 'react';
-import { Segment, Item, Header, Button } from 'semantic-ui-react';
+import { Segment, Item, Header, Button, Image } from 'semantic-ui-react';
 import { IGame } from '../../../app/models/game';
 import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import {format} from 'date-fns';
 import { RootStoreContext } from '../../../app/stores/rootStore';
+
+const gameImageStyle = {
+  filter: 'brightness(30%)'
+};
 
 const gameImageTextStyle = {
   position: 'absolute',
@@ -16,11 +20,17 @@ const gameImageTextStyle = {
 };
 
 const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
+  const host = game.players.filter(x => x.isHost)[0];
   const rootStore = useContext(RootStoreContext);
   const {connectToGame, disconnectFromGame, loading} = rootStore.gameStore;
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
+        <Image
+          src={`/assets/mahjong-tiles.jpg`}
+          fluid
+          style={gameImageStyle}
+        />
         <Segment style={gameImageTextStyle} basic>
           <Item.Group>
             <Item>
@@ -32,7 +42,7 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
                 />
                 <p>{format(game.date, "eeee do MMMM")}</p>
                 <p>
-                  Hosted by <strong>Bob</strong>
+                  Hosted by <strong>{host.displayName}</strong>
                 </p>
               </Item.Content>
             </Item>

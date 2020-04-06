@@ -64,16 +64,14 @@ namespace MahjongBuddy.API.SignalR
             return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
 
-        public async Task AddToGroup(int groupId)
+        public async Task AddToGroup(string groupId)
         {
-            var groupName = groupId.ToString();
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName.ToString());
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
         }
 
-        public async Task RemoveFromGroup(int groupId)
+        public async Task RemoveFromGroup(string groupId)
         {
-            var groupName = groupId.ToString();
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
         }
     }
 }

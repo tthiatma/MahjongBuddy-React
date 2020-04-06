@@ -18,11 +18,21 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   history
 }) => {
   const rootStore = useContext(RootStoreContext);
-  const { game, loadGame, loadingInitial } = rootStore.gameStore;
+  const {
+    game,
+    stopHubConnection,
+    createHubConnection,
+    loadGame,
+    loadingInitial,
+  } = rootStore.gameStore;
 
   useEffect(() => {
     loadGame(match.params.id);
-  }, [loadGame, match.params.id]);
+    createHubConnection(match.params!.id);
+    return () => {
+      stopHubConnection(match.params.id);
+    }
+  }, [createHubConnection, stopHubConnection, loadGame, match.params.id]);
 
   if (loadingInitial || !game)
     return <LoadingComponent content="Loading game..." />;
@@ -33,7 +43,6 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     <Grid>
       <Grid.Column width={10}>
         <GameLobbyHeader game={game} />
-        <GameLobbyInfo game={game} />
         <GameLobbyChat />
       </Grid.Column>
       <Grid.Column width={6}>
