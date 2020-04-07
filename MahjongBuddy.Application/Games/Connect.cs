@@ -17,6 +17,7 @@ namespace MahjongBuddy.Application.Games
         {
             public int GameId { get; set; }
             public string UserName { get; set; }
+            public WindDirection InitialSeatWind { get; set; }
 
         }
         public class Handler : IRequestHandler<Command, PlayerDto>
@@ -51,7 +52,8 @@ namespace MahjongBuddy.Application.Games
                 {
                     Game = game,
                     AppUser = user,
-                    IsHost = false
+                    IsHost = false,
+                    InitialSeatWind = request.InitialSeatWind
                 };
 
                 _context.UserGames.Add(connected);

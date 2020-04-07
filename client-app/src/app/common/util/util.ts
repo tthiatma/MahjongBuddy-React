@@ -1,5 +1,6 @@
 import { IGame, IPlayer } from "../../models/game";
 import { IUser } from "../../models/user";
+import { WindDirection } from "../../models/windEnum";
 
 export const combineDateAndTime = (date: Date, time: Date) => {
     // const timeString = time.getHours() + ':' + time.getMinutes() + ':00';
@@ -16,21 +17,33 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 }
 
 export const setGameProps = (game: IGame, user: IUser) => {
-    game.date = new Date(game.date);
+    
+  let currentPlayer = game.players.find(
+    p => p.userName === user.userName
+  );
+  game.date = new Date(game.date);
+    
     game.isCurrentPlayerConnected = game.players.some(
       p => p.userName === user.userName
     )
     game.isHost = game.players.some(
       p => p.userName === user.userName && p.isHost
     )
-    return game;
+    if(currentPlayer?.initialSeatWind){
+      game.initialSeatWind = game.players.find(
+        p => p.userName === user.userName
+      )!.initialSeatWind        
+    }else{
+      game.initialSeatWind = WindDirection.Unassigned
+    }
+  return game;
 }
 
-export const createPlayer = (user: IUser): IPlayer => {
-    return {
-        displayName: user.displayName,
-        isHost: false,
-        userName: user.userName,
-        image: user.image!
-    }
-}
+// export const createPlayer = (user: IUser): IPlayer => {
+//     return {
+//         displayName: user.displayName,
+//         isHost: false,
+//         userName: user.userName,
+//         image: user.image!
+//     }
+// }

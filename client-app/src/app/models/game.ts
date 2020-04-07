@@ -1,9 +1,12 @@
+import { WindDirection } from "./windEnum";
+
 export interface IGame{
     id: string;
     title: string;
     date: Date;
     isHost: boolean;
     status: number;
+    initialSeatWind?: WindDirection;
     isCurrentPlayerConnected: boolean;
     players: IPlayer[];
     chatMsgs: IChatMsg[];
@@ -40,4 +43,5 @@ export interface IPlayer{
     displayName: string;
     image: string;
     isHost: boolean;
+    initialSeatWind: WindDirection
 }

@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { setGameProps } from "../common/util/util";
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 import { IRoundTile } from "../models/tile";
+import { WindDirection } from "../models/windEnum";
 
 export default class GameStore {
 
@@ -60,7 +61,10 @@ export default class GameStore {
             this.game.players = this.game.players.filter(
               (p) => p.userName !== player?.userName
             );
-            this.game.isCurrentPlayerConnected = this.rootStore.userStore.user?.userName !== player.userName;
+            if(this.rootStore.userStore.user?.userName === player.userName){
+              this.game.initialSeatWind = WindDirection.Unassigned;
+              this.game.isCurrentPlayerConnected = false;
+            }
             this.gameRegistry.set(this.game.id, this.game);
             if(this.rootStore.userStore.user?.userName !== player.userName)
             toast.info(`${player.userName} has left the Game`);
@@ -72,7 +76,11 @@ export default class GameStore {
         runInAction(() => {
           if(this.game){
             this.game.players.push(player);
-            this.game.isCurrentPlayerConnected = this.rootStore.userStore.user?.userName === player.userName;
+            if(this.rootStore.userStore.user?.userName === player.userName){
+              this.game.initialSeatWind = player.initialSeatWind;
+              this.game.isCurrentPlayerConnected = true;
+            }
+
             this.gameRegistry.set(this.game.id, this.game);
             if(this.rootStore.userStore.user?.userName !== player.userName)
               toast.info(`${player.userName} has joined the Game`);
@@ -142,9 +150,10 @@ export default class GameStore {
     }
   };
 
-  @action connectToGame = async () => {
+  @action connectToGame = async (seat: WindDirection) => {
     let values: any = {};
     values.gameId = this.game!.id;
+    values.InitialSeatWind = seat;
     runInAction(() => {
       this.loading = true;
     })

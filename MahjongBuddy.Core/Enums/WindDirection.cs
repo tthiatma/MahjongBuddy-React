@@ -5,6 +5,7 @@
         East,
         South,
         West,
-        North
+        North,
+        Unassigned,
     }
 }
