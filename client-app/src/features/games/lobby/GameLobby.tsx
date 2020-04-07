@@ -6,7 +6,6 @@ import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import GameLobbyChat from "./GameLobbyChat";
 import GameLobbyHeader from "./GameLobbyHeader";
-import GameLobbyInfo from "./GameLobbyInfo";
 import GameLobbySidebar from "./GameLobbySidebar";
 
 interface DetailParams {
@@ -33,7 +32,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     return () => {
       stopHubConnection(match.params.id);
     }
-  }, [createHubConnection, stopHubConnection, loadGame, match.params.id]);
+  }, [createHubConnection, stopHubConnection, loadGame, match.params, match.params.id]);
 
   if (loadingInitial || !game || loading)
     return <LoadingComponent content="Loading game..." />;

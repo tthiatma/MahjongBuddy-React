@@ -2,7 +2,6 @@
 using MahjongBuddy.Application.Games;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -18,17 +17,12 @@ namespace MahjongBuddy.API.SignalR
             _mediator = mediator;
         }
 
-        //public async Task StartRound(CreateRound.Command command)
-        //{
-        //    try
-        //    {
-        //        await _mediator.Send(command);
-        //    }
-        //    catch (Exception ex)
-        //    {
+        public async Task StartRound(CreateRound.Command command)
+        {
+            var roundTiles = await _mediator.Send(command);
 
-        //    }
-        //}
+            await Clients.Group(command.GameId.ToString()).SendAsync("RoundStarted", roundTiles);
+        }
 
         public async Task DisconnectFromGame(Disconnect.Command command)
         {

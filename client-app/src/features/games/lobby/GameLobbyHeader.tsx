@@ -22,7 +22,7 @@ const gameImageTextStyle = {
 const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
   const host = game.players.filter(x => x.isHost)[0];
   const rootStore = useContext(RootStoreContext);
-  const {connectToGame, disconnectFromGame, loading} = rootStore.gameStore;
+  const {connectToGame, disconnectFromGame, loading, startRound} = rootStore.gameStore;
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
@@ -50,6 +50,9 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
         </Segment>
       </Segment>
       <Segment clearing attached="bottom">
+        <Button loading={loading} onClick={startRound}>
+            Start Round
+        </Button>
         {game.isHost ? (
           <Button
             as={Link}

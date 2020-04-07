@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useEffect } from 'react';
+import React, { Fragment, useContext } from 'react';
 import { Segment, Header, Form, Button, Comment } from 'semantic-ui-react';
 import { RootStoreContext } from '../../../app/stores/rootStore';
 import {Form as FinalForm, Field} from 'react-final-form';
@@ -10,8 +10,6 @@ import {formatDistance} from 'date-fns';
 const GameLobbyChat = () => {
   const rootStore = useContext(RootStoreContext);
   const {    
-    stopHubConnection,
-    createHubConnection,
     addChatMsg,
     game
   } = rootStore.gameStore;
@@ -35,7 +33,7 @@ const GameLobbyChat = () => {
               <Comment key={cm.id}>
                 <Comment.Avatar src={cm.image || "/assets/user.png"} />
                 <Comment.Content>
-                  <Comment.Author as={Link} to={`/profile/${cm. userName}`}>
+                  <Comment.Author as={Link} to={`/profile/${cm.userName}`}>
                     {cm.displayName}
                   </Comment.Author>
                   <Comment.Metadata>

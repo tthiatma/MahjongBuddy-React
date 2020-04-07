@@ -7,6 +7,7 @@ import { history } from '../..';
 import { toast } from 'react-toastify';
 import { setGameProps } from "../common/util/util";
 import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
+import { IRoundTile } from "../models/tile";
 
 export default class GameStore {
 
@@ -15,6 +16,7 @@ export default class GameStore {
     this.rootStore = rootStore;
   }
 
+  @observable roundTilesRegistry = new Map();
   @observable gameRegistry = new Map();
   @observable game: IGame | null = null;
   @observable loadingInitial = false;
@@ -36,6 +38,15 @@ export default class GameStore {
       })
       .configureLogging(LogLevel.Information)
       .build();
+
+      this.hubConnection.on("RoundStarted", (roundTiles) => {
+        console.log(roundTiles);
+        runInAction(() => {
+          roundTiles.forEach((tile: IRoundTile) => {
+            this.roundTilesRegistry.set(tile.id, tile);
+          });
+        })
+      })
 
       this.hubConnection.on("ReceiveChatMsg", chatMsg =>
         runInAction(() => {
@@ -158,6 +169,25 @@ export default class GameStore {
     })
     try{
       this.hubConnection!.invoke("DisconnectFromGame", values);
+      runInAction(() => {
+        this.loading = false;
+      })
+    }catch(error){
+      runInAction(() =>{
+        this.loading = false
+      })
+      toast.error('problem disconnecting from game');
+    }
+  };
+
+@action startRound = async () => {
+    let values: any = {};
+    values.gameId = parseInt(this.game!.id);
+    runInAction(() => {
+      this.loading = true;
+    })
+    try{
+      this.hubConnection!.invoke("StartRound", values);
       runInAction(() => {
         this.loading = false;
       })
