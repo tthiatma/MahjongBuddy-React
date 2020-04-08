@@ -10,6 +10,8 @@ namespace MahjongBuddy.Core
         public string Title { get; set; }
         public DateTime Date { get; set; }
         public GameStatus Status { get; set; }
+        public string HostId { get; set; }
+        public virtual AppUser Host { get; set; }
         public virtual ICollection<Round> Rounds { get; set; }
         public virtual ICollection<UserGame> UserGames { get; set; }
         public virtual ICollection<ChatMsg> ChatMsgs { get; set; }

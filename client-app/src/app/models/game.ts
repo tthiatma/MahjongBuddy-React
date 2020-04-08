@@ -5,6 +5,7 @@ export interface IGame{
     title: string;
     date: Date;
     isHost: boolean;
+    hostUserName: string;
     status: number;
     initialSeatWind?: WindDirection;
     isCurrentPlayerConnected: boolean;

@@ -1,9 +1,10 @@
 import React, { Fragment, useContext } from 'react';
-import { Segment, List, Item, Label, Image, Grid, Button } from 'semantic-ui-react';
+import { Segment, List, Item, Label, Image, Grid } from 'semantic-ui-react';
 import { IPlayer } from '../../../app/models/game';
 import { observer } from 'mobx-react-lite';
 import { WindDirection } from '../../../app/models/windEnum';
 import { RootStoreContext } from '../../../app/stores/rootStore';
+import GameLobbySeat from './GameLobbySeat';
 
 interface IProps{
   players: IPlayer[];
@@ -11,7 +12,7 @@ interface IProps{
 
 const GameLobbySidebar: React.FC<IProps> = ({players}) => {
   const rootStore = useContext(RootStoreContext);
-  const {connectToGame, disconnectFromGame, loading, game} = rootStore.gameStore;
+  const {game} = rootStore.gameStore;
 
   return (
     <Fragment>
@@ -26,87 +27,33 @@ const GameLobbySidebar: React.FC<IProps> = ({players}) => {
         {players.length} {players.length === 1 ? "Player" : "Players"} Joined
       </Segment>
 
-      <Grid celled="internally">
+      <Grid verticalAlign='middle' centered >
         <Grid.Row>
-          <Grid.Column width={3}></Grid.Column>
-          <Grid.Column textAlign="center" width={10}>
-            North Seat
-            {game?.initialSeatWind === WindDirection.North && (
-              <Button loading={loading} onClick={disconnectFromGame}>
-                Leave
-              </Button>
-            )}
-            {!game?.isCurrentPlayerConnected && !game?.players.some(p => p.initialSeatWind === WindDirection.North) && (
-              <Button
-                loading={loading}
-                onClick={() => connectToGame(WindDirection.North)}
-                color="teal"
-              >
-                Sit
-              </Button>
-            )}
+          <Grid.Column width={4}></Grid.Column>
+          <Grid.Column textAlign="center" width={8}>
+            <GameLobbySeat wind={WindDirection.North} />
           </Grid.Column>
-          <Grid.Column width={3}></Grid.Column>
+          <Grid.Column width={4}></Grid.Column>
         </Grid.Row>
 
         <Grid.Row>
-          <Grid.Column width={3}>
-            West Seat
-            {game?.initialSeatWind === WindDirection.West && (
-              <Button loading={loading} onClick={disconnectFromGame}>
-                Leave
-              </Button>
-            )}
-            {!game?.isCurrentPlayerConnected && !game?.players.some(p => p.initialSeatWind === WindDirection.West) && (
-              <Button
-                loading={loading}
-                onClick={() => connectToGame(WindDirection.West)}
-                color="teal"
-              >
-                Sit
-              </Button>
-            )}
+          <Grid.Column width={4} textAlign="center">
+            <GameLobbySeat wind={WindDirection.West} />
           </Grid.Column>
-          <Grid.Column width={10}>Image showing direction</Grid.Column>
-          <Grid.Column width={3}>
-            East Seat
-            {game?.initialSeatWind === WindDirection.East && (
-              <Button loading={loading} onClick={disconnectFromGame}>
-                Leave
-              </Button>
-            )}
-            {!game?.isCurrentPlayerConnected && !game?.players.some(p => p.initialSeatWind === WindDirection.East) &&(
-              <Button
-                loading={loading}
-                onClick={() => connectToGame(WindDirection.East)}
-                color="teal"
-              >
-                Sit
-              </Button>
-            )}
+          <Grid.Column width={8}>              
+            <Image size="medium" src={"/assets/wind_indicator.png"} />
+            </Grid.Column>
+          <Grid.Column width={4} textAlign="center">
+            <GameLobbySeat wind={WindDirection.East} />
           </Grid.Column>
         </Grid.Row>
 
         <Grid.Row>
-          <Grid.Column width={3}></Grid.Column>
-          <Grid.Column textAlign="center" width={10}>
-            South
-            {game?.initialSeatWind === WindDirection.South && (
-              <Button loading={loading} onClick={disconnectFromGame}>
-                Leave
-              </Button>
-            )}
-            {!game?.isCurrentPlayerConnected && !game?.players.some(p => p.initialSeatWind === WindDirection.South) && (
-              <Button
-                loading={loading}
-                onClick={() => connectToGame(WindDirection.South)}
-                color="teal"
-              >
-                Sit
-              </Button>
-            )}
+          <Grid.Column width={4}></Grid.Column>
+          <Grid.Column textAlign="center" width={8}>
+            <GameLobbySeat wind={WindDirection.South} />
           </Grid.Column>
-          <Grid.Column width={3}></Grid.Column>
+          <Grid.Column width={4}></Grid.Column>
         </Grid.Row>
       </Grid>
 

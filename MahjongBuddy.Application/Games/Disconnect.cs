@@ -41,10 +41,7 @@ namespace MahjongBuddy.Application.Games
 
                 if (connected == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already left the game" });
-
-                if (connected.IsHost)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Game = "You cannot remove yourself as host" });
-
+        
                 _context.UserGames.Remove(connected);
 
                 var success = await _context.SaveChangesAsync() > 0;

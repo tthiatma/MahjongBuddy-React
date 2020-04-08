@@ -52,7 +52,7 @@ namespace MahjongBuddy.Application.Games
                 {
                     Game = game,
                     AppUser = user,
-                    IsHost = false,
+                    IsHost = game.HostId == user.Id,
                     InitialSeatWind = request.InitialSeatWind
                 };
 

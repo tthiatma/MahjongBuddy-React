@@ -26,10 +26,10 @@ export const setGameProps = (game: IGame, user: IUser) => {
     game.isCurrentPlayerConnected = game.players.some(
       p => p.userName === user.userName
     )
-    game.isHost = game.players.some(
-      p => p.userName === user.userName && p.isHost
-    )
-    if(currentPlayer?.initialSeatWind){
+
+    game.isHost = game.hostUserName === user.userName;
+
+    if(currentPlayer?.initialSeatWind != undefined){
       game.initialSeatWind = game.players.find(
         p => p.userName === user.userName
       )!.initialSeatWind        

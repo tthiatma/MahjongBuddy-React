@@ -41,7 +41,6 @@ export default class GameStore {
       .build();
 
       this.hubConnection.on("RoundStarted", (roundTiles) => {
-        console.log(roundTiles);
         runInAction(() => {
           roundTiles.forEach((tile: IRoundTile) => {
             this.roundTilesRegistry.set(tile.id, tile);
@@ -260,6 +259,16 @@ export default class GameStore {
       var newGame : IGame = await agent.Games.create(game);
       runInAction("creating games", () => {
         this.gameRegistry.set(newGame.id, newGame);
+        this.game = newGame;
+        //when creating a new game, there will be one user in the game
+        var player = newGame.players[0];
+        if(this.game){
+          if(this.rootStore.userStore.user?.userName === player.userName){
+            this.game.initialSeatWind = player.initialSeatWind;
+            this.game.isCurrentPlayerConnected = true;
+          }  
+        }
+
         this.submitting = false;
       });
       history.push(`/lobby/${newGame.id}`)

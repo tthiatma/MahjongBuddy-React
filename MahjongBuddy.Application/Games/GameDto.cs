@@ -13,6 +13,8 @@ namespace MahjongBuddy.Application.Games
 
         public DateTime Date { get; set; }
 
+        public string HostUserName { get; set; }
+
         [JsonPropertyName("players")]
         public ICollection<PlayerDto> UserGames { get; set; }
 

@@ -119,6 +119,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("HostId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -126,6 +129,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("HostId");
 
                     b.ToTable("Games");
                 });
@@ -452,6 +457,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasOne("MahjongBuddy.Core.Game", "Game")
                         .WithMany("ChatMsgs")
                         .HasForeignKey("GameId");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.Game", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.AppUser", "Host")
+                        .WithMany()
+                        .HasForeignKey("HostId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>

@@ -41,11 +41,11 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
 
   return (
     <Grid>
-      <Grid.Column width={10}>
+      <Grid.Column width={8}>
         <GameLobbyHeader game={game} />
         <GameLobbyChat />
       </Grid.Column>
-      <Grid.Column width={6}>
+      <Grid.Column width={8}>
         <GameLobbySidebar players={game.players} />
       </Grid.Column>
     </Grid>

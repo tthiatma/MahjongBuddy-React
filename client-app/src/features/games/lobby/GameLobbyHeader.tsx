@@ -40,9 +40,9 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
                   content={game.title}
                   style={{ color: "white" }}
                 />
-                <p>{format(game.date, "eeee do MMMM")}</p>
+                <p>{format(new Date(game.date), "eeee do MMMM")}</p>
                 <p>
-                  Hosted by <strong>{host.displayName}</strong>
+                  Hosted by <strong>{host?.displayName}</strong>
                 </p>
               </Item.Content>
             </Item>

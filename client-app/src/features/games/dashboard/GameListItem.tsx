@@ -12,10 +12,10 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
       <Segment>
         <Item.Group>
           <Item>
-            <Item.Image size="tiny" circular src={host.image || "/assets/user.png"} />
+            <Item.Image size="tiny" circular src={host?.image || "/assets/user.png"} />
             <Item.Content>
               <Item.Header as={Link} to={`/games/${game.id}`}>{game.title}</Item.Header>
-              <Item.Description>Hosted by {host.displayName}</Item.Description>
+              <Item.Description>Hosted by {host?.displayName}</Item.Description>
               {game.isHost && 
               <Item.Description>
                 <Label

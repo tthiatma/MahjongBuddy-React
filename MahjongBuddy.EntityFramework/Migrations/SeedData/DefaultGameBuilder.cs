@@ -26,12 +26,6 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
         }
         private IEnumerable<Game> CreateGames()
         {
-            Round firstRound = new Round
-            {
-                Id = 1,
-                Counter = 1,
-                Wind = WindDirection.East
-            };
             List<Game> games = new List<Game>
             {
                 new Game
@@ -39,6 +33,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = 1,
                     Title = "Game 1",
                     Date = DateTime.Now.AddMonths(-2),
+                    HostId = "a",
                     UserGames = new List<UserGame>
                     {
                         new UserGame
@@ -72,22 +67,26 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = 2,
                     Title = "Game 2",
                     Date = DateTime.Now.AddMonths(-1),
+                    HostId = "a",
                     UserGames = new List<UserGame>
                     {
                         new UserGame
                         {
                             IsHost = true,
                             AppUserId = "a",
+                            InitialSeatWind = WindDirection.East
                         },
                         new UserGame
                         {
                             IsHost = false,
                             AppUserId = "b",
+                            InitialSeatWind = WindDirection.South
                         },
                         new UserGame
                         {
                             IsHost = false,
                             AppUserId = "c",
+                            InitialSeatWind = WindDirection.West
                         }
                     }
                 }
