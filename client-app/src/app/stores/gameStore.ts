@@ -5,9 +5,8 @@ import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from '../..';
 import { toast } from 'react-toastify';
-import { setGameProps, setRoundProps, GetOtherUserTiles } from "../common/util/util";
+import { setGameProps, setRoundProps } from "../common/util/util";
 import { HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
-import { IRoundTile } from "../models/tile";
 import { WindDirection } from "../models/windEnum";
 import { IRound } from "../models/round";
 
@@ -241,6 +240,8 @@ export default class GameStore {
       this.loadingInitial = true;
       try{
         round = await agent.Rounds.detail(id);
+        console.log('getting round');
+        console.log(round);
         runInAction("getting round", () => {
           setRoundProps(round, this.rootStore.userStore.user!);
           this.round = round;

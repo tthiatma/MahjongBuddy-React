@@ -1,6 +1,5 @@
 import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
-import _ from "lodash";
 import { IRoundTile } from "../../../app/models/tile";
 
 interface IProps{
