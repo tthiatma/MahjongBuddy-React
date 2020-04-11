@@ -5,10 +5,11 @@ import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from '../..';
 import { toast } from 'react-toastify';
-import { setGameProps } from "../common/util/util";
-import {HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
+import { setGameProps, setRoundProps, GetOtherUserTiles } from "../common/util/util";
+import { HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 import { IRoundTile } from "../models/tile";
 import { WindDirection } from "../models/windEnum";
+import { IRound } from "../models/round";
 
 export default class GameStore {
 
@@ -17,8 +18,9 @@ export default class GameStore {
     this.rootStore = rootStore;
   }
 
-  @observable roundTilesRegistry = new Map();
+  @observable roundRegistry = new Map();
   @observable gameRegistry = new Map();
+  @observable round: IRound | null = null;
   @observable game: IGame | null = null;
   @observable loadingInitial = false;
   @observable submitting = false;
@@ -27,7 +29,8 @@ export default class GameStore {
   @observable.ref hubConnection: HubConnection | null = null;
 
   @computed get gamesByDate() {
-    return this.groupGamesByDate( Array.from(this.gameRegistry.values()));
+    return this.groupGamesByDate( 
+      Array.from(this.gameRegistry.values()));
   };
 
   //******************Start Signal R*********************
@@ -40,12 +43,11 @@ export default class GameStore {
       .configureLogging(LogLevel.Information)
       .build();
 
-      this.hubConnection.on("RoundStarted", (roundTiles) => {
+      this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
-          roundTiles.forEach((tile: IRoundTile) => {
-            this.roundTilesRegistry.set(tile.id, tile);
-          });
+          this.round = round;
         })
+        history.push(`/games/${this.game!.id}/rounds/${this.round!.id}`)
       })
 
       this.hubConnection.on("ReceiveChatMsg", chatMsg =>
@@ -188,14 +190,17 @@ export default class GameStore {
     }
   };
 
-@action startRound = async () => {
+  @action nextRound = async() => {
+    
+  }
+  @action startRound = async () => {
     let values: any = {};
     values.gameId = parseInt(this.game!.id);
     runInAction(() => {
       this.loading = true;
     })
     try{
-      this.hubConnection!.invoke("StartRound", values);
+      this.hubConnection!.invoke("StartRound", values)
       runInAction(() => {
         this.loading = false;
       })
@@ -208,13 +213,12 @@ export default class GameStore {
   };
   //******************End Signal R***********************
   
-
   @action loadGames = async () => {
     this.loadingInitial = true;
     try {
       const games = await agent.Games.list();
       runInAction("loading games", () => {
-        games.forEach(game => {
+        games.forEach((game) => {
           setGameProps(game, this.rootStore.userStore.user!);
           this.gameRegistry.set(game.id, game);
         });
@@ -227,6 +231,31 @@ export default class GameStore {
       console.log(error);
     }
   };
+
+  @action loadRound = async (id: number) => {
+    let round = this.getRound(id);
+    if(round) {
+      this.round  = round;
+      return toJS(round);
+    }else{
+      this.loadingInitial = true;
+      try{
+        round = await agent.Rounds.detail(id);
+        runInAction("getting round", () => {
+          setRoundProps(round, this.rootStore.userStore.user!);
+          this.round = round;
+          this.roundRegistry.set(round.id, round);
+          this.loadingInitial = false;
+        });
+        return round;
+      } catch (error) {
+        runInAction("getting round error", () => {
+          this.loadingInitial = false;
+        })
+        console.log(error);
+      }
+    }
+  }
 
   @action loadGame = async (id: string) => {
     let game = this.getGame(id);
@@ -325,13 +354,20 @@ export default class GameStore {
     return this.gameRegistry.get(id);
   };
 
+  getRound = (id: number) => {
+    return this.roundRegistry.get(id);
+  }
+
   groupGamesByDate(games:IGame[]) {
     const sortedGames = games.sort(
       (a, b) => a.date.getTime() - b.date.getTime()
     )
-    return Object.entries(sortedGames.reduce((games, game) => {
+    return Object.entries(
+      sortedGames.reduce((games, game) => {
       const date = game.date.toISOString().split('T')[0];
-      games[date] = games[date] ? [...games[date], game] : [game];
+      games[date] = games[date] 
+      ? [...games[date], game] 
+      : [game];
       return games
     }, {} as {[key: string] : IGame[]}));
   };

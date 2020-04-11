@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Core;
 
-namespace MahjongBuddy.Application.Games
+namespace MahjongBuddy.Application.Rounds
 {
-    public class MappingProfile : Profile
+    public class MappingProfile: Profile
     {
         public MappingProfile()
         {
-            CreateMap<Game, GameDto>()
-                .ForMember(dest => dest.HostUserName, opt => opt.MapFrom(s => s.Host.UserName));
-            CreateMap<UserGame, PlayerDto>()
+            CreateMap<Round, RoundDto>();
+            CreateMap<RoundTile, RoundTileDto>();
+            CreateMap<UserRound, RoundPlayerDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.AppUser.UserName))
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName));
         }

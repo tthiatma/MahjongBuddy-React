@@ -1,9 +1,8 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment } from 'react';
 import { Segment, List, Item, Label, Image, Grid } from 'semantic-ui-react';
 import { IPlayer } from '../../../app/models/game';
 import { observer } from 'mobx-react-lite';
 import { WindDirection } from '../../../app/models/windEnum';
-import { RootStoreContext } from '../../../app/stores/rootStore';
 import GameLobbySeat from './GameLobbySeat';
 
 interface IProps{
@@ -11,9 +10,6 @@ interface IProps{
 }
 
 const GameLobbySidebar: React.FC<IProps> = ({players}) => {
-  const rootStore = useContext(RootStoreContext);
-  const {game} = rootStore.gameStore;
-
   return (
     <Fragment>
       <Segment

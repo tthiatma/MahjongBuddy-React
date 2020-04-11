@@ -1,7 +1,7 @@
 ﻿using MahjongBuddy.Core;
 using System;
 
-namespace MahjongBuddy.Application.Games
+namespace MahjongBuddy.Application.Rounds
 {
     public class RoundTileDto
     {

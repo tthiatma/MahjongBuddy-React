@@ -20,7 +20,6 @@ const gameImageTextStyle = {
 };
 
 const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
-  const host = game.players.filter(x => x.isHost)[0];
   const rootStore = useContext(RootStoreContext);
   const {loading, startRound} = rootStore.gameStore;
   return (
@@ -42,7 +41,7 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
                 />
                 <p>{format(new Date(game.date), "eeee do MMMM")}</p>
                 <p>
-                  Hosted by <strong>{host?.displayName}</strong>
+                  Hosted by <strong>{game.hostUserName}</strong>
                 </p>
               </Item.Content>
             </Item>

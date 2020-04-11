@@ -45,7 +45,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <Container style={{ marginTop: "5em" }}>
               <Switch>
                 <PrivateRoute exact path="/games" component={GameDashboard} />
-                <PrivateRoute path="/games/:id" component={GameOn} />
+                <PrivateRoute path="/games/:id/rounds/:roundId" component={GameOn} />
                 <PrivateRoute path="/lobby/:id" component={GameLobby} />
                 <PrivateRoute path="/login" component={LoginForm} />
                 <PrivateRoute

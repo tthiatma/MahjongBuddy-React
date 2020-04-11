@@ -12,16 +12,16 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MahjongBuddy.Application.Games
+namespace MahjongBuddy.Application.Rounds
 {
     public class CreateRound
     {
-        public class Command: IRequest<List<RoundTileDto>>
+        public class Command : IRequest<RoundDto>
         {
             public int GameId { get; set; }
         }
 
-        public class Handler: IRequestHandler<Command, List<RoundTileDto>>
+        public class Handler : IRequestHandler<Command, RoundDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -31,19 +31,19 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<List<RoundTileDto>> Handle(Command request, CancellationToken cancellationToken)
+
+            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.SingleOrDefaultAsync(x => x.Id == request.GameId);
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "Game does not exist" });
 
-                var lastRound = _context.Rounds.OrderByDescending(r => r.DateCreated).FirstOrDefault(r => r.GameId == request.GameId);
+                Round lastRound = _context.Rounds.OrderByDescending(r => r.DateCreated).FirstOrDefault(r => r.GameId == request.GameId);
 
-                //make host as dealer for convenient for now
                 AppUser lastDealer;
                 if (lastRound == null)
-                    lastDealer = game.UserGames.First(u => u.IsHost).AppUser;
+                    lastDealer = game.UserGames.First(u => u.InitialSeatWind == WindDirection.East).AppUser;
                 else
                     lastDealer = lastRound.UserRounds.First(u => u.IsDealer).AppUser;
 
@@ -54,17 +54,18 @@ namespace MahjongBuddy.Application.Games
                 {
                     GameId = request.GameId,
                     DateCreated = DateTime.Now,
-                    RoundTiles = CreateGameTiless().Shuffle()
+                    RoundTiles = CreateGameTiless().Shuffle(),
+                    UserRounds = new List<UserRound>()                    
                 };
 
                 var players = game.UserGames.Select(x => x.AppUser);
 
                 foreach (var player in players)
                 {
-                    if(player.Id == lastDealer.Id)
-                        AssignTilesToUser(14, player.Id, newRound.RoundTiles);
+                    if (player.Id == lastDealer.Id)
+                        AssignTilesToUser(14, player.UserName, newRound.RoundTiles);
                     else
-                        AssignTilesToUser(13, player.Id, newRound.RoundTiles);
+                        AssignTilesToUser(13, player.UserName, newRound.RoundTiles);
                 }
 
                 List<UserRound> userRounds = new List<UserRound>();
@@ -74,7 +75,7 @@ namespace MahjongBuddy.Application.Games
                     newRound.Counter = 1;
                     foreach (var ug in game.UserGames)
                     {
-                        var ur = new UserRound { AppUser = ug.AppUser, Round= newRound, Wind = ug.InitialSeatWind };
+                        var ur = new UserRound { AppUser = ug.AppUser, Round = newRound, Wind = ug.InitialSeatWind };
                         if (ug.AppUserId == lastDealer.Id)
                         {
                             ur.IsDealer = true;
@@ -102,29 +103,31 @@ namespace MahjongBuddy.Application.Games
                         var lastRoundWinners = lastRound.RoundResults.Where(x => x.IsWinner == true);
                         var dealerWonLastRound = lastRoundWinners.Any(x => x.AppUserId == lastDealer.Id);
 
-                        if(dealerWonLastRound)
+                        if (dealerWonLastRound)
                         {
                             newRound.Wind = lastRound.Wind;
                             userRounds.AddRange(GetNewUserRounds(lastRound.UserRounds, sameRound: true, newRound: newRound));
                         }
                         else
                         {
-                            //otherwise in the new round, every user's and round wind will be changed
-                            newRound.Wind = NextWind(lastRound.Wind);
+                            newRound.Wind = NextRoundWind(lastRound, lastRound.Wind);                            
                             userRounds.AddRange(GetNewUserRounds(lastRound.UserRounds, sameRound: false, newRound: newRound));
                         }
                     }
                 }
 
-                _context.UserRounds.AddRange(userRounds);
+                foreach (var ur in userRounds)
+                {
+                    newRound.UserRounds.Add(ur);
+                }
+
+                _context.Rounds.Add(newRound);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                var roundTilesToReturn = _mapper.Map<List<RoundTile>, List<RoundTileDto>>(newRound.RoundTiles.ToList());
+                if (success) return _mapper.Map<Round, RoundDto>(newRound);
 
-                if (success) return roundTilesToReturn;
-
-                throw new Exception("Problem creating a new round");                
+                throw new Exception("Problem creating a new round");
             }
 
             private IEnumerable<UserRound> GetNewUserRounds(IEnumerable<UserRound> userRounds, bool sameRound, Round newRound)
@@ -145,6 +148,16 @@ namespace MahjongBuddy.Application.Games
 
                 return ret;
             }
+
+            private WindDirection NextRoundWind(Round lastRound, WindDirection lastRoundWind)
+            {
+                var lastRoundDealer = lastRound.UserRounds.First(u => u.IsDealer);
+                if (lastRoundDealer.Wind != WindDirection.North)
+                    return lastRoundWind;
+                else
+                    return NextWind(lastRoundWind);
+            }
+
             private WindDirection NextWind(WindDirection wind)
             {
                 WindDirection ret;
@@ -232,7 +245,7 @@ namespace MahjongBuddy.Application.Games
                     playTile.Owner = userId;
                     if (playTile.Tile.TileType == TileType.Flower)
                     {
-                        playTile.Status = TileStatus.UserGraveyard;                    
+                        playTile.Status = TileStatus.UserGraveyard;
                     }
                     else
                     {
@@ -240,7 +253,7 @@ namespace MahjongBuddy.Application.Games
                         x++;
                     }
                     if (x == tilesCount)
-                    return;
+                        return;
                 }
             }
         }

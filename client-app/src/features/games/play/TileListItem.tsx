@@ -1,6 +1,6 @@
 import React from 'react'
 import { Segment, Item, Header, Button, Image } from 'semantic-ui-react'
-import { ITile } from '../../app/models/tile';
+import { ITile } from '../../../app/models/tile';
 import { observer } from 'mobx-react-lite';
 
 const  TileListItem: React.FC = () => {

@@ -30,6 +30,7 @@ namespace MahjongBuddy.Application.Users
 
                 return new User
                 {
+                    Id = user.Id,
                     DisplayName = user.DisplayName,
                     UserName = user.UserName,
                     Image = null,

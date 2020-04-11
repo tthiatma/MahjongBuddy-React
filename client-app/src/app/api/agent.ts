@@ -65,6 +65,10 @@ const Games = {
     delete: (id:string) => request.del(`/games/${id}`)
 }
 
+const Rounds = {
+    detail: (id: number) => request.get(`/rounds/${id}`)
+}
+
 const User = {
     current: (): Promise<IUser> => request.get('/user'),
     login: (user: IUserFormValues) : Promise<IUser> => request.post(`/user/login/`, user),
@@ -74,5 +78,6 @@ const User = {
 export default {
     Tiles, 
     Games,
-    User
+    User,
+    Rounds
 }

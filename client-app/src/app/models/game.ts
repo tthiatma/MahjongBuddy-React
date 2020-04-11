@@ -44,5 +44,6 @@ export interface IPlayer{
     displayName: string;
     image: string;
     isHost: boolean;
-    initialSeatWind: WindDirection
+    initialSeatWind: WindDirection;
+    currentSeatWind: WindDirection;
 }

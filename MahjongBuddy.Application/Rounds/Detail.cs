@@ -7,16 +7,15 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MahjongBuddy.Application.Games
+namespace MahjongBuddy.Application.Rounds
 {
     public class Detail
     {
-        public class Query : IRequest<GameDto>
+        public class Query : IRequest<RoundDto>
         {
             public int Id { get; set; }
         }
-
-        public class Handler : IRequestHandler<Query, GameDto>
+        public class Handler : IRequestHandler<Query, RoundDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -27,17 +26,17 @@ namespace MahjongBuddy.Application.Games
                 _mapper = mapper;
             }
 
-            public async Task<GameDto> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<RoundDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games
+                var round = await _context.Rounds
                     .FindAsync(request.Id);
 
-                if (game == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { game = "Not Found" });
+                if (round == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { round = "Not Found" });
 
-                var gameToReturn = _mapper.Map<Game, GameDto>(game);
+                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                return gameToReturn;
+                return roundToReturn;
             }
         }
     }
