@@ -96,4 +96,17 @@ body {
   transform-origin: 100% 0;
 }
 
+.zeroPadding {
+  padding: 0 !important;
+}
+
+.selectedTile {
+  background:rgba(85,55,188,.75);
+  -webkit-transition: opacity .25s ease;
+  -moz-transition: opacity .25s ease;
+}
+.selectedTile img{
+  opacity:0.4;
+}
+
 /*end home page styles*/

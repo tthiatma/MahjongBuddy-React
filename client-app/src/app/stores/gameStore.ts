@@ -9,6 +9,7 @@ import { setGameProps, setRoundProps } from "../common/util/util";
 import { HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 import { WindDirection } from "../models/windEnum";
 import { IRound } from "../models/round";
+import { IRoundTile } from "../models/tile";
 
 export default class GameStore {
 
@@ -17,6 +18,7 @@ export default class GameStore {
     this.rootStore = rootStore;
   }
 
+  @observable selectedTile: IRoundTile | null = null;
   @observable roundRegistry = new Map();
   @observable gameRegistry = new Map();
   @observable round: IRound | null = null;
@@ -192,6 +194,7 @@ export default class GameStore {
   @action nextRound = async() => {
     
   }
+
   @action startRound = async () => {
     let values: any = {};
     values.gameId = parseInt(this.game!.id);
@@ -208,6 +211,26 @@ export default class GameStore {
         this.loading = false
       })
       toast.error('problem disconnecting from game');
+    }
+  };
+
+  @action throwTile = async() => {
+    let values: any = {};
+    console.log(this.selectedTile?.id);
+    values.tileId = this.selectedTile?.id;
+    runInAction(() => {
+      this.loading = true;
+    })
+    try{
+      // this.hubConnection!.invoke("ThrowTile", values)
+      runInAction(() => {
+        this.loading = false;
+      })
+    }catch(error){
+      runInAction(() =>{
+        this.loading = false
+      })
+      toast.error('problem throwing tile');
     }
   };
   //******************End Signal R***********************

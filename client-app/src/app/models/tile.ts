@@ -65,7 +65,7 @@ enum TileSetGroup {
 }
 
 
-enum TileStatus{
+export enum TileStatus{
     //Tile belongs to the board
     Unrevealed = 0,
     //Tile just picked from the board

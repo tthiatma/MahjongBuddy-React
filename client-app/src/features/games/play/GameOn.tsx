@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { Grid, Label } from "semantic-ui-react";
+import { Grid, Label, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
@@ -21,6 +21,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({
           loadRound,
           loadingInitial,
           loading,
+          throwTile
         } = rootStore.gameStore;
         const { user } = rootStore.userStore;
 
@@ -37,7 +38,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({
         return (
           <Grid>
             {/* Top Player */}
-            <Grid.Row>
+            <Grid.Row className="zeroPadding">
               <Grid.Column width={3} />
               <Grid.Column width={10}>
                 <TileList
@@ -49,7 +50,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({
               <Grid.Column width={3} />
             </Grid.Row>
 
-            <Grid.Row>
+            <Grid.Row className="zeroPadding">
               {/* Left Player */}
               <Grid.Column width={1}></Grid.Column>
               <Grid.Column width={1}></Grid.Column>
@@ -83,9 +84,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({
             </Grid.Row>
 
             {/* Main Player */}
-            <Grid.Row>
+            <Grid.Row className="zeroPadding">
               <Grid.Column width={3} />
               <Grid.Column width={10}>
+                <Button loading={loading} onClick={throwTile}>
+                  Throw
+                </Button>
                 <TileList
                   tileStyleName="tileHorizontal"
                   containerStyleName="tileHorizontalContainer"
