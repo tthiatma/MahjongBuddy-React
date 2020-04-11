@@ -47,7 +47,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
       <Segment clearing>
         <Button
           as={Link}
-          to={`/lobby/${game.id}`}
+          to={`/games/${game.id}`}
           floated="right"
           content="View"
           color="blue"

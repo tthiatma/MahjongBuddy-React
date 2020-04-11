@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MahjongBuddy.Application.ChatMsgs
+namespace MahjongBuddy.Application.Dtos
 {
     public class ChatMsgDto
     {

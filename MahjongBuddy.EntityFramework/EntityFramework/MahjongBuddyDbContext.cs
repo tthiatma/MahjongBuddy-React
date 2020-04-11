@@ -7,7 +7,6 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
     public class MahjongBuddyDbContext : IdentityDbContext<AppUser>
     {
         //dotnet ef migrations add "InitialCreate" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
-        //dotnet ef migrations add "AddedDiceThrower" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
         public MahjongBuddyDbContext(DbContextOptions options) : base(options)
         {
         }

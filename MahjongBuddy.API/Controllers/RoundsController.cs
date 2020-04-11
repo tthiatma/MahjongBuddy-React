@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Rounds;
 using Microsoft.AspNetCore.Mvc;
 

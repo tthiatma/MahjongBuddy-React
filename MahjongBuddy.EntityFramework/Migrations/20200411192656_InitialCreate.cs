@@ -225,7 +225,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Counter = table.Column<int>(nullable: false),
+                    RoundCounter = table.Column<int>(nullable: false),
+                    TileCounter = table.Column<int>(nullable: false),
                     Wind = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     IsHalted = table.Column<bool>(nullable: false),

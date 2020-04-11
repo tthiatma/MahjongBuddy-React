@@ -5,10 +5,10 @@ import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from '../..';
 import { toast } from 'react-toastify';
-import { setGameProps, setRoundProps } from "../common/util/util";
+import { setGameProps, setRoundProps, GetOtherUserWindPosition } from "../common/util/util";
 import { HubConnection, HubConnectionBuilder, LogLevel} from '@microsoft/signalr';
 import { WindDirection } from "../models/windEnum";
-import { IRound } from "../models/round";
+import { IRound, IRoundPlayer } from "../models/round";
 import { IRoundTile } from "../models/tile";
 
 export default class GameStore {
@@ -19,6 +19,7 @@ export default class GameStore {
   }
 
   @observable selectedTile: IRoundTile | null = null;
+  @observable roundTileRegistry = new Map();
   @observable roundRegistry = new Map();
   @observable gameRegistry = new Map();
   @observable round: IRound | null = null;
@@ -29,6 +30,18 @@ export default class GameStore {
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
 
+  // @computed get getRightPlayer(){
+
+  // }
+
+  // @computed get getLeftPlayerTiles(){
+  //   if(this.round && this.round!.mainPlayer){
+  //     let leftPlayerWind: WindDirection | undefined = GetOtherUserWindPosition(this.round!.mainPlayer.wind, 'left');
+  //     let leftPlayer: IRoundPlayer| undefined = this.round!.roundPlayers.find(p => p.wind === leftPlayerWind);
+  //     return this.round!.roundTiles.filter(rt => rt.owner === leftPlayer!.userName);  
+  //   }
+  // };
+  
   @computed get gamesByDate() {
     return this.groupGamesByDate( 
       Array.from(this.gameRegistry.values()));
@@ -44,9 +57,23 @@ export default class GameStore {
       .configureLogging(LogLevel.Information)
       .build();
 
+      this.hubConnection.on("UpdateRound", (round: IRound) => {
+        console.log('updating round');
+        setRoundProps(round, this.rootStore.userStore.user!);
+        runInAction("updating round", () => {
+          this.round = round;
+          this.roundRegistry.set(round.id, round);  
+        })
+      })
+
+      this.hubConnection.on("UpdateTile", (tile: IRoundTile) => {
+        this.roundTileRegistry.set(tile.id, tile);
+      })
+
       this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
           this.round = round;
+          this.roundRegistry.set(round.id, round);
         })
         history.push(`/games/${this.game!.id}/rounds/${this.round!.id}`)
       })
@@ -216,13 +243,13 @@ export default class GameStore {
 
   @action throwTile = async() => {
     let values: any = {};
-    console.log(this.selectedTile?.id);
+    values.roundId = this.round?.id;
     values.tileId = this.selectedTile?.id;
     runInAction(() => {
       this.loading = true;
     })
     try{
-      // this.hubConnection!.invoke("ThrowTile", values)
+      this.hubConnection!.invoke("ThrowTile", values)
       runInAction(() => {
         this.loading = false;
       })
@@ -262,15 +289,15 @@ export default class GameStore {
     }else{
       this.loadingInitial = true;
       try{
-        round = await agent.Rounds.detail(id);
-        console.log('getting round');
-        console.log(round);
+        round = await agent.Rounds.detail(id)
         runInAction("getting round", () => {
           setRoundProps(round, this.rootStore.userStore.user!);
           this.round = round;
           this.roundRegistry.set(round.id, round);
           this.loadingInitial = false;
         });
+      console.log('getting round');
+        console.log(round);
         return round;
       } catch (error) {
         runInAction("getting round error", () => {
@@ -324,7 +351,7 @@ export default class GameStore {
 
         this.submitting = false;
       });
-      history.push(`/lobby/${newGame.id}`)
+      history.push(`/games/${newGame.id}`)
     } catch (error) {
       runInAction("creating game error", () => {
         this.submitting = false;
@@ -342,7 +369,7 @@ export default class GameStore {
         this.gameRegistry.set(game.id, game);
         this.game = game;
         this.submitting = false;
-        history.push(`/lobby/${game.id}`)
+        history.push(`/games/${game.id}`)
       });
     } catch (error) {
       runInAction("editing game error", () => {

@@ -141,9 +141,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Counter")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
@@ -163,6 +160,12 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsWinnerSelfPicked")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RoundCounter")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TileCounter")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Wind")

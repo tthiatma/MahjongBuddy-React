@@ -6,7 +6,8 @@ namespace MahjongBuddy.Core
     public class Round
     {
         public int Id { get; set; }
-        public int Counter { get; set; }
+        public int RoundCounter { get; set; }
+        public int TileCounter { get; set; }
         public WindDirection Wind { get; set; }
         public DateTime DateCreated { get; set; }
         //IsHalted is a short period where all player have brief moment of time to chow or pong or kong

@@ -3,7 +3,8 @@ import { IRoundTile } from "./tile";
 
 export interface IRound{
     id : number;
-    counter : number;
+    roundCounter : number;
+    tileConter: number;
     wind : WindDirection;
     DateCreated : Date;
     isHalted : boolean;
@@ -14,7 +15,10 @@ export interface IRound{
     gameId : number;
     roundTiles: IRoundTile[];
     roundPlayers: IRoundPlayer[];
-    currentRoundPlayer: IRoundPlayer;
+    mainPlayer: IRoundPlayer;
+    leftPlayer: IRoundPlayer;
+    rightPlayer: IRoundPlayer;
+    topPlayer: IRoundPlayer;
 }
 
 export interface IRoundPlayer{
@@ -25,4 +29,5 @@ export interface IRoundPlayer{
     isMyTurn: boolean;
     canDoNoFlower: boolean;
     wind: WindDirection;
+    tiles: IRoundTile[];
 }

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200408162637_InitialCreate")]
+    [Migration("20200411192656_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,9 +143,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Counter")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("TEXT");
 
@@ -165,6 +162,12 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsWinnerSelfPicked")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RoundCounter")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TileCounter")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Wind")

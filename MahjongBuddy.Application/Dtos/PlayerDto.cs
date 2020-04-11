@@ -1,6 +1,6 @@
 ﻿using MahjongBuddy.Core;
 
-namespace MahjongBuddy.Application.Games
+namespace MahjongBuddy.Application.Dtos
 {
     public class PlayerDto
     {

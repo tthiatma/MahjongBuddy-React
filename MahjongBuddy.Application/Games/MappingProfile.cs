@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Core;
 
 namespace MahjongBuddy.Application.Games

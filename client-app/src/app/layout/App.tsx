@@ -46,7 +46,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
               <Switch>
                 <PrivateRoute exact path="/games" component={GameDashboard} />
                 <PrivateRoute path="/games/:id/rounds/:roundId" component={GameOn} />
-                <PrivateRoute path="/lobby/:id" component={GameLobby} />
+                <PrivateRoute path="/games/:id" component={GameLobby} />
                 <PrivateRoute path="/login" component={LoginForm} />
                 <PrivateRoute
                   key={location.key}

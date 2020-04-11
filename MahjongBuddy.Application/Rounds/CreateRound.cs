@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Core;
@@ -72,7 +73,7 @@ namespace MahjongBuddy.Application.Rounds
                 if (lastRound == null)
                 {
                     newRound.Wind = WindDirection.East;
-                    newRound.Counter = 1;
+                    newRound.RoundCounter = 1;
                     foreach (var ug in game.UserGames)
                     {
                         var ur = new UserRound { AppUser = ug.AppUser, Round = newRound, Wind = ug.InitialSeatWind };
@@ -86,7 +87,7 @@ namespace MahjongBuddy.Application.Rounds
                 }
                 else
                 {
-                    newRound.Counter = lastRound.Counter + 1;
+                    newRound.RoundCounter = lastRound.RoundCounter + 1;
 
                     //if this is not the first round
                     //last round check

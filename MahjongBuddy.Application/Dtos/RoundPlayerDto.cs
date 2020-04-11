@@ -1,6 +1,7 @@
 ﻿using MahjongBuddy.Core;
+using System.Collections.Generic;
 
-namespace MahjongBuddy.Application.Rounds
+namespace MahjongBuddy.Application.Dtos
 {
     public class RoundPlayerDto
     {
@@ -17,6 +18,8 @@ namespace MahjongBuddy.Application.Rounds
         public bool CanDoNoFlower { get; set; }
 
         public WindDirection Wind { get; set; }
+
+        public ICollection<RoundTileDto> Tiles { get; set; }
 
     }
 }

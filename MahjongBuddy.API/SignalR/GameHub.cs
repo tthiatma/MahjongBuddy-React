@@ -1,6 +1,7 @@
 ﻿using MahjongBuddy.Application.ChatMsgs;
 using MahjongBuddy.Application.Games;
 using MahjongBuddy.Application.Rounds;
+using MahjongBuddy.Application.Tiles;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
@@ -54,11 +55,6 @@ namespace MahjongBuddy.API.SignalR
             await Clients.Group(command.GameId.ToString()).SendAsync("ReceiveChatMsg", chatMsg);
         }
 
-        private string GetUserName()
-        {            
-            return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-        }
-
         public async Task AddToGroup(string groupId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
@@ -67,6 +63,16 @@ namespace MahjongBuddy.API.SignalR
         public async Task RemoveFromGroup(string groupId)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+        }
+
+        public async Task ThrowTile(Throw.Command command)
+        {
+            var round = await _mediator.Send(command);
+            await Clients.Group(round.GameId.ToString()).SendAsync("UpdateRound", round);
+        }
+        private string GetUserName()
+        {
+            return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }

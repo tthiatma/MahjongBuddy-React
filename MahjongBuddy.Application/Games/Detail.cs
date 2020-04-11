@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;

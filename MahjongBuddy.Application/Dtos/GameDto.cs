@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace MahjongBuddy.Application.Games
+namespace MahjongBuddy.Application.Dtos
 {
     public class GameDto
     {
