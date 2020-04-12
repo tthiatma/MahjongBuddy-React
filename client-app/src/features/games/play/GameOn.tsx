@@ -16,17 +16,14 @@ interface DetailParams {
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
+  const { user } = rootStore.userStore;
+  const { loadingInitial, round, loadRound } = rootStore.roundStore;
   const {
-    round,
-    loadRound,
-    loadingInitial,
-    loading,
     throwTile,
+    loading,
     createHubConnection,
     stopHubConnection,
-  } = rootStore.gameStore;
-  const { user } = rootStore.userStore;
-
+  } = rootStore.hubStore;
   const currentPlayerTiles = round?.roundTiles.filter(
     (rt) => rt.owner === user?.userName
   );

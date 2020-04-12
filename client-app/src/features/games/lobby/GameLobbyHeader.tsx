@@ -21,7 +21,7 @@ const gameImageTextStyle = {
 
 const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
   const rootStore = useContext(RootStoreContext);
-  const {loading, startRound} = rootStore.gameStore;
+  const {loading, startRound} = rootStore.hubStore;
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>

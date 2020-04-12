@@ -1,19 +1,16 @@
-import React, { Fragment, useContext } from 'react';
-import { Segment, Header, Form, Button, Comment } from 'semantic-ui-react';
-import { RootStoreContext } from '../../../app/stores/rootStore';
-import {Form as FinalForm, Field} from 'react-final-form';
-import { Link } from 'react-router-dom';
-import TextAreaInput from '../../../app/common/form/TextAreaInput';
-import { observer } from 'mobx-react-lite';
-import {formatDistance} from 'date-fns';
+import React, { Fragment, useContext } from "react";
+import { Segment, Header, Form, Button, Comment } from "semantic-ui-react";
+import { RootStoreContext } from "../../../app/stores/rootStore";
+import { Form as FinalForm, Field } from "react-final-form";
+import { Link } from "react-router-dom";
+import TextAreaInput from "../../../app/common/form/TextAreaInput";
+import { observer } from "mobx-react-lite";
+import { formatDistance } from "date-fns";
 
 const GameLobbyChat = () => {
   const rootStore = useContext(RootStoreContext);
-  const {    
-    addChatMsg,
-    game
-  } = rootStore.gameStore;
-
+  const { game } = rootStore.gameStore;
+  const { addChatMsg } = rootStore.hubStore;
   return (
     <Fragment>
       <Segment
@@ -29,7 +26,7 @@ const GameLobbyChat = () => {
         <Comment.Group>
           {game &&
             game.chatMsgs &&
-            game.chatMsgs.map(cm => (
+            game.chatMsgs.map((cm) => (
               <Comment key={cm.id}>
                 <Comment.Avatar src={cm.image || "/assets/user.png"} />
                 <Comment.Content>
@@ -37,7 +34,9 @@ const GameLobbyChat = () => {
                     {cm.displayName}
                   </Comment.Author>
                   <Comment.Metadata>
-                  <div>{formatDistance(new Date(cm.createdAt), new Date())}</div>
+                    <div>
+                      {formatDistance(new Date(cm.createdAt), new Date())}
+                    </div>
                   </Comment.Metadata>
                   <Comment.Text>{cm.body}</Comment.Text>
                 </Comment.Content>

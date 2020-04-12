@@ -12,7 +12,7 @@ interface IProps{
 
 const TileList: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTiles }) => {
   const rootStore = useContext(RootStoreContext);
-  const {selectedTile} = rootStore.gameStore;
+  const {selectedTile} = rootStore.roundStore;
   return (
     <Fragment>
       <div id="rawr">
@@ -39,7 +39,7 @@ const TileList: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTi
                 <img
                   onClick={() =>
                     runInAction(() => {
-                      rootStore.gameStore.selectedTile = rt;
+                      rootStore.roundStore.selectedTile = rt;
                     })
                   }
                   alt="facedown-tile"

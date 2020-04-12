@@ -14,25 +14,28 @@ interface DetailParams {
 
 const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
-  history
+  history,
 }) => {
   const rootStore = useContext(RootStoreContext);
+  const { game, loadGame, loadingInitial } = rootStore.gameStore;
   const {
-    game,
     stopHubConnection,
     createHubConnection,
-    loadGame,
-    loadingInitial,
-    loading
-  } = rootStore.gameStore;
-
+    loading,
+  } = rootStore.hubStore;
   useEffect(() => {
     loadGame(match.params.id);
     createHubConnection(match.params!.id);
     return () => {
       stopHubConnection(match.params.id);
-    }
-  }, [createHubConnection, stopHubConnection, loadGame, match.params, match.params.id]);
+    };
+  }, [
+    createHubConnection,
+    stopHubConnection,
+    loadGame,
+    match.params,
+    match.params.id,
+  ]);
 
   if (loadingInitial || !game || loading)
     return <LoadingComponent content="Loading game..." />;
