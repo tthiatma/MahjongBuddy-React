@@ -43,6 +43,7 @@ namespace MahjongBuddy.Application.Tiles
                 tileToThrow.Owner = null;
                 tileToThrow.Status = TileStatus.BoardGraveyard;
                 tileToThrow.BoardGraveyardCounter = round.TileCounter;
+                round.TileCounter++;
                 round.RoundCounter++;
 
                 var success = await _context.SaveChangesAsync() > 0;

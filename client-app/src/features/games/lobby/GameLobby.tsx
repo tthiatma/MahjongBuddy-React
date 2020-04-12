@@ -22,12 +22,13 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     stopHubConnection,
     createHubConnection,
     loading,
+    leaveGroup
   } = rootStore.hubStore;
   useEffect(() => {
     loadGame(match.params.id);
     createHubConnection(match.params!.id);
     return () => {
-      stopHubConnection(match.params.id);
+      leaveGroup(match.params.id);
     };
   }, [
     createHubConnection,

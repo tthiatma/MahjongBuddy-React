@@ -23,6 +23,16 @@ export default class HubStore {
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
 
+  @action leaveGroup = (gameId: string) => {
+    if (this.hubConnection!.state === "Connected")
+    this.hubConnection!.invoke("RemoveFromGroup", gameId)
+  }
+
+  @action joinGroup = (gameId: string) => {
+    if (this.hubConnection!.state === "Connected")
+    this.hubConnection!.invoke("AddToGroup", gameId)
+  }
+
   @action createHubConnection = (gameId: string) => {
     if (!this.hubConnection) {
       this.hubConnection = new HubConnectionBuilder()
@@ -48,6 +58,7 @@ export default class HubStore {
       this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
           this.rootStore.roundStore.round = round;
+          setRoundProps(round, this.rootStore.userStore.user!);
           this.rootStore.roundStore.roundRegistry.set(round.id, round);
         });
         history.push(
@@ -129,6 +140,9 @@ export default class HubStore {
           });
           console.log("Error establishing connection", error);
         });
+    }
+    else if(this.hubConnection!.state === "Connected") {
+      this.hubConnection?.invoke("AddToGroup", gameId);
     }
   };
 

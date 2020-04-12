@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, Fragment } from "react";
 import { Grid, Label, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -8,6 +8,8 @@ import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
 import { GetOtherUserTiles } from "../../../app/common/util/util";
 import { TileStatus } from "../../../app/models/tile";
+import _ from "lodash";
+import TileListBoard from "./TileListBoard";
 
 interface DetailParams {
   roundId: string;
@@ -23,7 +25,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loading,
     createHubConnection,
     stopHubConnection,
+    leaveGroup
   } = rootStore.hubStore;
+
   const currentPlayerTiles = round?.roundTiles.filter(
     (rt) => rt.owner === user?.userName
   );
@@ -36,7 +40,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loadRound(parseInt(match.params.roundId));
     createHubConnection(match.params!.id);
     return () => {
-      stopHubConnection(match.params.id);
+      leaveGroup(match.params.id);
     };
   }, [
     createHubConnection,
@@ -73,21 +77,27 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <TileList
             tileStyleName="tileVertical"
             containerStyleName="tileVerticalContainer rotate90"
-            roundTiles={round.leftPlayer.tiles!}
+            roundTiles={GetOtherUserTiles(round, "left")}
           />
         </Grid.Column>
 
         {/* Board */}
         <Grid.Column width={10}>
-          <Label>Wind: {WindDirection[round.wind]}</Label>
-          <Label>
-            Current User Wind: {WindDirection[round.mainPlayer.wind]}
-          </Label>
-          <TileList
+          {round && (<Label>Wind: {WindDirection[round.wind]}</Label>)}
+          {round && round.mainPlayer && (
+            <Label>
+              Current User Wind: {WindDirection[round.mainPlayer.wind]}
+            </Label>
+          )}
+          {boardGraveyardTiles && (
+            <TileListBoard roundTiles={boardGraveyardTiles} />
+          )}
+
+          {/* <TileList
             tileStyleName="tileHorizontal"
             containerStyleName="tileHorizontalContainer"
             roundTiles={boardGraveyardTiles!}
-          />
+          /> */}
         </Grid.Column>
 
         {/* Right Player */}

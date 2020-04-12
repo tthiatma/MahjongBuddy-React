@@ -16,9 +16,6 @@ export interface IRound{
     roundTiles: IRoundTile[];
     roundPlayers: IRoundPlayer[];
     mainPlayer: IRoundPlayer;
-    leftPlayer: IRoundPlayer;
-    rightPlayer: IRoundPlayer;
-    topPlayer: IRoundPlayer;
 }
 
 export interface IRoundPlayer{
