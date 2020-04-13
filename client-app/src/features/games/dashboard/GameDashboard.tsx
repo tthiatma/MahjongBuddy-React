@@ -7,7 +7,7 @@ import GameListItemPlaceholder from "./GameListItemPlaceholder";
 
 const GameDashboard: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
-  const {loadGames, loadingInitial} = rootStore.gameStore;
+  const {loadGames, loadingGameInitial: loadingInitial} = rootStore.gameStore;
 
   useEffect(() => {
     loadGames();

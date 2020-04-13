@@ -13,12 +13,13 @@ namespace MahjongBuddy.Application.Tiles
 {
     public class Throw
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<RoundTileDto>
         {
+            public string GameId { get; set; }
             public int RoundId { get; set; }
             public Guid TileId { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, RoundTileDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -28,7 +29,7 @@ namespace MahjongBuddy.Application.Tiles
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<RoundTileDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
@@ -40,7 +41,7 @@ namespace MahjongBuddy.Application.Tiles
                 if (tileToThrow == null)
                     throw new RestException(HttpStatusCode.NotFound, new { RoundTile = "Could not find the tile" });
 
-                tileToThrow.Owner = null;
+                tileToThrow.Owner = "board";
                 tileToThrow.Status = TileStatus.BoardGraveyard;
                 tileToThrow.BoardGraveyardCounter = round.TileCounter;
                 round.TileCounter++;
@@ -48,9 +49,9 @@ namespace MahjongBuddy.Application.Tiles
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                var tileToReturn = _mapper.Map<RoundTile, RoundTileDto>(tileToThrow);
 
-                if (success) return roundToReturn;
+                if (success) return tileToReturn;
 
                 throw new Exception("Problem throwing tile");
             }

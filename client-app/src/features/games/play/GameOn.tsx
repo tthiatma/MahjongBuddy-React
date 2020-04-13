@@ -6,7 +6,6 @@ import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import TileList from "./TileList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
-import { GetOtherUserTiles } from "../../../app/common/util/util";
 import { TileStatus } from "../../../app/models/tile";
 import _ from "lodash";
 import TileListBoard from "./TileListBoard";
@@ -19,24 +18,46 @@ interface DetailParams {
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
   const { user } = rootStore.userStore;
-  const { loadingInitial, round, loadRound } = rootStore.roundStore;
+  const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
+  const {
+    loadingRoundInitial,
+    round,
+    loadRound,
+    roundTiles,
+  } = rootStore.roundStore;
   const {
     throwTile,
     loading,
     createHubConnection,
     stopHubConnection,
-    leaveGroup
+    leaveGroup,
   } = rootStore.hubStore;
 
-  const currentPlayerTiles = round?.roundTiles.filter(
-    (rt) => rt.owner === user?.userName
-  );
+  const currentPlayerTiles = roundTiles
+    ? roundTiles.filter((rt) => rt.owner === user?.userName)
+    : null;
 
-  const boardGraveyardTiles = round?.roundTiles.filter(
-    (rt) => rt.status === TileStatus.BoardGraveyard
-  );
+  const boardGraveyardTiles = roundTiles
+    ? roundTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
+    : null;
+
+  const leftPlayerTiles =
+    roundTiles && round && round.leftPlayer
+      ? roundTiles.filter((rt) => rt.owner === round?.leftPlayer?.userName)
+      : null;
+
+  const topPlayerTiles =
+    roundTiles && round && round.topPlayer
+      ? roundTiles.filter((rt) => rt.owner === round?.topPlayer?.userName)
+      : null;
+
+  const rightPlayerTiles =
+    roundTiles && round && round.rightPlayer
+      ? roundTiles.filter((rt) => rt.owner === round?.rightPlayer?.userName)
+      : null;
 
   useEffect(() => {
+    loadGame(match.params!.id);
     loadRound(parseInt(match.params.roundId));
     createHubConnection(match.params!.id);
     return () => {
@@ -45,13 +66,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [
     createHubConnection,
     stopHubConnection,
+    loadGame,
     loadRound,
     match.params,
     match.params.id,
     match.params.roundId,
   ]);
 
-  if (loadingInitial || !round || loading)
+  if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
 
   return (
@@ -60,10 +82,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       <Grid.Row className="zeroPadding">
         <Grid.Column width={3} />
         <Grid.Column width={10}>
+          {round && round.topPlayer && (
+            <Label>{round.topPlayer.userName}</Label>
+          )}
           <TileList
             tileStyleName="tileHorizontal"
             containerStyleName="tileHorizontalContainer"
-            roundTiles={GetOtherUserTiles(round, "top")}
+            roundTiles={topPlayerTiles!}
           />
         </Grid.Column>
         <Grid.Column width={3} />
@@ -72,18 +97,22 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       <Grid.Row className="zeroPadding">
         {/* Left Player */}
         <Grid.Column width={1}></Grid.Column>
-        <Grid.Column width={1}></Grid.Column>
+        <Grid.Column width={1}>
+        {round && round.leftPlayer && (
+            <Label>{round.leftPlayer.userName}</Label>
+          )}
+        </Grid.Column>
         <Grid.Column width={1}>
           <TileList
             tileStyleName="tileVertical"
             containerStyleName="tileVerticalContainer rotate90"
-            roundTiles={GetOtherUserTiles(round, "left")}
+            roundTiles={leftPlayerTiles!}
           />
         </Grid.Column>
 
         {/* Board */}
         <Grid.Column width={10}>
-          {round && (<Label>Wind: {WindDirection[round.wind]}</Label>)}
+          {round && <Label>Wind: {WindDirection[round.wind]}</Label>}
           {round && round.mainPlayer && (
             <Label>
               Current User Wind: {WindDirection[round.mainPlayer.wind]}
@@ -105,9 +134,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <TileList
             tileStyleName="tileVertical"
             containerStyleName="tileVerticalContainer rotateMinus90"
-            roundTiles={GetOtherUserTiles(round, "right")}
+            roundTiles={rightPlayerTiles!}
           />
-          <Grid.Column width={1}></Grid.Column>
+          <Grid.Column width={1}>
+          {round && round.rightPlayer && (
+            <Label>{round.rightPlayer.userName}</Label>
+          )}
+          </Grid.Column>
           <Grid.Column width={1}></Grid.Column>
         </Grid.Column>
       </Grid.Row>

@@ -15,7 +15,7 @@ export default class GameStore {
 
   @observable gameRegistry = new Map();
   @observable game: IGame | null = null;
-  @observable loadingInitial = false;
+  @observable loadingGameInitial = false;
   @observable submitting = false;
   @observable target = "";
 
@@ -24,7 +24,7 @@ export default class GameStore {
   }
 
   @action loadGames = async () => {
-    this.loadingInitial = true;
+    this.loadingGameInitial = true;
     try {
       const games = await agent.Games.list();
       runInAction("loading games", () => {
@@ -32,11 +32,11 @@ export default class GameStore {
           setGameProps(game, this.rootStore.userStore.user!);
           this.gameRegistry.set(game.id, game);
         });
-        this.loadingInitial = false;
+        this.loadingGameInitial = false;
       });
     } catch (error) {
       runInAction("load games error", () => {
-        this.loadingInitial = false;
+        this.loadingGameInitial = false;
       });
       console.log(error);
     }
@@ -48,19 +48,19 @@ export default class GameStore {
       this.game = game;
       return toJS(game);
     } else {
-      this.loadingInitial = true;
+      this.loadingGameInitial = true;
       try {
         game = await agent.Games.detail(id);
         runInAction("getting game", () => {
           setGameProps(game, this.rootStore.userStore.user!);
           this.game = game;
           this.gameRegistry.set(game.id, game);
-          this.loadingInitial = false;
+          this.loadingGameInitial = false;
         });
         return game;
       } catch (error) {
         runInAction("getting game error", () => {
-          this.loadingInitial = false;
+          this.loadingGameInitial = false;
         });
         console.log(error);
       }

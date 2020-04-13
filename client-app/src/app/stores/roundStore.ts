@@ -16,8 +16,8 @@ export default class RoundStore {
   @observable selectedTile: IRoundTile | null = null;
   @observable round: IRound | null = null;
   @observable roundRegistry = new Map();
-  @observable roundTileRegistry = new Map();
-  @observable loadingInitial = false;
+  @observable roundTiles: IRoundTile[] | null = null;
+  @observable loadingRoundInitial = false;
 
   @action loadRound = async (id: number) => {
     let round = this.getRound(id);
@@ -25,21 +25,22 @@ export default class RoundStore {
       this.round = round;
       return toJS(round);
     } else {
-      this.loadingInitial = true;
+      this.loadingRoundInitial = true;
       try {
         round = await agent.Rounds.detail(id);
         runInAction("getting round", () => {
           setRoundProps(round, this.rootStore.userStore.user!);
           this.round = round;
           this.roundRegistry.set(round.id, round);
-          this.loadingInitial = false;
+          this.roundTiles = round.roundTiles;
+          this.loadingRoundInitial = false;
         });
         console.log("getting round");
         console.log(round);
         return round;
       } catch (error) {
         runInAction("getting round error", () => {
-          this.loadingInitial = false;
+          this.loadingRoundInitial = false;
         });
         console.log(error);
       }

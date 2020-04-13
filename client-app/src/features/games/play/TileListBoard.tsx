@@ -11,7 +11,7 @@ interface IProps {
 const TileListBoard: React.FC<IProps> = ({ roundTiles }) => {
   return (
     <Fragment>
-      {roundTiles.sort(rt => rt.boardGraveyardCounter).map((rt) => (
+      {roundTiles.sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter).map((rt) => (
         <Fragment key={rt.id}>
             <span>{rt.boardGraveyardCounter}</span>
           <img src={rt.tile.imageSmall} />

@@ -3,17 +3,6 @@ import { IUser } from "../../models/user";
 import { WindDirection } from "../../models/windEnum";
 import { IRound, IRoundPlayer } from "../../models/round";
 
-export const GetOtherUser = (round: IRound, direction: string) => {
-  let playerWind: WindDirection | undefined =  GetOtherUserWindPosition(round.mainPlayer?.wind, direction);
-  return round.roundPlayers.filter(rt => rt.wind === playerWind);
-}
-
-export const GetOtherUserTiles = (round: IRound, direction: string ) => {
-  let playerWind: WindDirection | undefined =  GetOtherUserWindPosition(round.mainPlayer?.wind, direction);
-  let player: IRoundPlayer| undefined =  round.roundPlayers.find(p => p.wind === playerWind);
-  return round.roundTiles.filter(rt => rt.owner === player?.userName);
-}
-
 export const GetOtherUserWindPosition = (currentUserWind:WindDirection , direction: string) => {
   switch(direction){
     case 'left':
@@ -66,8 +55,18 @@ export const setRoundProps = (round: IRound, user: IUser) => {
   let mainPlayer = round.roundPlayers.find(
     p => p.userName === user.userName
   );
-  if(mainPlayer)
-  round.mainPlayer = mainPlayer;
+  if(mainPlayer){
+    round.mainPlayer = mainPlayer;
+
+    let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");
+    round.leftPlayer = round.roundPlayers.find(p => p.wind === leftUserWind);
+
+    let topUserWind = GetOtherUserWindPosition(mainPlayer.wind, "top");
+    round.topPlayer = round.roundPlayers.find(p => p.wind === topUserWind);
+
+    let rightUserWind = GetOtherUserWindPosition(mainPlayer.wind, "right");
+    round.rightPlayer = round.roundPlayers.find(p => p.wind === rightUserWind);
+  }
 }
 
 export const setGameProps = (game: IGame, user: IUser) => {

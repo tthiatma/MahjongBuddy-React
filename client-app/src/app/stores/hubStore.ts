@@ -2,9 +2,7 @@ import { observable, action, runInAction } from "mobx";
 import { RootStore } from "./rootStore";
 import { history } from "../..";
 import { toast } from "react-toastify";
-import {
-  setRoundProps,
-} from "../common/util/util";
+import { setRoundProps } from "../common/util/util";
 import {
   HubConnection,
   HubConnectionBuilder,
@@ -13,6 +11,7 @@ import {
 import { WindDirection } from "../models/windEnum";
 import { IRound } from "../models/round";
 import { IRoundTile } from "../models/tile";
+import GameStore from "./gameStore";
 
 export default class HubStore {
   rootStore: RootStore;
@@ -25,23 +24,16 @@ export default class HubStore {
 
   @action leaveGroup = (gameId: string) => {
     if (this.hubConnection!.state === "Connected")
-    this.hubConnection!.invoke("RemoveFromGroup", gameId)
-  }
+      this.hubConnection!.invoke("RemoveFromGroup", gameId);
+  };
 
   @action joinGroup = (gameId: string) => {
     if (this.hubConnection!.state === "Connected")
-    this.hubConnection!.invoke("AddToGroup", gameId)
-  }
+      this.hubConnection!.invoke("AddToGroup", gameId);
+  };
 
-  @action createHubConnection = (gameId: string) => {
-    if (!this.hubConnection) {
-      this.hubConnection = new HubConnectionBuilder()
-        .withUrl(process.env.REACT_APP_API_GAME_HUB_URL!, {
-          accessTokenFactory: () => this.rootStore.commonStore.token!,
-        })
-        .configureLogging(LogLevel.Information)
-        .build();
-
+  addHUbConnectionHandler() {
+    if (this.hubConnection) {
       this.hubConnection.on("UpdateRound", (round: IRound) => {
         console.log("updating round");
         setRoundProps(round, this.rootStore.userStore.user!);
@@ -52,12 +44,20 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateTile", (tile: IRoundTile) => {
-        this.rootStore.roundStore.roundTileRegistry.set(tile.id, tile);
+        if (this.rootStore.roundStore.roundTiles) {
+          let objIndex = this.rootStore.roundStore.roundTiles.findIndex(
+            (obj) => obj.id == tile.id
+          );
+          runInAction('updating tile', () => {
+            this.rootStore.roundStore.roundTiles![objIndex] = tile;
+          })
+        }
       });
 
       this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
           this.rootStore.roundStore.round = round;
+          this.rootStore.roundStore.roundTiles = round.roundTiles;
           setRoundProps(round, this.rootStore.userStore.user!);
           this.rootStore.roundStore.roundRegistry.set(round.id, round);
         });
@@ -119,6 +119,18 @@ export default class HubStore {
         toast.info(message);
       });
     }
+  }
+
+  @action createHubConnection = (gameId: string) => {
+    if (!this.hubConnection) {
+      this.hubConnection = new HubConnectionBuilder()
+        .withUrl(process.env.REACT_APP_API_GAME_HUB_URL!, {
+          accessTokenFactory: () => this.rootStore.commonStore.token!,
+        })
+        .configureLogging(LogLevel.Information)
+        .build();
+      this.addHUbConnectionHandler();
+    }
     if (this.hubConnection!.state === "Disconnected") {
       runInAction(() => {
         this.loading = true;
@@ -140,8 +152,7 @@ export default class HubStore {
           });
           console.log("Error establishing connection", error);
         });
-    }
-    else if(this.hubConnection!.state === "Connected") {
+    } else if (this.hubConnection!.state === "Connected") {
       this.hubConnection?.invoke("AddToGroup", gameId);
     }
   };
@@ -240,16 +251,21 @@ export default class HubStore {
 
   @action throwTile = async () => {
     let values: any = {};
+    values.gameId = this.rootStore.gameStore.game?.id.toString();
     values.roundId = this.rootStore.roundStore.round?.id;
     values.tileId = this.rootStore.roundStore.selectedTile?.id;
     runInAction(() => {
       this.loading = true;
     });
     try {
-      this.hubConnection!.invoke("ThrowTile", values);
-      runInAction(() => {
-        this.loading = false;
-      });
+      if(this.hubConnection && this.hubConnection.state =="Connected"){
+        this.hubConnection!.invoke("ThrowTile", values);
+        runInAction(() => {
+          this.loading = false;
+        });  
+      }else{
+        toast.error('not connected to hub')
+      }
     } catch (error) {
       runInAction(() => {
         this.loading = false;

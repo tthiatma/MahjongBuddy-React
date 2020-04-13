@@ -17,7 +17,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   history,
 }) => {
   const rootStore = useContext(RootStoreContext);
-  const { game, loadGame, loadingInitial } = rootStore.gameStore;
+  const { game, loadGame, loadingGameInitial: loadingInitial } = rootStore.gameStore;
   const {
     stopHubConnection,
     createHubConnection,

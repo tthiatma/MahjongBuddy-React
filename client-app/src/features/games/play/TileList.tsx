@@ -16,7 +16,7 @@ const TileList: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTi
   return (
     <Fragment>
       <div id="rawr">
-        {roundTiles
+        {roundTiles && roundTiles
           .filter((t) => t.status === TileStatus.UserGraveyard)
           .map((rt) => (
             <Fragment key={rt.id}>
@@ -31,7 +31,7 @@ const TileList: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTi
           ))}
       </div>
       <div>
-        {roundTiles
+        {roundTiles && roundTiles
           .filter((t) => t.status === TileStatus.UserActive)
           .map((rt) => (
             <Fragment key={rt.id}>
@@ -51,7 +51,7 @@ const TileList: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTi
           ))}
       </div>
       <div>
-        {roundTiles
+        {roundTiles && roundTiles
           .filter((t) => t.status === TileStatus.JustPicked)
           .map((rt) => (
             <Fragment key={rt.id}>
