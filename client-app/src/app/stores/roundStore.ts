@@ -1,8 +1,8 @@
-import { observable, action, runInAction, toJS } from "mobx";
+import { observable, action, runInAction } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { setRoundProps } from "../common/util/util";
-import { IRound } from "../models/round";
+import { IRound, IRoundPlayer } from "../models/round";
 import { IRoundTile } from "../models/tile";
 
 export default class RoundStore {
@@ -15,6 +15,10 @@ export default class RoundStore {
   @observable round: IRound | null = null;
   @observable roundTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
+  @observable mainPlayer: IRoundPlayer | null = null;
+  @observable leftPlayer: IRoundPlayer | null = null;
+  @observable rightPlayer: IRoundPlayer | null = null;
+  @observable topPlayer: IRoundPlayer | null = null;
 
   @action loadRound = async (id: number) => {
     let round: IRound;

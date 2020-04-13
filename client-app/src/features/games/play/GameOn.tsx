@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, Fragment } from "react";
+import React, { useContext, useEffect } from "react";
 import { Grid, Label, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -6,7 +6,6 @@ import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import TileList from "./TileList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
-import _ from "lodash";
 import TileListBoard from "./TileListBoard";
 import { TileStatus } from "../../../app/models/tileStatus";
 import TileListMainPlayer from "./TileListMainPlayer";
@@ -74,6 +73,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     stopHubConnection,
     loadGame,
     loadRound,
+    leaveGroup,
     match.params,
     match.params.id,
     match.params.roundId,
@@ -132,7 +132,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           )}
           {boardActiveTile && (
             <div>
-              <img src={boardActiveTile.tile.imageSmall} />
+              <img src={boardActiveTile.tile.imageSmall} alt='tile' />
             </div>
           )}
           {boardGraveyardTiles && (

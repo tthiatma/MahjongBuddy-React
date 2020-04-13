@@ -11,7 +11,6 @@ import {
 import { WindDirection } from "../models/windEnum";
 import { IRound } from "../models/round";
 import { IRoundTile } from "../models/tile";
-import GameStore from "./gameStore";
 
 export default class HubStore {
   rootStore: RootStore;
@@ -32,15 +31,16 @@ export default class HubStore {
       this.hubConnection!.invoke("AddToGroup", gameId);
   };
 
-  addHUbConnectionHandler() {
+  addHubConnectionHandler() {
     if (this.hubConnection) {
+
       this.hubConnection.on("UpdateRound", (round: IRound) => {
         console.log("update round called");
         setRoundProps(round, this.rootStore.userStore.user!);
         //update tiles
         if (round.updatedRoundTiles !== undefined) {
           console.log("there is a new updated tiles");
-          round.updatedRoundTiles.map((tile) => {
+          round.updatedRoundTiles.forEach((tile) => {
             let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === tile.id
             );
@@ -58,7 +58,7 @@ export default class HubStore {
 
       this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {
         if (this.rootStore.roundStore.roundTiles) {
-          tiles.map((tile) => {
+          tiles.forEach((tile) => {
             let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === tile.id
             );
@@ -143,7 +143,7 @@ export default class HubStore {
         })
         .configureLogging(LogLevel.Information)
         .build();
-      this.addHUbConnectionHandler();
+      this.addHubConnectionHandler();
     }
     if (this.hubConnection!.state === "Disconnected") {
       runInAction(() => {

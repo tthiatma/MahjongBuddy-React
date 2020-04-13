@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 
@@ -12,7 +12,7 @@ const TileListBoard: React.FC<IProps> = ({ roundTiles }) => {
       {roundTiles.sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter).map((rt) => (
         <Fragment key={rt.id}>
             <span>{rt.boardGraveyardCounter}</span>
-          <img src={rt.tile.imageSmall} />
+          <img src={rt.tile.imageSmall} alt='tile' />
         </Fragment>
       ))}
     </Fragment>

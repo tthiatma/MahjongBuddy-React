@@ -15,13 +15,13 @@ namespace MahjongBuddy.Application.Tiles
 {
     public class Throw
     {
-        public class Command : IRequest<List<RoundTileDto>>
+        public class Command : IRequest<RoundDto>
         {
             public string GameId { get; set; }
             public int RoundId { get; set; }
             public Guid TileId { get; set; }
         }
-        public class Handler : IRequestHandler<Command, List<RoundTileDto>>
+        public class Handler : IRequestHandler<Command, RoundDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -31,11 +31,11 @@ namespace MahjongBuddy.Application.Tiles
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<List<RoundTileDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 //TODO: when there is no more tiles, handle calling game is over
 
-                var tileList = new List<RoundTile>();
+                var updatedTiles = new List<RoundTile>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -46,7 +46,7 @@ namespace MahjongBuddy.Application.Tiles
                 if (existingActiveTileOnBoard != null)
                 {
                     existingActiveTileOnBoard.Status = TileStatus.BoardGraveyard;
-                    tileList.Add(existingActiveTileOnBoard);
+                    updatedTiles.Add(existingActiveTileOnBoard);
                 }
 
                 var tileToThrow = round.RoundTiles.FirstOrDefault(t => t.Id == request.TileId);
@@ -60,14 +60,16 @@ namespace MahjongBuddy.Application.Tiles
                 round.TileCounter++;
                 round.RoundCounter++;
 
-                tileList.Add(tileToThrow);
+                updatedTiles.Add(tileToThrow);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                var tilesToReturn = _mapper.Map<List<RoundTile>, List<RoundTileDto>>(tileList);
+                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+
+                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
 
                 if (success)
-                    return tilesToReturn;
+                    return roundToReturn;
 
                 throw new Exception("Problem throwing tile");
             }
