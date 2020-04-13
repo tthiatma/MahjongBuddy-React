@@ -9,6 +9,7 @@ import { WindDirection } from "../../../app/models/windEnum";
 import _ from "lodash";
 import TileListBoard from "./TileListBoard";
 import { TileStatus } from "../../../app/models/tileStatus";
+import TileListMainPlayer from "./TileListMainPlayer";
 
 interface DetailParams {
   roundId: string;
@@ -27,6 +28,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   } = rootStore.roundStore;
   const {
     throwTile,
+    pickTile, 
     loading,
     createHubConnection,
     stopHubConnection,
@@ -102,7 +104,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         {/* Left Player */}
         <Grid.Column width={1}></Grid.Column>
         <Grid.Column width={1}>
-        {round && round.leftPlayer && (
+          {round && round.leftPlayer && (
             <Label>{round.leftPlayer.userName}</Label>
           )}
         </Grid.Column>
@@ -116,15 +118,23 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
         {/* Board */}
         <Grid.Column width={10}>
-          {round && <div><Label>Wind: {WindDirection[round.wind]}</Label></div>}
-          {round && round.mainPlayer && (
+          {round && (
             <div>
-            <Label>
-              Current User Wind: {WindDirection[round.mainPlayer.wind]}
-            </Label>
+              <Label>Wind: {WindDirection[round.wind]}</Label>
             </div>
           )}
-          {boardActiveTile && <div><img src={boardActiveTile.tile.imageSmall} /></div>}
+          {round && round.mainPlayer && (
+            <div>
+              <Label>
+                Current User Wind: {WindDirection[round.mainPlayer.wind]}
+              </Label>
+            </div>
+          )}
+          {boardActiveTile && (
+            <div>
+              <img src={boardActiveTile.tile.imageSmall} />
+            </div>
+          )}
           {boardGraveyardTiles && (
             <TileListBoard roundTiles={boardGraveyardTiles} />
           )}
@@ -137,23 +147,22 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             containerStyleName="tileVerticalContainer rotateMinus90"
             roundTiles={rightPlayerTiles!}
           />
-          <Grid.Column width={1}>
+        </Grid.Column>
+        <Grid.Column width={1}>
           {round && round.rightPlayer && (
             <Label>{round.rightPlayer.userName}</Label>
           )}
-          </Grid.Column>
-          <Grid.Column width={1}></Grid.Column>
         </Grid.Column>
+        <Grid.Column width={1}></Grid.Column>
       </Grid.Row>
 
       {/* Main Player */}
       <Grid.Row className="zeroPadding">
         <Grid.Column width={3} />
         <Grid.Column width={10}>
-          <Button loading={loading} onClick={throwTile}>
-            Throw
-          </Button>
-          <TileList
+          <Button loading={loading} onClick={throwTile}>Throw</Button>
+          <Button loading={loading} onClick={pickTile}>Pick</Button>
+          <TileListMainPlayer
             tileStyleName="tileHorizontal"
             containerStyleName="tileHorizontalContainer"
             roundTiles={currentPlayerTiles!}

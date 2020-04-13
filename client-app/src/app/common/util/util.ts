@@ -1,7 +1,7 @@
 import { IGame } from "../../models/game";
 import { IUser } from "../../models/user";
 import { WindDirection } from "../../models/windEnum";
-import { IRound, IRoundPlayer } from "../../models/round";
+import { IRound } from "../../models/round";
 
 export const GetOtherUserWindPosition = (currentUserWind:WindDirection , direction: string) => {
   switch(direction){
@@ -52,10 +52,12 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 }
 
 export const setRoundProps = (round: IRound, user: IUser) => {
+  console.log('set round props called')
   let mainPlayer = round.roundPlayers.find(
     p => p.userName === user.userName
   );
   if(mainPlayer){
+    console.log('got main player');
     round.mainPlayer = mainPlayer;
 
     let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");

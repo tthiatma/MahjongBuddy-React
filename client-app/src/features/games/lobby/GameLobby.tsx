@@ -19,7 +19,6 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   const rootStore = useContext(RootStoreContext);
   const { game, loadGame, loadingGameInitial: loadingInitial } = rootStore.gameStore;
   const {
-    stopHubConnection,
     createHubConnection,
     loading,
     leaveGroup
@@ -32,7 +31,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     };
   }, [
     createHubConnection,
-    stopHubConnection,
+    leaveGroup,
     loadGame,
     match.params,
     match.params.id,

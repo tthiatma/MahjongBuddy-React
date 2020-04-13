@@ -12,11 +12,13 @@ const PrivateRoute : React.FC<IProps> = ({component: Component, ...rest}) => {
     const {isLoggedIn} = rootStore.userStore;
 
     return (
-        <Route
-            {...rest}
-            render={(props) => isLoggedIn ? <Component {...props} /> : <Redirect to={'/'}/>}
-        />
-    )
+      <Route
+        {...rest}
+        render={(props) =>
+          isLoggedIn ? <Component {...props} /> : <Redirect to={"/"} />
+        }
+      />
+    );
 }
 
 export default observer(PrivateRoute)

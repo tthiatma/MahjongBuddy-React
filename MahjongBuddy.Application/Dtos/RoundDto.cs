@@ -19,12 +19,15 @@ namespace MahjongBuddy.Application.Dtos
         public bool IsTied { get; set; }
         public bool IsWinnerSelfPicked { get; set; }
         public int GameId { get; set; }
-        public virtual ICollection<RoundTileDto> RoundTiles { get; set; }
+
+        public ICollection<RoundTileDto> UpdatedRoundTiles { get; set; }
+
+        public ICollection<RoundTileDto> RoundTiles { get; set; }
 
         //public virtual ICollection<RoundResult> RoundResults { get; set; }
 
         [JsonPropertyName("roundPlayers")]
-        public virtual ICollection<RoundPlayerDto> UserRounds { get; set; }
+        public ICollection<RoundPlayerDto> UserRounds { get; set; }
 
         //public virtual ICollection<UserGame> UserGames { get; set; }
 

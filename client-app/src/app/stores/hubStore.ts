@@ -35,24 +35,37 @@ export default class HubStore {
   addHUbConnectionHandler() {
     if (this.hubConnection) {
       this.hubConnection.on("UpdateRound", (round: IRound) => {
-        console.log("updating round");
+        console.log("update round called");
         setRoundProps(round, this.rootStore.userStore.user!);
+        //update tiles
+        if (round.updatedRoundTiles !== undefined) {
+          console.log("there is a new updated tiles");
+          round.updatedRoundTiles.map((tile) => {
+            let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
+              (obj) => obj.id === tile.id
+            );
+            runInAction("updating tile", () => {
+              this.rootStore.roundStore.roundTiles![objIndex] = tile;
+            });
+          });
+        }else{
+          console.log('no updated tiles');
+        }
         runInAction("updating round", () => {
           this.rootStore.roundStore.round = round;
-          this.rootStore.roundStore.roundRegistry.set(round.id, round);
         });
       });
 
       this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {
         if (this.rootStore.roundStore.roundTiles) {
-          tiles.map(tile => {
+          tiles.map((tile) => {
             let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
-              (obj) => obj.id == tile.id
+              (obj) => obj.id === tile.id
             );
-            runInAction('updating tile', () => {
+            runInAction("updating tile", () => {
               this.rootStore.roundStore.roundTiles![objIndex] = tile;
-            })  
-          })
+            });
+          });
         }
       });
 
@@ -61,7 +74,6 @@ export default class HubStore {
           this.rootStore.roundStore.round = round;
           this.rootStore.roundStore.roundTiles = round.roundTiles;
           setRoundProps(round, this.rootStore.userStore.user!);
-          this.rootStore.roundStore.roundRegistry.set(round.id, round);
         });
         history.push(
           `/games/${this.rootStore.gameStore.game!.id}/rounds/${
@@ -252,21 +264,19 @@ export default class HubStore {
   };
 
   @action throwTile = async () => {
-    let values: any = {};
-    values.gameId = this.rootStore.gameStore.game?.id.toString();
-    values.roundId = this.rootStore.roundStore.round?.id;
+    let values = this.getGameAndRoundProps();
     values.tileId = this.rootStore.roundStore.selectedTile?.id;
     runInAction(() => {
       this.loading = true;
     });
     try {
-      if(this.hubConnection && this.hubConnection.state =="Connected"){
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
         this.hubConnection!.invoke("ThrowTile", values);
         runInAction(() => {
           this.loading = false;
-        });  
-      }else{
-        toast.error('not connected to hub')
+        });
+      } else {
+        toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
@@ -274,5 +284,33 @@ export default class HubStore {
       });
       toast.error("problem throwing tile");
     }
+  };
+
+  @action pickTile = async () => {
+    runInAction(() => {
+      this.loading = true;
+    });
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        this.hubConnection!.invoke("PickTile", this.getGameAndRoundProps());
+        runInAction(() => {
+          this.loading = false;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem picking tile");
+    }
+  };
+
+  getGameAndRoundProps = () => {
+    let values: any = {};
+    values.gameId = this.rootStore.gameStore.game?.id.toString();
+    values.roundId = this.rootStore.roundStore.round?.id;
+    return values;
   };
 }

@@ -14,6 +14,7 @@ export interface IRound{
     isWinnerSelfPicked : boolean;
     gameId : number;
     roundTiles: IRoundTile[];
+    updatedRoundTiles?: IRoundTile[];
     roundPlayers: IRoundPlayer[];
     mainPlayer: IRoundPlayer;
     leftPlayer?: IRoundPlayer;

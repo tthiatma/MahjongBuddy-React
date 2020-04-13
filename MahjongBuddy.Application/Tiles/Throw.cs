@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+
 namespace MahjongBuddy.Application.Tiles
 {
     public class Throw
@@ -32,6 +33,8 @@ namespace MahjongBuddy.Application.Tiles
             }
             public async Task<List<RoundTileDto>> Handle(Command request, CancellationToken cancellationToken)
             {
+                //TODO: when there is no more tiles, handle calling game is over
+
                 var tileList = new List<RoundTile>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
