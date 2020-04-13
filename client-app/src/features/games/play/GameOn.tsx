@@ -6,9 +6,9 @@ import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import TileList from "./TileList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
-import { TileStatus } from "../../../app/models/tile";
 import _ from "lodash";
 import TileListBoard from "./TileListBoard";
+import { TileStatus } from "../../../app/models/tileStatus";
 
 interface DetailParams {
   roundId: string;
@@ -35,6 +35,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   const currentPlayerTiles = roundTiles
     ? roundTiles.filter((rt) => rt.owner === user?.userName)
+    : null;
+
+  const boardActiveTile = roundTiles
+    ? roundTiles.find((rt) => rt.status === TileStatus.BoardActive)
     : null;
 
   const boardGraveyardTiles = roundTiles
@@ -112,21 +116,18 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
         {/* Board */}
         <Grid.Column width={10}>
-          {round && <Label>Wind: {WindDirection[round.wind]}</Label>}
+          {round && <div><Label>Wind: {WindDirection[round.wind]}</Label></div>}
           {round && round.mainPlayer && (
+            <div>
             <Label>
               Current User Wind: {WindDirection[round.mainPlayer.wind]}
             </Label>
+            </div>
           )}
+          {boardActiveTile && <div><img src={boardActiveTile.tile.imageSmall} /></div>}
           {boardGraveyardTiles && (
             <TileListBoard roundTiles={boardGraveyardTiles} />
           )}
-
-          {/* <TileList
-            tileStyleName="tileHorizontal"
-            containerStyleName="tileHorizontalContainer"
-            roundTiles={boardGraveyardTiles!}
-          /> */}
         </Grid.Column>
 
         {/* Right Player */}

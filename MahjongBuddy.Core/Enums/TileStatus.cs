@@ -5,12 +5,14 @@
         //Tile belongs to the board
         Unrevealed = 0,
         //Tile just picked from the board
-        JustPicked = 1,
+        UserJustPicked = 1,
         //Tile that is on player's hand
         UserActive = 2,
         //Tile is kept by player
         UserGraveyard = 3,
-        //Tile is open and thrown to the board
-        BoardGraveyard = 4
+        //Tile is alive on board
+        BoardActive = 4,
+        //Tile is dead on board
+        BoardGraveyard = 5
     }
 }

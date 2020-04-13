@@ -1,8 +1,9 @@
 import React, { Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundTile, TileStatus } from "../../../app/models/tile";
+import { IRoundTile } from "../../../app/models/tile";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { runInAction } from "mobx";
+import { TileStatus } from "../../../app/models/tileStatus";
 
 interface IProps{
   containerStyleName: string;
@@ -52,7 +53,7 @@ const TileList: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTi
       </div>
       <div>
         {roundTiles && roundTiles
-          .filter((t) => t.status === TileStatus.JustPicked)
+          .filter((t) => t.status === TileStatus.UserJustPicked)
           .map((rt) => (
             <Fragment key={rt.id}>
               <span className={containerStyleName}>

@@ -1,8 +1,6 @@
 import React, { Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundTile, TileStatus } from "../../../app/models/tile";
-import { RootStoreContext } from "../../../app/stores/rootStore";
-import { runInAction } from "mobx";
+import { IRoundTile } from "../../../app/models/tile";
 
 interface IProps {
   roundTiles: IRoundTile[];

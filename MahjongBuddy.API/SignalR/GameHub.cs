@@ -67,8 +67,8 @@ namespace MahjongBuddy.API.SignalR
 
         public async Task ThrowTile(Throw.Command command)
         {
-            var tile = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateTile", tile);
+            var tiles = await _mediator.Send(command);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateTile", tiles);
         }
 
         private string GetUserName()

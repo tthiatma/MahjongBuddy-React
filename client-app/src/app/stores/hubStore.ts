@@ -43,13 +43,15 @@ export default class HubStore {
         });
       });
 
-      this.hubConnection.on("UpdateTile", (tile: IRoundTile) => {
+      this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {
         if (this.rootStore.roundStore.roundTiles) {
-          let objIndex = this.rootStore.roundStore.roundTiles.findIndex(
-            (obj) => obj.id == tile.id
-          );
-          runInAction('updating tile', () => {
-            this.rootStore.roundStore.roundTiles![objIndex] = tile;
+          tiles.map(tile => {
+            let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
+              (obj) => obj.id == tile.id
+            );
+            runInAction('updating tile', () => {
+              this.rootStore.roundStore.roundTiles![objIndex] = tile;
+            })  
           })
         }
       });
