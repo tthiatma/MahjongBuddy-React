@@ -101,12 +101,27 @@ body {
 }
 
 .selectedTile {
-  background:rgba(85,55,188,.75);
-  -webkit-transition: opacity .25s ease;
-  -moz-transition: opacity .25s ease;
+  border-color: rgba(85,55,188,.75);
+  border-style: dashed;
 }
 .selectedTile img{
   opacity:0.4;
 }
 
 /*end home page styles*/
+
+/*start flex css for tiles*/
+.flexTilesContainer{
+  display: flex;
+  flex-wrap: nowrap;
+  height: 100%;
+  justify-content: center;
+}
+
+.flexTiles{
+  height: 50px;
+  width: 36px;
+  background-position:center;
+}
+/*end flex css for tiles*/
+

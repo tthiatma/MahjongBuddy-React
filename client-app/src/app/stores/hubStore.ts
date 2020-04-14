@@ -344,7 +344,7 @@ export default class HubStore {
       toast.error("problem picking tile");
     }
   };
-
+  
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id.toString();

@@ -9,6 +9,7 @@ import { WindDirection } from "../../../app/models/windEnum";
 import TileListBoard from "./TileListBoard";
 import { TileStatus } from "../../../app/models/tileStatus";
 import TileListMainPlayer from "./TileListMainPlayer";
+import TileListOtherPlayer from "./TileListOtherPlayer";
 
 interface DetailParams {
   roundId: string;
@@ -92,14 +93,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       <Grid.Row className="zeroPadding">
         <Grid.Column width={3} />
         <Grid.Column width={10}>
-          {round && topPlayer && (
-            <Label>{topPlayer.userName}</Label>
-          )}
-          <TileList
-            tileStyleName="tileHorizontal"
-            containerStyleName="tileHorizontalContainer"
-            roundTiles={topPlayerTiles!}
-          />
+          <TileListOtherPlayer roundTiles={topPlayerTiles!} tileStyleName='tileHorizontal' containerStyleName='tileHorizontalContainer'  />
         </Grid.Column>
         <Grid.Column width={3} />
       </Grid.Row>
