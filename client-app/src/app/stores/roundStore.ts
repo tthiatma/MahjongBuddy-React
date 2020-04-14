@@ -2,7 +2,7 @@ import { observable, action, runInAction } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { setRoundProps } from "../common/util/util";
-import { IRound, IRoundPlayer } from "../models/round";
+import { IRound, IRoundPlayer, IRoundSimple } from "../models/round";
 import { IRoundTile } from "../models/tile";
 
 export default class RoundStore {
@@ -12,7 +12,7 @@ export default class RoundStore {
   }
 
   @observable selectedTile: IRoundTile | null = null;
-  @observable round: IRound | null = null;
+  @observable roundSimple: IRoundSimple | null = null;
   @observable roundTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
   @observable mainPlayer: IRoundPlayer | null = null;
@@ -26,8 +26,8 @@ export default class RoundStore {
     try {
       round = await agent.Rounds.detail(id);
       runInAction("getting round", () => {
-        setRoundProps(round, this.rootStore.userStore.user!);
-        this.round = round;
+        setRoundProps(round, this.rootStore.userStore.user!, this);
+        this.roundSimple = round;
         this.roundTiles = round.roundTiles;
         this.loadingRoundInitial = false;
       });

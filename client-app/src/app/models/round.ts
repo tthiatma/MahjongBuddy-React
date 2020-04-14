@@ -1,7 +1,7 @@
 import { WindDirection } from "./windEnum";
 import { IRoundTile } from "./tile";
 
-export interface IRound{
+export interface IRoundSimple{
     id : number;
     roundCounter : number;
     tileConter: number;
@@ -13,14 +13,13 @@ export interface IRound{
     isTied : boolean;
     isWinnerSelfPicked : boolean;
     gameId : number;
+}
+export interface IRound extends IRoundSimple{
     roundTiles: IRoundTile[];
     updatedRoundTiles?: IRoundTile[];
+    updatedRoundPlayers?: IRoundPlayer[];
     roundPlayers: IRoundPlayer[];
-    mainPlayer: IRoundPlayer;
-    leftPlayer?: IRoundPlayer;
-    rightPlayer?: IRoundPlayer;
-    topPlayer?: IRoundPlayer;
-}
+ }
 
 export interface IRoundPlayer{
     userName: string;
@@ -30,5 +29,4 @@ export interface IRoundPlayer{
     isMyTurn: boolean;
     canDoNoFlower: boolean;
     wind: WindDirection;
-    tiles: IRoundTile[];
 }

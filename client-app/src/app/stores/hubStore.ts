@@ -11,13 +11,20 @@ import {
 import { WindDirection } from "../models/windEnum";
 import { IRound } from "../models/round";
 import { IRoundTile } from "../models/tile";
+import RoundStore from "./roundStore";
+import GameStore from "./gameStore";
 
 export default class HubStore {
   rootStore: RootStore;
+  hubStore: HubStore;
+  roundStore: RoundStore;
+  gameStore: GameStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
+    this.hubStore = this.rootStore.hubStore;
+    this.roundStore = this.rootStore.roundStore;
+    this.gameStore = this.rootStore.gameStore;
   }
-
   @observable loading = false;
   @observable.ref hubConnection: HubConnection | null = null;
 
@@ -36,34 +43,57 @@ export default class HubStore {
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
         console.log("update round called");
-        setRoundProps(round, this.rootStore.userStore.user!);
-        //update tiles
-        if (round.updatedRoundTiles !== undefined) {
+        setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
+        
+        //update players
+        if (round.updatedRoundPlayers) {
+          console.log("there is a new player update");
+          round.updatedRoundPlayers.forEach((player) => {
+            runInAction("updating players", () => {
+              if(player.userName === this.roundStore.leftPlayer?.userName)
+              this.roundStore.leftPlayer = player;
+
+              if(player.userName === this.roundStore.rightPlayer?.userName)
+              this.roundStore.rightPlayer = player;
+
+              if(player.userName === this.roundStore.topPlayer?.userName)
+              this.roundStore.topPlayer = player;
+
+              if(player.userName === this.roundStore.mainPlayer?.userName)
+              this.roundStore.mainPlayer = player;
+            });
+          });
+        }else{
+          console.log('no updated tiles');
+        }
+        
+        //update tiles        
+        if (round.updatedRoundTiles) {
           console.log("there is a new updated tiles");
           round.updatedRoundTiles.forEach((tile) => {
-            let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
+            let objIndex = this.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === tile.id
             );
             runInAction("updating tile", () => {
-              this.rootStore.roundStore.roundTiles![objIndex] = tile;
+              this.roundStore.roundTiles![objIndex] = tile;
             });
           });
         }else{
           console.log('no updated tiles');
         }
         runInAction("updating round", () => {
-          this.rootStore.roundStore.round = round;
+          this.roundStore.roundSimple = round;
         });
       });
 
       this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {
-        if (this.rootStore.roundStore.roundTiles) {
+        if (this.roundStore.roundTiles) {
           tiles.forEach((tile) => {
-            let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
+            let objIndex = this.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === tile.id
             );
             runInAction("updating tile", () => {
-              this.rootStore.roundStore.roundTiles![objIndex] = tile;
+              this.roundStore.roundTiles![objIndex] = tile;
             });
           });
         }
@@ -71,37 +101,37 @@ export default class HubStore {
 
       this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
-          this.rootStore.roundStore.round = round;
-          this.rootStore.roundStore.roundTiles = round.roundTiles;
-          setRoundProps(round, this.rootStore.userStore.user!);
+          this.roundStore.roundSimple = round;
+          this.roundStore.roundTiles = round.roundTiles;
+          setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
         });
         history.push(
           `/games/${this.rootStore.gameStore.game!.id}/rounds/${
-            this.rootStore.roundStore.round!.id
+            this.roundStore.roundSimple!.id
           }`
         );
       });
 
       this.hubConnection.on("ReceiveChatMsg", (chatMsg) =>
         runInAction(() => {
-          this.rootStore.gameStore.game!.chatMsgs.push(chatMsg);
+          this.gameStore.game!.chatMsgs.push(chatMsg);
         })
       );
 
       this.hubConnection.on("PlayerDisconnected", (player) =>
         runInAction(() => {
-          if (this.rootStore.gameStore.game) {
-            this.rootStore.gameStore.game.players = this.rootStore.gameStore.game.players.filter(
+          if (this.gameStore.game) {
+            this.gameStore.game.players = this.gameStore.game.players.filter(
               (p) => p.userName !== player?.userName
             );
             if (this.rootStore.userStore.user?.userName === player.userName) {
-              this.rootStore.gameStore.game.initialSeatWind =
+              this.gameStore.game.initialSeatWind =
                 WindDirection.Unassigned;
-              this.rootStore.gameStore.game.isCurrentPlayerConnected = false;
+              this.gameStore.game.isCurrentPlayerConnected = false;
             }
-            this.rootStore.gameStore.gameRegistry.set(
-              this.rootStore.gameStore.game.id,
-              this.rootStore.gameStore.game
+            this.gameStore.gameRegistry.set(
+              this.gameStore.game.id,
+              this.gameStore.game
             );
             if (this.rootStore.userStore.user?.userName !== player.userName)
               toast.info(`${player.userName} has left the Game`);
@@ -111,17 +141,17 @@ export default class HubStore {
 
       this.hubConnection.on("PlayerConnected", (player) =>
         runInAction(() => {
-          if (this.rootStore.gameStore.game) {
-            this.rootStore.gameStore.game.players.push(player);
+          if (this.gameStore.game) {
+            this.gameStore.game.players.push(player);
             if (this.rootStore.userStore.user?.userName === player.userName) {
-              this.rootStore.gameStore.game.initialSeatWind =
+              this.gameStore.game.initialSeatWind =
                 player.initialSeatWind;
-              this.rootStore.gameStore.game.isCurrentPlayerConnected = true;
+              this.gameStore.game.isCurrentPlayerConnected = true;
             }
 
-            this.rootStore.gameStore.gameRegistry.set(
-              this.rootStore.gameStore.game.id,
-              this.rootStore.gameStore.game
+            this.gameStore.gameRegistry.set(
+              this.gameStore.game.id,
+              this.gameStore.game
             );
             if (this.rootStore.userStore.user?.userName !== player.userName)
               toast.info(`${player.userName} has joined the Game`);
@@ -195,7 +225,7 @@ export default class HubStore {
   };
 
   @action addChatMsg = async (values: any) => {
-    values.gameId = this.rootStore.gameStore.game!.id;
+    values.gameId = this.gameStore.game!.id;
     try {
       this.hubConnection!.invoke("SendChatMsg", values);
     } catch (error) {
@@ -205,7 +235,7 @@ export default class HubStore {
 
   @action connectToGame = async (seat: WindDirection) => {
     let values: any = {};
-    values.gameId = this.rootStore.gameStore.game!.id;
+    values.gameId = this.gameStore.game!.id;
     values.InitialSeatWind = seat;
     runInAction(() => {
       this.loading = true;
@@ -225,7 +255,7 @@ export default class HubStore {
 
   @action disconnectFromGame = async () => {
     let values: any = {};
-    values.gameId = this.rootStore.gameStore.game!.id;
+    values.gameId = this.gameStore.game!.id;
     runInAction(() => {
       this.loading = true;
     });
@@ -246,7 +276,7 @@ export default class HubStore {
 
   @action startRound = async () => {
     let values: any = {};
-    values.gameId = parseInt(this.rootStore.gameStore.game!.id);
+    values.gameId = parseInt(this.gameStore.game!.id);
     runInAction(() => {
       this.loading = true;
     });
@@ -265,12 +295,20 @@ export default class HubStore {
 
   @action throwTile = async () => {
     let values = this.getGameAndRoundProps();
-    values.tileId = this.rootStore.roundStore.selectedTile?.id;
+    values.tileId = this.roundStore.selectedTile?.id;
     runInAction(() => {
       this.loading = true;
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
+        runInAction('throw tile initially', () =>{
+          const tileToThrow = this.roundStore.selectedTile;
+          if(tileToThrow){
+            var tileInStore = this.roundStore.roundTiles?.find(t => t.id === tileToThrow?.id)
+            if(tileInStore)
+            tileInStore.owner = 'board';
+          }      
+        })
         this.hubConnection!.invoke("ThrowTile", values);
         runInAction(() => {
           this.loading = false;
@@ -309,8 +347,8 @@ export default class HubStore {
 
   getGameAndRoundProps = () => {
     let values: any = {};
-    values.gameId = this.rootStore.gameStore.game?.id.toString();
-    values.roundId = this.rootStore.roundStore.round?.id;
+    values.gameId = this.gameStore.game?.id.toString();
+    values.roundId = this.roundStore.roundSimple?.id;
     return values;
   };
 }

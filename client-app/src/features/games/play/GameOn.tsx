@@ -21,9 +21,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
   const {
     loadingRoundInitial,
-    round,
+    roundSimple: round,
     loadRound,
     roundTiles,
+    mainPlayer,
+    leftPlayer,
+    rightPlayer,
+    topPlayer
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -47,18 +51,18 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     : null;
 
   const leftPlayerTiles =
-    roundTiles && round && round.leftPlayer
-      ? roundTiles.filter((rt) => rt.owner === round?.leftPlayer?.userName)
+    roundTiles && round && leftPlayer
+      ? roundTiles.filter((rt) => rt.owner === leftPlayer?.userName)
       : null;
 
   const topPlayerTiles =
-    roundTiles && round && round.topPlayer
-      ? roundTiles.filter((rt) => rt.owner === round?.topPlayer?.userName)
+    roundTiles && round && topPlayer
+      ? roundTiles.filter((rt) => rt.owner === topPlayer?.userName)
       : null;
 
   const rightPlayerTiles =
-    roundTiles && round && round.rightPlayer
-      ? roundTiles.filter((rt) => rt.owner === round?.rightPlayer?.userName)
+    roundTiles && round && rightPlayer
+      ? roundTiles.filter((rt) => rt.owner === rightPlayer?.userName)
       : null;
 
   useEffect(() => {
@@ -88,8 +92,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       <Grid.Row className="zeroPadding">
         <Grid.Column width={3} />
         <Grid.Column width={10}>
-          {round && round.topPlayer && (
-            <Label>{round.topPlayer.userName}</Label>
+          {round && topPlayer && (
+            <Label>{topPlayer.userName}</Label>
           )}
           <TileList
             tileStyleName="tileHorizontal"
@@ -104,8 +108,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         {/* Left Player */}
         <Grid.Column width={1}></Grid.Column>
         <Grid.Column width={1}>
-          {round && round.leftPlayer && (
-            <Label>{round.leftPlayer.userName}</Label>
+          {round && leftPlayer && (
+            <Label>{leftPlayer.userName}</Label>
           )}
         </Grid.Column>
         <Grid.Column width={1}>
@@ -123,10 +127,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Label>Wind: {WindDirection[round.wind]}</Label>
             </div>
           )}
-          {round && round.mainPlayer && (
+          {round && mainPlayer && (
             <div>
               <Label>
-                Current User Wind: {WindDirection[round.mainPlayer.wind]}
+                Current User Wind: {WindDirection[mainPlayer.wind]}
               </Label>
             </div>
           )}
@@ -149,8 +153,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           />
         </Grid.Column>
         <Grid.Column width={1}>
-          {round && round.rightPlayer && (
-            <Label>{round.rightPlayer.userName}</Label>
+          {round && rightPlayer && (
+            <Label>{rightPlayer.userName}</Label>
           )}
         </Grid.Column>
         <Grid.Column width={1}></Grid.Column>

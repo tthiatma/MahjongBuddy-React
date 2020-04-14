@@ -20,6 +20,7 @@ namespace MahjongBuddy.Application.Dtos
         public bool IsWinnerSelfPicked { get; set; }
         public int GameId { get; set; }
 
+        public ICollection<RoundPlayerDto> UpdatedRoundPlayers { get; set; }
         public ICollection<RoundTileDto> UpdatedRoundTiles { get; set; }
 
         public ICollection<RoundTileDto> RoundTiles { get; set; }
