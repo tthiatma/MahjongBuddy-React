@@ -10,11 +10,14 @@ import TileListBoard from "./TileListBoard";
 import { TileStatus } from "../../../app/models/tileStatus";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 
 interface DetailParams {
   roundId: string;
   id: string;
 }
+
+//https://github.com/clauderic/react-sortable-hoc
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
@@ -66,6 +69,30 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       ? roundTiles.filter((rt) => rt.owner === rightPlayer?.userName)
       : null;
 
+    //  const onDragEnd = (result) {
+    //     const { destination, source, draggableId } = result;
+    
+    //     if (!destination) {
+    //       return;
+    //     }
+    
+    //     if (
+    //       destination.droppableId === source.droppableId &&
+    //       destination.index === source.index
+    //     ) {
+    //       return;
+    //     }
+    
+    //     const quotes = Object.assign([], this.state.quotes);
+    //     const quote = this.state.quotes[source.index];
+    //     quotes.splice(source.index, 1);
+    //     quotes.splice(destination.index, 0, quote);
+    
+    //     this.setState({
+    //       quotes: quotes
+    //     });
+    //   }
+
   useEffect(() => {
     loadGame(match.params!.id);
     loadRound(parseInt(match.params.roundId));
@@ -87,88 +114,109 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
 
+    const onDragEnd = (result: DropResult) => {
+      const {source, destination} = result;
+
+      if (!destination) {
+        return;
+      }
+
+      if(destination.droppableId === 'board')
+        console.log('dropped to board');
+      
+      if(destination.droppableId === 'tile')
+        console.log('dropped to tile');
+
+    };
+
   return (
-    <Grid>
-      {/* Top Player */}
-      <Grid.Row className="zeroPadding">
-        <Grid.Column width={3} />
-        <Grid.Column width={10}>
-          <TileListOtherPlayer roundTiles={topPlayerTiles!} tileStyleName='tileHorizontal' containerStyleName='tileHorizontalContainer'  />
-        </Grid.Column>
-        <Grid.Column width={3} />
-      </Grid.Row>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Grid>
+        {/* Top Player */}
+        <Grid.Row className="zeroPadding">
+          <Grid.Column width={3} />
+          <Grid.Column width={10}>
+            <TileListOtherPlayer
+              roundTiles={topPlayerTiles!}
+              tileStyleName="tileHorizontal"
+              containerStyleName="tileHorizontalContainer"
+            />
+          </Grid.Column>
+          <Grid.Column width={3} />
+        </Grid.Row>
 
-      <Grid.Row className="zeroPadding">
-        {/* Left Player */}
-        <Grid.Column width={1}></Grid.Column>
-        <Grid.Column width={1}>
-          {round && leftPlayer && (
-            <Label>{leftPlayer.userName}</Label>
-          )}
-        </Grid.Column>
-        <Grid.Column width={1}>
-          <TileList
-            tileStyleName="tileVertical"
-            containerStyleName="tileVerticalContainer rotate90"
-            roundTiles={leftPlayerTiles!}
-          />
-        </Grid.Column>
+        <Grid.Row className="zeroPadding">
+          {/* Left Player */}
+          <Grid.Column width={1}></Grid.Column>
+          <Grid.Column width={1}>
+            {round && leftPlayer && <Label>{leftPlayer.userName}</Label>}
+          </Grid.Column>
+          <Grid.Column width={1}>
+            <TileList
+              tileStyleName="tileVertical"
+              containerStyleName="tileVerticalContainer rotate90"
+              roundTiles={leftPlayerTiles!}
+            />
+          </Grid.Column>
 
-        {/* Board */}
-        <Grid.Column width={10}>
-          {round && (
-            <div>
-              <Label>Wind: {WindDirection[round.wind]}</Label>
-            </div>
-          )}
-          {round && mainPlayer && (
-            <div>
-              <Label>
-                Current User Wind: {WindDirection[mainPlayer.wind]}
-              </Label>
-            </div>
-          )}
-          {boardActiveTile && (
-            <div>
-              <img src={boardActiveTile.tile.imageSmall} alt='tile' />
-            </div>
-          )}
-          {boardGraveyardTiles && (
-            <TileListBoard roundTiles={boardGraveyardTiles} />
-          )}
-        </Grid.Column>
+          {/* Board */}
+          <Grid.Column width={10}>
+            {round && (
+              <div>
+                <Label>Wind: {WindDirection[round.wind]}</Label>
+              </div>
+            )}
+            {round && mainPlayer && (
+              <div>
+                <Label>
+                  Current User Wind: {WindDirection[mainPlayer.wind]}
+                </Label>
+              </div>
+            )}
+            {boardActiveTile && (
+              <div>
+                <img src={boardActiveTile.tile.imageSmall} alt="tile" />
+              </div>
+            )}
+            {boardGraveyardTiles && (
+              <TileListBoard roundTiles={boardGraveyardTiles} />
+            )}
+          </Grid.Column>
 
-        {/* Right Player */}
-        <Grid.Column width={1}>
-          <TileList
-            tileStyleName="tileVertical"
-            containerStyleName="tileVerticalContainer rotateMinus90"
-            roundTiles={rightPlayerTiles!}
-          />
-        </Grid.Column>
-        <Grid.Column width={1}>
-          {round && rightPlayer && (
-            <Label>{rightPlayer.userName}</Label>
-          )}
-        </Grid.Column>
-        <Grid.Column width={1}></Grid.Column>
-      </Grid.Row>
+          {/* Right Player */}
+          <Grid.Column width={1}>
+            <TileList
+              tileStyleName="tileVertical"
+              containerStyleName="tileVerticalContainer rotateMinus90"
+              roundTiles={rightPlayerTiles!}
+            />
+          </Grid.Column>
+          <Grid.Column width={1}>
+            {round && rightPlayer && <Label>{rightPlayer.userName}</Label>}
+          </Grid.Column>
+          <Grid.Column width={1}></Grid.Column>
+        </Grid.Row>
 
-      {/* Main Player */}
-      <Grid.Row className="zeroPadding">
-        <Grid.Column width={3} />
-        <Grid.Column width={10}>
-          <Button loading={loading} onClick={throwTile}>Throw</Button>
-          <Button loading={loading} onClick={pickTile}>Pick</Button>
-          <TileListMainPlayer
-            tileStyleName="tileHorizontal"
-            containerStyleName="tileHorizontalContainer"
-            roundTiles={currentPlayerTiles!}
-          />
-        </Grid.Column>
-        <Grid.Column width={3} />
-      </Grid.Row>
-    </Grid>
+        {/* Main Player */}
+        <Grid.Row className="zeroPadding">
+          <Grid.Column width={3} />
+          <Grid.Column width={10}>
+            <Button loading={loading} onClick={throwTile}>
+              Throw
+            </Button>
+            <Button loading={loading} onClick={pickTile}>
+              Pick
+            </Button>
+            <TileListMainPlayer
+              tileStyleName="tileHorizontal"
+              containerStyleName="tileHorizontalContainer"
+              roundTiles={currentPlayerTiles!}
+            />
+          </Grid.Column>
+          <Grid.Column width={3} />
+        </Grid.Row>
+      </Grid>
+    </DragDropContext>
   );
 };
 
