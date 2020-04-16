@@ -201,6 +201,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         <Grid.Row className="zeroPadding">
           <Grid.Column width={3} />
           <Grid.Column width={10}>
+            {mainPlayer && <span>IsMyTurn:{mainPlayer.isMyTurn.toString()}</span>}
             <Button loading={loading} onClick={throwTile}>
               Throw
             </Button>

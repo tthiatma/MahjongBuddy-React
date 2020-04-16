@@ -13,7 +13,7 @@ namespace MahjongBuddy.API.SignalR
     public class GameHub : Hub
     {
         private readonly IMediator _mediator;
-
+        
         public GameHub(IMediator mediator)
         {
             _mediator = mediator;
@@ -67,6 +67,7 @@ namespace MahjongBuddy.API.SignalR
 
         public async Task ThrowTile(Throw.Command command)
         {
+            command.UserName = GetUserName();
             var round = await _mediator.Send(command);
             await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }

@@ -20,6 +20,7 @@ namespace MahjongBuddy.Application.Tiles
             public string GameId { get; set; }
             public int RoundId { get; set; }
             public Guid TileId { get; set; }
+            public string UserName { get; set; }
         }
         public class Handler : IRequestHandler<Command, RoundDto>
         {
@@ -36,10 +37,16 @@ namespace MahjongBuddy.Application.Tiles
                 //TODO: when there is no more tiles, handle calling game is over
 
                 var updatedTiles = new List<RoundTile>();
+                var updatedPlayers = new List<UserRound>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
+
+                var currentPlayer = round.UserRounds.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+
+                if(currentPlayer == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
                 //existing active tile on board to be no longer active
                 var existingActiveTileOnBoard = round.RoundTiles.FirstOrDefault(t => t.Status == TileStatus.BoardActive);
@@ -62,16 +69,49 @@ namespace MahjongBuddy.Application.Tiles
 
                 updatedTiles.Add(tileToThrow);
 
+                //take off turn from current player and figure out next player's turn
+                currentPlayer.IsMyTurn = false;
+                var nextPlayerTurn = GetNextPlayer(round.UserRounds, currentPlayer.Wind);
+                nextPlayerTurn.IsMyTurn = true;
+
+                updatedPlayers.Add(currentPlayer);
+                updatedPlayers.Add(nextPlayerTurn);
+
                 var success = await _context.SaveChangesAsync() > 0;
 
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
                 roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<UserRound>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                 if (success)
                     return roundToReturn;
 
                 throw new Exception("Problem throwing tile");
+            }
+
+            private UserRound GetNextPlayer(ICollection<UserRound> players, WindDirection currentPlayerWind)
+            {
+                UserRound ret;
+                switch (currentPlayerWind)
+                {
+                    case WindDirection.East:
+                        ret = players.First(p => p.Wind == WindDirection.North);
+                        break;
+                    case WindDirection.South:
+                        ret = players.First(p => p.Wind == WindDirection.East);
+                        break;
+                    case WindDirection.West:
+                        ret = players.First(p => p.Wind == WindDirection.South);
+                        break;
+                    case WindDirection.North:
+                        ret = players.First(p => p.Wind == WindDirection.West);
+                        break;
+                    default:
+                        throw new Exception("Error when getting next player");
+                }
+
+                return ret;
             }
         }
     }
