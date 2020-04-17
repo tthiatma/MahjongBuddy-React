@@ -17,7 +17,7 @@ const getStyle = (isDraggingOver: boolean) => ({
 
 const TileListBoard: React.FC<IProps> = ({ roundTiles }) => {
   return (
-    <Droppable droppableId="board">
+    <Droppable droppableId="test">
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}

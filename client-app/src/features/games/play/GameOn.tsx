@@ -10,7 +10,8 @@ import TileListBoard from "./TileListBoard";
 import { TileStatus } from "../../../app/models/tileStatus";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
+import { toJS, runInAction } from "mobx";
 
 interface DetailParams {
   roundId: string;
@@ -42,9 +43,17 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leaveGroup,
   } = rootStore.hubStore;
 
-  const currentPlayerTiles = roundTiles
-    ? roundTiles.filter((rt) => rt.owner === user?.userName)
-    : null;
+  const mainPlayerActiveTiles = roundTiles
+  ? roundTiles.filter((rt) => rt.owner === user?.userName && rt.status === TileStatus.UserActive)
+  : null;
+
+  const mainPlayerGraveYardTiles = roundTiles
+  ? roundTiles.filter((rt) => rt.owner === user?.userName && rt.status === TileStatus.UserGraveyard)
+  : null;
+
+  const mainPlayerJustPickedTile = roundTiles
+  ? roundTiles.filter((rt) => rt.owner === user?.userName && rt.status === TileStatus.UserJustPicked)
+  : null;
 
   const boardActiveTile = roundTiles
     ? roundTiles.find((rt) => rt.status === TileStatus.BoardActive)
@@ -68,6 +77,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     roundTiles && round && rightPlayer
       ? roundTiles.filter((rt) => rt.owner === rightPlayer?.userName)
       : null;
+
+  const getStyle = (isDraggingOver: boolean) => ({
+    background: isDraggingOver ? 'lightblue' : 'lightgrey',
+    display: 'flex',
+    // padding: grid,
+    overflow: 'auto',
+    transitionDuration: `0.001s`
+  });
 
     //  const onDragEnd = (result) {
     //     const { destination, source, draggableId } = result;
@@ -123,6 +140,15 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
       if(destination.droppableId === 'board')
         console.log('dropped to board');
+        console.log(source);
+        console.log(destination);
+        if(mainPlayerActiveTiles)
+        {
+          runInAction('throwingtile',() => {
+            rootStore.roundStore.selectedTile = toJS(mainPlayerActiveTiles[source.index]);
+          })
+          throwTile();
+        }
       
       if(destination.droppableId === 'tile')
         console.log('dropped to tile');
@@ -201,18 +227,39 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         <Grid.Row className="zeroPadding">
           <Grid.Column width={3} />
           <Grid.Column width={10}>
-            {mainPlayer && <span>IsMyTurn:{mainPlayer.isMyTurn.toString()}</span>}
-            <Button loading={loading} onClick={throwTile}>
-              Throw
-            </Button>
-            <Button loading={loading} onClick={pickTile}>
-              Pick
-            </Button>
-            <TileListMainPlayer
-              tileStyleName="tileHorizontal"
-              containerStyleName="tileHorizontalContainer"
-              roundTiles={currentPlayerTiles!}
-            />
+            <Grid.Row>
+              {mainPlayer && (
+                <span>IsMyTurn:{mainPlayer.isMyTurn.toString()}</span>
+              )}
+              <Button loading={loading} onClick={throwTile}>
+                Throw
+              </Button>
+              <Button loading={loading} onClick={pickTile}>
+                Pick
+              </Button>
+              <Droppable droppableId="board">
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  style={getStyle(snapshot.isDraggingOver)}
+                  {...provided.droppableProps}
+                >
+                  <div style={{width:'100px', backgroundColor:'red', height: '50px'}}/>
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+
+            </Grid.Row>
+            <Grid.Row>
+              <TileListMainPlayer
+                tileStyleName="tileHorizontal"
+                containerStyleName="tileHorizontalContainer"
+                mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
+                mainPlayerActiveTiles={mainPlayerActiveTiles!}
+                mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
+              />
+            </Grid.Row>
           </Grid.Column>
           <Grid.Column width={3} />
         </Grid.Row>
