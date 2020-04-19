@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, Fragment } from "react";
 import { Grid, Label, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -7,7 +7,6 @@ import TileList from "./TileList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
 import TileListBoard from "./TileListBoard";
-import { TileStatus } from "../../../app/models/tileStatus";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
@@ -22,93 +21,38 @@ interface DetailParams {
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
-  const { user } = rootStore.userStore;
   const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
   const {
     loadingRoundInitial,
     roundSimple: round,
     loadRound,
-    roundTiles,
     mainPlayer,
     leftPlayer,
     rightPlayer,
-    topPlayer
+    mainPlayerActiveTiles,
+    mainPlayerGraveYardTiles,
+    mainPlayerJustPickedTile,
+    boardActiveTile,
+    boardGraveyardTiles,
+    leftPlayerTiles,
+    topPlayerTiles,
+    rightPlayerTiles,
   } = rootStore.roundStore;
   const {
     throwTile,
-    pickTile, 
+    pickTile,
     loading,
     createHubConnection,
     stopHubConnection,
     leaveGroup,
   } = rootStore.hubStore;
 
-  const mainPlayerActiveTiles = roundTiles
-  ? roundTiles.filter((rt) => rt.owner === user?.userName && rt.status === TileStatus.UserActive)
-  : null;
-
-  const mainPlayerGraveYardTiles = roundTiles
-  ? roundTiles.filter((rt) => rt.owner === user?.userName && rt.status === TileStatus.UserGraveyard)
-  : null;
-
-  const mainPlayerJustPickedTile = roundTiles
-  ? roundTiles.filter((rt) => rt.owner === user?.userName && rt.status === TileStatus.UserJustPicked)
-  : null;
-
-  const boardActiveTile = roundTiles
-    ? roundTiles.find((rt) => rt.status === TileStatus.BoardActive)
-    : null;
-
-  const boardGraveyardTiles = roundTiles
-    ? roundTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
-    : null;
-
-  const leftPlayerTiles =
-    roundTiles && round && leftPlayer
-      ? roundTiles.filter((rt) => rt.owner === leftPlayer?.userName)
-      : null;
-
-  const topPlayerTiles =
-    roundTiles && round && topPlayer
-      ? roundTiles.filter((rt) => rt.owner === topPlayer?.userName)
-      : null;
-
-  const rightPlayerTiles =
-    roundTiles && round && rightPlayer
-      ? roundTiles.filter((rt) => rt.owner === rightPlayer?.userName)
-      : null;
-
   const getStyle = (isDraggingOver: boolean) => ({
-    background: isDraggingOver ? 'lightblue' : 'lightgrey',
-    display: 'flex',
-    // padding: grid,
-    overflow: 'auto',
-    transitionDuration: `0.001s`
+    background: isDraggingOver ? "lightblue" : "lightgrey",
+    display: "flex",
+    overflow: "auto",
+    transitionDuration: `0.001s`,
   });
-
-    //  const onDragEnd = (result) {
-    //     const { destination, source, draggableId } = result;
-    
-    //     if (!destination) {
-    //       return;
-    //     }
-    
-    //     if (
-    //       destination.droppableId === source.droppableId &&
-    //       destination.index === source.index
-    //     ) {
-    //       return;
-    //     }
-    
-    //     const quotes = Object.assign([], this.state.quotes);
-    //     const quote = this.state.quotes[source.index];
-    //     quotes.splice(source.index, 1);
-    //     quotes.splice(destination.index, 0, quote);
-    
-    //     this.setState({
-    //       quotes: quotes
-    //     });
-    //   }
 
   useEffect(() => {
     loadGame(match.params!.id);
@@ -131,29 +75,25 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
 
-    const onDragEnd = (result: DropResult) => {
-      const {source, destination} = result;
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
 
-      if (!destination) {
-        return;
+    if (!destination) {
+      return;
+    }
+
+    if (destination.droppableId === "board")
+      if (mainPlayerActiveTiles) {
+        runInAction("throwingtile", () => {
+          rootStore.roundStore.selectedTile = toJS(
+            mainPlayerActiveTiles[source.index]
+          );
+        });
+        throwTile();
       }
 
-      if(destination.droppableId === 'board')
-        console.log('dropped to board');
-        console.log(source);
-        console.log(destination);
-        if(mainPlayerActiveTiles)
-        {
-          runInAction('throwingtile',() => {
-            rootStore.roundStore.selectedTile = toJS(mainPlayerActiveTiles[source.index]);
-          })
-          throwTile();
-        }
-      
-      if(destination.droppableId === 'tile')
-        console.log('dropped to tile');
-
-    };
+    if (destination.droppableId === "tile") console.log("dropped to tile");
+  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -187,26 +127,31 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
           {/* Board */}
           <Grid.Column width={10}>
-            {round && (
-              <div>
-                <Label>Wind: {WindDirection[round.wind]}</Label>
-              </div>
-            )}
-            {round && mainPlayer && (
-              <div>
-                <Label>
-                  Current User Wind: {WindDirection[mainPlayer.wind]}
-                </Label>
-              </div>
-            )}
             {boardActiveTile && (
               <div>
                 <img src={boardActiveTile.tile.imageSmall} alt="tile" />
               </div>
             )}
+
             {boardGraveyardTiles && (
               <TileListBoard roundTiles={boardGraveyardTiles} />
             )}
+            <Droppable droppableId="board">
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  style={getStyle(snapshot.isDraggingOver)}
+                  {...provided.droppableProps}
+                >
+                  <div
+                    style={{
+                      height: "50px",
+                    }}
+                  />
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
           </Grid.Column>
 
           {/* Right Player */}
@@ -229,7 +174,15 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={10}>
             <Grid.Row>
               {mainPlayer && (
-                <span>IsMyTurn:{mainPlayer.isMyTurn.toString()}</span>
+                <Fragment>
+                  <span>{`IsMyTurn: ${mainPlayer.isMyTurn.toString()} `}</span>
+                  <span>
+                    {` Current User Wind:${WindDirection[mainPlayer.wind]} `}
+                  </span>
+                  <span>
+                    {` Current Wind: ${WindDirection[round.wind]}`} 
+                    </span>
+                </Fragment>
               )}
               <Button loading={loading} onClick={throwTile}>
                 Throw
@@ -237,19 +190,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={pickTile}>
                 Pick
               </Button>
-              <Droppable droppableId="board">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  style={getStyle(snapshot.isDraggingOver)}
-                  {...provided.droppableProps}
-                >
-                  <div style={{width:'100px', backgroundColor:'red', height: '50px'}}/>
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-
             </Grid.Row>
             <Grid.Row>
               <TileListMainPlayer
