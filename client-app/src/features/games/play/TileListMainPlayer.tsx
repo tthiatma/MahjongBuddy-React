@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
-import { RootStoreContext } from "../../../app/stores/rootStore";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 
 interface IProps{
@@ -27,7 +26,6 @@ const getListStyle = (isDraggingOver: boolean) => ({
 });
 
 const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerActiveTiles,mainPlayerGraveYardTiles, mainPlayerJustPickedTile }) => {
-  const rootStore = useContext(RootStoreContext);
   return (
     <div style={mainPlayerTiles}>
       <div style={mainPlayerGraveyard} id="userGraveyard">

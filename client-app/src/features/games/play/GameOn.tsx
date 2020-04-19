@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, Fragment } from "react";
-import { Grid, Label, Button } from "semantic-ui-react";
+import { Grid, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
@@ -104,8 +104,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={10}>
             <TileListOtherPlayer
               roundTiles={topPlayerTiles!}
-              tileStyleName="tileHorizontal"
-              containerStyleName="tileHorizontalContainer"
+              tileStyleName="flexTiles"
+              containerStyleName="flexTilesContainer"
             />
           </Grid.Column>
           <Grid.Column width={3} />
@@ -113,17 +113,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
         <Grid.Row className="zeroPadding">
           {/* Left Player */}
-          <Grid.Column width={1}></Grid.Column>
-          <Grid.Column width={1}>
-            {round && leftPlayer && <Label>{leftPlayer.userName}</Label>}
-          </Grid.Column>
-          <Grid.Column width={1}>
-            <TileList
+          <TileList
+              player={leftPlayer!} 
               tileStyleName="tileVertical"
-              containerStyleName="tileVerticalContainer rotate90"
+              containerStyleName="tileVerticalContainer"
+              rotation="rotate90"
               roundTiles={leftPlayerTiles!}
             />
-          </Grid.Column>
 
           {/* Board */}
           <Grid.Column width={10}>
@@ -155,17 +151,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           </Grid.Column>
 
           {/* Right Player */}
-          <Grid.Column width={1}>
-            <TileList
+          <TileList
+              player={rightPlayer!}
               tileStyleName="tileVertical"
-              containerStyleName="tileVerticalContainer rotateMinus90"
+              containerStyleName="tileVerticalContainer"
+              rotation="rotateMinus90"
               roundTiles={rightPlayerTiles!}
             />
-          </Grid.Column>
-          <Grid.Column width={1}>
-            {round && rightPlayer && <Label>{rightPlayer.userName}</Label>}
-          </Grid.Column>
-          <Grid.Column width={1}></Grid.Column>
         </Grid.Row>
 
         {/* Main Player */}

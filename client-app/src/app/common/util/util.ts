@@ -54,14 +54,12 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 }
 
 export const setRoundProps = (round: IRound, user: IUser, roundStore: RoundStore) => {
-  console.log('set round props called')
   if(!roundStore.mainPlayer){
     runInAction("Updating Round Players", () =>{
       let mainPlayer = round.roundPlayers.find(
         p => p.userName === user.userName
       );
         if(mainPlayer){
-        console.log('got main player');
         roundStore.mainPlayer = mainPlayer;
   
         let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");

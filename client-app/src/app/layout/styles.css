@@ -114,7 +114,7 @@ body {
 .flexTilesContainer{
   display: flex;
   flex-wrap: nowrap;
-  height: 100%;
+  height: 50px;
   justify-content: center;
 }
 
