@@ -9,7 +9,7 @@ import { WindDirection } from "../../../app/models/windEnum";
 import TileListBoard from "./TileListBoard";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
-import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
+import { DragDropContext, DropResult, Droppable, ResponderProvided } from "react-beautiful-dnd";
 import { toJS, runInAction } from "mobx";
 
 interface DetailParams {
@@ -37,6 +37,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayerTiles,
     topPlayerTiles,
     rightPlayerTiles,
+    roundTiles
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -75,18 +76,18 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
 
-  const onDragEnd = (result: DropResult) => {
-    const { source, destination } = result;
-
+  const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
+    const { source, destination, draggableId } = result;
     if (!destination) {
       return;
     }
 
     if (destination.droppableId === "board")
       if (mainPlayerActiveTiles) {
+
         runInAction("throwingtile", () => {
           rootStore.roundStore.selectedTile = toJS(
-            mainPlayerActiveTiles[source.index]
+            roundTiles!.find(t => t.id === draggableId)!
           );
         });
         throwTile();
@@ -122,16 +123,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             />
 
           {/* Board */}
-          <Grid.Column width={10}>
-            {boardActiveTile && (
-              <div>
-                <img src={boardActiveTile.tile.imageSmall} alt="tile" />
-              </div>
-            )}
-
-            {boardGraveyardTiles && (
-              <TileListBoard roundTiles={boardGraveyardTiles} />
-            )}
+          <Grid.Column width={10}>          
+            <TileListBoard graveyardTiles={boardGraveyardTiles!} activeTile={boardActiveTile!} />
             <Droppable droppableId="board">
               {(provided, snapshot) => (
                 <div

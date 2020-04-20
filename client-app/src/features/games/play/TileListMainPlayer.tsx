@@ -63,7 +63,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
                               backgroundImage: `url(${rt.tile.imageSmall}`,
                             }}
                             className="flexTiles"
-                          />
+                          />                         
                         </div>
                       )}
                     </Draggable>

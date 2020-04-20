@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Droppable } from "react-beautiful-dnd";
 
 interface IProps {
-  roundTiles: IRoundTile[];
+  graveyardTiles: IRoundTile[];
+  activeTile: IRoundTile;
 }
 
 const getStyle = (isDraggingOver: boolean) => ({
@@ -15,27 +16,26 @@ const getStyle = (isDraggingOver: boolean) => ({
  transitionDuration: `0.001s`
 });
 
-const TileListBoard: React.FC<IProps> = ({ roundTiles }) => {
+const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile }) => {
   return (
-    <Droppable droppableId="test">
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          style={getStyle(snapshot.isDraggingOver)}
-          {...provided.droppableProps}
-        >
-          {roundTiles
-            .sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter)
-            .map((rt, index) => (
-                <div key={rt.id}>
-                <span>{rt.boardGraveyardCounter}</span>
-                <img src={rt.tile.imageSmall} alt="tile" />
-              </div>
-            ))}
-          {provided.placeholder}
-        </div>
-      )}
-    </Droppable>
+    <div>
+      <div style={{ display: "flex", minHeight:"350px", flexWrap:'wrap', alignItems:'flex-start', alignContent: 'flex-start' }}>
+        {graveyardTiles
+          .sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter)
+          .map((rt, index) => (
+            <div key={rt.id}>
+              <img src={rt.tile.imageSmall} alt="tile" />
+            </div>
+          ))}
+      </div>
+      <div style={{ display: "flex", justifyContent:'center' }}>
+        {activeTile && (
+          <div>
+            <img src={activeTile.tile.imageSmall} alt="tile" />
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
