@@ -29,6 +29,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     mainPlayer,
     leftPlayer,
     rightPlayer,
+    topPlayer,
     mainPlayerActiveTiles,
     mainPlayerGraveYardTiles,
     mainPlayerJustPickedTile,
@@ -104,6 +105,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={3} />
           <Grid.Column width={10}>
             <TileListOtherPlayer
+              player={topPlayer!}
               roundTiles={topPlayerTiles!}
               tileStyleName="flexTiles"
               containerStyleName="flexTilesContainer"
