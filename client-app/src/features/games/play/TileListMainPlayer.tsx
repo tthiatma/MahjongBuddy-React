@@ -2,6 +2,7 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import { toJS } from "mobx";
 
 interface IProps{
   containerStyleName: string;
@@ -49,7 +50,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
           >
             <div>
             {mainPlayerActiveTiles && mainPlayerActiveTiles
-            .map((rt, index) => (
+            .map((rt, index) => (                  
                     <Draggable draggableId={rt.id} index={index} key={rt.id}>
                       {(provided) => (
                         <div
@@ -63,7 +64,8 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
                               backgroundImage: `url(${rt.tile.imageSmall}`,
                             }}
                             className="flexTiles"
-                          />                         
+                          />
+                          {console.log(toJS(rt))}                         
                         </div>
                       )}
                     </Draggable>

@@ -5,6 +5,7 @@ import { setRoundProps } from "../common/util/util";
 import { IRound, IRoundPlayer, IRoundSimple } from "../models/round";
 import { IRoundTile } from "../models/tile";
 import { TileStatus } from "../models/tileStatus";
+import _ from "lodash";
 
 export default class RoundStore {
   rootStore: RootStore;

@@ -14,7 +14,7 @@ import { RootStoreContext } from "../stores/rootStore";
 import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import PrivateRoute from "./PrivateRoute";
-import HomePage from "../../features/home/homePage";
+import HomePage from "../../features/home/HomePage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 

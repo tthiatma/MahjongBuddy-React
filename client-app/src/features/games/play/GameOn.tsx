@@ -43,6 +43,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const {
     throwTile,
     pickTile,
+    pong,
     loading,
     createHubConnection,
     stopHubConnection,
@@ -78,7 +79,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     return <LoadingComponent content="Loading round..." />;
 
   const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
-    const { source, destination, draggableId } = result;
+    const { destination, draggableId } = result;
     if (!destination) {
       return;
     }
@@ -176,6 +177,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Button>
               <Button loading={loading} onClick={pickTile}>
                 Pick
+              </Button>
+              <Button loading={loading} onClick={pong}>
+                Pong
               </Button>
             </Grid.Row>
             <Grid.Row>

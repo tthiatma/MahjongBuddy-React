@@ -1,9 +1,11 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundPlayer } from "../../../app/models/round";
 import { Label } from "semantic-ui-react";
+import { runInAction } from "mobx";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 interface IProps {
   containerStyleName: string;
@@ -18,6 +20,7 @@ const TileListOtherPlayer: React.FC<IProps> = ({
   containerStyleName,
   player
 }) => {
+  const rootStore = useContext(RootStoreContext);
   return (
     <Fragment>
       <div>
@@ -29,6 +32,12 @@ const TileListOtherPlayer: React.FC<IProps> = ({
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
               <div
+              onClick={() =>
+                runInAction(() => {
+                  rootStore.roundStore.selectedTile = rt;
+                })
+              }
+
                 key={rt.id}
                 style={{
                   backgroundImage: `url(${rt.tile.imageSmall}`,
