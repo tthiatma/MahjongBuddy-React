@@ -1,72 +1,104 @@
-import React, { Fragment, useContext } from "react";
+import React, { useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { RootStoreContext } from "../../../app/stores/rootStore";
-import { runInAction } from "mobx";
-import { TileStatus } from "../../../app/models/tileStatus";
+import { Droppable, Draggable } from "react-beautiful-dnd";
 
 interface IProps{
   containerStyleName: string;
   tileStyleName: string;
-  roundTiles: IRoundTile[];
+  mainPlayerActiveTiles: IRoundTile[] | null;
+  mainPlayerGraveYardTiles: IRoundTile[] | null;
+  mainPlayerJustPickedTile: IRoundTile[] | null;
 }
 
-const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, tileStyleName, roundTiles }) => {
+const mainPlayerTiles = {
+  display: 'flex',
+};
+
+const mainPlayerGraveyard = {
+  display: 'flex',
+  marginRight: '5px'
+}
+
+const getListStyle = (isDraggingOver: boolean) => ({
+  background: isDraggingOver ? 'lightblue' : 'lightgrey',
+  display: 'flex'
+});
+
+const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerActiveTiles,mainPlayerGraveYardTiles, mainPlayerJustPickedTile }) => {
   const rootStore = useContext(RootStoreContext);
-  const {selectedTile} = rootStore.roundStore;
   return (
-    <Fragment>
-      <div id="rawr">
-        {roundTiles && roundTiles
-          .filter((t) => t.status === TileStatus.UserGraveyard)
-          .map((rt) => (
-            <Fragment key={rt.id}>
-              <span className={containerStyleName}>
-                <img
-                  alt="facedown-tile"
-                  className={tileStyleName}
-                  src={rt.tile.imageSmall}
-                />
-              </span>
-            </Fragment>
-          ))}
+    <div style={mainPlayerTiles}>
+      <div style={mainPlayerGraveyard} id="userGraveyard">
+        {mainPlayerGraveYardTiles && mainPlayerGraveYardTiles
+            .map((rt) => (
+              <div
+                key={rt.id}
+                style={{
+                  backgroundImage: `url(${rt.tile.imageSmall}`,
+                }}
+                className="flexTiles"
+              />
+            ))}
       </div>
-      <div>
-        {roundTiles && roundTiles
-          .filter((t) => t.status === TileStatus.UserActive)
-          .map((rt) => (
-            <Fragment key={rt.id}>
-              <span className={selectedTile?.id === rt.id ? `${containerStyleName} selectedTile` : containerStyleName}>
-                <img
-                  onClick={() =>
-                    runInAction(() => {
-                      rootStore.roundStore.selectedTile = rt;
-                    })
-                  }
-                  alt="facedown-tile"
-                  className={selectedTile?.id === rt.id ? `${tileStyleName} selectedTile` : tileStyleName}
-                  src={rt.tile.imageSmall}
-                />
-              </span>
-            </Fragment>
-          ))}
-      </div>
-      <div>
-        {roundTiles && roundTiles
-          .filter((t) => t.status === TileStatus.UserJustPicked)
-          .map((rt) => (
-            <Fragment key={rt.id}>
-              <span className={containerStyleName}>
-                <img
-                  alt="facedown-tile"
-                  className={tileStyleName}
-                  src={rt.tile.imageSmall}
-                />
-              </span>
-            </Fragment>
-          ))}
-      </div>
-    </Fragment>
+      <Droppable droppableId="tile" direction="horizontal">
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            style={getListStyle(snapshot.isDraggingOver)}
+            {...provided.droppableProps}
+          >
+            <div>
+            {mainPlayerActiveTiles && mainPlayerActiveTiles
+            .map((rt, index) => (
+                    <Draggable draggableId={rt.id} index={index} key={rt.id}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={containerStyleName}
+                        >
+                          <div
+                            style={{
+                              backgroundImage: `url(${rt.tile.imageSmall}`,
+                            }}
+                            className="flexTiles"
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+              {provided.placeholder}
+            </div>
+            <div id="userGraveyard">
+              {mainPlayerJustPickedTile && mainPlayerJustPickedTile
+              .map((rt, index) => (
+                    <Draggable draggableId={rt.id} index={index} key={rt.id}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={containerStyleName}
+                        >
+                          <div
+                            style={{
+                              backgroundImage: `url(${rt.tile.imageSmall}`,
+                            }}
+                            className="flexTiles"
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+              {provided.placeholder}
+            </div>
+          </div>
+        )}
+      </Droppable>
+    </div>
   );
 };
 export default observer(TileListMainPlayer);

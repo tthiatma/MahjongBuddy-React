@@ -35,7 +35,6 @@ namespace MahjongBuddy.Application.Tiles
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 //TODO: when there is no more tiles, handle calling game is over
-
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<UserRound>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);

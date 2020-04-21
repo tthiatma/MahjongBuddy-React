@@ -1,9 +1,10 @@
-import { observable, action, runInAction } from "mobx";
+import { observable, action, runInAction, computed } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { setRoundProps } from "../common/util/util";
 import { IRound, IRoundPlayer, IRoundSimple } from "../models/round";
 import { IRoundTile } from "../models/tile";
+import { TileStatus } from "../models/tileStatus";
 
 export default class RoundStore {
   rootStore: RootStore;
@@ -19,6 +20,54 @@ export default class RoundStore {
   @observable leftPlayer: IRoundPlayer | null = null;
   @observable rightPlayer: IRoundPlayer | null = null;
   @observable topPlayer: IRoundPlayer | null = null;
+
+  @computed get boardActiveTile() {
+    return this.roundTiles
+    ? this.roundTiles.find((rt) => rt.status === TileStatus.BoardActive)
+    : null;
+  } 
+
+  @computed get boardGraveyardTiles() {
+    return this.roundTiles
+  ? this.roundTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
+  : null;
+  }
+
+  @computed get mainPlayerActiveTiles(){
+    return this.roundTiles
+  ? this.roundTiles.filter((rt) => rt.owner === this.rootStore.userStore.user?.userName && rt.status === TileStatus.UserActive)
+  : null;
+  }
+
+  @computed get mainPlayerGraveYardTiles() {
+    return this.roundTiles
+  ? this.roundTiles.filter((rt) => rt.owner === this.rootStore.userStore.user?.userName && rt.status === TileStatus.UserGraveyard)
+  : null;
+  }
+
+  @computed get mainPlayerJustPickedTile () {   
+    return this.roundTiles 
+  ? this.roundTiles.filter((rt) => rt.owner === this.rootStore.userStore.user?.userName && rt.status === TileStatus.UserJustPicked)
+  : null;
+  }
+
+  @computed get leftPlayerTiles () {
+    return this.roundTiles && this.roundSimple && this.leftPlayer
+    ? this.roundTiles.filter((rt) => rt.owner === this.leftPlayer?.userName)
+    : null;
+  }  
+
+  @computed get topPlayerTiles() {
+    return this.roundTiles && this.roundSimple && this.topPlayer
+      ? this.roundTiles.filter((rt) => rt.owner === this.topPlayer?.userName)
+      : null;
+  } 
+
+  @computed get rightPlayerTiles() {
+    return this.roundTiles && this.roundSimple && this.rightPlayer
+    ? this.roundTiles.filter((rt) => rt.owner === this.rightPlayer?.userName)
+    : null;
+  } 
 
   @action loadRound = async (id: number) => {
     let round: IRound;
