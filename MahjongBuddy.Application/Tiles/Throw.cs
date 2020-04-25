@@ -35,6 +35,7 @@ namespace MahjongBuddy.Application.Tiles
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 //TODO: when there is no more tiles, handle calling game is over
+                //TODO: when someone can pong/chow the tile, turn on the flag so client can show user the option
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<UserRound>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);
@@ -53,6 +54,16 @@ namespace MahjongBuddy.Application.Tiles
                 {
                     existingActiveTileOnBoard.Status = TileStatus.BoardGraveyard;
                     updatedTiles.Add(existingActiveTileOnBoard);
+                }
+
+                var userJustPickedTile = round.RoundTiles.Where(t => t.Owner == request.UserName && t.Status == TileStatus.UserJustPicked);
+                if(userJustPickedTile != null && userJustPickedTile.Count() > 0)
+                {
+                    foreach (var t in userJustPickedTile)
+                    {
+                        t.Status = TileStatus.UserActive;
+                        updatedTiles.Add(t);
+                    }
                 }
 
                 var tileToThrow = round.RoundTiles.FirstOrDefault(t => t.Id == request.TileId);

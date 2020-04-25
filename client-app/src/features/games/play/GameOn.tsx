@@ -11,6 +11,7 @@ import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable, ResponderProvided } from "react-beautiful-dnd";
 import { toJS, runInAction } from "mobx";
+import { IRoundTile, TileValue } from "../../../app/models/tile";
 
 interface DetailParams {
   roundId: string;
@@ -44,6 +45,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     throwTile,
     pickTile,
     pong,
+    chow,
     loading,
     createHubConnection,
     stopHubConnection,
@@ -77,6 +79,82 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
+    
+  const doChow = () => {
+    let chowTiles: IRoundTile[] = [];
+  
+    let boardActiveTile = rootStore.roundStore.boardActiveTile;
+
+    let sameTypeChowTiles = rootStore.roundStore.mainPlayerActiveTiles?.filter(t => t.tile.tileType == boardActiveTile?.tile.tileType);
+    console.log('sameTypeChowTiles = ' + sameTypeChowTiles?.length);
+
+    if(boardActiveTile?.tile.tileValue === TileValue.One){
+      let possibleTiles = sameTypeChowTiles?.filter(t => t.tile.tileValue === TileValue.Two || t.tile.tileValue === TileValue.Three)
+      console.log('possibleTiles = ' + possibleTiles?.length);
+      if(possibleTiles && possibleTiles.length === 2)
+        chowTiles = possibleTiles;
+    }else if(boardActiveTile?.tile.tileValue === TileValue.Nine){
+      let possibleTiles = sameTypeChowTiles?.filter(t => t.tile.tileValue === TileValue.Eight || t.tile.tileValue === TileValue.Seven)
+      console.log('possibleTiles = ' + possibleTiles?.length);
+      if(possibleTiles && possibleTiles.length === 2)
+        chowTiles = possibleTiles;
+    }else if(boardActiveTile!.tile.tileValue >= 2 && boardActiveTile!.tile.tileValue <= 8){
+      console.log('its 2 to 8')
+      console.log('sameTypeChowTiles length is ' + sameTypeChowTiles?.length )
+      let possibleTiles = sameTypeChowTiles?.filter(t => 
+        t.tile.tileValue === (boardActiveTile!.tile.tileValue - 2) 
+        || t.tile.tileValue === (boardActiveTile!.tile.tileValue + 2)
+        || t.tile.tileValue === (boardActiveTile!.tile.tileValue + 1)
+        || t.tile.tileValue === (boardActiveTile!.tile.tileValue - 1)
+        )
+        if(possibleTiles && possibleTiles.length > 1){
+          console.log(possibleTiles.length);
+
+          for(var i = 0; i < possibleTiles.length; i ++ ){
+            let t = possibleTiles[i];
+            console.log('testing tile ' + t.tile.tileValue);
+            let testChowTiles: IRoundTile[] = [];
+            testChowTiles.push(t);
+            testChowTiles.push(boardActiveTile!);
+            testChowTiles.sort((a,b) => a!.tile.tileValue - b!.tile.tileValue);
+          if((t.tile.tileValue + boardActiveTile!.tile.tileValue) % 2 !== 0){
+              console.log('tile is connected')
+              //then these two tiles is connected
+              let probableTile = possibleTiles.find(t => t.tile.tileValue === (testChowTiles[0].tile.tileValue - 1));
+              if(!probableTile)
+                probableTile = possibleTiles.find(t => t.tile.tileValue === (testChowTiles[1].tile.tileValue + 1));
+              
+              if(probableTile){
+                console.log('found matching tiles to chow');
+                chowTiles.push(probableTile);
+                chowTiles.push(t);
+                break;
+              }
+            }else{
+              //then these two tiles is not connected
+              console.log('tile is NOT connected')
+              let probableTile = possibleTiles.find(t => t.tile.tileValue === (testChowTiles[0].tile.tileValue + 1));              
+              if(probableTile){
+                console.log('found matching tiles to chow');
+                chowTiles.push(probableTile);
+                chowTiles.push(t);
+                break;
+              }
+            }
+          }
+        }
+        else{
+          console.log('not possible to chow tiles because possible chow tiles is ' + possibleTiles?.length);
+        }
+    }
+
+    if(chowTiles.length === 2){
+      chowTiles.forEach(t => console.log(t.tile.tileValue))
+      chow(chowTiles)
+    }
+    else
+      console.log('cant chow because chowTiles length is ' + chowTiles.length);
+    }
 
   const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
     const { destination, draggableId } = result;
@@ -180,6 +258,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Button>
               <Button loading={loading} onClick={pong}>
                 Pong
+              </Button>
+              <Button loading={loading} onClick={doChow}>
+                Chow
               </Button>
             </Grid.Row>
             <Grid.Row>

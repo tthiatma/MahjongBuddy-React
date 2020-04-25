@@ -364,6 +364,30 @@ export default class HubStore {
     }
   }
 
+  @action chow = async(tiles: IRoundTile[]) =>{
+
+    let values = this.getGameAndRoundProps();
+    values.ChowTiles = tiles;
+
+    runInAction(() => {
+      this.loading = true;
+    });
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        this.hubConnection!.invoke('ChowTile', values);
+        runInAction(() => {
+          this.loading = false;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem invoking chow to hub ");
+    }
+  }
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id.toString();

@@ -65,7 +65,6 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
                             }}
                             className="flexTiles"
                           />
-                          {console.log(toJS(rt))}                         
                         </div>
                       )}
                     </Draggable>

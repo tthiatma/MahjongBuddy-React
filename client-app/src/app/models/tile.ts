@@ -21,7 +21,7 @@ export interface ITile {
     imageSmall: string;
 }
 
-enum TileValue
+export enum TileValue
 {
     One = 1,
     Two = 2,

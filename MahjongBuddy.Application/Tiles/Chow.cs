@@ -13,13 +13,16 @@ using System.Threading.Tasks;
 
 namespace MahjongBuddy.Application.Tiles
 {
-    public class Pong
+    public class Chow
     {
         public class Command : IRequest<RoundDto>
         {
             public string GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
+
+            //TODO: just use ID instead of whole tile object here
+            public ICollection<RoundTile> ChowTiles { get; set; }
         }
         public class Handler : IRequestHandler<Command, RoundDto>
         {
@@ -33,14 +36,11 @@ namespace MahjongBuddy.Application.Tiles
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                //Note to consider when pong tile:
-                //-player turn changed
-                //-flag when user can pong
-                //-when pong tile user need to throw a tile.
+                //Note to consider when chow tile:
+                //-when chow tile user need to throw a tile.
                 //assign tile ownership to current user
 
                 var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<UserRound>();
 
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
@@ -49,50 +49,46 @@ namespace MahjongBuddy.Application.Tiles
 
                 round.IsHalted = true;
 
+                if(request.ChowTiles == null || request.ChowTiles.Count() != 2)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "invalid data to chow tiles" });
+
                 var boardActiveTiles = round.RoundTiles.Where(t => t.Status == TileStatus.BoardActive);
                 if (boardActiveTiles == null || boardActiveTiles.Count() > 1)
-                    throw new RestException(HttpStatusCode.BadRequest, new {Round = "there are more than one tiles to pong" });
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no tile or more than one tiles to chow" });
 
-                var tileToPong = boardActiveTiles.First();
+                var tileToChow = boardActiveTiles.First();
 
-                updatedTiles.Add(tileToPong);
+                if(tileToChow.Tile.TileType == TileType.Dragon || tileToChow.Tile.TileType == TileType.Flower || tileToChow.Tile.TileType == TileType.Wind)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile must be money, round, or stick for chow" });
 
-                //check if user currently have two tile to pong 
+                var chowTileIds = request.ChowTiles.Select(t => t.Id);
+                var dbTilesToChow = round.RoundTiles.Where(t => chowTileIds.Contains(t.Id)).ToList();
 
-                var matchingUserTiles = round.RoundTiles
-                    .Where(t => t.Owner == request.UserName 
-                        && t.Tile.TileType == tileToPong.Tile.TileType 
-                        && t.Tile.TileValue == tileToPong.Tile.TileValue);
+                dbTilesToChow.Add(tileToChow);
+
+                var sortedChowTiles = dbTilesToChow.OrderBy(t => t.Tile.TileValue).ToArray();
+
+                //check if its straight
+                if (sortedChowTiles[0].Tile.TileValue + 1 == sortedChowTiles[1].Tile.TileValue
+                    && sortedChowTiles[1].Tile.TileValue + 1 == sortedChowTiles[2].Tile.TileValue)
+                {
+                    foreach (var tile in sortedChowTiles)
+                    {
+                        tile.Owner = request.UserName;
+                        tile.TileSetGroup = TileSetGroup.Chow;
+                        tile.Status = TileStatus.UserGraveyard;
+                    }
+                }
+                else
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile is not in sequence to chow" });
+                }
                 
-                if(matchingUserTiles == null || matchingUserTiles.Count() != 2)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are more than one tiles to pong" });
-
-                foreach (var tile in matchingUserTiles)
-                {
-                    updatedTiles.Add(tile);
-                }
-
-                foreach (var tile in updatedTiles)
-                {
-                    tile.Owner = request.UserName;
-                    tile.TileSetGroup = TileSetGroup.Pong;
-                    tile.Status = TileStatus.UserGraveyard;
-                }
+                updatedTiles.AddRange(sortedChowTiles);
 
                 var currentPlayer = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
-                if(currentPlayer == null)
+                if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
-
-                currentPlayer.IsMyTurn = true;
-
-                var otherPlayerTurn = round.UserRounds.FirstOrDefault(u => u.IsMyTurn == true);
-                if(otherPlayerTurn != null)
-                {
-                    otherPlayerTurn.IsMyTurn = false;
-                    updatedPlayers.Add(otherPlayerTurn);
-                }
-
-                updatedPlayers.Add(currentPlayer);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
@@ -100,12 +96,10 @@ namespace MahjongBuddy.Application.Tiles
 
                 roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
 
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<UserRound>, ICollection<RoundPlayerDto>>(updatedPlayers);
-
                 if (success)
                     return roundToReturn;
 
-                throw new Exception("Problem pong ing tile");
+                throw new Exception("Problem chow ing tile");
             }
         }
     }
