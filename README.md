@@ -20,8 +20,13 @@ In order for the application to work, navigate to **MahjongBuddy.API** folder an
     "AllowedHosts": "*"
 }
 ```
+## IDE & Software
+- [.Net Core 3](https://dotnet.microsoft.com/download)
+- [Node](https://nodejs.org/en/download/)
+- [Visual studio code](https://code.visualstudio.com/)
+- [Git](https://git-scm.com/)
 
-## Recommended Visual studio code extension:
+### Recommended Visual studio code extension:
 - C#
 - C# Extensions
 - Auto Close Tag
