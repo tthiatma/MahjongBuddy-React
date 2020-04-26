@@ -1,8 +1,8 @@
 # MahjongBuddy with ASP.Net Core 3 + React Typescript + Mobx 
 
 ## Setup
-In order for the application to work, navigate to **MahjongBuddy.API** folder and do below: 
-- Run dotnet user-secrets set "TokenKey" "[InsertLongSecretKeyHere]"
+In order for the application to work, navigate to **MahjongBuddy.API** folder and do below steps: 
+- Add user secret for Token key by running  `dotnet user-secrets set "TokenKey" "[InsertLongSecretKeyHere]"`
 - create a new file called **appsettings.json** like below as example
 
 ```json
