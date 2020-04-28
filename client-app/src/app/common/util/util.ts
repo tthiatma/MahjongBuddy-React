@@ -4,6 +4,7 @@ import { WindDirection } from "../../models/windEnum";
 import { IRound } from "../../models/round";
 import { runInAction } from "mobx";
 import RoundStore from "../../stores/roundStore";
+import { IRoundTile } from "../../models/tile";
 
 export const GetOtherUserWindPosition = (currentUserWind:WindDirection , direction: string) => {
   switch(direction){
@@ -44,6 +45,14 @@ export const GetOtherUserWindPosition = (currentUserWind:WindDirection , directi
       }
     break;
   }
+}
+
+export const sortTiles = (a: IRoundTile, b: IRoundTile) => {
+  if(a.tile.tileType > b.tile.tileType) return -1;
+  if(a.tile.tileType < b.tile.tileType) return 1;
+  if(a.tile.tileValue > b.tile.tileValue) return 1;
+  if(a.tile.tileValue < b.tile.tileValue) return -1;  
+  return 0;
 }
 
 export const combineDateAndTime = (date: Date, time: Date) => {

@@ -88,6 +88,14 @@ namespace MahjongBuddy.API.SignalR
             await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }
 
+        public async Task KongTile(Kong.Command command)
+        {
+            string userName = GetUserName();
+            command.UserName = userName;
+            var round = await _mediator.Send(command);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+        }
+
         public async Task ChowTile(Chow.Command command)
         {
             string userName = GetUserName();

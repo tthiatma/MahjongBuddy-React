@@ -10,7 +10,7 @@ import {
 } from "@microsoft/signalr";
 import { WindDirection } from "../models/windEnum";
 import { IRound } from "../models/round";
-import { IRoundTile } from "../models/tile";
+import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
 
@@ -388,6 +388,29 @@ export default class HubStore {
       toast.error("problem invoking chow to hub ");
     }
   }
+
+  @action kong = async(tileType: TileType, tileValue: TileValue) => {
+    let values = this.getGameAndRoundProps();
+    this.loading = true;
+    values.TileType = tileType;
+    values.TileValue = tileValue;
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        this.hubConnection!.invoke('KongTile', values);
+        runInAction(() => {
+          this.loading = false;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem invoking kong to hub ");
+    }
+  }
+
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id.toString();

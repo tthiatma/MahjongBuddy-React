@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, Fragment } from "react";
-import { Grid, Button } from "semantic-ui-react";
+import { Grid, Button, IconGroup } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
@@ -11,7 +11,9 @@ import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable, ResponderProvided } from "react-beautiful-dnd";
 import { toJS, runInAction } from "mobx";
-import { IRoundTile, TileValue } from "../../../app/models/tile";
+import { IRoundTile, TileValue, TileSetGroup } from "../../../app/models/tile";
+import _ from "lodash";
+import { TileStatus } from "../../../app/models/tileStatus";
 
 interface DetailParams {
   roundId: string;
@@ -31,7 +33,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayer,
     rightPlayer,
     topPlayer,
+    mainPlayerTiles,
     mainPlayerActiveTiles,
+    mainPlayerAliveTiles,
     mainPlayerGraveYardTiles,
     mainPlayerJustPickedTile,
     boardActiveTile,
@@ -45,6 +49,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     throwTile,
     pickTile,
     pong,
+    kong,
     chow,
     loading,
     createHubConnection,
@@ -156,6 +161,76 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       console.log('cant chow because chowTiles length is ' + chowTiles.length);
     }
 
+    const doKong = () => {
+
+      let validTileForKongs :IRoundTile[] = [];
+      let mpt = mainPlayerTiles?.map(t => toJS(t));
+
+      var kongTiles =  _.chain(mpt)
+      .groupBy((asd)=>`${asd.tile.tileType}-${asd.tile.tileValue}`)
+      .filter((asd) => asd.length > 2)
+      .value()
+
+      _.forEach(kongTiles, function(ts){
+        if(ts.length === 3){
+          //if player has 3 same tiles and not in graveyard, they can kong matching board active tile anytime even if its not their turn
+          let userActive = _.filter(ts, (t) => t.status !== TileStatus.UserGraveyard);
+          //console.log(userActive);
+          if(userActive.length === 3 
+            && boardActiveTile
+            && userActive[0].tile.tileType === boardActiveTile.tile.tileType
+            && userActive[0].tile.tileValue === boardActiveTile.tile.tileValue)
+            validTileForKongs.push(boardActiveTile);
+        }
+
+        if(ts.length === 4){
+          //if its player's turn 
+          if(mainPlayer && mainPlayer.isMyTurn){
+            //if player has 3 same tiles and its already ponged, player can kong only from their active and just picked tile
+            let pongedTile = _.filter(ts, (t) => t.tileSetGroup === TileSetGroup.Pong);
+            if(pongedTile.length === 3){
+              //check if user active tile 
+              let tileIsAlive = _.filter(mainPlayerAliveTiles, (t) => t.tile.tileValue === pongedTile[0].tile.tileValue
+              && t.tile.tileType === pongedTile[0].tile.tileType)
+  
+              if(tileIsAlive.length > 0 )
+                validTileForKongs.push(tileIsAlive[0]);
+            }  
+
+            //if tile is not in graveyard, then player can kong when its his turn
+            let allTileAlive = _.filter(ts, (t) => t.status !== TileStatus.UserGraveyard)
+            if(allTileAlive.length === 4)
+              validTileForKongs.push(allTileAlive[0]);
+          }
+        }
+
+      });
+      _.forEach(validTileForKongs, (t) => console.log(t));
+
+      if(validTileForKongs.length === 1){
+        console.log ('Valid tile to kong');
+        console.log (toJS(validTileForKongs[0]));
+        let kt = toJS(validTileForKongs[0])
+        kong(kt.tile.tileType, kt.tile.tileValue);
+      }
+      else{
+        //display option which tile to kong
+      }
+
+      // kong only possible when there are 3 or 4 tiles in user posession
+      // let sameTileType:any = _.groupBy(asd, 'tile.tileType');
+      // let rawr = _.forEach(sameTileType, function(value, key) {
+      //   sameTileType[key] = _.groupBy(sameTileType[key], 'tile.tileValue');
+      // }); 
+      // _.forEach(rawr, (v, k) => console.log(v))
+    //check board active tile where any tile that can be kong
+
+      //check if its user turn
+
+      //if its user's turn, its possible that it could be multiple kong
+
+      //TODO: present options which tile to kong
+    }
   const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
     const { destination, draggableId } = result;
     if (!destination) {
@@ -261,6 +336,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Button>
               <Button loading={loading} onClick={doChow}>
                 Chow
+              </Button>
+              <Button loading={loading} onClick={doKong}>
+                Kong
               </Button>
             </Grid.Row>
             <Grid.Row>

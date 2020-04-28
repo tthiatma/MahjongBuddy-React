@@ -49,7 +49,7 @@ export enum TileValue
     FlowerNumericFour = 24
 }
 
-enum TileType{
+export enum TileType{
     Circle,
     Money,
     Stick,
@@ -58,7 +58,7 @@ enum TileType{
     Flower
 }
 
-enum TileSetGroup {
+export enum TileSetGroup {
     None,
     Chow,
     Pong,

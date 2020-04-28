@@ -1,7 +1,7 @@
 import { observable, action, runInAction, computed } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
-import { setRoundProps } from "../common/util/util";
+import { setRoundProps, sortTiles } from "../common/util/util";
 import { IRound, IRoundPlayer, IRoundSimple } from "../models/round";
 import { IRoundTile } from "../models/tile";
 import { TileStatus } from "../models/tileStatus";
@@ -34,15 +34,35 @@ export default class RoundStore {
   : null;
   }
 
+  @computed get mainPlayerTiles() {
+    return this.roundTiles && this.roundSimple && this.leftPlayer
+    ? this.roundTiles
+    .filter((rt) => rt.owner === this.rootStore.userStore.user!.userName)
+    : null;
+  }
+
+  @computed get mainPlayerAliveTiles(){
+    return this.roundTiles
+  ? this.roundTiles
+  .filter((rt) => rt.owner === this.rootStore.userStore.user!.userName 
+    && (rt.status === TileStatus.UserActive || rt.status === TileStatus.UserJustPicked))
+  .sort(sortTiles)
+  : null;
+  }
+
   @computed get mainPlayerActiveTiles(){
     return this.roundTiles
-  ? this.roundTiles.filter((rt) => rt.owner === this.rootStore.userStore.user?.userName && rt.status === TileStatus.UserActive)
+  ? this.roundTiles
+  .filter((rt) => rt.owner === this.rootStore.userStore.user!.userName && rt.status === TileStatus.UserActive)
+  .sort(sortTiles)
   : null;
   }
 
   @computed get mainPlayerGraveYardTiles() {
     return this.roundTiles
-  ? this.roundTiles.filter((rt) => rt.owner === this.rootStore.userStore.user?.userName && rt.status === TileStatus.UserGraveyard)
+  ? this.roundTiles
+  .filter((rt) => rt.owner === this.rootStore.userStore.user?.userName && rt.status === TileStatus.UserGraveyard)
+  .sort(sortTiles)
   : null;
   }
 
@@ -54,19 +74,25 @@ export default class RoundStore {
 
   @computed get leftPlayerTiles () {
     return this.roundTiles && this.roundSimple && this.leftPlayer
-    ? this.roundTiles.filter((rt) => rt.owner === this.leftPlayer?.userName)
+    ? this.roundTiles
+    .filter((rt) => rt.owner === this.leftPlayer?.userName)
+    .sort(sortTiles)
     : null;
   }  
 
   @computed get topPlayerTiles() {
     return this.roundTiles && this.roundSimple && this.topPlayer
-      ? this.roundTiles.filter((rt) => rt.owner === this.topPlayer?.userName)
+      ? this.roundTiles
+      .filter((rt) => rt.owner === this.topPlayer?.userName)
+      .sort(sortTiles)
       : null;
   } 
 
   @computed get rightPlayerTiles() {
     return this.roundTiles && this.roundSimple && this.rightPlayer
-    ? this.roundTiles.filter((rt) => rt.owner === this.rightPlayer?.userName)
+    ? this.roundTiles
+    .filter((rt) => rt.owner === this.rightPlayer?.userName)
+    .sort(sortTiles)
     : null;
   } 
 
