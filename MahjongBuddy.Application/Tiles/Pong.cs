@@ -85,7 +85,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 currentPlayer.IsMyTurn = true;
 
-                var otherPlayerTurn = round.UserRounds.FirstOrDefault(u => u.IsMyTurn == true);
+                var otherPlayerTurn = round.UserRounds.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
                 if(otherPlayerTurn != null)
                 {
                     otherPlayerTurn.IsMyTurn = false;
