@@ -33,6 +33,5 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         {
             TestDataContext.Dispose();            
         }
-
     }
 }

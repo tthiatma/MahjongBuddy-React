@@ -60,13 +60,6 @@ namespace MahjongBuddy.Application.Tiles
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 
-                var boardActiveTiles = round.RoundTiles.Where(t => t.Status == TileStatus.BoardActive);
-                if (boardActiveTiles == null || boardActiveTiles.Count() > 1)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are more than one tiles to kong" });
-
-                var bat = boardActiveTiles.First();
-                var boardActiveMatchedWithRequest = (bat.Tile.TileType == request.TileType && bat.Tile.TileValue == request.TileValue);
-
                 List<RoundTile> userActiveTilesToKong = new List<RoundTile>();
                 var currentUserTiles = round.RoundTiles.Where(t => t.Owner == request.UserName);
 
@@ -77,37 +70,42 @@ namespace MahjongBuddy.Application.Tiles
                 .Where(t => t.Tile.TileType == request.TileType 
                 && t.Tile.TileValue == request.TileValue);
 
-                if (currentPlayer.IsMyTurn)
+                if(tilesToKong.Count() == 4)
                 {
-                    if(tilesToKong.Count() == 4)
+                    if(currentPlayer.IsMyTurn)
                     {
-                        updatedTiles.AddRange(tilesToKong);
-                    }
-                    if (tilesToKong.Count() == 3)
-                    {                    
-                        var userRequestedTileTokong = tilesToKong.First(t => t.Status != TileStatus.UserGraveyard );
-
-                        if(userRequestedTileTokong != null)
+                        //if its not konged already, then user can kong it
+                        var kongedTile = tilesToKong.Where(t => t.TileSetGroup == TileSetGroup.Kong);
+                        if (kongedTile.Count() == 0)
                         {
                             updatedTiles.AddRange(tilesToKong);
-                            updatedTiles.Add(userRequestedTileTokong);
                         }
-                        if(boardActiveMatchedWithRequest)
+                    }
+                }
+                if (tilesToKong.Count() == 3)
+                {
+                    //if user only have three and its already ponged, then player can't kong
+                    var tilesAlreadyPonged = tilesToKong.Where(t => t.TileSetGroup == TileSetGroup.Pong);
+                    if(tilesAlreadyPonged.Count() == 3)
+                        throw new RestException(HttpStatusCode.BadRequest, new { Round = "Can't do kong when all tiles ponged" });
+
+                    var boardActiveTiles = round.RoundTiles.Where(t => t.Status == TileStatus.BoardActive);
+                    if (boardActiveTiles == null || boardActiveTiles.Count() > 1)
+                        throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are more than one tiles to kong" });
+                    var bat = boardActiveTiles.First();
+                    var boardActiveMatchedWithRequest = (bat.Tile.TileType == request.TileType && bat.Tile.TileValue == request.TileValue);
+
+                    if (boardActiveMatchedWithRequest)
+                    {
+                        //only have 3 active tiles then board must exist to kong
+                        var allTilesAreActive = tilesToKong.Where(t => t.Status != TileStatus.UserGraveyard);
+                        if (boardActiveMatchedWithRequest && allTilesAreActive.Count() == 3)
                         {
                             updatedTiles.AddRange(tilesToKong);
                             updatedTiles.Add(bat);
                         }
                     }
-                }
-                else
-                {
-                    //not user's turn, so can only kong from board active tile
-                    if (tilesToKong.Count() == 3 && boardActiveMatchedWithRequest)
-                    {
-                        updatedTiles.AddRange(tilesToKong);
-                        updatedTiles.Add(bat);
-                    }
-                }
+                }                
 
                 if(updatedTiles.Count() == 4)
                     updatedTiles.GoGraveyard(request.UserName, TileSetGroup.Kong);

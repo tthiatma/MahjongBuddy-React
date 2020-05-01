@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace MahjongBuddy.Application.Tests.Fixtures
 {
-    public class GameFixture: BaseFixture
+    public class GameFixture: BaseFixture, IDisposable
     {
         public string MainPlayerUserName { get; set; }
         public string OtherPlayerName { get; set; }
@@ -29,6 +29,10 @@ namespace MahjongBuddy.Application.Tests.Fixtures
             OtherPlayerRound = TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == OtherPlayerName);
         }
 
+        public override void Dispose()
+        {
+            base.Dispose();
+        }
         private void CreateUser()
         {
             TestDataContext.Users.AddRange(new List<AppUser>
@@ -98,7 +102,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
             });
         }
 
-        private void CreateRound()
+        public void CreateRound()
         {
             TestDataContext.Rounds.Add(new Round
             {
