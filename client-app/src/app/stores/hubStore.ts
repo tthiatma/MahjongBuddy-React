@@ -188,9 +188,7 @@ export default class HubStore {
           });
         })
         .catch((error) => {
-          runInAction(() => {
-            this.loading = false;
-          });
+          this.loading = false;
           console.log("Error establishing connection", error);
         });
     } else if (this.hubConnection!.state === "Connected") {
@@ -224,7 +222,9 @@ export default class HubStore {
   @action addChatMsg = async (values: any) => {
     values.gameId = this.gameStore.game!.id;
     try {
-      this.hubConnection!.invoke("SendChatMsg", values);
+      this.hubConnection!.invoke("SendChatMsg", values).catch((e) => {
+        toast.error("Unable to send chat message");
+      });
     } catch (error) {
       console.log(error);
     }
