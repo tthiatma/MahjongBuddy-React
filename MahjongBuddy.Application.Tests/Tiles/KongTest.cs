@@ -1,10 +1,8 @@
 ﻿using MahjongBuddy.Application.Errors;
-using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Application.Tests.Fixtures;
 using MahjongBuddy.Application.Tests.Helpers;
 using MahjongBuddy.Application.Tiles;
 using MahjongBuddy.Core;
-using Moq;
 using System;
 using System.Linq;
 using System.Net;

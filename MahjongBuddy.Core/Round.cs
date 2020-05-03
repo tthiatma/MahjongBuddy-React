@@ -15,7 +15,6 @@ namespace MahjongBuddy.Core
         public bool IsOver { get; set; }
         public bool IsPaused { get; set; }
         public bool IsTied { get; set; }
-        public bool IsWinnerSelfPicked { get; set; }
         public int GameId { get; set; }
         public virtual Game Game { get; set; }
         public virtual ICollection<RoundResult> RoundResults { get; set; }

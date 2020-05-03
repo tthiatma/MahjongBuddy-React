@@ -411,6 +411,24 @@ export default class HubStore {
     }
   }
 
+  @action win = async() => {
+    try {
+      this.loading = true;
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        this.hubConnection
+        .invoke("Win", this.getGameAndRoundProps())
+        .catch((e) => {
+          toast.error("Can't win");
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      toast.error("problem calling win");
+    } finally {
+      this.loading = false;
+    }
+  }
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id.toString();

@@ -28,12 +28,6 @@ namespace MahjongBuddy.Application.Helpers
             }
         }
 
-        public static void ResetTiles(MahjongBuddyDbContext context)
-        { 
-        
-        }
-
-
         public static List<RoundTile>CreateTiles(MahjongBuddyDbContext context)
         {
             var allTiles = context.Tiles.ToList();
