@@ -5,6 +5,8 @@
     {
         None,
 
+        Chicken,
+
         //ping wu
         Straight,
 
@@ -13,9 +15,13 @@
 
         //wan jat sik
         MixedOneSuit,
+        StraightMixedOneSuit,
+        TriplettMixedOneSuit,
 
         //cing jat sik
         AllOneSuit,
+        StraightAllOneSuit,
+        PongAllOneSuit,
 
         SevenPairs,
 
@@ -23,6 +29,7 @@
         ThirteenOrphans,
 
         //jiu gau
+        //one nine one nine
         Orphans,
 
         //siu saam jyun

@@ -83,5 +83,206 @@ namespace MahjongBuddy.Application.Helpers
 
             return tiles;
         }
+
+        public static HandType DetermineHandCanWin(IEnumerable<RoundTile> tiles)
+        {
+            //if all weird combo hand is checked, in order to win 
+            //tiles needs to be either, chicken, straight, or triplet
+
+            if (tiles.Count() != 14)
+                return HandType.None;
+
+            //get possible eyes
+            //TODO: improve the way picking eyes by selecting ignoring 3 same tiles first
+            List<IEnumerable<RoundTile>> eyeCollection = new List<IEnumerable<RoundTile>>();
+            foreach (var t in tiles)
+            {
+                var sameTiles = tiles.Where(ti => ti.Tile.TileValue == t.Tile.TileValue && ti.Tile.TileType == t.Tile.TileType);
+                if (sameTiles != null && sameTiles.Count() > 1)
+                {
+                    eyeCollection.Add(sameTiles.Take(2));
+                }
+            }
+
+            if (eyeCollection.Count() == 0)
+                return HandType.None;
+
+            //test for triplet first because it has higher point
+            bool allPong = false;
+            foreach (var eyes in eyeCollection)
+            {
+                //remove possible eyes from tiles
+                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
+                foreach (var t in eyes)
+                {
+                    tilesWithoutEyes.Remove(t);
+                }
+
+                //try check all pong
+                for (int i = 0; i < 4; i++)
+                {
+                    var pongSet = GetPongSet(tilesWithoutEyes);
+                    if(pongSet == null)
+                    {
+                        break;
+                    }
+                    tilesWithoutEyes = tilesWithoutEyes.Except(pongSet).ToList();
+                    //if it gets all the way to last set
+                    if (i == 3)
+                        allPong = true;
+                }
+                if (allPong)
+                    return HandType.Triplets;
+            }
+
+            //test for straight
+            bool allStraight = false;
+            foreach (var eyes in eyeCollection)
+            {
+                //remove possible eyes from tiles
+                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
+                foreach (var t in eyes)
+                {
+                    tilesWithoutEyes.Remove(t);
+                }
+
+                //try check all straight
+                for (int i = 0; i < 4; i++)
+                {
+                    var straightSet = GetStraightSet(tilesWithoutEyes);
+                    if (straightSet == null)
+                    {
+                        break;
+                    }
+                    tilesWithoutEyes = tilesWithoutEyes.Except(straightSet).ToList();
+                    //if it gets all the way to last set
+                    if (i == 3)
+                        allStraight = true;
+                }
+                if (allStraight)
+                    return HandType.Straight;
+            }
+            //test for chicken
+            bool isChicken = false;
+            foreach (var eyes in eyeCollection)
+            {
+                //remove possible eyes from tiles
+                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
+                foreach (var t in eyes)
+                {
+                    tilesWithoutEyes.Remove(t);
+                }
+
+                //try check all set
+                for (int i = 0; i < 4; i++)
+                {
+                    var anySet = GetAnySet(tilesWithoutEyes);
+                    if (anySet == null)
+                    {
+                        break;
+                    }
+                    tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
+                    //if it gets all the way to last set
+                    if (i == 3)
+                        isChicken = true;
+                }
+                if (isChicken)
+                    return HandType.Chicken;
+            }
+
+            return HandType.None;
+        }
+
+
+        public static IEnumerable<RoundTile> GetPongSet(IEnumerable<RoundTile> tiles)
+        {
+            foreach (var t in tiles)
+            {
+                var temp = FindPongTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                {
+                    return temp;
+                }
+            }
+            return null;
+        }
+
+        public static IEnumerable<RoundTile> GetAnySet(IEnumerable<RoundTile> tiles)
+        {
+            foreach (var t in tiles)
+            {
+                var temp = FindPongTiles(t, tiles);
+                if (temp == null)
+                    temp = FindStraightTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                {
+                    return temp;
+                }
+            }
+            return null;
+        }
+
+        public static IEnumerable<RoundTile> GetStraightSet(IEnumerable<RoundTile> tiles)
+        {
+            foreach (var t in tiles)
+            {
+                var temp = FindStraightTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                {
+                    return temp;
+                }
+            }
+            return null;
+        }
+
+
+        public static List<RoundTile> FindStraightTiles(RoundTile theTile, IEnumerable<RoundTile> tiles)
+        {
+            var ret = new List<RoundTile>();
+
+            var sameTypeTiles = tiles.Where(t => t.Tile.TileType == theTile.Tile.TileType);
+            foreach (var t in sameTypeTiles)
+            {
+                if (sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue - 2)) && sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue - 1)))
+                {
+                    ret.Add(t);
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue - 2)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue - 1)).First());
+                    break;
+                }
+
+                if (sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue - 1)) && sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)))
+                {
+                    ret.Add(t);
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue - 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)).First());
+                    break;
+                }
+
+                if (sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)) && sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue + 2)))
+                {
+                    ret.Add(t);
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue + 2)).First());
+                    break;
+                }
+            }
+            return ret;
+        }
+
+
+        public static List<RoundTile> FindPongTiles(RoundTile theTile, IEnumerable<RoundTile> tiles)
+        {
+            var ret = new List<RoundTile>();
+            var sameTiles = tiles.Where(t => t.Tile.TileType == theTile.Tile.TileType && t.Tile.TileValue == theTile.Tile.TileValue);
+            if (sameTiles != null && sameTiles.Count() == 3)
+            {
+                foreach (var t in sameTiles)
+                {
+                    ret.Add(t);
+                }
+            }
+            return ret;
+        }
     }
 }

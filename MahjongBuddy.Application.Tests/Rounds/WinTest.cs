@@ -32,7 +32,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForSevenPairsWithBoard(context, _f.MainPlayerUserName);
+            var tiles = WinTilesHelper.SetupForSevenPairs(context, _f.MainPlayerUserName, selfPick: false);
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -47,7 +47,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForThirteenOrphansWithBoard(context, _f.MainPlayerUserName);
+            var tiles = WinTilesHelper.SetupForThirteenOrphans(context, _f.MainPlayerUserName, selfPick: false);
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -55,6 +55,36 @@ namespace MahjongBuddy.Application.Tests.Rounds
             var result = new HandTypeHelper(tiles).GetHandType();
 
             Assert.Equal(HandType.ThirteenOrphans, result);
+        }
+
+        [Fact]
+        public void Detect_Triplets()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: false);
+
+            _f.OtherPlayerRound.IsMyTurn = true;
+            _f.MainPlayerRound.IsMyTurn = false;
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(HandType.Triplets, result);
+        }
+
+        [Fact]
+        public void Detect_Straight()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForStraight(context, _f.MainPlayerUserName, selfPick: false);
+
+            _f.OtherPlayerRound.IsMyTurn = true;
+            _f.MainPlayerRound.IsMyTurn = false;
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(HandType.Triplets, result);
         }
     }
 }

@@ -1,7 +1,6 @@
-﻿using MahjongBuddy.Core;
-using System;
+﻿using MahjongBuddy.Application.Rounds.Scorings.HandTypes;
+using MahjongBuddy.Core;
 using System.Collections.Generic;
-using System.Text;
 
 namespace MahjongBuddy.Application.Rounds.Scorings
 {
@@ -14,7 +13,9 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             _tiles = tiles;
             _initial = new SevenPairs(tiles);
             FindHandType thirteenOrphans = new ThirteenOrphans(tiles);
+            FindHandType legitSet = new LegitSet(tiles);
             _initial.SetSuccessor(thirteenOrphans);
+            thirteenOrphans.SetSuccessor(legitSet);
         }
 
         public HandType GetHandType()
