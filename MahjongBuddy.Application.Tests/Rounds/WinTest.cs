@@ -84,7 +84,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var result = new HandTypeHelper(tiles).GetHandType();
 
-            Assert.Equal(HandType.Triplets, result);
+            Assert.Equal(HandType.Straight, result);
         }
     }
 }

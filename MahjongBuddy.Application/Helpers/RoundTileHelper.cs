@@ -131,9 +131,10 @@ namespace MahjongBuddy.Application.Helpers
                     if (i == 3)
                         allPong = true;
                 }
-                if (allPong)
-                    return HandType.Triplets;
             }
+            if (allPong)
+                return HandType.Triplets;
+
 
             //test for straight
             bool allStraight = false;
@@ -159,9 +160,10 @@ namespace MahjongBuddy.Application.Helpers
                     if (i == 3)
                         allStraight = true;
                 }
-                if (allStraight)
-                    return HandType.Straight;
             }
+            if (allStraight)
+                return HandType.Straight;
+
             //test for chicken
             bool isChicken = false;
             foreach (var eyes in eyeCollection)
@@ -186,9 +188,9 @@ namespace MahjongBuddy.Application.Helpers
                     if (i == 3)
                         isChicken = true;
                 }
-                if (isChicken)
-                    return HandType.Chicken;
             }
+            if (isChicken)
+                return HandType.Chicken;
 
             return HandType.None;
         }
