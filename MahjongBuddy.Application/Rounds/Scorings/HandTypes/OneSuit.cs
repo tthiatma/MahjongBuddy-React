@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 {
-    class MixedOneSuit : FindHandType
+    class OneSuit : FindHandType
     {
         public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
@@ -34,9 +34,13 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
                     }
                 }
             }
-            
-            if(dragonOrWind.Count() > 0 && allSameType)
-                handTypes.Add(HandType.MixedOneSuit);
+            if(allSameType)
+            {
+                if(dragonOrWind.Count() > 0)
+                    handTypes.Add(HandType.MixedOneSuit);
+                else
+                    handTypes.Add(HandType.AllOneSuit);
+            }                
 
             if (_successor != null)
                 return _successor.HandleRequest(tiles, handTypes);

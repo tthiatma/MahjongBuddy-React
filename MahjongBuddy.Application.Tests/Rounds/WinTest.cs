@@ -35,9 +35,6 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var tiles = WinTilesHelper.SetupForSevenPairs(context, _f.MainPlayerUserName, selfPick: true);
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
-
             var result = new HandTypeHelper(tiles).GetHandType();
 
             Assert.Contains(HandType.SevenPairs, result);
@@ -49,9 +46,6 @@ namespace MahjongBuddy.Application.Tests.Rounds
             var context = _f.TestDataContext;
 
             var tiles = WinTilesHelper.SetupForThirteenOrphans(context, _f.MainPlayerUserName, selfPick: true);
-
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
 
             List<HandType> result = new HandTypeHelper(tiles).GetHandType();
 
@@ -65,9 +59,6 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var tiles = WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: true);
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
-
             var result = new HandTypeHelper(tiles).GetHandType();
 
             Assert.Contains(HandType.Triplets, result);
@@ -80,13 +71,11 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var tiles = WinTilesHelper.SetupForStraight(context, _f.MainPlayerUserName, selfPick: true);
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
-
             var result = new HandTypeHelper(tiles).GetHandType();
 
             Assert.Contains(HandType.Straight, result);
         }
+
         [Fact]
         public void Detect_MixedOneSuit()
         {
@@ -94,13 +83,52 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var tiles = WinTilesHelper.SetupForMixedOneSuit(context, _f.MainPlayerUserName, selfPick: true);
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
-
             var result = new HandTypeHelper(tiles).GetHandType();
 
             Assert.Contains(HandType.MixedOneSuit, result);
             Assert.Contains(HandType.Chicken, result);
         }
+
+        [Fact]
+        public void Detect_AllOneSuit()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForAllOneSuit(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Contains(HandType.AllOneSuit, result);
+            Assert.Contains(HandType.Chicken, result);
+        }
+
+        [Fact]
+        public void Detect_AllOneSuit_Straight()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForAllOneSuitStraight(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(2, result.Count());
+            Assert.Contains(HandType.AllOneSuit, result);
+            Assert.Contains(HandType.Straight, result);
+        }
+
+        [Fact]
+        public void Detect_AllOneSuit_Triplets()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForAllOneSuitTriplets(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(2, result.Count());
+            Assert.Contains(HandType.AllOneSuit, result);
+            Assert.Contains(HandType.Triplets, result);
+        }
+
     }
 }
