@@ -6,10 +6,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 {
     class LegitSet : FindHandType
     {
-        public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
+        public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
             if (tiles == null)
-                return HandType.None;
+                return handTypes;
 
             var result = RoundTileHelper.DetermineHandCanWin(tiles);
 
@@ -17,16 +17,16 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
             {
                 if (_successor != null)
                 {
-                    return _successor.HandleRequest(tiles);
+                    return _successor.HandleRequest(tiles, handTypes);
                 }
                 else 
                 {
-                    return HandType.None;
+                    return handTypes;
                 }
             }
             else
             {
-                return HandType.None;
+                return handTypes;
             }
         }
     }

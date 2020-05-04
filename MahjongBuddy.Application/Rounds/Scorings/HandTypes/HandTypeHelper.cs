@@ -8,9 +8,11 @@ namespace MahjongBuddy.Application.Rounds.Scorings
     {
         readonly IEnumerable<RoundTile> _tiles;
         readonly FindHandType _initial;
+        List<HandType> _handtypes;
         public HandTypeHelper(IEnumerable<RoundTile> tiles)
         {
             _tiles = tiles;
+            _handtypes = new List<HandType>();
             _initial = new SevenPairs();
             FindHandType thirteenOrphans = new ThirteenOrphans();
             FindHandType legitSet = new LegitSet();
@@ -23,12 +25,12 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             triplets.SetSuccessor(straight);
         }
 
-        public HandType GetHandType()
+        public List<HandType> GetHandType()
         {
             if (_tiles != null)
-                return _initial.HandleRequest(_tiles);
+                return _initial.HandleRequest(_tiles, _handtypes);
             else
-                return HandType.None;
+                return _handtypes;
         }
     }
 }

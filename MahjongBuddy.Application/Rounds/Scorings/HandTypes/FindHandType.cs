@@ -11,6 +11,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             _successor = successor;
         }
 
-        public abstract HandType HandleRequest(IEnumerable<RoundTile> tiles);
+        public abstract List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> result);
     }
 }

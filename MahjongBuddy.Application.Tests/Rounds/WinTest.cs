@@ -3,6 +3,7 @@ using MahjongBuddy.Application.Tests.Fixtures;
 using MahjongBuddy.Application.Tests.Helpers;
 using MahjongBuddy.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -39,7 +40,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var result = new HandTypeHelper(tiles).GetHandType();
 
-            Assert.Equal(HandType.SevenPairs, result);
+            Assert.Contains(HandType.SevenPairs, result);
         }
 
         [Fact]
@@ -52,9 +53,9 @@ namespace MahjongBuddy.Application.Tests.Rounds
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
 
-            var result = new HandTypeHelper(tiles).GetHandType();
+            List<HandType> result = new HandTypeHelper(tiles).GetHandType();
 
-            Assert.Equal(HandType.ThirteenOrphans, result);
+            Assert.Contains(HandType.ThirteenOrphans, result);
         }
 
         [Fact]
@@ -69,7 +70,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var result = new HandTypeHelper(tiles).GetHandType();
 
-            Assert.Equal(HandType.Triplets, result);
+            Assert.Contains(HandType.Triplets, result);
         }
 
         [Fact]
@@ -84,7 +85,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
 
             var result = new HandTypeHelper(tiles).GetHandType();
 
-            Assert.Equal(HandType.Straight, result);
+            Assert.Contains(HandType.Straight, result);
         }
     }
 }

@@ -6,11 +6,11 @@ namespace MahjongBuddy.Application.Rounds.Scorings
 {
     class SevenPairs : FindHandType
     {
-        public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
+        public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
             //2-2-2-2-2-2-2 all tiles consist of pairs it can't be flowers obviously
             if (tiles == null)
-                return HandType.None;
+                return handTypes;
 
             //check al pairs      
             bool isAllPair = true;
@@ -28,16 +28,19 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             }
 
             if (isAllPair)
-                return HandType.SevenPairs;
+            {
+                handTypes.Add(HandType.SevenPairs);
+                return handTypes;
+            }
             else
             {
                 if (_successor != null)
                 {
-                    return _successor.HandleRequest(tiles);
+                    return _successor.HandleRequest(tiles, handTypes);
                 }
                 else
                 {
-                    return HandType.None;
+                    return handTypes;
                 }
             }
         }

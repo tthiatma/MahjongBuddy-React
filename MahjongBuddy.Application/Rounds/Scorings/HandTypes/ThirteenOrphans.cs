@@ -7,7 +7,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
 {
     class ThirteenOrphans : FindHandType
     {
-        public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
+        public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
             var thirteenWonderTiles = TileHelper.BuildThirteenWonder();
             bool foundEyesFor13Wonders = false;
@@ -47,17 +47,18 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             }
             if (is13Wonders)
             {
-                return HandType.ThirteenOrphans;
+                handTypes.Add(HandType.ThirteenOrphans);
+                return handTypes;
             }
             else
             {
                 if (_successor != null)
                 {
-                    return _successor.HandleRequest(tiles);
+                    return _successor.HandleRequest(tiles, handTypes);
                 }
                 else
                 {
-                    return HandType.None;
+                    return handTypes;
                 }
             }
         }

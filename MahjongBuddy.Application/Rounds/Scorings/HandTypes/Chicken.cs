@@ -6,24 +6,26 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 {
     class Chicken : FindHandType
     {
-        public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
+        public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
             if (tiles == null)
-                return HandType.None;
+                return handTypes;
 
             var result = RoundTileHelper.DetermineHandCanWin(tiles);
 
-            if (result == HandType.Chicken)
-                return HandType.Chicken;
+            if (result == HandType.Chicken) 
+            {
+                handTypes.Add(HandType.Chicken);
+                return handTypes;            }
             else
             {
                 if (_successor != null)
                 {
-                    return _successor.HandleRequest(tiles);
+                    return _successor.HandleRequest(tiles, handTypes);
                 }
                 else
                 {
-                    return HandType.None;
+                    return handTypes;
                 }
             }
         }
