@@ -100,7 +100,19 @@ namespace MahjongBuddy.Application.Helpers
                 var sameTiles = tiles.Where(ti => ti.Tile.TileValue == t.Tile.TileValue && ti.Tile.TileType == t.Tile.TileType);
                 if (sameTiles != null && sameTiles.Count() > 1)
                 {
-                    eyeCollection.Add(sameTiles.Take(2));
+                    bool exist = false;
+                    var tv = sameTiles.First().Tile.TileValue;
+                    var tp = sameTiles.First().Tile.TileType;
+                    foreach (IEnumerable<RoundTile> e in eyeCollection)
+                    {
+                        if (e.Where(t => t.Tile.TileType == tp && t.Tile.TileValue == tv).Count() > 0)
+                        {
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if(!exist)
+                        eyeCollection.Add(sameTiles.Take(2));
                 }
             }
 
@@ -195,16 +207,13 @@ namespace MahjongBuddy.Application.Helpers
             return HandType.None;
         }
 
-
         public static IEnumerable<RoundTile> GetPongSet(IEnumerable<RoundTile> tiles)
         {
             foreach (var t in tiles)
             {
                 var temp = FindPongTiles(t, tiles);
-                if (temp != null && temp.Count() == 3)
-                {
+                if (temp.Count() == 3)
                     return temp;
-                }
             }
             return null;
         }
@@ -213,13 +222,11 @@ namespace MahjongBuddy.Application.Helpers
         {
             foreach (var t in tiles)
             {
-                var temp = FindPongTiles(t, tiles);
-                if (temp == null)
-                    temp = FindStraightTiles(t, tiles);
+                var temp = FindStraightTiles(t, tiles);
+                if (temp.Count() == 0)
+                    temp = FindPongTiles(t, tiles);
                 if (temp != null && temp.Count() == 3)
-                {
                     return temp;
-                }
             }
             return null;
         }
@@ -229,14 +236,11 @@ namespace MahjongBuddy.Application.Helpers
             foreach (var t in tiles)
             {
                 var temp = FindStraightTiles(t, tiles);
-                if (temp != null && temp.Count() == 3)
-                {
+                if (temp.Count() == 3)
                     return temp;
-                }
             }
             return null;
         }
-
 
         public static List<RoundTile> FindStraightTiles(RoundTile theTile, IEnumerable<RoundTile> tiles)
         {
@@ -271,7 +275,6 @@ namespace MahjongBuddy.Application.Helpers
             }
             return ret;
         }
-
 
         public static List<RoundTile> FindPongTiles(RoundTile theTile, IEnumerable<RoundTile> tiles)
         {

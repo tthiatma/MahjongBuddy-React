@@ -14,20 +14,18 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
             var result = RoundTileHelper.DetermineHandCanWin(tiles);
 
             if (result == HandType.Triplets || result == HandType.Straight || result == HandType.Chicken)
-            {
-                if (_successor != null)
-                {
-                    return _successor.HandleRequest(tiles, handTypes);
-                }
-                else 
-                {
-                    return handTypes;
-                }
-            }
+                    handTypes.Add(result);
             else
             {
+                //cant win
+                //short circuit
                 return handTypes;
             }
+
+            if (_successor != null)
+                return _successor.HandleRequest(tiles, handTypes);
+            else
+                return handTypes;
         }
     }
 }

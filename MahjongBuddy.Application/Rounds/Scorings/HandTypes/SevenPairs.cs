@@ -29,6 +29,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
 
             if (isAllPair)
             {
+                //short circuit
                 handTypes.Add(HandType.SevenPairs);
                 return handTypes;
             }

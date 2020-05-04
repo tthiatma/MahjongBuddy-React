@@ -38,7 +38,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.DragonGreen && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.DragonGreen && string.IsNullOrEmpty(t.Owner));
 
             if (selfPick)
             {
@@ -87,7 +87,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindNorth && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindNorth && string.IsNullOrEmpty(t.Owner));
 
             if (selfPick)
             {
@@ -133,7 +133,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast && string.IsNullOrEmpty(t.Owner));
 
             if (selfPick)
             {
@@ -171,7 +171,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast && string.IsNullOrEmpty(t.Owner));
 
             if (selfPick)
             {
@@ -189,5 +189,93 @@ namespace MahjongBuddy.Application.Tests.Helpers
             return userTiles;
         }
 
+        public static IEnumerable<RoundTile> SetupForMixedOneSuit(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            //userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Nine && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.WindWest).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Seven && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Eight && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Nine && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForAllOneSuit(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Nine && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Eight && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Seven && t.Tile.TileType == TileType.Circle));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.Seven 
+            && t.Tile.TileType == TileType.Circle 
+            && string.IsNullOrEmpty(t.Owner));
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            return userTiles;
+        }
     }
 }

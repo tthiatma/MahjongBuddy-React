@@ -15,13 +15,9 @@
 
         //wan jat sik
         MixedOneSuit,
-        StraightMixedOneSuit,
-        TriplettMixedOneSuit,
 
         //cing jat sik
         AllOneSuit,
-        StraightAllOneSuit,
-        PongAllOneSuit,
 
         SevenPairs,
 

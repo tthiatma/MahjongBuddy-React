@@ -47,6 +47,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             }
             if (is13Wonders)
             {
+                //short circuit
                 handTypes.Add(HandType.ThirteenOrphans);
                 return handTypes;
             }

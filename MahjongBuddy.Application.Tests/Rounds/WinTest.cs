@@ -33,7 +33,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForSevenPairs(context, _f.MainPlayerUserName, selfPick: false);
+            var tiles = WinTilesHelper.SetupForSevenPairs(context, _f.MainPlayerUserName, selfPick: true);
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -48,7 +48,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForThirteenOrphans(context, _f.MainPlayerUserName, selfPick: false);
+            var tiles = WinTilesHelper.SetupForThirteenOrphans(context, _f.MainPlayerUserName, selfPick: true);
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -63,7 +63,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: false);
+            var tiles = WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: true);
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -78,7 +78,7 @@ namespace MahjongBuddy.Application.Tests.Rounds
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForStraight(context, _f.MainPlayerUserName, selfPick: false);
+            var tiles = WinTilesHelper.SetupForStraight(context, _f.MainPlayerUserName, selfPick: true);
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -86,6 +86,21 @@ namespace MahjongBuddy.Application.Tests.Rounds
             var result = new HandTypeHelper(tiles).GetHandType();
 
             Assert.Contains(HandType.Straight, result);
+        }
+        [Fact]
+        public void Detect_MixedOneSuit()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForMixedOneSuit(context, _f.MainPlayerUserName, selfPick: true);
+
+            _f.OtherPlayerRound.IsMyTurn = true;
+            _f.MainPlayerRound.IsMyTurn = false;
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Contains(HandType.MixedOneSuit, result);
+            Assert.Contains(HandType.Chicken, result);
         }
     }
 }
