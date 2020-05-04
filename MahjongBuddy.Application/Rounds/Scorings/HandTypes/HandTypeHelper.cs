@@ -11,11 +11,11 @@ namespace MahjongBuddy.Application.Rounds.Scorings
         public HandTypeHelper(IEnumerable<RoundTile> tiles)
         {
             _tiles = tiles;
-            _initial = new SevenPairs(tiles);
-            FindHandType thirteenOrphans = new ThirteenOrphans(tiles);
-            FindHandType legitSet = new LegitSet(tiles);
-            FindHandType triplets = new Triplets(tiles);
-            FindHandType straight = new Straight(tiles);
+            _initial = new SevenPairs();
+            FindHandType thirteenOrphans = new ThirteenOrphans();
+            FindHandType legitSet = new LegitSet();
+            FindHandType triplets = new Triplets();
+            FindHandType straight = new Straight();
 
             _initial.SetSuccessor(thirteenOrphans);
             thirteenOrphans.SetSuccessor(legitSet);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 {
-    class Straight : FindHandType
+    class Chicken : FindHandType
     {
         public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
         {
@@ -13,8 +13,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 
             var result = RoundTileHelper.DetermineHandCanWin(tiles);
 
-            if (result == HandType.Straight)
-                return HandType.Straight;
+            if (result == HandType.Chicken)
+                return HandType.Chicken;
             else
             {
                 if (_successor != null)

@@ -7,7 +7,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings
 {
     class ThirteenOrphans : FindHandType
     {
-        public ThirteenOrphans(IEnumerable<RoundTile> tiles) : base(tiles){}
         public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
         {
             var thirteenWonderTiles = TileHelper.BuildThirteenWonder();

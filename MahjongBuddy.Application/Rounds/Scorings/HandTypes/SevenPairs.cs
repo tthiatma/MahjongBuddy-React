@@ -6,9 +6,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings
 {
     class SevenPairs : FindHandType
     {
-        public SevenPairs(IEnumerable<RoundTile> tiles): base (tiles)
-        {
-        }
         public override HandType HandleRequest(IEnumerable<RoundTile> tiles)
         {
             //2-2-2-2-2-2-2 all tiles consist of pairs it can't be flowers obviously
