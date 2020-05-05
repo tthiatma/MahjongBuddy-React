@@ -29,6 +29,18 @@ namespace MahjongBuddy.Application.Tests.Rounds
         }
 
         [Fact]
+        public void Detect_InvalidWin()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForInvalidWin(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Empty(result);
+        }
+
+        [Fact]
         public void Detect_SevenPairs()
         {
             var context = _f.TestDataContext;
