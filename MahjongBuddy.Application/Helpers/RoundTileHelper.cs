@@ -89,11 +89,23 @@ namespace MahjongBuddy.Application.Helpers
             //if all weird combo hand is checked, in order to win 
             //tiles needs to be either, chicken, straight, or triplet
 
+            var listTiles = tiles.ToList();
+            //check if there's kong tiles, because the total tiles will be more than 14
+            //we want to take off 1 kong tiles to make it total of 14 tiles to easily determine valid tiles to win
+            var kongTiles = tiles
+                .Where(t => t.TileSetGroup == TileSetGroup.Kong)
+                .GroupBy(t => new { t.Tile.TileType, t.Tile.TileValue });
+
+            foreach (var group in kongTiles)
+            {
+                //take off 1 tile
+                listTiles.Remove(group.First());
+            }
+            tiles = listTiles;
             if (tiles.Count() != 14)
                 return HandType.None;
 
             //get possible eyes
-            //TODO: improve the way picking eyes by selecting ignoring 3 same tiles first
             List<IEnumerable<RoundTile>> eyeCollection = new List<IEnumerable<RoundTile>>();
             foreach (var t in tiles)
             {
@@ -150,6 +162,10 @@ namespace MahjongBuddy.Application.Helpers
 
             //test for straight
             bool allStraight = false;
+
+            //if there are 3+ wind or 3+ dragon, then its not possible for the tiless to be straight
+            var windOrDragonTiles = tiles.Where(t => t.Tile.TileType == TileType.Dragon || t.Tile.TileType == TileType.Wind);
+
             foreach (var eyes in eyeCollection)
             {
                 //remove possible eyes from tiles
@@ -235,6 +251,9 @@ namespace MahjongBuddy.Application.Helpers
         {
             foreach (var t in tiles)
             {
+                if (t.Tile.TileType == TileType.Dragon || t.Tile.TileType == TileType.Wind)
+                    return null;
+
                 var temp = FindStraightTiles(t, tiles);
                 if (temp.Count() == 3)
                     return temp;

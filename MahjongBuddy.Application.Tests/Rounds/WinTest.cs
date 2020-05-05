@@ -130,5 +130,32 @@ namespace MahjongBuddy.Application.Tests.Rounds
             Assert.Contains(HandType.Triplets, result);
         }
 
+        [Fact]
+        public void Detect_SmallDragon_Chicken()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForSmallDragon(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(2, result.Count());
+            Assert.Contains(HandType.SmallDragon, result);
+            Assert.Contains(HandType.Chicken, result);
+        }
+
+        [Fact]
+        public void Detect_BigDragon_Chicken()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForBigDragon(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(2, result.Count());
+            Assert.Contains(HandType.BigDragon, result);
+            Assert.Contains(HandType.Chicken, result);
+        }
     }
 }

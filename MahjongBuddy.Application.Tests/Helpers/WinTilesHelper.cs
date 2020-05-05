@@ -38,7 +38,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.DragonGreen && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.DragonGreen);
 
             if (selfPick)
             {
@@ -87,7 +87,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindNorth && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindNorth);
 
             if (selfPick)
             {
@@ -133,7 +133,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
 
             if (selfPick)
             {
@@ -171,7 +171,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast && string.IsNullOrEmpty(t.Owner));
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
 
             if (selfPick)
             {
@@ -349,6 +349,90 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.Seven
             && t.Tile.TileType == TileType.Circle);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForSmallDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonGreen).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonRed).Take(3));
+
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.DragonWhite));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.DragonWhite);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            return userTiles;
+        }
+        public static IEnumerable<RoundTile> SetupForBigDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+
+            var fourWhiteDragon = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonWhite).Take(4);
+            fourWhiteDragon.ToList().ForEach(t => t.TileSetGroup = TileSetGroup.Kong);
+            userTiles.AddRange(fourWhiteDragon);
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonGreen).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonRed).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Seven && t.Tile.TileType == TileType.Money));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.Seven && t.Tile.TileType == TileType.Money);
 
             if (selfPick)
             {
