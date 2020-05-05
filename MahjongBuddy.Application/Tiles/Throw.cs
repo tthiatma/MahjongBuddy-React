@@ -75,7 +75,6 @@ namespace MahjongBuddy.Application.Tiles
                 tileToThrow.Status = TileStatus.BoardActive;
                 tileToThrow.BoardGraveyardCounter = round.TileCounter;
                 round.TileCounter++;
-                round.RoundCounter++;
 
                 updatedTiles.Add(tileToThrow);
 

@@ -12,6 +12,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
             _successor = successor;
         }
 
-        public abstract List<ExtraPoint> HandleRequest(IEnumerable<RoundTile> tiles, Round round, List<ExtraPoint> extraPoints);
+        public abstract List<ExtraPoint> HandleRequest(Round round, string winnerUserName, List<ExtraPoint> extraPoints);
     }
 }
