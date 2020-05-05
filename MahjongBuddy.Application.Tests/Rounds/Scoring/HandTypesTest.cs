@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace MahjongBuddy.Application.Tests.Rounds
+namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 {
-    public class WinTest : TestBase, IClassFixture<GameFixture>, IDisposable
+    public class HandTypesTest : TestBase, IClassFixture<GameFixture>, IDisposable
     {
         private readonly GameFixture _f;
 
-        public WinTest(GameFixture f)
+        public HandTypesTest(GameFixture f)
         {
             _f = f;
         }

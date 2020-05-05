@@ -24,10 +24,6 @@
         //sap saam jiu
         ThirteenOrphans,
 
-        //jiu gau
-        //one nine one nine
-        Orphans,
-
         //siu saam jyun
         SmallDragon,
         
@@ -39,6 +35,10 @@
 
         //daai sei hei
         BigFourWind,
+
+        //jiu gau
+        //one nine one nine
+        Orphans,
 
         AllKong,
 
