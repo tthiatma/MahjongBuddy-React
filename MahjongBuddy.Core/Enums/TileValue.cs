@@ -2,6 +2,7 @@
 {
     public enum TileValue
     {
+        None = 0,
         One = 1,
         Two = 2,
         Three = 3,
@@ -25,6 +26,6 @@
         FlowerNumericOne = 21,
         FlowerNumericTwo = 22,
         FlowerNumericThree = 23,
-        FlowerNumericFour = 24
+        FlowerNumericFour = 24,
     }
 }
