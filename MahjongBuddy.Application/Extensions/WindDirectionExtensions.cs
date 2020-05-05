@@ -20,5 +20,21 @@ namespace MahjongBuddy.Application.Extensions
                     return TileValue.None;
             }
         }
+        public static int ToFlowerNum (this WindDirection wd )
+        {
+            switch (wd)
+            {
+                case WindDirection.East:
+                    return 1;
+                case WindDirection.South:
+                    return 2;
+                case WindDirection.West:
+                    return 3;
+                case WindDirection.North:
+                    return 4;
+                default:
+                    return 0;
+            }
+        }
     }
 }

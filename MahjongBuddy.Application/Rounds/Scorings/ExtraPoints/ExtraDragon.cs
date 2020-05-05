@@ -9,7 +9,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
     {
         public override List<ExtraPoint> HandleRequest(Round round, string winnerUserName, List<ExtraPoint> extraPoints)
         {
-            var tiles = round.RoundTiles;
+            var tiles = round.RoundTiles.Where(t => t.Owner == winnerUserName);
             var redDragonTiles = tiles.Where(t => t.Tile.TileValue == TileValue.DragonRed);
             if (redDragonTiles.Count() >= 3)
                 extraPoints.Add(ExtraPoint.RedDragon);

@@ -10,5 +10,6 @@
         public bool IsMyTurn { get; set; }
         public bool CanDoNoFlower { get; set; }
         public WindDirection Wind { get; set; }
+        public int FlowerNum { get; set; }
     }
 }

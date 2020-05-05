@@ -36,20 +36,21 @@
         //daai sei hei
         BigFourWind,
 
+        //TODO: implement below
         //jiu gau
         //one nine one nine
-        Orphans,
+        //Orphans,
 
-        AllKong,
+        //AllKong,
 
         //Four pong and all concealed, and win by self pick
-        HiddenTreasure,
+        //HiddenTreasure,
 
         //zi jat sik
-        AllHonors,
+        //AllHonors,
 
         //gau zi lin waan
         //one suit 1112345678999
-        NineGates
+        //NineGates
     }
 }

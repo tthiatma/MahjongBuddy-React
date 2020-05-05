@@ -15,20 +15,21 @@
         //mun cing
         ConcealedHand,
 
-        //hoi dai lau jyut
-        WinOnLastTile,
         NoFlower,
         RomanFlower,
         NumericFlower,
         AllFourFlowerSameType,
 
-        //dealer instant win when grabbing all 14 tiles
-        HeavenlyHand,
-
-        //someone throw first tile and other player call win
-        EarthlyHand,
+        //hoi dai lau jyut
+        WinOnLastTile,
 
         //TODO: implement below
+        //dealer instant win when grabbing all 14 tiles
+        //HeavenlyHand,
+
+        //someone throw first tile and other player call win
+        //EarthlyHand,
+
         //gong soeng hoi faa
         //KongAndFlowerAndWin
 

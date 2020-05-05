@@ -138,12 +138,15 @@ namespace MahjongBuddy.Application.Rounds
 
                 foreach (var lur in userRounds)
                 {
+                    var userWind = sameRound ? lur.Wind : NextWind(lur.Wind);
+                    var flowerNum = userWind.ToFlowerNum();
                     var ur = new UserRound
                     {
                         AppUserId = lur.AppUserId,
                         IsDealer = lur.IsDealer,
                         IsMyTurn = lur.IsMyTurn,
-                        Wind = sameRound ? lur.Wind : NextWind(lur.Wind)
+                        Wind = userWind,
+                        FlowerNum = flowerNum
                     };
                     ret.Add(ur);
                 }
