@@ -52,6 +52,5 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
             else
                 return handTypes;
         }
-
     }
 }

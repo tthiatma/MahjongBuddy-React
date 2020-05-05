@@ -169,5 +169,35 @@ namespace MahjongBuddy.Application.Tests.Rounds
             Assert.Contains(HandType.BigDragon, result);
             Assert.Contains(HandType.Chicken, result);
         }
+
+        [Fact]
+        public void Detect_BigFourWind_Chicken()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForBigFourWind(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(3, result.Count());
+            Assert.Contains(HandType.BigFourWind, result);
+            Assert.Contains(HandType.MixedOneSuit, result);
+            Assert.Contains(HandType.Triplets, result);
+        }
+
+        [Fact]
+        public void Detect_SmallFourWind_Chicken()
+        {
+            var context = _f.TestDataContext;
+
+            var tiles = WinTilesHelper.SetupForSmallFourWind(context, _f.MainPlayerUserName, selfPick: true);
+
+            var result = new HandTypeHelper(tiles).GetHandType();
+
+            Assert.Equal(3, result.Count());
+            Assert.Contains(HandType.SmallFourWind, result);
+            Assert.Contains(HandType.MixedOneSuit, result);
+            Assert.Contains(HandType.Chicken, result);
+        }
     }
 }
