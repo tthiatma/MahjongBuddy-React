@@ -17,13 +17,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
             if(winner == null)
                 throw new Exception("creating round not appropriately, winner need to be in the round");
 
-            //something wrong here
-            //if user has no flower at all
-            if (winner.FlowerNum == 0)
-                throw new Exception("creating round not appropriately, user need to have flower num set");
-
             //if user has flower corresponding to their num
-            foreach (var flower in GetFlowerTileValue(winner.FlowerNum))
+            foreach (var flower in GetFlowerTileValue(winner.Wind))
             {
                 var flowerTile = tiles.FirstOrDefault(t => t.Tile.TileValue == flower);
                 if (flowerTile != null)
@@ -45,6 +40,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
             if (allFourNumericFlowers.Count() == 4)
                 extraPoints.Add(ExtraPoint.AllFourFlowerSameType);
 
+            //if user doesn't have flower at all
+            var hasFlower = tiles.Any(t => t.Tile.TileType == TileType.Flower);
+            if (!hasFlower)
+                extraPoints.Add(ExtraPoint.NoFlower);
 
             if (_successor != null)
                 return _successor.HandleRequest(round, winnerUserName, extraPoints);
@@ -52,29 +51,29 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
                 return extraPoints;
         }
 
-        private List<TileValue> GetFlowerTileValue(int flowerNum)
+        private List<TileValue> GetFlowerTileValue(WindDirection wd)
         {
             List<TileValue> ret = new List<TileValue>();
 
-            if(flowerNum == 1)
+            if(wd == WindDirection.East)
             {
                 ret.Add(TileValue.FlowerRomanOne);
                 ret.Add(TileValue.FlowerNumericOne);
             }
 
-            if (flowerNum == 2)
+            if (wd == WindDirection.South)
             {
                 ret.Add(TileValue.FlowerRomanTwo);
                 ret.Add(TileValue.FlowerNumericTwo);
             }
 
-            if (flowerNum == 3)
+            if (wd == WindDirection.West)
             {
                 ret.Add(TileValue.FlowerRomanThree);
                 ret.Add(TileValue.FlowerNumericThree);
             }
 
-            if (flowerNum == 4)
+            if (wd == WindDirection.North)
             {
                 ret.Add(TileValue.FlowerRomanFour);
                 ret.Add(TileValue.FlowerNumericFour);

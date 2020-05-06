@@ -108,6 +108,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
             TestDataContext.Rounds.Add(new Round
             {
                 GameId = GameId,
+                Wind = WindDirection.East,
                 DateCreated = DateTime.Now,
                 RoundTiles = RoundTileHelper.CreateTiles(TestDataContext).Shuffle(),
                 UserRounds = new List<UserRound>
@@ -115,22 +116,22 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                     new UserRound
                     {
                         AppUserId = "a",
-                        FlowerNum = 1
+                        Wind = WindDirection.South
                     },
                     new UserRound
                     {
                         AppUserId = "b",
-                        FlowerNum = 2
+                        Wind = WindDirection.East
                     },
                     new UserRound
                     {
                         AppUserId = "c",
-                        FlowerNum = 3
+                        Wind = WindDirection.West
                     },
                     new UserRound
                     {
                         AppUserId = "d",
-                        FlowerNum = 4
+                        Wind = WindDirection.North
                     }
                 }
             });

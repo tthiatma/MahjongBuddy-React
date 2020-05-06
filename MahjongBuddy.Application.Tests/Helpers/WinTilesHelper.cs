@@ -104,14 +104,22 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             return userTiles;
         }
-
+       
         public static IEnumerable<RoundTile> SetupForStraight(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
 
-            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
-            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
-            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(threeCircle);
 
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
@@ -147,7 +155,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
-
+            context.SaveChanges();
             return userTiles;
         }
 
@@ -586,6 +594,10 @@ namespace MahjongBuddy.Application.Tests.Helpers
         {
             List<RoundTile> userTiles = new List<RoundTile>();
 
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
             var fourRedDragon = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonRed).Take(4);
             fourRedDragon.ToList().ForEach(t => t.TileSetGroup = TileSetGroup.Kong);
             userTiles.AddRange(fourRedDragon);
@@ -618,6 +630,603 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
+            return userTiles;
+        }
+        
+        public static IEnumerable<RoundTile> SetupForExtraPointsGreenDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var threeGreenDragon = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonGreen).Take(3);
+            threeGreenDragon.ToList().ForEach(t => t.TileSetGroup = TileSetGroup.Pong);
+            userTiles.AddRange(threeGreenDragon);
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            context.SaveChanges();
+            return userTiles;
+        }
+        
+        public static IEnumerable<RoundTile> SetupForExtraPointsWhiteDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var threeWhiteDragon = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.DragonWhite).Take(3);
+            threeWhiteDragon.ToList().ForEach(t => t.TileSetGroup = TileSetGroup.Pong);
+            userTiles.AddRange(threeWhiteDragon);
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointsSeatWind(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var threeWindSouth = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.WindSouth).Take(3);
+            threeWindSouth.ToList().ForEach(t => t.TileSetGroup = TileSetGroup.Pong);
+            userTiles.AddRange(threeWindSouth);
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            context.SaveChanges();
+            return userTiles;
+        }
+        
+        public static IEnumerable<RoundTile> SetupForExtraPointsPrevailingWind(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var threeWindEast = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.WindEast).Take(3);
+            threeWindEast.ToList().ForEach(t => t.TileSetGroup = TileSetGroup.Pong);
+            userTiles.AddRange(threeWindEast);
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointSelfPick(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(threeCircle);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointConcealed(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointNoFlower(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(threeCircle);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+            context.SaveChanges();
+            return userTiles;
+        }
+        
+        public static IEnumerable<RoundTile> SetupForExtraPointRomanFlower(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            //because test setup new round for new user set to wind south, set the 2nd flower roman for this data
+            var romanFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerRomanTwo);
+            romanFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(romanFlower);
+
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(threeCircle);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointNumericFlower(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            //because test setup new round for new user set to wind south, set the 2nd flower roman for this data
+            var romanFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericTwo);
+            romanFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(romanFlower);
+
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(threeCircle);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointFourNumericFlower(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            //because test setup new round for new user set to wind south, set the 2nd flower roman for this data
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var twoNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericTwo);
+            twoNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(twoNumericFlower);
+
+            var threeNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericThree);
+            threeNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(threeNumericFlower);
+
+            var fourNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericFour);
+            fourNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(fourNumericFlower);
+
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(threeCircle);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+            context.SaveChanges();
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForExtraPointLastTile(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var oneNumericFlower = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.FlowerNumericOne);
+            oneNumericFlower.Status = TileStatus.UserGraveyard;
+            userTiles.Add(oneNumericFlower);
+
+            var oneCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            oneCircle.Status = TileStatus.UserGraveyard;
+            oneCircle.TileSetGroup = TileSetGroup.Chow;
+            userTiles.Add(oneCircle);
+
+            var twoCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            twoCircle.TileSetGroup = TileSetGroup.Chow;
+            twoCircle.Status = TileStatus.UserGraveyard;
+            userTiles.Add(twoCircle);
+
+            var threeCircle = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            threeCircle.TileSetGroup = TileSetGroup.Chow;
+            threeCircle.Status = TileStatus.UserGraveyard;
+            userTiles.Add(threeCircle);
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            if (selfPick)
+            {
+                lastTile.Owner = userId;
+                lastTile.Status = TileStatus.UserJustPicked;
+            }
+            else
+            {
+                lastTile.Owner = "board";
+                lastTile.Status = TileStatus.BoardActive;
+            }
+
+            userTiles.Add(lastTile);
+
+            context.SaveChanges();
+            //set all other tiles' owner to be board for easy test lol
+            context.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner)).ToList().ForEach(t => t.Owner = "board");
 
             context.SaveChanges();
             return userTiles;

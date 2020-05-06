@@ -11,10 +11,15 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
                 return handTypes;
 
             //remove flower tiles if exist because handtype ignore flower
-            tiles = tiles.Except(tiles.Where(t => t.Tile.TileType == TileType.Flower));
+            var tilesList = tiles.ToList();
+            var userFlowerTiles = tiles.Where(t => t.Tile.TileType == TileType.Flower);
+            foreach (var item in userFlowerTiles)
+            {
+                tilesList.Remove(item);
+            }
 
             if (_successor != null)
-                return _successor.HandleRequest(tiles, handTypes);
+                return _successor.HandleRequest(tilesList, handTypes);
             else
                 return handTypes;
         }
