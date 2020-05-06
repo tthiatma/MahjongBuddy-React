@@ -94,6 +94,5 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
 
             return games;
         }
-
     }
 }

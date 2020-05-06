@@ -11,13 +11,13 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
     {
         public override List<ExtraPoint> HandleRequest(Round round, string winnerUserName, List<ExtraPoint> extraPoints)
         {
-            var tiles = round.RoundTiles.Where(t => t.Owner == winnerUserName);
+            var allTiles = round.RoundTiles;
             var winner = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == winnerUserName);
 
             if (winner == null)
                 throw new Exception("creating round not appropriately, winner need to be in the round");
 
-            var stillMoreTiles = tiles.Any(t => string.IsNullOrEmpty(t.Owner));
+            var stillMoreTiles = allTiles.Any(t => string.IsNullOrEmpty(t.Owner));
 
             if (!stillMoreTiles)
                 extraPoints.Add(ExtraPoint.WinOnLastTile);            

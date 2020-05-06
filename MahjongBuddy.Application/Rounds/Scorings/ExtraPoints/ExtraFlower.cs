@@ -42,7 +42,9 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
             || t.Tile.TileValue == TileValue.FlowerNumericTwo
             || t.Tile.TileValue == TileValue.FlowerNumericThree
             || t.Tile.TileValue == TileValue.FlowerNumericFour);
+            if (allFourNumericFlowers.Count() == 4)
                 extraPoints.Add(ExtraPoint.AllFourFlowerSameType);
+
 
             if (_successor != null)
                 return _successor.HandleRequest(round, winnerUserName, extraPoints);

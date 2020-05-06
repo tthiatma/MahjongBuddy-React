@@ -2,25 +2,27 @@
 using MahjongBuddy.Core;
 using System.Collections.Generic;
 
-namespace MahjongBuddy.Application.Rounds.Scorings
+namespace MahjongBuddy.Application.Rounds.Scorings.Builder
 {
-    public class HandTypeHelper
+    public class HandTypeBuilder
     {
         readonly IEnumerable<RoundTile> _tiles;
         readonly FindHandType _initial;
         List<HandType> _handtypes;
-        public HandTypeHelper(IEnumerable<RoundTile> tiles)
+        public HandTypeBuilder(IEnumerable<RoundTile> tiles)
         {
             _tiles = tiles;
             _handtypes = new List<HandType>();
-            _initial = new SevenPairs();
+            _initial = new InitialHandType();
+            FindHandType sevenPairs = new SevenPairs();
             FindHandType thirteenOrphans = new ThirteenOrphans();
             FindHandType legitSet = new LegitSet();
             FindHandType oneSuit = new OneSuit();
             FindHandType dragon = new Dragon();
             FindHandType fourWind = new FourWind();
 
-            _initial.SetSuccessor(thirteenOrphans);
+            _initial.SetSuccessor(sevenPairs);
+            sevenPairs.SetSuccessor(thirteenOrphans);
             thirteenOrphans.SetSuccessor(legitSet);
             legitSet.SetSuccessor(oneSuit);
             oneSuit.SetSuccessor(dragon);

@@ -15,6 +15,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         public UserRound MainPlayerRound { get; set; }
         public UserRound OtherPlayerRound { get; set; }
         public int RoundId { get; set; }
+        public Round Round { get; set; }
 
         public GameFixture()
         {
@@ -106,26 +107,30 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         {
             TestDataContext.Rounds.Add(new Round
             {
-                GameId = RoundId,
+                GameId = GameId,
                 DateCreated = DateTime.Now,
                 RoundTiles = RoundTileHelper.CreateTiles(TestDataContext).Shuffle(),
                 UserRounds = new List<UserRound>
                 {
                     new UserRound
                     {
-                        AppUserId = "a"
+                        AppUserId = "a",
+                        FlowerNum = 1
                     },
                     new UserRound
                     {
-                        AppUserId = "b"
+                        AppUserId = "b",
+                        FlowerNum = 2
                     },
                     new UserRound
                     {
-                        AppUserId = "c"
+                        AppUserId = "c",
+                        FlowerNum = 3
                     },
                     new UserRound
                     {
-                        AppUserId = "d"
+                        AppUserId = "d",
+                        FlowerNum = 4
                     }
                 }
             });
