@@ -6,12 +6,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
 {
     public class HandTypeBuilder
     {
-        readonly IEnumerable<RoundTile> _tiles;
         readonly FindHandType _initial;
         List<HandType> _handtypes;
-        public HandTypeBuilder(IEnumerable<RoundTile> tiles)
+        public HandTypeBuilder()
         {
-            _tiles = tiles;
             _handtypes = new List<HandType>();
             _initial = new InitialHandType();
             FindHandType sevenPairs = new SevenPairs();
@@ -29,10 +27,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
             dragon.SetSuccessor(fourWind);
         }
 
-        public List<HandType> GetHandType()
+        public List<HandType> GetHandType(IEnumerable<RoundTile> tiles)
         {
-            if (_tiles != null)
-                return _initial.HandleRequest(_tiles, _handtypes);
+            if (tiles != null)
+                return _initial.HandleRequest(tiles, _handtypes);
             else
                 return _handtypes;
         }

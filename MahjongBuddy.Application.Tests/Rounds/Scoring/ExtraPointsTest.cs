@@ -40,7 +40,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
             
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.RedDragon, result);
@@ -55,7 +55,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.GreenDragon, result);           
@@ -70,7 +70,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.WhiteDragon, result);
@@ -85,7 +85,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.SeatWind, result);
@@ -100,7 +100,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.PrevailingWind, result);
@@ -115,7 +115,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.SelfPick, result);
@@ -130,7 +130,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.ConcealedHand, result);
@@ -145,7 +145,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.NoFlower, result);
@@ -160,7 +160,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.RomanFlower, result);
@@ -175,7 +175,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.NumericFlower, result);
@@ -190,7 +190,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Equal(2, result.Count());
             Assert.Contains(ExtraPoint.NumericFlower, result);
@@ -206,7 +206,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var round = _f.TestDataContext.Rounds.First();
 
-            var result = new ExtraPointBuilder(round, _f.MainPlayerUserName).GetExtraPoint();
+            var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
             Assert.Single(result);
             Assert.Contains(ExtraPoint.WinOnLastTile, result);
