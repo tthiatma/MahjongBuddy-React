@@ -53,6 +53,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
 
@@ -102,9 +104,11 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
-       
+
         public static IEnumerable<RoundTile> SetupForStraight(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
@@ -134,7 +138,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
 
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
- 
+
             foreach (var t in userTiles)
             {
                 t.Owner = userId;
@@ -155,7 +159,9 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
             context.SaveChanges();
+
             return userTiles;
         }
 
@@ -202,6 +208,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
 
@@ -239,6 +247,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
 
             return userTiles;
         }
@@ -285,6 +295,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
 
@@ -312,7 +324,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.Seven 
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.Seven
             && t.Tile.TileType == TileType.Circle);
 
             if (selfPick)
@@ -328,6 +340,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
 
@@ -337,7 +351,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle));
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle));
-            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle));
+            var firsRoundThree = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+            userTiles.Add(firsRoundThree);
 
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
             userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
@@ -360,10 +375,11 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 t.Status = TileStatus.UserActive;
             }
 
-            var lastTile = context.RoundTiles.First(t => 
+            var lastTile = context.RoundTiles.First(t =>
             t.Tile.TileValue == TileValue.Three
             && t.Tile.TileType == TileType.Circle
-            && t.Id != matchingLastTile.Id);
+            && t.Id != matchingLastTile.Id
+            && t.Id != firsRoundThree.Id);
 
             if (selfPick)
             {
@@ -377,6 +393,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
 
             return userTiles;
         }
@@ -416,6 +434,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
 
             return userTiles;
         }
@@ -460,9 +480,11 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
-        
+
         public static IEnumerable<RoundTile> SetupForBigDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
@@ -501,6 +523,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
 
             return userTiles;
         }
@@ -544,9 +568,11 @@ namespace MahjongBuddy.Application.Tests.Helpers
 
             userTiles.Add(lastTile);
 
+            context.SaveChanges();
+
             return userTiles;
         }
-        
+
         public static IEnumerable<RoundTile> SetupForSmallFourWind(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
@@ -586,6 +612,8 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
 
             return userTiles;
         }
@@ -632,9 +660,10 @@ namespace MahjongBuddy.Application.Tests.Helpers
             userTiles.Add(lastTile);
 
             context.SaveChanges();
+
             return userTiles;
         }
-        
+
         public static IEnumerable<RoundTile> SetupForExtraPointsGreenDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
@@ -679,7 +708,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             context.SaveChanges();
             return userTiles;
         }
-        
+
         public static IEnumerable<RoundTile> SetupForExtraPointsWhiteDragon(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
@@ -769,7 +798,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             context.SaveChanges();
             return userTiles;
         }
-        
+
         public static IEnumerable<RoundTile> SetupForExtraPointsPrevailingWind(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
@@ -976,7 +1005,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             context.SaveChanges();
             return userTiles;
         }
-        
+
         public static IEnumerable<RoundTile> SetupForExtraPointRomanFlower(MahjongBuddyDbContext context, string userId, bool selfPick)
         {
             List<RoundTile> userTiles = new List<RoundTile>();

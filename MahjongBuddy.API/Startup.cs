@@ -22,6 +22,8 @@ using MahjongBuddy.Core;
 using MahjongBuddy.API.SignalR;
 using System.Threading.Tasks;
 using System;
+using MahjongBuddy.Application.Rounds.Scorings;
+using MahjongBuddy.Application.Rounds.Scorings.Builder;
 
 namespace MahjongBuddy.API
 {
@@ -113,6 +115,9 @@ namespace MahjongBuddy.API
                 });
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddTransient<IPointsCalculator, HomeGameCalculator>();
+            services.AddTransient<HandTypeBuilder, HandTypeBuilder>();
+            services.AddTransient<ExtraPointBuilder, ExtraPointBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

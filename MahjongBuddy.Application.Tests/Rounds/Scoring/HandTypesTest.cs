@@ -32,9 +32,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForInvalidWin(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForInvalidWin(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Empty(result);
         }
@@ -44,9 +46,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForSevenPairs(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForSevenPairs(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Contains(HandType.SevenPairs, result);
         }
@@ -56,9 +60,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForThirteenOrphans(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForThirteenOrphans(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Contains(HandType.ThirteenOrphans, result);
         }
@@ -68,9 +74,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Contains(HandType.Triplets, result);
         }
@@ -80,9 +88,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForStraight(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForStraight(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Contains(HandType.Straight, result);
         }
@@ -92,9 +102,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForMixedOneSuit(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForMixedOneSuit(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Contains(HandType.MixedOneSuit, result);
             Assert.Contains(HandType.Chicken, result);
@@ -105,9 +117,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForAllOneSuit(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForAllOneSuit(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Contains(HandType.AllOneSuit, result);
             Assert.Contains(HandType.Chicken, result);
@@ -118,9 +132,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForAllOneSuitStraight(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForAllOneSuitStraight(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Equal(2, result.Count());
             Assert.Contains(HandType.AllOneSuit, result);
@@ -132,9 +148,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForAllOneSuitTriplets(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForAllOneSuitTriplets(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Equal(2, result.Count());
             Assert.Contains(HandType.AllOneSuit, result);
@@ -146,9 +164,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForSmallDragon(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForSmallDragon(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Equal(2, result.Count());
             Assert.Contains(HandType.SmallDragon, result);
@@ -160,9 +180,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForBigDragon(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForBigDragon(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Equal(2, result.Count());
             Assert.Contains(HandType.BigDragon, result);
@@ -174,9 +196,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForBigFourWind(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForBigFourWind(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Equal(3, result.Count());
             Assert.Contains(HandType.BigFourWind, result);
@@ -189,9 +213,11 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            var tiles = WinTilesHelper.SetupForSmallFourWind(context, _f.MainPlayerUserName, selfPick: true);
+            WinTilesHelper.SetupForSmallFourWind(context, _f.MainPlayerUserName, selfPick: true);
 
-            var result = new HandTypeBuilder().GetHandType(tiles);
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
             Assert.Equal(3, result.Count());
             Assert.Contains(HandType.SmallFourWind, result);

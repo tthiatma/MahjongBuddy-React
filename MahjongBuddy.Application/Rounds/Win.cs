@@ -1,6 +1,7 @@
 using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace MahjongBuddy.Application.Rounds
 {
@@ -25,11 +27,13 @@ namespace MahjongBuddy.Application.Rounds
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
+            private readonly IPointsCalculator _pointCalculator;
 
-            public Handler(MahjongBuddyDbContext context, IMapper mapper)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper, IPointsCalculator pointCalculator)
             {
                 _context = context;
                 _mapper = mapper;
+                _pointCalculator = pointCalculator;
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
