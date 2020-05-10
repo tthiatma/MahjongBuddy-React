@@ -2,16 +2,16 @@ using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
+using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace MahjongBuddy.Application.Rounds
 {
@@ -19,7 +19,7 @@ namespace MahjongBuddy.Application.Rounds
     {
         public class Command : IRequest<RoundDto>
         {
-            public string GameId { get; set; }
+            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
@@ -37,27 +37,49 @@ namespace MahjongBuddy.Application.Rounds
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
+                var game = await _context.Games.FindAsync(request.GameId);
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
-                if (round == null)
+                if (game == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
+
+                if (round == null || game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
+                //var ut = round.RoundTiles.Where(t => t.Owner == request.UserName).Select(t=> t.Id).ToList();
+                //var rawr = _context.RoundTiles.Where(t => t.Owner == request.UserName).Select(t => t.Id).ToList();
+                //var difference = rawr.Except(ut);
+                //var theWeirdOne = _context.RoundTiles.First(t => t.Id == difference.First());
+
                 //if its a valid win:
-                //set the game as over
-                round.IsOver = true;
+                HandWorth handWorth = _pointCalculator.Calculate(round, request.UserName);
 
-                //create the result
-                RoundResult result = new RoundResult();
-                //record who win and who lost 
+                if(handWorth == null)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Win = "Invalid combination hand" });
 
-                round.RoundResults.Add(result);
+                if (handWorth.Points >= game.MinPoint)
+                {
+                    //set the game as over
+                    round.IsOver = true;
+                    //create the result
+                    RoundResult result = new RoundResult();
+                    //record who win and who lost 
 
+                    round.RoundResults.Add(result);
 
-                var success = await _context.SaveChangesAsync() > 0;
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+
+                    var success = await _context.SaveChangesAsync() > 0;
+
+                    if (success)
+                        return roundToReturn;
+
+                }
+                else
+                    throw new RestException(HttpStatusCode.BadRequest, new {Win = "Not enough point to win with this hand" });
 
                 throw new Exception("Problem calling win");
             }
         }
-
     }
 }

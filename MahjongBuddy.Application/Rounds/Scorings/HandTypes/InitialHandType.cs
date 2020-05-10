@@ -1,4 +1,5 @@
 ﻿using MahjongBuddy.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
@@ -9,6 +10,9 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
         {
             if (tiles == null)
                 return handTypes;
+
+            if (tiles.Count() < 14)
+                throw new Exception("invalid count of tiles");
 
             //remove flower tiles if exist because handtype ignore flower
             var tilesList = tiles.ToList();

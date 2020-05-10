@@ -8,6 +8,8 @@ namespace MahjongBuddy.Core
     {
         public int Id { get; set; }
         public string Title { get; set; }
+        public int MinPoint { get; set; }
+        public int MaxPoint { get; set; }
         public DateTime Date { get; set; }
         public GameStatus Status { get; set; }
         public string HostId { get; set; }

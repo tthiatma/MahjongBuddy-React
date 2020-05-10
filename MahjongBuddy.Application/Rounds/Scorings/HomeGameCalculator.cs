@@ -55,7 +55,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
         {
             HandWorth ret = new HandWorth();
             int totalPoints = 0;
-            var handTypes = _handBuilder.GetHandType(round, winnerUserName);
+                var handTypes = _handBuilder.GetHandType(round, winnerUserName);
             if(handTypes.Count() > 0)
             {
                 handTypes.ForEach(tp => totalPoints += _handTypeLookup[tp]);
@@ -66,6 +66,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 ret.HandTypes = handTypes;
                 ret.ExtraPoints = extraPoints;
                 ret.Points = totalPoints;
+            }
+            else
+            {
+                ret = null;
             }
             return ret;
         }

@@ -43,6 +43,8 @@ namespace MahjongBuddy.Application.Games
                     Date = DateTime.Now,
                     Host = user,
                     Status = GameStatus.Created,
+                    MinPoint = 3,
+                    MaxPoint = 10,
                     UserGames = new List<UserGame>{
                         new UserGame {
                             IsHost = true,

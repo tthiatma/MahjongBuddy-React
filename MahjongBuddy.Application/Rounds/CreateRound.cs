@@ -57,7 +57,8 @@ namespace MahjongBuddy.Application.Rounds
                     GameId = request.GameId,
                     DateCreated = DateTime.Now,
                     RoundTiles = RoundTileHelper.CreateTiles(_context).Shuffle(),
-                    UserRounds = new List<UserRound>()                    
+                    UserRounds = new List<UserRound>(),
+                    RoundResults = new List<RoundResult>()
                 };
 
                 var players = game.UserGames.Select(x => x.AppUser);

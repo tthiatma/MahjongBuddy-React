@@ -1,5 +1,8 @@
 ﻿using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Application.Helpers;
+using MahjongBuddy.Application.Interfaces;
+using MahjongBuddy.Application.Rounds.Scorings;
+using MahjongBuddy.Application.Rounds.Scorings.Builder;
 using MahjongBuddy.Core;
 using System;
 using System.Collections.Generic;
@@ -16,6 +19,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         public UserRound OtherPlayerRound { get; set; }
         public int RoundId { get; set; }
         public Round Round { get; set; }
+        public IPointsCalculator PointCalculator { get; set; }
 
         public GameFixture()
         {
@@ -25,7 +29,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
             RoundId = 1;
 
             CreateBaseData();
-
+            PointCalculator = new HomeGameCalculator(new ExtraPointBuilder(), new HandTypeBuilder());
             MainPlayerRound = TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == MainPlayerUserName);
             OtherPlayerRound = TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == OtherPlayerName);
         }
@@ -73,6 +77,8 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                 Title = "Game 1",
                 Date = DateTime.Now.AddMonths(-2),
                 HostId = "a",
+                MinPoint = 3,
+                MaxPoint = 10,
                 UserGames = new List<UserGame>
                     {
                         new UserGame
@@ -111,6 +117,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                 Wind = WindDirection.East,
                 DateCreated = DateTime.Now,
                 RoundTiles = RoundTileHelper.CreateTiles(TestDataContext).Shuffle(),
+                RoundResults = new List<RoundResult>(),
                 UserRounds = new List<UserRound>
                 {
                     new UserRound
