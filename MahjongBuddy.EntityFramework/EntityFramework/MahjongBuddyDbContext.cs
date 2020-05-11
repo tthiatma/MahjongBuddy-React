@@ -18,6 +18,8 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         public DbSet<Tile> Tiles { get; set; }
         public DbSet<UserGame> UserGames { get; set; }
         public DbSet<UserRound> UserRounds { get; set; }
+        public DbSet<RoundResultHand> RoundHands { get; set; }
+        public DbSet<RoundResultExtraPoint> RoundExtraPoints { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

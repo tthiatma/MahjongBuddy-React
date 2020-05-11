@@ -122,6 +122,12 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<string>("HostId")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("MaxPoint")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MinPoint")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -157,9 +163,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsTied")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsWinnerSelfPicked")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("RoundCounter")
@@ -202,6 +205,56 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.ToTable("RoundResults");
                 });
 
+            modelBuilder.Entity("MahjongBuddy.Core.RoundResultExtraPoint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ExtraPoint")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Point")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RoundResultId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoundResultId");
+
+                    b.ToTable("RoundExtraPoints");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RoundResultHand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HandType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Point")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("RoundResultId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoundResultId");
+
+                    b.ToTable("RoundHands");
+                });
+
             modelBuilder.Entity("MahjongBuddy.Core.RoundTile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -225,6 +278,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ThrownBy")
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("TileId")
                         .HasColumnType("INTEGER");
@@ -305,6 +361,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("CanDoNoFlower")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FlowerNum")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsDealer")
@@ -487,6 +546,20 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasOne("MahjongBuddy.Core.Round", "Round")
                         .WithMany("RoundResults")
                         .HasForeignKey("RoundId");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RoundResultExtraPoint", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.RoundResult", "RoundResult")
+                        .WithMany("RoundResultExtraPoints")
+                        .HasForeignKey("RoundResultId");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RoundResultHand", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.RoundResult", "RoundResult")
+                        .WithMany("RoundResultHands")
+                        .HasForeignKey("RoundResultId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundTile", b =>

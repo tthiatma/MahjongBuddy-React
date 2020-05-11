@@ -6,8 +6,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings
 {
     public class HandWorth
     {
-        public IEnumerable<HandType> HandTypes { get; set; }
-        public IEnumerable<ExtraPoint> ExtraPoints { get; set; }
+        public ICollection<HandType> HandTypes { get; set; }
+        public ICollection<ExtraPoint> ExtraPoints { get; set; }
         public int Points { get; set; }
     }
 }

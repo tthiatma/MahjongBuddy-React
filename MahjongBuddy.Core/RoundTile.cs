@@ -10,6 +10,8 @@ namespace MahjongBuddy.Core
         //this is the counter for user active tiles for sorting purposes
         public int ActiveTileCounter { get; set; }
         public string Owner { get; set; }
+        //track who thrown the tile
+        public string ThrownBy { get; set; }
         public int RoundId { get; set; }
         //when someone won, mark the tile as winner tile
         public bool IsWinner { get; set; }

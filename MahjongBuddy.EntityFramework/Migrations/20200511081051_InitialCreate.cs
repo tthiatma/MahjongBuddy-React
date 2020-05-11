@@ -177,6 +177,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Title = table.Column<string>(nullable: true),
+                    MinPoint = table.Column<int>(nullable: false),
+                    MaxPoint = table.Column<int>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     HostId = table.Column<string>(nullable: true)
@@ -233,7 +235,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     IsOver = table.Column<bool>(nullable: false),
                     IsPaused = table.Column<bool>(nullable: false),
                     IsTied = table.Column<bool>(nullable: false),
-                    IsWinnerSelfPicked = table.Column<bool>(nullable: false),
                     GameId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -282,6 +283,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     BoardGraveyardCounter = table.Column<int>(nullable: false),
                     ActiveTileCounter = table.Column<int>(nullable: false),
                     Owner = table.Column<string>(nullable: true),
+                    ThrownBy = table.Column<string>(nullable: true),
                     RoundId = table.Column<int>(nullable: false),
                     IsWinner = table.Column<bool>(nullable: false),
                     TileSetGroup = table.Column<int>(nullable: false),
@@ -348,7 +350,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     IsDealer = table.Column<bool>(nullable: false),
                     IsMyTurn = table.Column<bool>(nullable: false),
                     CanDoNoFlower = table.Column<bool>(nullable: false),
-                    Wind = table.Column<int>(nullable: false)
+                    Wind = table.Column<int>(nullable: false),
+                    FlowerNum = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -365,6 +368,50 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         principalTable: "Rounds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoundExtraPoints",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: true),
+                    ExtraPoint = table.Column<int>(nullable: false),
+                    RoundResultId = table.Column<int>(nullable: true),
+                    Point = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoundExtraPoints", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoundExtraPoints_RoundResults_RoundResultId",
+                        column: x => x.RoundResultId,
+                        principalTable: "RoundResults",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoundHands",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(nullable: true),
+                    HandType = table.Column<int>(nullable: false),
+                    RoundResultId = table.Column<int>(nullable: true),
+                    Point = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoundHands", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoundHands_RoundResults_RoundResultId",
+                        column: x => x.RoundResultId,
+                        principalTable: "RoundResults",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -418,6 +465,16 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "IX_Games_HostId",
                 table: "Games",
                 column: "HostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoundExtraPoints_RoundResultId",
+                table: "RoundExtraPoints",
+                column: "RoundResultId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoundHands_RoundResultId",
+                table: "RoundHands",
+                column: "RoundResultId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoundResults_AppUserId",
@@ -481,7 +538,10 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "ChatMsgs");
 
             migrationBuilder.DropTable(
-                name: "RoundResults");
+                name: "RoundExtraPoints");
+
+            migrationBuilder.DropTable(
+                name: "RoundHands");
 
             migrationBuilder.DropTable(
                 name: "RoundTiles");
@@ -494,6 +554,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "RoundResults");
 
             migrationBuilder.DropTable(
                 name: "Tiles");

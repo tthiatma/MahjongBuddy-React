@@ -11,14 +11,14 @@ namespace MahjongBuddy.Application.Rounds.Scorings
     {
         private readonly ExtraPointBuilder _pointBuider;
         private readonly HandTypeBuilder _handBuilder;
-        private readonly Dictionary<HandType, int> _handTypeLookup;
-        private readonly Dictionary<ExtraPoint, int> _extraPointLookup;
+        public Dictionary<HandType, int> HandTypeLookup { get; }
+        public Dictionary<ExtraPoint, int> ExtraPointLookup { get; }
 
         public HomeGameCalculator(ExtraPointBuilder pointBuilder, HandTypeBuilder handBuilder)
         {
             _pointBuider = pointBuilder;
             _handBuilder = handBuilder;
-            _handTypeLookup = new Dictionary<HandType, int>()
+            HandTypeLookup = new Dictionary<HandType, int>()
             {
                 { HandType.AllOneSuit, 7 },
                 { HandType.BigDragon, 10 },
@@ -33,7 +33,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { HandType.Triplets, 3 },
                 { HandType.None, -10 },
             };
-            _extraPointLookup = new Dictionary<ExtraPoint, int>()
+            ExtraPointLookup = new Dictionary<ExtraPoint, int>()
             {
                 { ExtraPoint.AllFourFlowerSameType, 1 },
                 { ExtraPoint.ConcealedHand, 1 },
@@ -58,10 +58,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 var handTypes = _handBuilder.GetHandType(round, winnerUserName);
             if(handTypes.Count() > 0)
             {
-                handTypes.ForEach(tp => totalPoints += _handTypeLookup[tp]);
+                handTypes.ForEach(tp => totalPoints += HandTypeLookup[tp]);
 
                 var extraPoints = _pointBuider.GetExtraPoint(round, winnerUserName);
-                extraPoints.ForEach(ep => totalPoints += _extraPointLookup[ep]);
+                extraPoints.ForEach(ep => totalPoints += ExtraPointLookup[ep]);
 
                 ret.HandTypes = handTypes;
                 ret.ExtraPoints = extraPoints;
