@@ -15,8 +15,8 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         public string MainPlayerUserName { get; set; }
         public string OtherPlayerName { get; set; }
         public int GameId { get; set; }
-        public UserRound MainPlayerRound { get; set; }
-        public UserRound OtherPlayerRound { get; set; }
+        public RoundPlayer MainPlayerRound { get; set; }
+        public RoundPlayer OtherPlayerRound { get; set; }
         public int RoundId { get; set; }
         public Round Round { get; set; }
         public IPointsCalculator PointCalculator { get; set; }
@@ -30,8 +30,8 @@ namespace MahjongBuddy.Application.Tests.Fixtures
 
             CreateBaseData();
             PointCalculator = new HomeGameCalculator(new ExtraPointBuilder(), new HandTypeBuilder());
-            MainPlayerRound = TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == MainPlayerUserName);
-            OtherPlayerRound = TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == OtherPlayerName);
+            MainPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == MainPlayerUserName);
+            OtherPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == OtherPlayerName);
         }
 
         public override void Dispose()
@@ -118,24 +118,24 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                 DateCreated = DateTime.Now,
                 RoundTiles = RoundTileHelper.CreateTiles(TestDataContext).Shuffle(),
                 RoundResults = new List<RoundResult>(),
-                UserRounds = new List<UserRound>
+                RoundPlayers = new List<RoundPlayer>
                 {
-                    new UserRound
+                    new RoundPlayer
                     {
                         AppUserId = "a",
                         Wind = WindDirection.South
                     },
-                    new UserRound
+                    new RoundPlayer
                     {
                         AppUserId = "b",
                         Wind = WindDirection.East
                     },
-                    new UserRound
+                    new RoundPlayer
                     {
                         AppUserId = "c",
                         Wind = WindDirection.West
                     },
-                    new UserRound
+                    new RoundPlayer
                     {
                         AppUserId = "d",
                         Wind = WindDirection.North

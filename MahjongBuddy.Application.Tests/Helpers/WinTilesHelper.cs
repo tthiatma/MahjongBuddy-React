@@ -160,6 +160,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             {
                 lastTile.Owner = "board";
                 lastTile.Status = TileStatus.BoardActive;
+                lastTile.ThrownBy = "south";
             }
 
             userTiles.Add(lastTile);

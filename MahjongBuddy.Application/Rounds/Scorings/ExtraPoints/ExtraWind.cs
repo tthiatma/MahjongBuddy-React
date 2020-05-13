@@ -11,7 +11,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
         public override List<ExtraPoint> HandleRequest(Round round, string winnerUserName, List<ExtraPoint> extraPoints)
         {
             var tiles = round.RoundTiles.Where(t => t.Owner == winnerUserName);
-            var winner = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == winnerUserName);
+            var winner = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == winnerUserName);
 
             //if this is user's wind
             var userCurrentWind = winner.Wind.ToTileValue();

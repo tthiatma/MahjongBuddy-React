@@ -47,7 +47,7 @@ namespace MahjongBuddy.Application.Tiles
                 //weird situation is when it's user's turn, user can kong their active tiles and can kong board active tiles
 
                 var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<UserRound>();
+                var updatedPlayers = new List<RoundPlayer>();
 
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
@@ -56,7 +56,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 round.IsHalted = true;
 
-                var currentPlayer = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 
@@ -125,7 +125,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 currentPlayer.IsMyTurn = true;
 
-                var otherPlayerTurn = round.UserRounds.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
+                var otherPlayerTurn = round.RoundPlayers.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
                 if(otherPlayerTurn != null)
                 {
                     otherPlayerTurn.IsMyTurn = false;
@@ -139,7 +139,7 @@ namespace MahjongBuddy.Application.Tiles
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
                 roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<UserRound>, ICollection<RoundPlayerDto>>(updatedPlayers);
+                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                 if (success)
                     return roundToReturn;

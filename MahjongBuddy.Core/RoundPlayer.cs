@@ -1,6 +1,6 @@
 ﻿namespace MahjongBuddy.Core
 {
-    public class UserRound
+    public class RoundPlayer
     {
         public string AppUserId { get; set; }
         public virtual AppUser AppUser { get; set; }
@@ -8,8 +8,7 @@
         public virtual Round Round { get; set; }
         public bool IsDealer { get; set; }
         public bool IsMyTurn { get; set; }
-        public bool CanDoNoFlower { get; set; }
         public WindDirection Wind { get; set; }
-        public int FlowerNum { get; set; }
+        public int Points { get; set; }
     }
 }

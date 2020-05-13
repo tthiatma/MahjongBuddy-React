@@ -26,8 +26,8 @@ namespace MahjongBuddy.Application.Tests.Rounds
             _f.CreateRound();
             _f.TestDataContext.SaveChanges();
             _f.RoundId = _f.TestDataContext.Rounds.First().Id;
-            _f.MainPlayerRound = _f.TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == _f.MainPlayerUserName);
-            _f.OtherPlayerRound = _f.TestDataContext.Rounds.First().UserRounds.First(u => u.AppUser.UserName == _f.OtherPlayerName);
+            _f.MainPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == _f.MainPlayerUserName);
+            _f.OtherPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == _f.OtherPlayerName);
         }
 
         public void Dispose()
@@ -56,8 +56,10 @@ namespace MahjongBuddy.Application.Tests.Rounds
             var sut = new Win.Handler(context, _mapper, _f.PointCalculator);
             ut = context.RoundTiles.Where(t => t.Owner == _f.MainPlayerUserName);
             var result = sut.Handle(winCommand, CancellationToken.None).Result;
-
-            //Assert.Equal("Game1", result.round);
+            var winnerResult = result.RoundResults.First(u => u.IsWinner == true);
+            var winner = result.RoundPlayers.First(u => u.UserName == winnerResult.UserName);
+            Assert.Equal(9, winner.Points);
+            Assert.Equal(4, result.RoundResults.Count());
         }
     }
 }

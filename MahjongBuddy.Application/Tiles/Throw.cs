@@ -37,13 +37,13 @@ namespace MahjongBuddy.Application.Tiles
                 //TODO: when there is no more tiles, handle calling game is over
                 //TODO: when someone can pong/chow the tile, turn on the flag so client can show user the option
                 var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<UserRound>();
+                var updatedPlayers = new List<RoundPlayer>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.UserRounds.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
 
                 if(currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
@@ -81,7 +81,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 //take off turn from current player and figure out next player's turn
                 currentPlayer.IsMyTurn = false;
-                var nextPlayerTurn = GetNextPlayer(round.UserRounds, currentPlayer.Wind);
+                var nextPlayerTurn = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
                 nextPlayerTurn.IsMyTurn = true;
 
                 updatedPlayers.Add(currentPlayer);
@@ -92,7 +92,7 @@ namespace MahjongBuddy.Application.Tiles
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
                 roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<UserRound>, ICollection<RoundPlayerDto>>(updatedPlayers);
+                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                 if (success)
                     return roundToReturn;
@@ -100,9 +100,9 @@ namespace MahjongBuddy.Application.Tiles
                 throw new Exception("Problem throwing tile");
             }
 
-            private UserRound GetNextPlayer(ICollection<UserRound> players, WindDirection currentPlayerWind)
+            private RoundPlayer GetNextPlayer(ICollection<RoundPlayer> players, WindDirection currentPlayerWind)
             {
-                UserRound ret;
+                RoundPlayer ret;
                 switch (currentPlayerWind)
                 {
                     case WindDirection.East:

@@ -9,6 +9,6 @@ namespace MahjongBuddy.Core
 
         public virtual ICollection<UserGame> UserGames { get; set; }
 
-        public virtual ICollection<UserRound> UserRounds { get; set; }
+        public virtual ICollection<RoundPlayer> UserRounds { get; set; }
     }
 }

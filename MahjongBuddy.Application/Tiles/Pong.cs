@@ -40,7 +40,7 @@ namespace MahjongBuddy.Application.Tiles
                 //assign tile ownership to current user
 
                 var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<UserRound>();
+                var updatedPlayers = new List<RoundPlayer>();
 
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
@@ -79,13 +79,13 @@ namespace MahjongBuddy.Application.Tiles
                     tile.Status = TileStatus.UserGraveyard;
                 }
 
-                var currentPlayer = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
                 if(currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 
                 currentPlayer.IsMyTurn = true;
 
-                var otherPlayerTurn = round.UserRounds.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
+                var otherPlayerTurn = round.RoundPlayers.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
                 if(otherPlayerTurn != null)
                 {
                     otherPlayerTurn.IsMyTurn = false;
@@ -100,7 +100,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
 
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<UserRound>, ICollection<RoundPlayerDto>>(updatedPlayers);
+                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                 if (success)
                     return roundToReturn;

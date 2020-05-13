@@ -19,7 +19,7 @@ namespace MahjongBuddy.Core
         public virtual Game Game { get; set; }
         public virtual ICollection<RoundResult> RoundResults { get; set; }
         public virtual ICollection<RoundTile> RoundTiles { get; set; }
-        public virtual ICollection<UserRound> UserRounds { get; set; }
+        public virtual ICollection<RoundPlayer> RoundPlayers { get; set; }
         public virtual ICollection<UserGame> UserGames { get; set; }
     }
 }

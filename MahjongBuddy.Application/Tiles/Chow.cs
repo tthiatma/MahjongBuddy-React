@@ -86,7 +86,7 @@ namespace MahjongBuddy.Application.Tiles
                 
                 updatedTiles.AddRange(sortedChowTiles);
 
-                var currentPlayer = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 

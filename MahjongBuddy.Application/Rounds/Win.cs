@@ -46,15 +46,10 @@ namespace MahjongBuddy.Application.Rounds
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var winner = round.UserRounds.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                var winner = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
 
                 if (winner == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Player = "Could not find player" });
-
-                //var ut = round.RoundTiles.Where(t => t.Owner == request.UserName).Select(t=> t.Id).ToList();
-                //var rawr = _context.RoundTiles.Where(t => t.Owner == request.UserName).Select(t => t.Id).ToList();
-                //var difference = rawr.Except(ut);
-                //var theWeirdOne = _context.RoundTiles.First(t => t.Id == difference.First());
 
                 //if its a valid win:
                 HandWorth handWorth = _pointCalculator.Calculate(round, request.UserName);
@@ -95,36 +90,48 @@ namespace MahjongBuddy.Application.Rounds
                         winnerResult.RoundResultExtraPoints.Add(new RoundResultExtraPoint { ExtraPoint = e, Point = point, Name = e.ToString() });
                     }
 
-                    round.RoundResults.Add(winnerResult);
 
                     //now that we have the winner, check the loser
 
-                    if(isSelfPick)
+                    var losingPoint = handWorth.Points * -1;
+
+                    if (isSelfPick)
                     {
                         //if its self pick, then all 3 other players needs to record the loss
-                        var losers = round.UserRounds.Where(u => u.AppUser.UserName != request.UserName);
+                        var losers = round.RoundPlayers.Where(u => u.AppUser.UserName != request.UserName);
+
+                        //points will be times 3
+                        var winningPoint = handWorth.Points * 3;
+                        winner.Points += winningPoint;
+                        winnerResult.PointsResult = winningPoint;
 
                         foreach (var l in losers)
                         {
-                            round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser });
+                            l.Points -= handWorth.Points;
+                            round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser, PointsResult = losingPoint });
                         }
                     }
                     else
                     {
                         //otherwise there is only one loser that throw the tile to board
                         var boardTile = round.RoundTiles.First(t => t.Owner == "Board");
-                        var loser = round.UserRounds.First(u => u.AppUser.UserName == boardTile.ThrownBy);
-                        round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser});
+                        var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
+                        loser.Points -= handWorth.Points;
+                        round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });
                     }
+                    round.RoundResults.Add(winnerResult);
+
 
                     //TODO implement more than one winner
-                    
-                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+
 
                     var success = await _context.SaveChangesAsync() > 0;
 
                     if (success)
+                    {
+                        var roundToReturn = _mapper.Map<Round, RoundDto>(round);
                         return roundToReturn;
+                    }
 
                 }
                 else
