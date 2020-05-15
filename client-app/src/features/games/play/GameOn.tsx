@@ -87,6 +87,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     
   const doChow = () => {
     let chowTiles: IRoundTile[] = [];
+    let chowTilesOptions: Array<IRoundTile[]> = [];
   
     let boardActiveTile = rootStore.roundStore.boardActiveTile;
 
@@ -113,7 +114,24 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         || t.tile.tileValue === (boardActiveTile!.tile.tileValue - 1)
         )
         if(possibleTiles && possibleTiles.length > 1){
-          console.log(possibleTiles.length);
+          console.log('possible tiles = ' + possibleTiles.length);
+
+          _.forEach(possibleTiles, function(value){
+            console.log(toJS(value));
+          });
+
+          //remove dups
+          const rawr = _.uniqWith(
+            possibleTiles, 
+            (a, b) => 
+              a.tile.tileType == b.tile.tileType &&
+              a.tile.tileValue == b.tile.tileValue
+            )
+            console.log('rawr is');
+
+            _.forEach(rawr, function(value){
+              console.log(toJS(value));
+            });            
 
           for(var i = 0; i < possibleTiles.length; i ++ ){
             let t = possibleTiles[i];
@@ -132,9 +150,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               
               if(probableTile){
                 console.log('found matching tiles to chow');
+                //add the two possible tiles as option 
+                chowTilesOptions.push([toJS(probableTile), toJS(t)]);
                 chowTiles.push(probableTile);
                 chowTiles.push(t);
-                break;
               }
             }else{
               //then these two tiles is not connected
@@ -142,9 +161,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               let probableTile = possibleTiles.find(t => t.tile.tileValue === (testChowTiles[0].tile.tileValue + 1));              
               if(probableTile){
                 console.log('found matching tiles to chow');
+                chowTilesOptions.push([toJS(probableTile), toJS(t)]);
                 chowTiles.push(probableTile);
                 chowTiles.push(t);
-                break;
               }
             }
           }
@@ -158,9 +177,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       chowTiles.forEach(t => console.log(t.tile.tileValue))
       chow(chowTiles)
     }
-    else
-      //
-      console.log('cant chow because chowTiles length is ' + chowTiles.length);
+    else{
+          //display option to chow
+          console.log(chowTilesOptions);
+        }
     }
 
     const doKong = () => {
