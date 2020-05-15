@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, Fragment } from "react";
-import { Grid, Button, IconGroup } from "semantic-ui-react";
+import { Grid, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
@@ -90,7 +90,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   
     let boardActiveTile = rootStore.roundStore.boardActiveTile;
 
-    let sameTypeChowTiles = rootStore.roundStore.mainPlayerActiveTiles?.filter(t => t.tile.tileType == boardActiveTile?.tile.tileType);
+    let sameTypeChowTiles = rootStore.roundStore.mainPlayerActiveTiles?.filter(t => t.tile.tileType === boardActiveTile?.tile.tileType);
     console.log('sameTypeChowTiles = ' + sameTypeChowTiles?.length);
 
     if(boardActiveTile?.tile.tileValue === TileValue.One){
@@ -122,6 +122,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             testChowTiles.push(t);
             testChowTiles.push(boardActiveTile!);
             testChowTiles.sort((a,b) => a!.tile.tileValue - b!.tile.tileValue);
+            
           if((t.tile.tileValue + boardActiveTile!.tile.tileValue) % 2 !== 0){
               console.log('tile is connected')
               //then these two tiles is connected
@@ -158,6 +159,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       chow(chowTiles)
     }
     else
+      //
       console.log('cant chow because chowTiles length is ' + chowTiles.length);
     }
 

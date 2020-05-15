@@ -39,8 +39,8 @@ axios.interceptors.response.use(undefined, error => {
 
 const responseBody = (Response: AxiosResponse) => Response.data;
 
-const sleep = (ms: number) => (response: AxiosResponse) => 
-    new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
+// const sleep = (ms: number) => (response: AxiosResponse) => 
+//     new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
 
 const request = {
     get: (url:string) => axios.get(url).then(responseBody),

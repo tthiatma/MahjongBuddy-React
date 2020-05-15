@@ -2,7 +2,6 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Droppable, Draggable } from "react-beautiful-dnd";
-import { toJS } from "mobx";
 
 interface IProps{
   containerStyleName: string;
