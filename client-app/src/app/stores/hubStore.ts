@@ -364,7 +364,7 @@ export default class HubStore {
     }
   }
 
-  @action chow = async(tiles: IRoundTile[]) =>{
+  @action chow = async(tiles: any[]) =>{
 
     let values = this.getGameAndRoundProps();
     values.ChowTiles = tiles;

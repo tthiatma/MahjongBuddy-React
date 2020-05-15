@@ -20,9 +20,7 @@ namespace MahjongBuddy.Application.Tiles
             public string GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
-
-            //TODO: just use ID instead of whole tile object here
-            public ICollection<RoundTile> ChowTiles { get; set; }
+            public IEnumerable<Guid> ChowTiles { get; set; }
         }
         public class Handler : IRequestHandler<Command, RoundDto>
         {
@@ -61,8 +59,7 @@ namespace MahjongBuddy.Application.Tiles
                 if(tileToChow.Tile.TileType == TileType.Dragon || tileToChow.Tile.TileType == TileType.Flower || tileToChow.Tile.TileType == TileType.Wind)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile must be money, round, or stick for chow" });
 
-                var chowTileIds = request.ChowTiles.Select(t => t.Id);
-                var dbTilesToChow = round.RoundTiles.Where(t => chowTileIds.Contains(t.Id)).ToList();
+                var dbTilesToChow = round.RoundTiles.Where(t => request.ChowTiles.Contains(t.Id)).ToList();
 
                 dbTilesToChow.Add(tileToChow);
 
@@ -80,10 +77,8 @@ namespace MahjongBuddy.Application.Tiles
                     }
                 }
                 else
-                {
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile is not in sequence to chow" });
-                }
-                
+
                 updatedTiles.AddRange(sortedChowTiles);
 
                 var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
