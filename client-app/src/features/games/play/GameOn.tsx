@@ -11,6 +11,9 @@ import {
   Card,
   Image,
   CardProps,
+  Modal,
+  Header,
+  Icon,
 } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -76,6 +79,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   } = rootStore.hubStore;
 
   const [chowOptions, setChowOptions] = useState<any[]>([]);
+  const [showResult, setShowResult] = useState<boolean>(false);
+
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "lightgrey",
     display: "flex",
@@ -402,6 +407,34 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={3} />
           <Grid.Column width={10}>
             <Grid.Row>
+              <Modal
+                trigger={
+                  <Button onClick={() => setShowResult(true)}>Show Modal</Button>
+                }
+                open={showResult}
+                onClose={() => setShowResult(false)}
+                size="small"
+              >
+                <Header icon="bullhorn" content="Result" />
+                <Modal.Content>
+                  <h3>
+                    Winner : Tonny - 4 pts
+                  </h3>
+                  <Image src="/assets/tiles/50px/man/man1.png" />
+                  <h3>
+                    Feeder : Peter (4 pts)
+                  </h3>
+                </Modal.Content>
+                <Modal.Actions>
+                  <Button
+                    color="green"
+                    onClick={() => setShowResult(false)}
+                    inverted
+                  >
+                    <Icon name="checkmark" /> Got it
+                  </Button>
+                </Modal.Actions>
+              </Modal>
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
@@ -429,7 +462,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Button>
               <Button loading={loading} onClick={doKong}>
                 Kong
-              </Button>              
+              </Button>
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>

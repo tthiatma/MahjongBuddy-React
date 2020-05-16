@@ -409,7 +409,9 @@ export default class HubStore {
 
   @action kong = async(tileType: TileType, tileValue: TileValue) => {
     let values = this.getGameAndRoundProps();
-    this.loading = true;
+    runInAction(() => {
+      this.loading = true;
+    });
     values.TileType = tileType;
     values.TileValue = tileValue;
     try {
@@ -444,7 +446,9 @@ export default class HubStore {
     } catch (error) {
       toast.error("problem calling win");
     } finally {
-      this.loading = false;
+      runInAction(() => {
+        this.loading = false;
+      });
     }
   }
   getGameAndRoundProps = () => {
