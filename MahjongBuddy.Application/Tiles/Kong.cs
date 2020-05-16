@@ -18,7 +18,7 @@ namespace MahjongBuddy.Application.Tiles
     {
         public class Command : IRequest<RoundDto>
         {
-            public string GameId { get; set; }
+            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
             public TileType TileType { get; set; }

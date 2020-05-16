@@ -60,7 +60,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayerTiles,
     topPlayerTiles,
     rightPlayerTiles,
-    roundTiles,
+    roundTiles
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -72,6 +72,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     createHubConnection,
     stopHubConnection,
     leaveGroup,
+    winRound
   } = rootStore.hubStore;
 
   const [chowOptions, setChowOptions] = useState<any[]>([]);
@@ -428,6 +429,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Button>
               <Button loading={loading} onClick={doKong}>
                 Kong
+              </Button>              
+              <Button loading={loading} onClick={winRound}>
+                Win
               </Button>
             </Grid.Row>
             <Grid.Row>

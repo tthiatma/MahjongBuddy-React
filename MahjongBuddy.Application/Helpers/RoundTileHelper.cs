@@ -109,7 +109,9 @@ namespace MahjongBuddy.Application.Helpers
             List<IEnumerable<RoundTile>> eyeCollection = new List<IEnumerable<RoundTile>>();
             foreach (var t in tiles)
             {
-                var sameTiles = tiles.Where(ti => ti.Tile.TileValue == t.Tile.TileValue && ti.Tile.TileType == t.Tile.TileType);
+                var sameTiles = tiles.Where(ti => ti.Tile.TileValue == t.Tile.TileValue 
+                && ti.Tile.TileType == t.Tile.TileType);
+
                 if (sameTiles != null && sameTiles.Count() > 1)
                 {
                     bool exist = false;

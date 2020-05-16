@@ -34,6 +34,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Title = "Game 1",
                     Date = DateTime.Now.AddMonths(-2),
                     HostId = "a",
+                    MinPoint = 3,
                     UserGames = new List<UserGame>
                     {
                         new UserGame
@@ -68,6 +69,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Title = "Game 2",
                     Date = DateTime.Now.AddMonths(-1),
                     HostId = "a",
+                    MinPoint = 3,
                     UserGames = new List<UserGame>
                     {
                         new UserGame

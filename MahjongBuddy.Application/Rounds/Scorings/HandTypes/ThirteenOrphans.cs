@@ -16,7 +16,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             {
                 var dTile = tiles.Where(tt => (tt.Tile.TileType == t.TileType) && (tt.Tile.TileValue == t.TileValue));
 
-                if (dTile != null)
+                if (dTile != null && dTile.Count() > 0)
                 {
                     if (foundEyesFor13Wonders)
                     {

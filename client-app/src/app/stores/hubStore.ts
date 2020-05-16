@@ -290,6 +290,24 @@ export default class HubStore {
     }
   };
 
+  @action winRound = async() => {
+    this.loading = true;
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        console.log('is hub connected and calling win')
+        this.hubConnection!.invoke("WinRound", this.getGameAndRoundProps());
+        this.loading = false;
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem calling win");
+    }
+  };
+
   @action throwTile = async () => {
     let values = this.getGameAndRoundProps();
     values.tileId = this.roundStore.selectedTile?.id;
@@ -431,7 +449,7 @@ export default class HubStore {
   }
   getGameAndRoundProps = () => {
     let values: any = {};
-    values.gameId = this.gameStore.game?.id.toString();
+    values.gameId = this.gameStore.game?.id;
     values.roundId = this.roundStore.roundSimple?.id;
     return values;
   };

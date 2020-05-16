@@ -104,7 +104,7 @@ namespace MahjongBuddy.API.SignalR
             await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }
 
-        public async Task Win(Win.Command command)
+        public async Task WinRound(Win.Command command)
         {
             string userName = GetUserName();
             command.UserName = userName;
