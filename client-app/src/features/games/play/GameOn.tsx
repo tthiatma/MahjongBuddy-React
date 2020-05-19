@@ -34,6 +34,7 @@ import { toJS, runInAction } from "mobx";
 import { IRoundTile, TileValue, TileSetGroup } from "../../../app/models/tile";
 import _ from "lodash";
 import { TileStatus } from "../../../app/models/tileStatus";
+import { IRoundResult } from "../../../app/models/round";
 
 interface DetailParams {
   roundId: string;
@@ -63,7 +64,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayerTiles,
     topPlayerTiles,
     rightPlayerTiles,
-    roundTiles
+    roundTiles,
+    roundResults
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -78,8 +80,18 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     winRound
   } = rootStore.hubStore;
 
+  //currently only support one winner
   const [chowOptions, setChowOptions] = useState<any[]>([]);
   const [showResult, setShowResult] = useState<boolean>(false);
+  let winner: IRoundResult | null = null;
+  let losers: IRoundResult[] | null = null;
+  let winnerTiles: IRoundTile[] | null = null;
+
+  if(roundResults){
+    winner = roundResults?.find((r) => r.isWinner === true)!;
+    losers = roundResults!.filter((r) => r.isWinner === false)
+    winnerTiles = roundTiles?.filter((t) => t.owner === winner?.userName)!;
+  }
 
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "lightgrey",
@@ -409,7 +421,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             <Grid.Row>
               <Modal
                 trigger={
-                  <Button onClick={() => setShowResult(true)}>Show Modal</Button>
+                  <Button onClick={() => setShowResult(true)}>
+                    Show Modal
+                  </Button>
                 }
                 open={showResult}
                 onClose={() => setShowResult(false)}
@@ -418,11 +432,33 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Header icon="bullhorn" content="Result" />
                 <Modal.Content>
                   <h3>
-                    Winner : Tonny - 4 pts
+                    Winner : {winner?.userName}: {winner?.pointsResult} pts
+                    <ul>
+                      {winner?.roundResultHands.map((h, i) => (
+                        <li key={i}>
+                          {h.name} : {h.point}
+                        </li>
+                      ))}
+                      {winner?.roundResultExtraPoints.map((e, i) => (
+                        <li key={i}>
+                          {e.name} : {e.point}
+                        </li>
+                      ))}
+                    </ul>
                   </h3>
-                  <Image src="/assets/tiles/50px/man/man1.png" />
+                  {winnerTiles?.map((t, i) => (
+                    <Image key={i} src={t.tile.image} />
+                  ))}
                   <h3>
-                    Feeder : Peter (4 pts)
+                    {losers && (
+                      <ul>
+                        {losers.map((l, i) => (
+                          <li key={i}>
+                            {l.userName}: {l.pointsResult}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </h3>
                 </Modal.Content>
                 <Modal.Actions>

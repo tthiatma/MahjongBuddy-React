@@ -2,7 +2,7 @@ import { observable, action, runInAction, computed } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { setRoundProps, sortTiles } from "../common/util/util";
-import { IRound, IRoundPlayer, IRoundSimple } from "../models/round";
+import { IRound, IRoundPlayer, IRoundSimple, IRoundResult } from "../models/round";
 import { IRoundTile } from "../models/tile";
 import { TileStatus } from "../models/tileStatus";
 
@@ -20,6 +20,7 @@ export default class RoundStore {
   @observable leftPlayer: IRoundPlayer | null = null;
   @observable rightPlayer: IRoundPlayer | null = null;
   @observable topPlayer: IRoundPlayer | null = null;
+  @observable roundResults: IRoundResult[] | null = null;
 
   @computed get boardActiveTile() {
     return this.roundTiles

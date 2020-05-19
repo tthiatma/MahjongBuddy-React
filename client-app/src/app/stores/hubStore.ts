@@ -40,10 +40,17 @@ export default class HubStore {
 
   addHubConnectionHandler() {
     if (this.hubConnection) {
+
       this.hubConnection.on("UpdateRound", (round: IRound) => {
         console.log("update round called");
+        if(round.isOver && round.roundResults){
+          console.log(round.roundResults);  
+          runInAction("updating round results", () => {
+            this.roundStore.roundResults = round.roundResults;                        
+          })
+        }
+        
         setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
-
         //update players
         if (round.updatedRoundPlayers) {
           console.log("there is a new player update");
@@ -63,7 +70,7 @@ export default class HubStore {
             });
           });
         } else {
-          console.log("no updated tiles");
+          console.log("no updated players");
         }
 
         //update tiles

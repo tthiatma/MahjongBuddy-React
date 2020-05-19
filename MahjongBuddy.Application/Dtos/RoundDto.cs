@@ -23,7 +23,6 @@ namespace MahjongBuddy.Application.Dtos
         public ICollection<RoundTileDto> UpdatedRoundTiles { get; set; }
         public ICollection<RoundTileDto> RoundTiles { get; set; }
         public ICollection<RoundResultDto> RoundResults { get; set; }
-        [JsonPropertyName("roundPlayers")]
         public ICollection<RoundPlayerDto> RoundPlayers { get; set; }
     }
 }
