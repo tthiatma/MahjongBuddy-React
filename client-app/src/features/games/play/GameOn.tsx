@@ -35,6 +35,7 @@ import { IRoundTile, TileValue, TileSetGroup } from "../../../app/models/tile";
 import _ from "lodash";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundResult } from "../../../app/models/round";
+import { sortTiles } from "../../../app/common/util/util";
 
 interface DetailParams {
   roundId: string;
@@ -90,7 +91,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if(roundResults){
     winner = roundResults?.find((r) => r.isWinner === true)!;
     losers = roundResults!.filter((r) => r.isWinner === false)
-    winnerTiles = roundTiles?.filter((t) => t.owner === winner?.userName)!;
+    winnerTiles = roundTiles?.filter((t) => t.owner === winner?.userName)!.sort(sortTiles);
   }
 
   const getStyle = (isDraggingOver: boolean) => ({
@@ -446,9 +447,19 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       ))}
                     </ul>
                   </h3>
-                  {winnerTiles?.map((t, i) => (
-                    <Image key={i} src={t.tile.image} />
-                  ))}
+                  <div className="flexTilesContainer">
+                    {winnerTiles &&
+                      winnerTiles
+                        .map((rt) => (
+                          <div
+                            key={rt.id}
+                            style={{
+                              backgroundImage: `url(${rt.tile.imageSmall}`,
+                            }}
+                            className="flexTiles"
+                          />
+                        ))}
+                  </div>
                   <h3>
                     {losers && (
                       <ul>
