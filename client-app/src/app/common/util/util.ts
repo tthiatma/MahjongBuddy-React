@@ -48,6 +48,8 @@ export const GetOtherUserWindPosition = (currentUserWind:WindDirection , directi
 }
 
 export const sortTiles = (a: IRoundTile, b: IRoundTile) => {
+  if(a.tileSetGroupIndex > b.tileSetGroupIndex) return -1;
+  if(a.tileSetGroupIndex < b.tileSetGroupIndex) return 1;
   if(a.tile.tileType > b.tile.tileType) return -1;
   if(a.tile.tileType < b.tile.tileType) return 1;
   if(a.tile.tileValue > b.tile.tileValue) return 1;

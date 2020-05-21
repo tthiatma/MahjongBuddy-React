@@ -318,6 +318,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("TileSetGroup")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("TileSetGroupIndex")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RoundId");

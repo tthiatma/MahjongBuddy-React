@@ -8,6 +8,7 @@ export interface IRoundTile{
     roundId: number;
     isWinner: boolean;
     tileSetGroup: TileSetGroup;
+    tileSetGroupIndex: number;
     status: TileStatus;
     tile: ITile;
 }

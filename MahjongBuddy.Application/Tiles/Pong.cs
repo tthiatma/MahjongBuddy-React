@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -72,12 +73,7 @@ namespace MahjongBuddy.Application.Tiles
                     updatedTiles.Add(tile);
                 }
 
-                foreach (var tile in updatedTiles)
-                {
-                    tile.Owner = request.UserName;
-                    tile.TileSetGroup = TileSetGroup.Pong;
-                    tile.Status = TileStatus.UserGraveyard;
-                }
+                updatedTiles.GoGraveyard(request.UserName, TileSetGroup.Pong, round.RoundTiles.GetLastGroupIndex(request.UserName));
 
                 var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
                 if(currentPlayer == null)

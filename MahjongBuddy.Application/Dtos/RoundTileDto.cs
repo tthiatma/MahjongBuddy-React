@@ -16,6 +16,7 @@ namespace MahjongBuddy.Application.Dtos
         //when someone won, mark the tile as winner tile
         public bool IsWinner { get; set; }
         public TileSetGroup TileSetGroup { get; set; }
+        public int TileSetGroupIndex { get; set; }
         public TileStatus Status { get; set; }
         public Tile Tile { get; set; }
     }

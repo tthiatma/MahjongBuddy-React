@@ -108,7 +108,7 @@ namespace MahjongBuddy.Application.Tiles
                 }                
 
                 if(updatedTiles.Count() == 4)
-                    updatedTiles.GoGraveyard(request.UserName, TileSetGroup.Kong);
+                    updatedTiles.GoGraveyard(request.UserName, TileSetGroup.Kong, round.RoundTiles.GetLastGroupIndex(request.UserName));
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new { Kong = "Not possible to kong" });
                 //add new tile for user

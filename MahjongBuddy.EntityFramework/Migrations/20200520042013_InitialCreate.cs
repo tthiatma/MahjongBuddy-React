@@ -316,6 +316,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     RoundId = table.Column<int>(nullable: false),
                     IsWinner = table.Column<bool>(nullable: false),
                     TileSetGroup = table.Column<int>(nullable: false),
+                    TileSetGroupIndex = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: false),
                     TileId = table.Column<int>(nullable: true)
                 },

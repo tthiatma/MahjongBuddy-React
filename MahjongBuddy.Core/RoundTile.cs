@@ -16,6 +16,7 @@ namespace MahjongBuddy.Core
         //when someone won, mark the tile as winner tile
         public bool IsWinner { get; set; }
         public TileSetGroup TileSetGroup { get; set; }
+        public int TileSetGroupIndex { get; set; }
         public TileStatus Status { get; set; }
         public virtual Round Round { get; set; }
         public virtual Tile Tile { get; set; }

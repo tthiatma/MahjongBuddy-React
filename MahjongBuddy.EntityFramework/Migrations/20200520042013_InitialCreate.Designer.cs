@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200513090629_InitialCreate")]
+    [Migration("20200520042013_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -318,6 +318,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("TileSetGroup")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TileSetGroupIndex")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");

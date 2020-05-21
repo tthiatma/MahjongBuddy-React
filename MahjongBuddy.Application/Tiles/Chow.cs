@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -69,12 +70,16 @@ namespace MahjongBuddy.Application.Tiles
                 if (sortedChowTiles[0].Tile.TileValue + 1 == sortedChowTiles[1].Tile.TileValue
                     && sortedChowTiles[1].Tile.TileValue + 1 == sortedChowTiles[2].Tile.TileValue)
                 {
-                    foreach (var tile in sortedChowTiles)
+
+                    int groupIndex = 1;
+                    var tileSets = round.RoundTiles.Where(t => t.Owner == request.UserName && t.TileSetGroup != TileSetGroup.None);
+                    if(tileSets.Count() > 0)
                     {
-                        tile.Owner = request.UserName;
-                        tile.TileSetGroup = TileSetGroup.Chow;
-                        tile.Status = TileStatus.UserGraveyard;
+                        var lastIndex =  tileSets.GroupBy(t => t.TileSetGroupIndex).Select(g => g.Last()).First().TileSetGroupIndex;
+                        groupIndex = lastIndex + 1;
                     }
+                    
+                    sortedChowTiles.GoGraveyard(request.UserName, TileSetGroup.Chow, round.RoundTiles.GetLastGroupIndex(request.UserName));
                 }
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile is not in sequence to chow" });
