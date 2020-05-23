@@ -66,7 +66,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     topPlayerTiles,
     rightPlayerTiles,
     roundTiles,
-    roundResults
+    roundResults,
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -78,7 +78,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     createHubConnection,
     stopHubConnection,
     leaveGroup,
-    winRound
+    winRound,
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -88,10 +88,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   let losers: IRoundResult[] | null = null;
   let winnerTiles: IRoundTile[] | null = null;
 
-  if(roundResults){
+  if (roundResults) {
     winner = roundResults?.find((r) => r.isWinner === true)!;
-    losers = roundResults!.filter((r) => r.isWinner === false)
-    winnerTiles = roundTiles?.filter((t) => t.owner === winner?.userName)!.sort(sortTiles);
+    losers = roundResults!.filter((r) => r.isWinner === false);
+    winnerTiles = roundTiles
+      ?.filter((t) => t.owner === winner?.userName)!
+      .sort(sortTiles);
   }
 
   const getStyle = (isDraggingOver: boolean) => ({
@@ -128,26 +130,29 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     let boardActiveTile = rootStore.roundStore.boardActiveTile;
 
     let sameTypeChowTiles = rootStore.roundStore.mainPlayerActiveTiles?.filter(
-      (t) => t.tile.tileType === boardActiveTile?.tile.tileType && t.tile.tileValue !== boardActiveTile?.tile.tileValue
+      (t) =>
+        t.tile.tileType === boardActiveTile?.tile.tileType &&
+        t.tile.tileValue !== boardActiveTile?.tile.tileValue
     );
 
     if (boardActiveTile?.tile.tileValue === TileValue.One) {
-      let possibleTiles = sameTypeChowTiles?.filter(
-        (t) =>
-          t.tile.tileValue === TileValue.Two ||
-          t.tile.tileValue === TileValue.Three
-      );
+      const tileTwo = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Two);
+      const tileThree = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Three);
 
-      if (possibleTiles && possibleTiles.length === 2)
-        chowTilesOptions.push(possibleTiles);
+      if (tileTwo && tileThree) {
+        let twoThreeArray: IRoundTile[] = [tileTwo, tileThree];
+        chowTilesOptions.push(twoThreeArray);
+      }
     } else if (boardActiveTile?.tile.tileValue === TileValue.Nine) {
-      let possibleTiles = sameTypeChowTiles?.filter(
-        (t) =>
-          t.tile.tileValue === TileValue.Eight ||
-          t.tile.tileValue === TileValue.Seven
-      );
-      if (possibleTiles && possibleTiles.length === 2)
-        chowTilesOptions.push(possibleTiles);
+      console.log("board tile is 9");
+      const tileSeven = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Seven);
+      const tileEight = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Eight);
+
+      if (tileSeven && tileEight) {
+        let sevenEightArray: IRoundTile[] = [tileSeven, tileEight];
+        chowTilesOptions.push(sevenEightArray);
+      }
+
     } else {
       let possibleTiles = sameTypeChowTiles?.filter(
         (t) =>
@@ -200,22 +205,22 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         );
       }
     }
-      //remove dups
-      chowTilesOptions = _.uniqWith(chowTilesOptions, (a, b) => {
-        let foundDups = true;
-        var firsta = _.find(b, function (t) {
-          return t.tile.tileValue === a[0].tile.tileValue;
-        });
-        var seconda = _.find(b, function (t) {
-          return t.tile.tileValue === a[1].tile.tileValue;
-        });
-
-        if (!firsta || !seconda) foundDups = false;
-
-        return foundDups;
+    //remove dups
+    chowTilesOptions = _.uniqWith(chowTilesOptions, (a, b) => {
+      let foundDups = true;
+      var firsta = _.find(b, function (t) {
+        return t.tile.tileValue === a[0].tile.tileValue;
+      });
+      var seconda = _.find(b, function (t) {
+        return t.tile.tileValue === a[1].tile.tileValue;
       });
 
-      if (chowTilesOptions.length === 1) {
+      if (!firsta || !seconda) foundDups = false;
+
+      return foundDups;
+    });
+
+    if (chowTilesOptions.length === 1) {
       const ct = chowTilesOptions[0];
       chow([ct[0].id, ct[1].id]);
     } else if (chowTilesOptions.length > 1) {
@@ -449,16 +454,15 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   </h3>
                   <div className="flexTilesContainer">
                     {winnerTiles &&
-                      winnerTiles
-                        .map((rt) => (
-                          <div
-                            key={rt.id}
-                            style={{
-                              backgroundImage: `url(${rt.tile.imageSmall}`,
-                            }}
-                            className="flexTiles"
-                          />
-                        ))}
+                      winnerTiles.map((rt) => (
+                        <div
+                          key={rt.id}
+                          style={{
+                            backgroundImage: `url(${rt.tile.imageSmall}`,
+                          }}
+                          className="flexTiles"
+                        />
+                      ))}
                   </div>
                   <h3>
                     {losers && (
