@@ -79,6 +79,13 @@ namespace MahjongBuddy.API.SignalR
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
         }
 
+        public async Task ThrowAllTiles(ThrowAll.Command command)
+        {
+            command.UserName = GetUserName();
+            var round = await _mediator.Send(command);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+        }
+
         public async Task ThrowTile(Throw.Command command)
         {
             command.UserName = GetUserName();

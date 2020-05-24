@@ -365,6 +365,28 @@ export default class HubStore {
     }
   };
 
+  @action throwAllTile = async () => {
+    let values = this.getGameAndRoundProps();
+    runInAction(() => {
+      this.loading = true;
+    });
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        this.hubConnection!.invoke("ThrowAllTiles", values);
+        runInAction(() => {
+          this.loading = false;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem throwing all tile");
+    }
+  }
+
   @action pickTile = async () => {
     runInAction(() => {
       this.loading = true;

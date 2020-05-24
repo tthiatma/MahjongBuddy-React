@@ -81,7 +81,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     stopHubConnection,
     leaveGroup,
     winRound,
-    endRound
+    endRound,
+    throwAllTile
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -440,12 +441,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                         size="mini"
                         src="/assets/tiles/50px/face-down.png"
                       />
-                      <Item.Content verticalAlign="middle" className="remainingTileHeader">
-                        <Item.Header>
-                            {`x ${remainingTiles}`}
-                        </Item.Header>
+                      <Item.Content
+                        verticalAlign="middle"
+                        className="remainingTileHeader"
+                      >
+                        <Item.Header>{`x ${remainingTiles}`}</Item.Header>
                       </Item.Content>
-                      </Item>
+                    </Item>
                   </Item.Group>
                   <span></span>
                 </Fragment>
@@ -517,6 +519,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
 
+              <Button loading={loading} onClick={throwAllTile}>
+                Throw All
+              </Button>
               <Button loading={loading} onClick={throwTile}>
                 Throw
               </Button>
@@ -535,9 +540,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              <Button loading={loading} onClick={endRound}>
-                Give Up
-              </Button>
+              {remainingTiles === 1 
+              && mainPlayerJustPickedTile!.length === 0
+              && mainPlayer!.isMyTurn 
+              && (
+                <Button loading={loading} onClick={endRound}>
+                  Give Up
+                </Button>
+              )}
             </Grid.Row>
             <Grid.Row>
               <TileListMainPlayer
