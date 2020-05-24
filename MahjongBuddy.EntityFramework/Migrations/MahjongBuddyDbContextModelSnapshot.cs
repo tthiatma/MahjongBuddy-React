@@ -198,6 +198,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("Points")
                         .HasColumnType("INTEGER");
 
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB");
+
                     b.Property<int>("Wind")
                         .HasColumnType("INTEGER");
 

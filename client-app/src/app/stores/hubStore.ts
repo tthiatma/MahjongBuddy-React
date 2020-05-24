@@ -374,7 +374,10 @@ export default class HubStore {
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke('PongTile', this.getGameAndRoundProps());
+        this.hubConnection!.invoke('PongTile', this.getGameAndRoundProps())
+        .catch(err => {
+          toast.error(`can't pong`);
+        });
         runInAction(() => {
           this.loading = false;
         });

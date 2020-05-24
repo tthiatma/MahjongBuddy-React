@@ -1,9 +1,11 @@
 ﻿using MahjongBuddy.Application.ChatMsgs;
+using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Games;
 using MahjongBuddy.Application.Rounds;
 using MahjongBuddy.Application.Tiles;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -21,9 +23,16 @@ namespace MahjongBuddy.API.SignalR
 
         public async Task StartRound(CreateRound.Command command)
         {
-            var roundTiles = await _mediator.Send(command);
+            try
+            {
+                var roundTiles = await _mediator.Send(command);
+                await Clients.Group(command.GameId.ToString()).SendAsync("RoundStarted", roundTiles);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
 
-            await Clients.Group(command.GameId.ToString()).SendAsync("RoundStarted", roundTiles);
         }
 
         public async Task DisconnectFromGame(Disconnect.Command command)
@@ -84,8 +93,16 @@ namespace MahjongBuddy.API.SignalR
         {
             string userName = GetUserName();
             command.UserName = userName;
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            try
+            {
+                var round = await _mediator.Send(command);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            }
+            catch (RestException ex)
+            {
+                var test = new HubException("Can't Pong", ex);
+                throw test;
+            }
         }
 
         public async Task KongTile(Kong.Command command)
@@ -100,8 +117,16 @@ namespace MahjongBuddy.API.SignalR
         {
             string userName = GetUserName();
             command.UserName = userName;
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+
+            try
+            {
+                var round = await _mediator.Send(command);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            }
+            catch (RestException ex)
+            {
+                throw new HubException(ex.Message);
+            }
         }
 
         public async Task WinRound(Win.Command command)

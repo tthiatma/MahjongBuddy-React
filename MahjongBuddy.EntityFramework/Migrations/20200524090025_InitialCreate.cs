@@ -257,7 +257,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     IsDealer = table.Column<bool>(nullable: false),
                     IsMyTurn = table.Column<bool>(nullable: false),
                     Wind = table.Column<int>(nullable: false),
-                    Points = table.Column<int>(nullable: false)
+                    Points = table.Column<int>(nullable: false),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -359,26 +360,26 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
             migrationBuilder.Sql(
-                @"
-                CREATE TRIGGER SetRoundTileTimestampOnUpdate
-                AFTER UPDATE ON RoundTiles
-                BEGIN
-                    UPDATE RoundTiles
-                    SET Timestamp = randomblob(8)
-                    WHERE rowid = NEW.rowid;
-                END
-                ");
-            
+                    @"
+                    CREATE TRIGGER SetRoundTileTimestampOnUpdate
+                    AFTER UPDATE ON RoundTiles
+                    BEGIN
+                        UPDATE RoundTiles
+                        SET Timestamp = randomblob(8)
+                        WHERE rowid = NEW.rowid;
+                    END
+                    ");
+
             migrationBuilder.Sql(
                         @"
-                CREATE TRIGGER SetRoundTileTimestampOnInsert
-                AFTER INSERT ON RoundTiles
-                BEGIN
-                    UPDATE RoundTiles
-                    SET Timestamp = randomblob(8)
-                    WHERE rowid = NEW.rowid;
-                END
-            ");
+                    CREATE TRIGGER SetRoundTileTimestampOnInsert
+                    AFTER INSERT ON RoundTiles
+                    BEGIN
+                        UPDATE RoundTiles
+                        SET Timestamp = randomblob(8)
+                        WHERE rowid = NEW.rowid;
+                    END
+                ");
 
             migrationBuilder.CreateTable(
                 name: "UserGames",

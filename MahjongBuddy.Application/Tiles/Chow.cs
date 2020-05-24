@@ -49,6 +49,8 @@ namespace MahjongBuddy.Application.Tiles
 
                 round.IsHalted = true;
 
+                //TODO only allow chow when it's user's turn
+
                 if (request.ChowTiles == null || request.ChowTiles.Count() != 2)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "invalid data to chow tiles" });
 
