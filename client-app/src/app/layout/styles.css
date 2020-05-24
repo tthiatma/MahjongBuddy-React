@@ -126,3 +126,6 @@ body {
 }
 /*end flex css for tiles*/
 
+.remainingTileHeader{
+  padding-left: 0 !important;
+}

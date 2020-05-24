@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace MahjongBuddy.Application.Rounds
 {
-    public class CreateRound
+    public class Create
     {
         public class Command : IRequest<RoundDto>
         {

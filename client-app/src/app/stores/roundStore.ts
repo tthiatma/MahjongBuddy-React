@@ -22,6 +22,12 @@ export default class RoundStore {
   @observable topPlayer: IRoundPlayer | null = null;
   @observable roundResults: IRoundResult[] | null = null;
 
+  @computed get remainingTiles(){
+    return this.roundTiles
+    ? this.roundTiles.filter((rt) => rt.owner === null).length
+    : null;
+  }
+
   @computed get boardActiveTile() {
     return this.roundTiles
     ? this.roundTiles.find((rt) => rt.status === TileStatus.BoardActive)

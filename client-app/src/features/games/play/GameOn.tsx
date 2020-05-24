@@ -14,6 +14,7 @@ import {
   Modal,
   Header,
   Icon,
+  Item,
 } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -67,6 +68,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     rightPlayerTiles,
     roundTiles,
     roundResults,
+    remainingTiles
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -79,6 +81,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     stopHubConnection,
     leaveGroup,
     winRound,
+    endRound
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -425,6 +428,30 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={3} />
           <Grid.Column width={10}>
             <Grid.Row>
+              {mainPlayer && (
+                <Fragment>
+                  <span>{`IsMyTurn: ${mainPlayer.isMyTurn.toString()} `}</span>
+                  <span>{` User Wind:${WindDirection[mainPlayer.wind]} `}</span>
+                  <span>{` Wind: ${WindDirection[round.wind]}`}</span>
+                  <span>{`is over:${round.isOver} `}</span>
+                  <Item.Group>
+                    <Item>
+                      <Item.Image
+                        size="mini"
+                        src="/assets/tiles/50px/face-down.png"
+                      />
+                      <Item.Content verticalAlign="middle" className="remainingTileHeader">
+                        <Item.Header>
+                            {`x ${remainingTiles}`}
+                        </Item.Header>
+                      </Item.Content>
+                      </Item>
+                  </Item.Group>
+                  <span></span>
+                </Fragment>
+              )}
+            </Grid.Row>
+            <Grid.Row>
               <Modal
                 trigger={
                   <Button onClick={() => setShowResult(true)}>
@@ -490,15 +517,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
 
-              {mainPlayer && (
-                <Fragment>
-                  <span>{`IsMyTurn: ${mainPlayer.isMyTurn.toString()} `}</span>
-                  <span>
-                    {` Current User Wind:${WindDirection[mainPlayer.wind]} `}
-                  </span>
-                  <span>{` Current Wind: ${WindDirection[round.wind]}`}</span>
-                </Fragment>
-              )}
               <Button loading={loading} onClick={throwTile}>
                 Throw
               </Button>
@@ -516,6 +534,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Button>
               <Button loading={loading} onClick={winRound}>
                 Win
+              </Button>
+              <Button loading={loading} onClick={endRound}>
+                Give Up
               </Button>
             </Grid.Row>
             <Grid.Row>

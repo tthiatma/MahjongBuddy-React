@@ -21,7 +21,7 @@ namespace MahjongBuddy.API.SignalR
             _mediator = mediator;
         }
 
-        public async Task StartRound(CreateRound.Command command)
+        public async Task StartRound(Application.Rounds.Create.Command command)
         {
             try
             {
@@ -32,7 +32,12 @@ namespace MahjongBuddy.API.SignalR
             {
                 Console.WriteLine(ex.Message);
             }
+        }
 
+        public async Task EndRound(End.Command command)
+        {
+            var round = await _mediator.Send(command);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }
 
         public async Task DisconnectFromGame(Disconnect.Command command)

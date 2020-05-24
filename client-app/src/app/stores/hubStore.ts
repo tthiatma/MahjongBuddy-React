@@ -276,6 +276,24 @@ export default class HubStore {
     }
   };
 
+  @action endRound = async () => {
+    this.loading = true;
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        console.log('is hub connected and calling End Round')
+        this.hubConnection!.invoke("EndRound", this.getGameAndRoundProps());
+        this.loading = false;
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem calling End Round");
+    }
+  };
+
   @action nextRound = async () => {};
 
   @action startRound = async () => {
