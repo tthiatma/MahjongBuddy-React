@@ -1,4 +1,6 @@
-﻿namespace MahjongBuddy.Core
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MahjongBuddy.Core
 {
     public class RoundPlayer
     {
@@ -10,5 +12,7 @@
         public bool IsMyTurn { get; set; }
         public WindDirection Wind { get; set; }
         public int Points { get; set; }
+        [Timestamp]
+        public byte[] Timestamp { get; set; }
     }
 }

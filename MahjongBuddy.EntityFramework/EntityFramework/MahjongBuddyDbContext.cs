@@ -7,6 +7,51 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
     public class MahjongBuddyDbContext : IdentityDbContext<AppUser>
     {
         //dotnet ef migrations add "InitialCreate" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
+
+        //migrationBuilder.Sql(
+        //        @"
+        //        CREATE TRIGGER SetRoundTileTimestampOnUpdate
+        //        AFTER UPDATE ON RoundTiles
+        //        BEGIN
+        //            UPDATE RoundTiles
+        //            SET Timestamp = randomblob(8)
+        //            WHERE rowid = NEW.rowid;
+        //        END
+        //        ");
+
+        //    migrationBuilder.Sql(
+        //                @"
+        //        CREATE TRIGGER SetRoundTileTimestampOnInsert
+        //        AFTER INSERT ON RoundTiles
+        //        BEGIN
+        //            UPDATE RoundTiles
+        //            SET Timestamp = randomblob(8)
+        //            WHERE rowid = NEW.rowid;
+        //        END
+        //    ");
+
+        //migrationBuilder.Sql(
+        //        @"
+        //        CREATE TRIGGER SetRoundPlayerTimestampOnUpdate
+        //        AFTER UPDATE ON RoundPlayers
+        //        BEGIN
+        //            UPDATE RoundPlayers
+        //            SET Timestamp = randomblob(8)
+        //            WHERE rowid = NEW.rowid;
+        //        END
+        //        ");
+
+        //    migrationBuilder.Sql(
+        //                @"
+        //        CREATE TRIGGER SetRoundPlayerTimestampOnInsert
+        //        AFTER INSERT ON RoundPlayers
+        //        BEGIN
+        //            UPDATE RoundPlayers
+        //            SET Timestamp = randomblob(8)
+        //            WHERE rowid = NEW.rowid;
+        //        END
+        //    ");
+
         public MahjongBuddyDbContext(DbContextOptions options) : base(options)
         {
         }
@@ -34,6 +79,11 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 .HasOne(g => g.Game)
                 .WithMany(u => u.UserGames)
                 .HasForeignKey(g => g.GameId);
+
+            builder.Entity<RoundTile>().Property(x => x.Timestamp)
+            .IsConcurrencyToken(true)
+            .ValueGeneratedOnAddOrUpdate();
+
 
             builder.Entity<RoundPlayer>(x => x.HasKey(ur => new { ur.RoundId, ur.AppUserId }));
             builder.Entity<RoundPlayer>()

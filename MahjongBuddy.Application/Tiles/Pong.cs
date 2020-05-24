@@ -5,6 +5,7 @@ using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,8 +52,8 @@ namespace MahjongBuddy.Application.Tiles
                 round.IsHalted = true;
 
                 var boardActiveTiles = round.RoundTiles.Where(t => t.Status == TileStatus.BoardActive);
-                if (boardActiveTiles == null || boardActiveTiles.Count() > 1)
-                    throw new RestException(HttpStatusCode.BadRequest, new {Round = "there are more than one tiles to pong" });
+                if (boardActiveTiles == null)
+                    throw new RestException(HttpStatusCode.BadRequest, new {Round = "there are no tile to pong" });
 
                 var tileToPong = boardActiveTiles.First();
 
@@ -65,8 +66,13 @@ namespace MahjongBuddy.Application.Tiles
                         && t.Tile.TileType == tileToPong.Tile.TileType 
                         && t.Tile.TileValue == tileToPong.Tile.TileValue);
                 
-                if(matchingUserTiles == null || matchingUserTiles.Count() != 2)
+                if(matchingUserTiles == null || matchingUserTiles.Count() < 2)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are more than one tiles to pong" });
+
+                //if there is Userjustpicked status then pong is invalid
+                var justPickedTile = round.RoundTiles.FirstOrDefault(t => t.Status == TileStatus.UserJustPicked);
+                if (justPickedTile != null)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "someone already picked tile, no pong is allowed" });
 
                 foreach (var tile in matchingUserTiles)
                 {
@@ -90,16 +96,24 @@ namespace MahjongBuddy.Application.Tiles
 
                 updatedPlayers.Add(currentPlayer);
 
-                var success = await _context.SaveChangesAsync() > 0;
+                try
+                {
+                    var success = await _context.SaveChangesAsync() > 0;
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
 
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
+                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
-                if (success)
-                    return roundToReturn;
+                    if (success)
+                        return roundToReturn;
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile was modified" });
+                }
 
                 throw new Exception("Problem pong ing tile");
             }

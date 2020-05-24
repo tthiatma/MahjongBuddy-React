@@ -5,6 +5,7 @@ using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 round.IsHalted = true;
 
-                if(request.ChowTiles == null || request.ChowTiles.Count() != 2)
+                if (request.ChowTiles == null || request.ChowTiles.Count() != 2)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "invalid data to chow tiles" });
 
                 var boardActiveTiles = round.RoundTiles.Where(t => t.Status == TileStatus.BoardActive);
@@ -57,7 +58,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 var tileToChow = boardActiveTiles.First();
 
-                if(tileToChow.Tile.TileType == TileType.Dragon || tileToChow.Tile.TileType == TileType.Flower || tileToChow.Tile.TileType == TileType.Wind)
+                if (tileToChow.Tile.TileType == TileType.Dragon || tileToChow.Tile.TileType == TileType.Flower || tileToChow.Tile.TileType == TileType.Wind)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile must be money, round, or stick for chow" });
 
                 var dbTilesToChow = round.RoundTiles.Where(t => request.ChowTiles.Contains(t.Id)).ToList();
@@ -73,12 +74,12 @@ namespace MahjongBuddy.Application.Tiles
 
                     int groupIndex = 1;
                     var tileSets = round.RoundTiles.Where(t => t.Owner == request.UserName && t.TileSetGroup != TileSetGroup.None);
-                    if(tileSets.Count() > 0)
+                    if (tileSets.Count() > 0)
                     {
-                        var lastIndex =  tileSets.GroupBy(t => t.TileSetGroupIndex).Select(g => g.Last()).First().TileSetGroupIndex;
+                        var lastIndex = tileSets.GroupBy(t => t.TileSetGroupIndex).Select(g => g.Last()).First().TileSetGroupIndex;
                         groupIndex = lastIndex + 1;
                     }
-                    
+
                     sortedChowTiles.GoGraveyard(request.UserName, TileSetGroup.Chow, round.RoundTiles.GetLastGroupIndex(request.UserName));
                 }
                 else
@@ -90,14 +91,19 @@ namespace MahjongBuddy.Application.Tiles
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 
-                var success = await _context.SaveChangesAsync() > 0;
+                try
+                {
+                    var success = await _context.SaveChangesAsync() > 0;
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
 
-                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-
-                if (success)
-                    return roundToReturn;
+                    if (success) return roundToReturn;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile was modified" });
+                }
 
                 throw new Exception("Problem chow ing tile");
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MahjongBuddy.Core
 {
@@ -13,12 +14,12 @@ namespace MahjongBuddy.Core
         //track who thrown the tile
         public string ThrownBy { get; set; }
         public int RoundId { get; set; }
-        //when someone won, mark the tile as winner tile
-        public bool IsWinner { get; set; }
         public TileSetGroup TileSetGroup { get; set; }
         public int TileSetGroupIndex { get; set; }
         public TileStatus Status { get; set; }
         public virtual Round Round { get; set; }
         public virtual Tile Tile { get; set; }
+        [Timestamp]
+        public byte[] Timestamp { get; set; }
     }
 }

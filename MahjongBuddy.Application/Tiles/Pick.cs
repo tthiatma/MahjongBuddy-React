@@ -4,6 +4,7 @@ using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,6 +44,8 @@ namespace MahjongBuddy.Application.Tiles
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
+                
+                //TODO only allow pick tile when it's player's turn
 
                 //we loop 8 times because there are total of 8 flowers. get more tiles if its a flower
                 for (var i = 0; i < 8; i++)
@@ -70,14 +73,21 @@ namespace MahjongBuddy.Application.Tiles
                     }
                 }
 
-                var success = await _context.SaveChangesAsync() > 0;
+                try
+                {
+                    var success = await _context.SaveChangesAsync() > 0;
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
 
-                if (success)
-                    return roundToReturn;
+                    if (success)
+                        return roundToReturn;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "player status was modified" });
+                }
 
                 throw new Exception("Problem picking tile");
             }

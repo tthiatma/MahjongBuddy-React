@@ -297,9 +297,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("BoardGraveyardCounter")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsWinner")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Owner")
                         .HasColumnType("TEXT");
 
@@ -320,6 +317,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.Property<int>("TileSetGroupIndex")
                         .HasColumnType("INTEGER");
+
+                    b.Property<byte[]>("Timestamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("BLOB");
 
                     b.HasKey("Id");
 

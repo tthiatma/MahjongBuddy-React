@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace MahjongBuddy.Core
 {
@@ -18,6 +19,8 @@ namespace MahjongBuddy.Core
         public int GameId { get; set; }
         public virtual Game Game { get; set; }
         public virtual ICollection<RoundResult> RoundResults { get; set; }
+
+        [ConcurrencyCheck]
         public virtual ICollection<RoundTile> RoundTiles { get; set; }
         public virtual ICollection<RoundPlayer> RoundPlayers { get; set; }
         public virtual ICollection<UserGame> UserGames { get; set; }

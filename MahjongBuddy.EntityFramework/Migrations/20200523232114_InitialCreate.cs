@@ -276,6 +276,28 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.Sql(
+                    @"
+                    CREATE TRIGGER SetRoundPlayerTimestampOnUpdate
+                    AFTER UPDATE ON RoundPlayers
+                    BEGIN
+                        UPDATE RoundPlayers
+                        SET Timestamp = randomblob(8)
+                        WHERE rowid = NEW.rowid;
+                    END
+                    ");
+
+            migrationBuilder.Sql(
+                        @"
+                    CREATE TRIGGER SetRoundPlayerTimestampOnInsert
+                    AFTER INSERT ON RoundPlayers
+                    BEGIN
+                        UPDATE RoundPlayers
+                        SET Timestamp = randomblob(8)
+                        WHERE rowid = NEW.rowid;
+                    END
+                ");
+
             migrationBuilder.CreateTable(
                 name: "RoundResults",
                 columns: table => new
@@ -314,11 +336,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Owner = table.Column<string>(nullable: true),
                     ThrownBy = table.Column<string>(nullable: true),
                     RoundId = table.Column<int>(nullable: false),
-                    IsWinner = table.Column<bool>(nullable: false),
                     TileSetGroup = table.Column<int>(nullable: false),
                     TileSetGroupIndex = table.Column<int>(nullable: false),
                     Status = table.Column<int>(nullable: false),
-                    TileId = table.Column<int>(nullable: true)
+                    TileId = table.Column<int>(nullable: true),
+                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -336,6 +358,27 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+            migrationBuilder.Sql(
+                @"
+                CREATE TRIGGER SetRoundTileTimestampOnUpdate
+                AFTER UPDATE ON RoundTiles
+                BEGIN
+                    UPDATE RoundTiles
+                    SET Timestamp = randomblob(8)
+                    WHERE rowid = NEW.rowid;
+                END
+                ");
+            
+            migrationBuilder.Sql(
+                        @"
+                CREATE TRIGGER SetRoundTileTimestampOnInsert
+                AFTER INSERT ON RoundTiles
+                BEGIN
+                    UPDATE RoundTiles
+                    SET Timestamp = randomblob(8)
+                    WHERE rowid = NEW.rowid;
+                END
+            ");
 
             migrationBuilder.CreateTable(
                 name: "UserGames",

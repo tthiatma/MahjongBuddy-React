@@ -11,6 +11,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MahjongBuddy.Application.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace MahjongBuddy.Application.Tiles
 {
@@ -134,15 +135,22 @@ namespace MahjongBuddy.Application.Tiles
 
                 updatedPlayers.Add(currentPlayer);
 
-                var success = await _context.SaveChangesAsync() > 0;
+                try
+                {
+                    var success = await _context.SaveChangesAsync() > 0;
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
+                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
-                if (success)
-                    return roundToReturn;
+                    if (success)
+                        return roundToReturn;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile was modified" });
+                }
 
                 throw new Exception("Problem kong ing tile");
             }

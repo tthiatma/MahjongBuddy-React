@@ -61,7 +61,7 @@ namespace MahjongBuddy.API
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .WithExposedHeaders("WWW-Authenticate")
-                    .WithOrigins("http://localhost:3000")
+                    .WithOrigins("http://localhost:3000", "http://192.168.86.167:3000", "http://192.168.86.26")
                     .AllowCredentials();
                 });
             });
