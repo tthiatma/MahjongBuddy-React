@@ -15,6 +15,8 @@ import {
   Header,
   Icon,
   Item,
+  Divider,
+  Segment,
 } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -88,6 +90,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   //currently only support one winner
   const [chowOptions, setChowOptions] = useState<any[]>([]);
   const [showResult, setShowResult] = useState<boolean>(false);
+  const square = { width: 50, height: 50, padding: '0.5em' }
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
   let winnerTiles: IRoundTile[] | null = null;
@@ -392,6 +395,38 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
           {/* Board */}
           <Grid.Column width={10}>
+            <Grid.Row style={{ paddingTop: "1em" }}>
+              <Grid>
+                <Grid.Column width={6} />
+                <Grid.Column width={4}>
+                  <Grid.Row>
+                    <Segment centered circular style={square}>
+                      <Item.Group>
+                        <Item>
+                          <Item.Image
+                            size="mini"
+                            src="/assets/tiles/50px/face-down.png"
+                          />
+                          <Item.Content
+                            verticalAlign="middle"
+                            className="remainingTileHeader"
+                          >
+                            <Item.Header>{`${remainingTiles}`}</Item.Header>
+                          </Item.Content>
+                        </Item>
+                      </Item.Group>
+                    </Segment>
+                    <Segment centered circular style={square}>
+                      <Header as="h3">{WindDirection[round.wind]}</Header>
+                    </Segment>
+                  </Grid.Row>
+                </Grid.Column>
+                <Grid.Column width={6} />
+              </Grid>
+            </Grid.Row>
+            <Grid.Row>
+              <Divider />
+            </Grid.Row>
             <TileListBoard
               graveyardTiles={boardGraveyardTiles!}
               activeTile={boardActiveTile!}
@@ -429,30 +464,15 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={3} />
           <Grid.Column width={10}>
             <Grid.Row>
-              {mainPlayer && (
-                <Fragment>
-                  <span>{`IsMyTurn: ${mainPlayer.isMyTurn.toString()} `}</span>
-                  <span>{` User Wind:${WindDirection[mainPlayer.wind]} `}</span>
-                  <span>{` Wind: ${WindDirection[round.wind]}`}</span>
-                  <span>{`is over:${round.isOver} `}</span>
-                  <Item.Group>
-                    <Item>
-                      <Item.Image
-                        size="mini"
-                        src="/assets/tiles/50px/face-down.png"
-                      />
-                      <Item.Content
-                        verticalAlign="middle"
-                        className="remainingTileHeader"
-                      >
-                        <Item.Header>{`x ${remainingTiles}`}</Item.Header>
-                      </Item.Content>
-                    </Item>
-                  </Item.Group>
-                  <span></span>
-                </Fragment>
-              )}
+              <TileListMainPlayer
+                tileStyleName="tileHorizontal"
+                containerStyleName="tileHorizontalContainer"
+                mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
+                mainPlayerActiveTiles={mainPlayerActiveTiles!}
+                mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
+              />
             </Grid.Row>
+
             <Grid.Row>
               <Modal
                 trigger={
@@ -540,23 +560,22 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              {remainingTiles === 1 
-              && mainPlayerJustPickedTile!.length === 0
-              && mainPlayer!.isMyTurn 
-              && (
-                <Button loading={loading} onClick={endRound}>
-                  Give Up
-                </Button>
-              )}
+              {remainingTiles === 1 &&
+                mainPlayerJustPickedTile!.length === 0 &&
+                mainPlayer!.isMyTurn && (
+                  <Button loading={loading} onClick={endRound}>
+                    Give Up
+                  </Button>
+                )}
             </Grid.Row>
             <Grid.Row>
-              <TileListMainPlayer
-                tileStyleName="tileHorizontal"
-                containerStyleName="tileHorizontalContainer"
-                mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
-                mainPlayerActiveTiles={mainPlayerActiveTiles!}
-                mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
-              />
+              {mainPlayer && (
+                <Segment.Group horizontal size='tiny'>
+                  <Segment {...(mainPlayer.isMyTurn && {color:'green'})}>{`IsMyTurn: ${mainPlayer.isMyTurn.toString()} `}</Segment>
+                  <Segment {...(mainPlayer.isMyTurn && {color:'green'})}>{WindDirection[mainPlayer.wind]}</Segment>
+                  <Segment {...(mainPlayer.isMyTurn && {color:'green'})}>{`is over:${round.isOver} `}</Segment>
+                </Segment.Group>
+              )}
             </Grid.Row>
           </Grid.Column>
           <Grid.Column width={3} />

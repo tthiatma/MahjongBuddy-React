@@ -3,9 +3,10 @@ import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundPlayer } from "../../../app/models/round";
-import { Label } from "semantic-ui-react";
+import { Label, Segment } from "semantic-ui-react";
 import { runInAction } from "mobx";
 import { RootStoreContext } from "../../../app/stores/rootStore";
+import { WindDirection } from "../../../app/models/windEnum";
 
 interface IProps {
   containerStyleName: string;
@@ -24,7 +25,16 @@ const TileListOtherPlayer: React.FC<IProps> = ({
   return (
     <Fragment>
       <div>
-      {player && (<Label>{player.userName}</Label>)}
+        {player && (
+          <Segment.Group horizontal size="tiny">
+            <Segment {...(player.isMyTurn && { color: "green" })}>
+              <Label>{player.userName}</Label>
+            </Segment>
+            <Segment {...(player.isMyTurn && { color: "green" })}>
+              {WindDirection[player.wind]}
+            </Segment>
+          </Segment.Group>
+        )}
       </div>
       <div className={containerStyleName}>
         {roundTiles &&
@@ -32,12 +42,11 @@ const TileListOtherPlayer: React.FC<IProps> = ({
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
               <div
-              onClick={() =>
-                runInAction(() => {
-                  rootStore.roundStore.selectedTile = rt;
-                })
-              }
-
+                onClick={() =>
+                  runInAction(() => {
+                    rootStore.roundStore.selectedTile = rt;
+                  })
+                }
                 key={rt.id}
                 style={{
                   backgroundImage: `url(${rt.tile.imageSmall}`,
