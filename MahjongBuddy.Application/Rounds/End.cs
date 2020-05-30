@@ -50,6 +50,8 @@ namespace MahjongBuddy.Application.Rounds
                 if (remainingTiles.Count() <= 1)
                 {
                     round.IsOver = true;
+                    round.IsTied = true;
+
                     var success = await _context.SaveChangesAsync() > 0;
 
                     if (success)
