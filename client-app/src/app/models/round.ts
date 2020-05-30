@@ -55,4 +55,5 @@ export interface IRoundPlayer {
   isMyTurn: boolean;
   canDoNoFlower: boolean;
   wind: WindDirection;
+  points: number;
 }
