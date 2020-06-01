@@ -1,19 +1,11 @@
-import React, {
-  useContext,
-  useEffect,
-  Fragment,
-  useState,
-  SyntheticEvent,
-} from "react";
+import React, { useContext, useEffect, useState, SyntheticEvent } from "react";
 import {
   Grid,
   Button,
   Card,
   Image,
   CardProps,
-  Modal,
   Header,
-  Icon,
   Item,
   Divider,
   Segment,
@@ -21,24 +13,18 @@ import {
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
-import TileList from "./TileList";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
 import TileListBoard from "./TileListBoard";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
-import {
-  DragDropContext,
-  DropResult,
-  Droppable,
-  ResponderProvided,
-} from "react-beautiful-dnd";
+import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { toJS, runInAction } from "mobx";
 import { IRoundTile, TileValue, TileSetGroup } from "../../../app/models/tile";
 import _ from "lodash";
 import { TileStatus } from "../../../app/models/tileStatus";
-import { IRoundResult } from "../../../app/models/round";
-import { sortTiles } from "../../../app/common/util/util";
+import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
+import ResultModal from "./ResultModal";
 
 interface DetailParams {
   roundId: string;
@@ -69,8 +55,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     topPlayerTiles,
     rightPlayerTiles,
     roundTiles,
+    remainingTiles,
     roundResults,
-    remainingTiles
+    showResult
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -84,25 +71,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leaveGroup,
     winRound,
     endRound,
-    throwAllTile
+    throwAllTile,
   } = rootStore.hubStore;
 
   //currently only support one winner
   const [chowOptions, setChowOptions] = useState<any[]>([]);
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const square = { width: 50, height: 50, padding: '0.5em' }
-  let winner: IRoundResult | null = null;
-  let losers: IRoundResult[] | null = null;
-  let winnerTiles: IRoundTile[] | null = null;
-
-  if (roundResults) {
-    winner = roundResults?.find((r) => r.isWinner === true)!;
-    losers = roundResults!.filter((r) => r.isWinner === false);
-    winnerTiles = roundTiles
-      ?.filter((t) => t.owner === winner?.userName)!
-      .sort(sortTiles);
-  }
-
+  const square = { width: 50, height: 50, padding: "0.5em" };
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "lightgrey",
     display: "flex",
@@ -143,8 +117,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     );
 
     if (boardActiveTile?.tile.tileValue === TileValue.One) {
-      const tileTwo = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Two);
-      const tileThree = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Three);
+      const tileTwo = sameTypeChowTiles?.find(
+        (t) => t.tile.tileValue === TileValue.Two
+      );
+      const tileThree = sameTypeChowTiles?.find(
+        (t) => t.tile.tileValue === TileValue.Three
+      );
 
       if (tileTwo && tileThree) {
         let twoThreeArray: IRoundTile[] = [tileTwo, tileThree];
@@ -152,14 +130,17 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       }
     } else if (boardActiveTile?.tile.tileValue === TileValue.Nine) {
       console.log("board tile is 9");
-      const tileSeven = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Seven);
-      const tileEight = sameTypeChowTiles?.find((t) => t.tile.tileValue === TileValue.Eight);
+      const tileSeven = sameTypeChowTiles?.find(
+        (t) => t.tile.tileValue === TileValue.Seven
+      );
+      const tileEight = sameTypeChowTiles?.find(
+        (t) => t.tile.tileValue === TileValue.Eight
+      );
 
       if (tileSeven && tileEight) {
         let sevenEightArray: IRoundTile[] = [tileSeven, tileEight];
         chowTilesOptions.push(sevenEightArray);
       }
-
     } else {
       let possibleTiles = sameTypeChowTiles?.filter(
         (t) =>
@@ -260,7 +241,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       console.log(data.chowtiles);
       chow(data.chowtiles);
       setChowOptions([]);
-    } catch {
+    } catch (ex) {
       console.log("failed chowing");
     }
   };
@@ -347,7 +328,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     //TODO: present options which tile to kong
   };
 
-  const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
+  const onDragEnd = (result: DropResult) => {
     const { destination, draggableId } = result;
     if (!destination) {
       return;
@@ -376,8 +357,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             <TileListOtherPlayer
               player={topPlayer!}
               roundTiles={topPlayerTiles!}
-              tileStyleName="flexTiles"
-              containerStyleName="flexTilesContainer"
             />
           </Grid.Column>
           <Grid.Column width={3} />
@@ -385,13 +364,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
         <Grid.Row className="zeroPadding">
           {/* Left Player */}
-          <TileList
-            player={leftPlayer!}
-            tileStyleName="tileVertical"
-            containerStyleName="tileVerticalContainer"
-            rotation="rotate90"
-            roundTiles={leftPlayerTiles!}
-          />
+          <Grid.Column width={3}>
+            <TileListOtherPlayerVertical
+              player={leftPlayer!}
+              roundTiles={leftPlayerTiles!}
+              isReversed={false}
+            />
+          </Grid.Column>
 
           {/* Board */}
           <Grid.Column width={10}>
@@ -400,7 +379,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={6} />
                 <Grid.Column width={4}>
                   <Grid.Row>
-                    <Segment centered circular style={square}>
+                    <Segment circular style={square}>
                       <Item.Group>
                         <Item>
                           <Item.Image
@@ -416,7 +395,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                         </Item>
                       </Item.Group>
                     </Segment>
-                    <Segment centered circular style={square}>
+                    <Segment circular style={square}>
                       <Header as="h3">{WindDirection[round.wind]}</Header>
                     </Segment>
                   </Grid.Row>
@@ -450,13 +429,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           </Grid.Column>
 
           {/* Right Player */}
-          <TileList
-            player={rightPlayer!}
-            tileStyleName="tileVertical"
-            containerStyleName="tileVerticalContainer"
-            rotation="rotateMinus90"
-            roundTiles={rightPlayerTiles!}
-          />
+          <Grid.Column width={3}>
+            <TileListOtherPlayerVertical
+              player={rightPlayer!}
+              roundTiles={rightPlayerTiles!}
+              isReversed={true}
+            />
+          </Grid.Column>
         </Grid.Row>
 
         {/* Main Player */}
@@ -474,67 +453,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             </Grid.Row>
 
             <Grid.Row>
-              <Modal
-                trigger={
-                  <Button onClick={() => setShowResult(true)}>
-                    Show Modal
-                  </Button>
-                }
-                open={showResult}
-                onClose={() => setShowResult(false)}
-                size="small"
-              >
-                <Header icon="bullhorn" content="Result" />
-                <Modal.Content>
-                  <h3>
-                    Winner : {winner?.userName}: {winner?.pointsResult} pts
-                    <ul>
-                      {winner?.roundResultHands.map((h, i) => (
-                        <li key={i}>
-                          {h.name} : {h.point}
-                        </li>
-                      ))}
-                      {winner?.roundResultExtraPoints.map((e, i) => (
-                        <li key={i}>
-                          {e.name} : {e.point}
-                        </li>
-                      ))}
-                    </ul>
-                  </h3>
-                  <div className="flexTilesContainer">
-                    {winnerTiles &&
-                      winnerTiles.map((rt) => (
-                        <div
-                          key={rt.id}
-                          style={{
-                            backgroundImage: `url(${rt.tile.imageSmall}`,
-                          }}
-                          className="flexTiles"
-                        />
-                      ))}
-                  </div>
-                  <h3>
-                    {losers && (
-                      <ul>
-                        {losers.map((l, i) => (
-                          <li key={i}>
-                            {l.userName}: {l.pointsResult}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </h3>
-                </Modal.Content>
-                <Modal.Actions>
-                  <Button
-                    color="green"
-                    onClick={() => setShowResult(false)}
-                    inverted
-                  >
-                    <Icon name="checkmark" /> Got it
-                  </Button>
-                </Modal.Actions>
-              </Modal>
+              <ResultModal
+                roundResults={roundResults}
+                roundTiles={roundTiles}
+              />
+
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
@@ -560,22 +483,38 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              {remainingTiles === 1 &&
+              <Button loading={loading} onClick={endRound}>
+                Give Up
+              </Button>
+
+              {/* {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
                 mainPlayer!.isMyTurn && (
                   <Button loading={loading} onClick={endRound}>
                     Give Up
                   </Button>
-                )}
+                )} */}
             </Grid.Row>
-            <Grid.Row>
-              {mainPlayer && (
-                <Segment.Group horizontal size='tiny'>
-                  <Segment {...(mainPlayer.isMyTurn && {color:'green'})}>{`IsMyTurn: ${mainPlayer.isMyTurn.toString()} `}</Segment>
-                  <Segment {...(mainPlayer.isMyTurn && {color:'green'})}>{WindDirection[mainPlayer.wind]}</Segment>
-                  <Segment {...(mainPlayer.isMyTurn && {color:'green'})}>{`is over:${round.isOver} `}</Segment>
-                </Segment.Group>
-              )}
+            <Grid.Row centered>
+              <div
+                className="playerStatusContainer"
+                {...(mainPlayer!.isMyTurn && {
+                  className: "playerTurn playerStatusContainer",
+                })}
+              >
+                {mainPlayer && (
+                  <span
+                    style={{
+                      width: "100%",
+                      textAlign: "center",
+                      lineHeight: "40px",
+                    }}
+                  >
+                    {mainPlayer.userName} - {WindDirection[mainPlayer.wind]} -{" "}
+                    {mainPlayer.points} - {round?.isOver.toString()} - {showResult.toString()}
+                  </span>
+                )}
+              </div>
             </Grid.Row>
           </Grid.Column>
           <Grid.Column width={3} />

@@ -1,61 +1,42 @@
-import React, { Fragment, useContext } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundPlayer } from "../../../app/models/round";
-import { Label, Segment } from "semantic-ui-react";
-import { runInAction } from "mobx";
-import { RootStoreContext } from "../../../app/stores/rootStore";
+import { Grid } from "semantic-ui-react";
 import { WindDirection } from "../../../app/models/windEnum";
 
 interface IProps {
-  containerStyleName: string;
-  tileStyleName: string;
   roundTiles: IRoundTile[];
   player: IRoundPlayer;
 }
 
 const TileListOtherPlayer: React.FC<IProps> = ({
   roundTiles,
-  tileStyleName,
-  containerStyleName,
   player
 }) => {
-  const rootStore = useContext(RootStoreContext);
   return (
-    <Fragment>
-      <div>
-        {player && (
-          <Segment.Group horizontal size="tiny">
-            <Segment {...(player.isMyTurn && { color: "green" })}>
-              <Label>{player.userName}</Label>
-            </Segment>
-            <Segment {...(player.isMyTurn && { color: "green" })}>
-              {WindDirection[player.wind]}
-            </Segment>
-          </Segment.Group>
-        )}
-      </div>
-      <div className={containerStyleName}>
+    <Grid verticalAlign="middle">
+      <Grid.Row centered className='playerStatusContainer' {...(player.isMyTurn && { className: 'playerTurn playerStatusContainer' })}>
+        <span>
+          {player.userName} - {WindDirection[player.wind]} - {player.points}
+        </span>
+      </Grid.Row>
+      <Grid.Row centered>
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
-              <div
-                onClick={() =>
-                  runInAction(() => {
-                    rootStore.roundStore.selectedTile = rt;
-                  })
-                }
-                key={rt.id}
-                style={{
-                  backgroundImage: `url(${rt.tile.imageSmall}`,
-                }}
-                className={tileStyleName}
-              />
+              <div key={rt.id}>
+                <img
+                  alt={rt.tile.title}
+                  src={rt.tile.imageSmall}
+                  style={{ overflow: "hidden" }}
+                />
+              </div>
             ))}
-      </div>
-      <div className={containerStyleName}>
+      </Grid.Row>
+      <Grid.Row>
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserGraveyard)
@@ -65,11 +46,10 @@ const TileListOtherPlayer: React.FC<IProps> = ({
                 style={{
                   backgroundImage: `url(${rt.tile.imageSmall}`,
                 }}
-                className={tileStyleName}
               />
             ))}
-      </div>
-    </Fragment>
+      </Grid.Row>
+    </Grid>
   );
 };
 export default observer(TileListOtherPlayer);

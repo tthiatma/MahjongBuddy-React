@@ -46,6 +46,7 @@ export default class HubStore {
         if(round.isOver && round.roundResults){
           console.log(round.roundResults);  
           runInAction("updating round results", () => {
+            this.roundStore.showResult = true;
             this.roundStore.roundResults = round.roundResults;                        
           })
         }

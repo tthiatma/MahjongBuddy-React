@@ -74,28 +74,6 @@ body {
   transform: rotate(180deg);
 }
 
-.rotate90 {
-  -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
-  transform: rotate(90deg);
-  white-space: nowrap;
-  display: inline-block;
-  white-space: nowrap;
-  transform-origin: 0 0;
-}
-.rotateMinus90 {
-  -webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg);
-  -o-transform: rotate(-90deg);
-  transform: rotate(-90deg);
-  display: inline-block;
-  white-space: nowrap;
-  transform-origin: 100% 0;
-}
-
 .zeroPadding {
   padding: 0 !important;
 }
@@ -118,6 +96,12 @@ body {
   justify-content: center;
 }
 
+.flexTilesVerticalContainer{
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;  
+}
+
 .flexTiles{
   height: 50px;
   width: 36px;
@@ -128,4 +112,51 @@ body {
 
 .remainingTileHeader{
   padding-left: 0 !important;
+}
+
+.rotate90 {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+  white-space: nowrap;
+}
+.rotateMinus90 {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  white-space: nowrap;
+ }
+
+.playerStatusContainer{
+  border: 1px solid #ddd;
+  background-color: #eee;
+  height: 40px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.playerStatusContainerVertical {
+  height: 100%;
+  border: 1px solid #ddd;
+  background-color: #eee;
+  display: flex;
+}
+.playerStatusHeaderVertical {
+  flex: 0 0 40px;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.playerTurn{
+  background-color: #1976d2 !important;
+}
+
+.playerTurn > span {
+  color: #fff;
 }

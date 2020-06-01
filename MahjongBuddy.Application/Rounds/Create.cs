@@ -43,7 +43,7 @@ namespace MahjongBuddy.Application.Rounds
 
                 Round lastRound = _context.Rounds.OrderByDescending(r => r.DateCreated).FirstOrDefault(r => r.GameId == request.GameId);
 
-                if (!lastRound.IsOver)
+                if (lastRound != null && !lastRound.IsOver)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
 
                 var newRound = new Round

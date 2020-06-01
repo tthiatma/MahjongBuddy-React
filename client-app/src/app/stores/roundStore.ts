@@ -12,6 +12,7 @@ export default class RoundStore {
     this.rootStore = rootStore;
   }
 
+  @observable showResult: boolean = false;
   @observable selectedTile: IRoundTile | null = null;
   @observable roundSimple: IRoundSimple | null = null;
   @observable roundTiles: IRoundTile[] | null = null;
