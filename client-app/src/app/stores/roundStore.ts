@@ -13,6 +13,8 @@ export default class RoundStore {
   }
 
   @observable showResult: boolean = false;
+  @observable roundOver: boolean = false;
+  @observable roundEndingCounter: number = 5;
   @observable selectedTile: IRoundTile | null = null;
   @observable roundSimple: IRoundSimple | null = null;
   @observable roundTiles: IRoundTile[] | null = null;

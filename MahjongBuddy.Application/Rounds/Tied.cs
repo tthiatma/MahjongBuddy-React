@@ -11,9 +11,10 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace MahjongBuddy.Application.Rounds
 {
-    public class End
+    public class Tied
     {
         public class Command : IRequest<RoundDto>
         {
@@ -25,13 +26,11 @@ namespace MahjongBuddy.Application.Rounds
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
-            private readonly IPointsCalculator _pointCalculator;
 
-            public Handler(MahjongBuddyDbContext context, IMapper mapper, IPointsCalculator pointCalculator)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper)
             {
                 _context = context;
                 _mapper = mapper;
-                _pointCalculator = pointCalculator;
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
@@ -51,6 +50,7 @@ namespace MahjongBuddy.Application.Rounds
                 {
                     round.IsOver = true;
                     round.IsTied = true;
+                    round.IsEnding = false;
 
                     var success = await _context.SaveChangesAsync() > 0;
 

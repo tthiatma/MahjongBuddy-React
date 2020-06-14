@@ -15,6 +15,7 @@ import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import PrivateRoute from "./PrivateRoute";
 import HomePage from "../../features/home/HomePage";
+import TestPage from "../../features/test/TestPage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 
@@ -48,6 +49,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                 <PrivateRoute path="/games/:id/rounds/:roundId" component={GameOn} />
                 <PrivateRoute path="/games/:id" component={GameLobby} />
                 <PrivateRoute path="/login" component={LoginForm} />
+                <PrivateRoute path="/test" component={TestPage} />
                 <PrivateRoute
                   key={location.key}
                   path={["/createGame", "/manage/:id"]}

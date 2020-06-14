@@ -23,7 +23,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         <div className="playerStatusContainerVertical">
           <div
             className="playerStatusHeaderVertical"
-            {...(player.isMyTurn && { className: "playerTurn widget-header" })}
+            {...(player.isMyTurn && { className: "playerTurn playerStatusHeaderVertical" })}
           >
             <span
               className="rotate90"

@@ -43,10 +43,11 @@ export default class HubStore {
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
         console.log("update round called");
+
         if(round.isOver && round.roundResults){
           console.log(round.roundResults);  
           runInAction("updating round results", () => {
-            this.roundStore.showResult = true;
+            this.roundStore.roundOver = true;
             this.roundStore.roundResults = round.roundResults;                        
           })
         }
@@ -89,6 +90,9 @@ export default class HubStore {
           console.log("no updated tiles");
         }
         runInAction("updating round", () => {
+          console.log('updating round');
+          console.log('is ending = ' + round.isEnding);
+
           this.roundStore.roundSimple = round;
         });
       });
@@ -277,13 +281,15 @@ export default class HubStore {
     }
   };
 
-  @action endRound = async () => {
+  @action tiedRound = async() => {
     this.loading = true;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        console.log('is hub connected and calling End Round')
-        this.hubConnection!.invoke("EndRound", this.getGameAndRoundProps());
-        this.loading = false;
+        console.log('is hub connected and calling Tied Round')
+        this.hubConnection!.invoke("TiedRound", this.getGameAndRoundProps());
+        runInAction(() => {
+          this.loading = false;
+        })
       } else {
         toast.error("not connected to hub");
       }
@@ -291,7 +297,27 @@ export default class HubStore {
       runInAction(() => {
         this.loading = false;
       });
-      toast.error("problem calling End Round");
+      toast.error("problem calling TiedRound");
+    }
+  };
+
+  @action endingRound = async () => {
+    this.loading = true;
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        console.log('is hub connected and calling Ending Round')
+        this.hubConnection!.invoke("EndingRound", this.getGameAndRoundProps());
+        runInAction(() => {
+          this.loading = false;
+        })
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem calling EndingRound");
     }
   };
 

@@ -9,6 +9,7 @@ import {
   Item,
   Divider,
   Segment,
+  Label,
 } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
@@ -19,7 +20,7 @@ import TileListBoard from "./TileListBoard";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
-import { toJS, runInAction } from "mobx";
+import { toJS, runInAction, autorun, reaction, observe, observable } from "mobx";
 import { IRoundTile, TileValue, TileSetGroup } from "../../../app/models/tile";
 import _ from "lodash";
 import { TileStatus } from "../../../app/models/tileStatus";
@@ -31,15 +32,39 @@ interface DetailParams {
   id: string;
 }
 
+const counter = observable({ count: 0 })
+
+// invoke once of and dispose reaction: reacts to observable value.
+const reaction3 = reaction(
+    () => counter.count,
+    (count, reaction) => {
+        console.log("reaction 3: invoked. counter.count = " + count)
+        reaction.dispose()
+    }
+)
+
+runInAction(() => {counter.count = 1})
+
+// prints:
+// reaction 3: invoked. counter.count = 1
+
+runInAction(() => {counter.count = 2})
+// prints:
+// (There are no logging, because of reaction disposed. But, counter continue reaction)
+
+console.log(counter.count)
+
+
 //https://github.com/clauderic/react-sortable-hoc
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
-  const rootStore = useContext(RootStoreContext);
+  const rootStore = useContext(RootStoreContext); 
   const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
   const {
     loadingRoundInitial,
     roundSimple: round,
     loadRound,
+    roundOver,
     mainPlayer,
     leftPlayer,
     rightPlayer,
@@ -57,7 +82,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     roundTiles,
     remainingTiles,
     roundResults,
-    showResult
+    roundEndingCounter,
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -70,7 +95,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     stopHubConnection,
     leaveGroup,
     winRound,
-    endRound,
+    endingRound,
+    tiedRound,
     throwAllTile,
   } = rootStore.hubStore;
 
@@ -85,25 +111,22 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   });
 
   useEffect(() => {
-    loadGame(match.params!.id);
-    loadRound(parseInt(match.params.roundId));
     createHubConnection(match.params!.id);
     return () => {
       leaveGroup(match.params.id);
     };
-  }, [
-    createHubConnection,
-    stopHubConnection,
-    loadGame,
-    loadRound,
-    leaveGroup,
-    match.params,
-    match.params.id,
-    match.params.roundId,
-  ]);
+  }, [createHubConnection, stopHubConnection, leaveGroup, match.params]);
+
+  useEffect(() => {
+    loadGame(match.params!.id);
+  }, [loadGame,match.params, match.params.id]);
+
+  useEffect(() => {
+    loadRound(parseInt(match.params.roundId));
+  }, [loadRound, match.params.roundId]);
 
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
-    return <LoadingComponent content="Loading round..." />;
+  return <LoadingComponent content="Loading round..." />;
 
   const doChow = () => {
     let chowTilesOptions: Array<IRoundTile[]> = [];
@@ -483,9 +506,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              <Button loading={loading} onClick={endRound}>
+              <Button loading={loading} onClick={endingRound}>
                 Give Up
               </Button>
+              <Button loading={loading} onClick={tiedRound}>
+                Over
+              </Button>
+              <Label>{roundEndingCounter}</Label>
 
               {/* {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
@@ -511,7 +538,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     }}
                   >
                     {mainPlayer.userName} - {WindDirection[mainPlayer.wind]} -{" "}
-                    {mainPlayer.points} - {round?.isOver.toString()} - {showResult.toString()}
+                    {mainPlayer.points} - isover: {round?.isOver.toString()} -
+                    isEnding: {round?.isEnding.toString()}
                   </span>
                 )}
               </div>

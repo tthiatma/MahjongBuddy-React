@@ -34,7 +34,13 @@ namespace MahjongBuddy.API.SignalR
             }
         }
 
-        public async Task EndRound(End.Command command)
+        public async Task EndingRound(Ending.Command command)
+        {
+            var round = await _mediator.Send(command);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+        }
+
+        public async Task TiedRound(Tied.Command command)
         {
             var round = await _mediator.Send(command);
             await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);

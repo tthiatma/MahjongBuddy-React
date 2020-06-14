@@ -15,6 +15,7 @@ namespace MahjongBuddy.Application.Dtos
         //IsHalted is a short period where all player have brief moment of time to chow or pong or kong
         public bool IsHalted { get; set; }
         public bool IsOver { get; set; }
+        public bool IsEnding { get; set; }
         public bool IsPaused { get; set; }
         public bool IsTied { get; set; }
         public bool IsWinnerSelfPicked { get; set; }
