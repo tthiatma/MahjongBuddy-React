@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { Segment, Label, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
-import { observable, reaction, runInAction } from "mobx";
+import { runInAction } from "mobx";
 import { RouteComponentProps } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
 
@@ -12,7 +12,7 @@ interface TestParams {
 
 const TestPage: React.FC<RouteComponentProps<TestParams>> = () => {
   const rootStore = useContext(RootStoreContext);
-  const { isMyTurn, counter, canPick } = rootStore.roundStore;
+  const { isMyTurn, pickCounter: counter, canPick } = rootStore.roundStore;
   // const [counter, setCounter] = useState(5);
   // const [myTurn, setMyTurn] = useState(false);
   // const [canPick, setCanPick] = useState(false);

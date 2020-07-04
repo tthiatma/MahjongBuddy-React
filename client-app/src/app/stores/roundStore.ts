@@ -15,32 +15,71 @@ export default class RoundStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
+
+    //reaction to automatically call round tied
+    //when 1 tile left and the person's turn give up
+    //when no tile left
     reaction(
-      () => this.isMyTurn && this.counter,
+      () => this.roundSimple?.isEnding && this.roundEndingCounter,
       () => {
-        if (this.isMyTurn) {
-          this.counter > 0 &&
-            setTimeout(() => runInAction(() => this.counter--), 1000);
-          if (this.counter === 0) runInAction(() => (this.canPick = true));
+        if(this.roundSimple?.isEnding){
+          this.roundEndingCounter > 0 &&
+          setTimeout(() => runInAction(() => this.roundEndingCounter--), 1000);
+          if (this.roundEndingCounter === 0) {
+            //call round over
+            console.log('calling tied roud')
+            rootStore.hubStore.tiedRound();
+          };
         } else {
           runInAction(() => {
-            this.counter = 3;
+            this.roundEndingCounter = 5;
+          });
+        }
+      }
+    );
+
+    reaction(
+      () => this.mainPlayer?.isMyTurn && this.pickCounter,
+      () => {
+        if (this.mainPlayer?.isMyTurn) {
+          this.pickCounter > 0 &&
+            setTimeout(() => runInAction(() => this.pickCounter--), 1000);
+          if (this.pickCounter === 0) runInAction(() => (this.canPick = true));
+        } else {
+          runInAction(() => {
+            this.pickCounter = 5;
             this.canPick = false;
           });
         }
       }
     );
+
+    // reaction(
+    //   () => this.isMyTurn && this.counter,
+    //   () => {
+    //     if (this.isMyTurn) {
+    //       this.counter > 0 &&
+    //         setTimeout(() => runInAction(() => this.counter--), 1000);
+    //       if (this.counter === 0) runInAction(() => (this.canPick = true));
+    //     } else {
+    //       runInAction(() => {
+    //         this.counter = 3;
+    //         this.canPick = false;
+    //       });
+    //     }
+    //   }
+    // );
   }
 
-  @observable counter: number = 3;
+  @observable pickCounter: number = 5;
   @observable canPick: boolean = false;
   @observable isMyTurn: boolean = false;
   @observable showResult: boolean = false;
   @observable roundOver: boolean = false;
   @observable roundEndingCounter: number = 5;
-  @observable selectedTile: IRoundTile | null = null;
+  @observable.shallow selectedTile: IRoundTile | null = null;
   @observable roundSimple: IRoundSimple | null = null;
-  @observable roundTiles: IRoundTile[] | null = null;
+  @observable.shallow roundTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
   @observable mainPlayer: IRoundPlayer | null = null;
   @observable leftPlayer: IRoundPlayer | null = null;

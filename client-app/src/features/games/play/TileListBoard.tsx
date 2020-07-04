@@ -7,7 +7,6 @@ interface IProps {
   activeTile: IRoundTile;
 }
 
-
 const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile }) => {
   return (
     <div>

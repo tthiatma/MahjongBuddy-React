@@ -20,7 +20,7 @@ import TileListBoard from "./TileListBoard";
 import TileListMainPlayer from "./TileListMainPlayer";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
-import { toJS, runInAction, autorun, reaction, observe, observable } from "mobx";
+import { toJS, runInAction } from "mobx";
 import { IRoundTile, TileValue, TileSetGroup } from "../../../app/models/tile";
 import _ from "lodash";
 import { TileStatus } from "../../../app/models/tileStatus";
@@ -32,39 +32,17 @@ interface DetailParams {
   id: string;
 }
 
-const counter = observable({ count: 0 })
-
-// invoke once of and dispose reaction: reacts to observable value.
-const reaction3 = reaction(
-    () => counter.count,
-    (count, reaction) => {
-        console.log("reaction 3: invoked. counter.count = " + count)
-        reaction.dispose()
-    }
-)
-
-runInAction(() => {counter.count = 1})
-
-// prints:
-// reaction 3: invoked. counter.count = 1
-
-runInAction(() => {counter.count = 2})
-// prints:
-// (There are no logging, because of reaction disposed. But, counter continue reaction)
-
-console.log(counter.count)
-
-
 //https://github.com/clauderic/react-sortable-hoc
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
-  const rootStore = useContext(RootStoreContext); 
+  const rootStore = useContext(RootStoreContext);
   const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
   const {
+    canPick,
+    pickCounter,
     loadingRoundInitial,
     roundSimple: round,
     loadRound,
-    roundOver,
     mainPlayer,
     leftPlayer,
     rightPlayer,
@@ -119,14 +97,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   useEffect(() => {
     loadGame(match.params!.id);
-  }, [loadGame,match.params, match.params.id]);
+  }, [loadGame, match.params, match.params.id]);
 
   useEffect(() => {
     loadRound(parseInt(match.params.roundId));
   }, [loadRound, match.params.roundId]);
 
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
-  return <LoadingComponent content="Loading round..." />;
+    return <LoadingComponent content="Loading round..." />;
 
   const doChow = () => {
     let chowTilesOptions: Array<IRoundTile[]> = [];
@@ -421,6 +399,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     <Segment circular style={square}>
                       <Header as="h3">{WindDirection[round.wind]}</Header>
                     </Segment>
+                    {round.isEnding && (
+                      <Segment circular style={square}>
+                        <Header as="h3">{roundEndingCounter}</Header>
+                      </Segment>
+                    )}
                   </Grid.Row>
                 </Grid.Column>
                 <Grid.Column width={6} />
@@ -491,8 +474,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={throwTile}>
                 Throw
               </Button>
-              <Button loading={loading} onClick={pickTile}>
+              <Button disabled={!canPick} loading={loading} onClick={pickTile}>
                 Pick
+                {pickCounter > 0 && `(${pickCounter})`}
               </Button>
               <Button loading={loading} onClick={pong}>
                 Pong
@@ -512,7 +496,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={tiedRound}>
                 Over
               </Button>
-              <Label>{roundEndingCounter}</Label>
 
               {/* {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
