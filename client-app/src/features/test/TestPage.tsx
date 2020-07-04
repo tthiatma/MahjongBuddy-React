@@ -1,40 +1,56 @@
-import React from "react";
-import { Segment, Label } from "semantic-ui-react";
+import React, { useState, useEffect, useContext } from "react";
+import { Segment, Label, Button } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { observable, reaction, runInAction } from "mobx";
+import { RouteComponentProps } from "react-router-dom";
+import { RootStoreContext } from "../../app/stores/rootStore";
 
-const counter = observable({ count: 0 })
+interface TestParams {
+  roundId: string;
+  id: string;
+}
 
-// invoke once of and dispose reaction: reacts to observable value.
- reaction(
-    () => counter.count,
-    (count, reaction) => {
-        console.log("reaction 3: invoked. counter.count = " + count)
-        reaction.dispose()
-    }
-)
+const TestPage: React.FC<RouteComponentProps<TestParams>> = () => {
+  const rootStore = useContext(RootStoreContext);
+  const { isMyTurn, counter, canPick } = rootStore.roundStore;
+  // const [counter, setCounter] = useState(5);
+  // const [myTurn, setMyTurn] = useState(false);
+  // const [canPick, setCanPick] = useState(false);
 
-runInAction(() => {counter.count = 1})
+  const toggleIsMyTurn = () => {
+    runInAction(() => {
+      rootStore.roundStore.isMyTurn = !isMyTurn;
+    });
+  };
 
-// prints:
-// reaction 3: invoked. counter.count = 1
+  // const toggleMyTurn = () => {
+  //   setMyTurn(!myTurn);
+  // };
 
-runInAction(() => {counter.count = 2})
-// prints:
-// (There are no logging, because of reaction disposed. But, counter continue reaction)
-
-console.log(counter.count)
-
-
-const TestPage = () => {
-//   const rootStore = useContext(RootStoreContext);
-
-// prints:
-// 2
+  // useEffect(() => {
+  //   if (myTurn) {
+  //     counter > 0 && setTimeout(() => setCounter(counter - 1), 1000);
+  //     if (counter === 0) setCanPick(true);
+  //   } else {
+  //     setCounter(3);
+  //     setCanPick(false);
+  //   }
+  // }, [counter, myTurn]);
 
   return (
     <Segment inverted textAlign="center" vertical>
-        <Label>Test</Label>
+      {/* <div>
+        <Label>{counter}</Label>
+        <Label>{myTurn.toString()}</Label>
+        <Button onClick={toggleMyTurn}>Go</Button>
+        <Button disabled={!canPick}>{canPick.toString()}</Button>
+      </div> */}
+      <div>
+        <Label>{counter}</Label>
+        <Label>{isMyTurn.toString()}</Label>
+        <Button onClick={toggleIsMyTurn}>Go</Button>
+        <Button disabled={!canPick}>{canPick.toString()}</Button>
+      </div>
     </Segment>
   );
 };
