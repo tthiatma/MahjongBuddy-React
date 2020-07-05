@@ -29,11 +29,11 @@ const ResultModal: React.FC<IProps> = ({
            }) 
         }
 
+        console.log('roundresult is :' + roundResults);
         if (roundResults) {
           winner = roundResults?.find((r) => r.isWinner === true)!;
           losers = roundResults!.filter((r) => r.isWinner === false);
-          winnerTiles = roundTiles
-            ?.filter((t) => t.owner === winner?.userName)!
+          winnerTiles = roundTiles!.filter((t) => t.owner === winner?.userName)!
             .sort(sortTiles);
         }
 
@@ -44,46 +44,53 @@ const ResultModal: React.FC<IProps> = ({
             size="small"
           >
             <Header icon="bullhorn" content="Result" />
+
+            {roundResults !== null && roundResults.length > 0   ? 
+                        <Modal.Content>
+                        <h3>
+                          Winner : {winner?.userName}: {winner?.pointsResult} pts
+                          <ul>
+                            {winner?.roundResultHands.map((h, i) => (
+                              <li key={i}>
+                                {h.name} : {h.point}
+                              </li>
+                            ))}
+                            {winner?.roundResultExtraPoints.map((e, i) => (
+                              <li key={i}>
+                                {e.name} : {e.point}
+                              </li>
+                            ))}
+                          </ul>
+                        </h3>
+                        <div className="flexTilesContainer">
+                          {winnerTiles &&
+                            winnerTiles.map((rt) => (
+                              <div
+                                key={rt.id}
+                                style={{
+                                  backgroundImage: `url(${rt.tile.imageSmall}`,
+                                }}
+                                className="flexTiles"
+                              />
+                            ))}
+                        </div>
+                        <h3>
+                          {losers && (
+                            <ul>
+                              {losers.map((l, i) => (
+                                <li key={i}>
+                                  {l.userName}: {l.pointsResult}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </h3>
+                      </Modal.Content>          
+            : 
             <Modal.Content>
-              <h3>
-                Winner : {winner?.userName}: {winner?.pointsResult} pts
-                <ul>
-                  {winner?.roundResultHands.map((h, i) => (
-                    <li key={i}>
-                      {h.name} : {h.point}
-                    </li>
-                  ))}
-                  {winner?.roundResultExtraPoints.map((e, i) => (
-                    <li key={i}>
-                      {e.name} : {e.point}
-                    </li>
-                  ))}
-                </ul>
-              </h3>
-              <div className="flexTilesContainer">
-                {winnerTiles &&
-                  winnerTiles.map((rt) => (
-                    <div
-                      key={rt.id}
-                      style={{
-                        backgroundImage: `url(${rt.tile.imageSmall}`,
-                      }}
-                      className="flexTiles"
-                    />
-                  ))}
-              </div>
-              <h3>
-                {losers && (
-                  <ul>
-                    {losers.map((l, i) => (
-                      <li key={i}>
-                        {l.userName}: {l.pointsResult}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </h3>
+              <h3>booooo it's a tie. nobody win</h3>
             </Modal.Content>
+            }
             <Modal.Actions>
               <Button
                 color="green"

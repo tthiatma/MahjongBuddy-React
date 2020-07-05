@@ -523,6 +523,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     {mainPlayer.userName} - {WindDirection[mainPlayer.wind]} -{" "}
                     {mainPlayer.points} - isover: {round?.isOver.toString()} -
                     isEnding: {round?.isEnding.toString()}
+                    myTurn: {mainPlayer!.isMyTurn.toString()}
                   </span>
                 )}
               </div>

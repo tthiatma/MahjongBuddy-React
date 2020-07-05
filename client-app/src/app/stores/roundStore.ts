@@ -16,6 +16,14 @@ export default class RoundStore {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
 
+    reaction(
+      () => this.roundSimple?.isOver,
+      () => {
+        if(this.roundSimple?.isOver)
+          this.showResult = true;
+      }
+    )
+
     //reaction to automatically call round tied
     //when 1 tile left and the person's turn give up
     //when no tile left
@@ -38,6 +46,7 @@ export default class RoundStore {
       }
     );
 
+    //reaction for countdown before user can pick tile
     reaction(
       () => this.mainPlayer?.isMyTurn && this.pickCounter,
       () => {
@@ -53,22 +62,6 @@ export default class RoundStore {
         }
       }
     );
-
-    // reaction(
-    //   () => this.isMyTurn && this.counter,
-    //   () => {
-    //     if (this.isMyTurn) {
-    //       this.counter > 0 &&
-    //         setTimeout(() => runInAction(() => this.counter--), 1000);
-    //       if (this.counter === 0) runInAction(() => (this.canPick = true));
-    //     } else {
-    //       runInAction(() => {
-    //         this.counter = 3;
-    //         this.canPick = false;
-    //       });
-    //     }
-    //   }
-    // );
   }
 
   @observable pickCounter: number = 5;

@@ -65,25 +65,23 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 }
 
 export const setRoundProps = (round: IRound, user: IUser, roundStore: RoundStore) => {
-  if(!roundStore.mainPlayer){
-    runInAction("Updating Round Players", () =>{
-      let mainPlayer = round.roundPlayers.find(
-        p => p.userName === user.userName
-      );
-        if(mainPlayer){
-        roundStore.mainPlayer = mainPlayer;
+  runInAction("Updating Round Players", () =>{
+    let mainPlayer = round.roundPlayers.find(
+      p => p.userName === user.userName
+    );
+      if(mainPlayer){
+      roundStore.mainPlayer = mainPlayer;
+
+      let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");
+      roundStore.leftPlayer = round.roundPlayers.find(p => p.wind === leftUserWind)!;
   
-        let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");
-        roundStore.leftPlayer = round.roundPlayers.find(p => p.wind === leftUserWind)!;
-    
-        let topUserWind = GetOtherUserWindPosition(mainPlayer.wind, "top");
-        roundStore.topPlayer = round.roundPlayers.find(p => p.wind === topUserWind)!;
-    
-        let rightUserWind = GetOtherUserWindPosition(mainPlayer.wind, "right");
-        roundStore.rightPlayer = round.roundPlayers.find(p => p.wind === rightUserWind)!;
-      }  
-    })  
-  }
+      let topUserWind = GetOtherUserWindPosition(mainPlayer.wind, "top");
+      roundStore.topPlayer = round.roundPlayers.find(p => p.wind === topUserWind)!;
+  
+      let rightUserWind = GetOtherUserWindPosition(mainPlayer.wind, "right");
+      roundStore.rightPlayer = round.roundPlayers.find(p => p.wind === rightUserWind)!;
+    }  
+  })  
 }
 
 export const setGameProps = (game: IGame, user: IUser) => {

@@ -25,8 +25,8 @@ namespace MahjongBuddy.API.SignalR
         {
             try
             {
-                var roundTiles = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("RoundStarted", roundTiles);
+                var newRound = await _mediator.Send(command);
+                await Clients.Group(command.GameId.ToString()).SendAsync("RoundStarted", newRound);
             }
             catch (Exception ex)
             {
