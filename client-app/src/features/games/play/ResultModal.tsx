@@ -17,6 +17,7 @@ const ResultModal: React.FC<IProps> = ({
   roundTiles,
 }) => {
         const rootStore = useContext(RootStoreContext);
+        const {startRound} = rootStore.hubStore;
         const {showResult} = rootStore.roundStore;
 
         let winner: IRoundResult | null = null;
@@ -98,6 +99,13 @@ const ResultModal: React.FC<IProps> = ({
                 inverted
               >
                 <Icon name="checkmark" /> Got it
+              </Button>
+              <Button
+                color="blue"
+                onClick={startRound}
+                inverted
+              >
+                <Icon name="play" /> Next Round
               </Button>
             </Modal.Actions>
           </Modal>

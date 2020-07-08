@@ -106,6 +106,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
 
+    const cancelEnding = () => {
+      runInAction(() => {
+        rootStore.roundStore.roundSimple!.isEnding = false;
+      })
+    }
   const doChow = () => {
     let chowTilesOptions: Array<IRoundTile[]> = [];
 
@@ -490,11 +495,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              <Button loading={loading} onClick={endingRound}>
+              <Button disabled={!canPick} loading={loading} onClick={endingRound}>
                 Give Up
               </Button>
               <Button loading={loading} onClick={tiedRound}>
                 Over
+              </Button>
+              <Button onClick={cancelEnding}>
+                Cancel Ending
               </Button>
 
               {/* {remainingTiles === 1 &&

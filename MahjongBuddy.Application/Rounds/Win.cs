@@ -61,6 +61,7 @@ namespace MahjongBuddy.Application.Rounds
                 {
                     //set the game as over
                     round.IsOver = true;
+                    round.IsEnding = false;
                     //create the result
                     //record who win and who lost 
                     RoundResult winnerResult = new RoundResult

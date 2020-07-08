@@ -101,7 +101,7 @@ export default class HubStore {
         if (this.roundStore.roundTiles) {
           tiles.forEach((tile) => {
             let objIndex = this.roundStore.roundTiles!.findIndex(
-              (obj) => obj.id === tile.id
+              (obj) => obj.id === tile.id 
             );
             runInAction("updating tile", () => {
               this.roundStore.roundTiles![objIndex] = tile;
@@ -112,6 +112,7 @@ export default class HubStore {
 
       this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
+          this.roundStore.showResult = false;
           this.roundStore.roundSimple = round;
           this.roundStore.roundTiles = round.roundTiles;
           setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);

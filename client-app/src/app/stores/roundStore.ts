@@ -19,8 +19,9 @@ export default class RoundStore {
     reaction(
       () => this.roundSimple?.isOver,
       () => {
-        if(this.roundSimple?.isOver)
+        if(this.roundSimple?.isOver){
           this.showResult = true;
+        }
       }
     )
 
@@ -34,9 +35,11 @@ export default class RoundStore {
           this.roundEndingCounter > 0 &&
           setTimeout(() => runInAction(() => this.roundEndingCounter--), 1000);
           if (this.roundEndingCounter === 0) {
-            //call round over
-            console.log('calling tied roud')
-            rootStore.hubStore.tiedRound();
+            //call round over if its the user's turn so that no multiple call
+            if(this.mainPlayer?.isMyTurn)
+            {
+              rootStore.hubStore.tiedRound();  
+            }
           };
         } else {
           runInAction(() => {
