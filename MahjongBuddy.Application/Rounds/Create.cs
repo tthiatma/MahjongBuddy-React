@@ -43,8 +43,8 @@ namespace MahjongBuddy.Application.Rounds
 
                 Round lastRound = _context.Rounds.OrderByDescending(r => r.DateCreated).FirstOrDefault(r => r.GameId == request.GameId);
 
-                if (lastRound != null && !lastRound.IsOver)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
+                //if (lastRound != null && !lastRound.IsOver)
+                //    throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
 
                 var newRound = new Round
                 {
@@ -114,7 +114,12 @@ namespace MahjongBuddy.Application.Rounds
                     newRound.RoundPlayers.Add(ur);
                 }
 
-                var dealerId = roundPlayers.First(u => u.IsDealer).AppUserId;
+                var theDealer = roundPlayers.First(u => u.IsDealer);
+
+                var dealerId = theDealer.AppUserId;
+                if(dealerId == null && theDealer.AppUser != null)
+                    dealerId = theDealer.AppUser.Id;
+
                 //tiles assignment
                 foreach (var player in players)
                 {
