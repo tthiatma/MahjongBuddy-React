@@ -4,7 +4,6 @@
     {
         public Circle5()
         {
-            Id = 15;
             TileType = TileType.Circle;
             TileValue = TileValue.Five;
             Title = "RoundFive";

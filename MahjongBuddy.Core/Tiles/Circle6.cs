@@ -4,7 +4,6 @@
     {
         public Circle6()
         {
-            Id = 16;
             TileType = TileType.Circle;
             TileValue = TileValue.Six;
             Title = "RoundSix";

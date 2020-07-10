@@ -4,7 +4,6 @@
     {
         public FlowerRoman3()
         {
-            Id = 63;
             TileType = TileType.Flower;
             TileValue = TileValue.FlowerRomanThree;
             Title = "FlowerRomanThree";

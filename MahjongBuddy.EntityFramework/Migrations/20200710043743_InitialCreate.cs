@@ -52,7 +52,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(nullable: true),
                     TileType = table.Column<int>(nullable: false),
                     TileValue = table.Column<int>(nullable: false),
@@ -69,7 +69,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RoleId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -90,7 +90,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(nullable: false),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true)
@@ -175,7 +175,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(nullable: true),
                     MinPoint = table.Column<int>(nullable: false),
                     MaxPoint = table.Column<int>(nullable: false),
@@ -226,13 +226,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RoundCounter = table.Column<int>(nullable: false),
                     TileCounter = table.Column<int>(nullable: false),
                     Wind = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     IsHalted = table.Column<bool>(nullable: false),
                     IsOver = table.Column<bool>(nullable: false),
+                    IsEnding = table.Column<bool>(nullable: false),
                     IsPaused = table.Column<bool>(nullable: false),
                     IsTied = table.Column<bool>(nullable: false),
                     GameId = table.Column<int>(nullable: false)
@@ -277,34 +278,12 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.Sql(
-                    @"
-                    CREATE TRIGGER SetRoundPlayerTimestampOnUpdate
-                    AFTER UPDATE ON RoundPlayers
-                    BEGIN
-                        UPDATE RoundPlayers
-                        SET Timestamp = randomblob(8)
-                        WHERE rowid = NEW.rowid;
-                    END
-                    ");
-
-            migrationBuilder.Sql(
-                        @"
-                    CREATE TRIGGER SetRoundPlayerTimestampOnInsert
-                    AFTER INSERT ON RoundPlayers
-                    BEGIN
-                        UPDATE RoundPlayers
-                        SET Timestamp = randomblob(8)
-                        WHERE rowid = NEW.rowid;
-                    END
-                ");
-
             migrationBuilder.CreateTable(
                 name: "RoundResults",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     IsWinner = table.Column<bool>(nullable: false),
                     RoundId = table.Column<int>(nullable: true),
                     AppUserId = table.Column<string>(nullable: true),
@@ -359,27 +338,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
-            migrationBuilder.Sql(
-                    @"
-                    CREATE TRIGGER SetRoundTileTimestampOnUpdate
-                    AFTER UPDATE ON RoundTiles
-                    BEGIN
-                        UPDATE RoundTiles
-                        SET Timestamp = randomblob(8)
-                        WHERE rowid = NEW.rowid;
-                    END
-                    ");
-
-            migrationBuilder.Sql(
-                        @"
-                    CREATE TRIGGER SetRoundTileTimestampOnInsert
-                    AFTER INSERT ON RoundTiles
-                    BEGIN
-                        UPDATE RoundTiles
-                        SET Timestamp = randomblob(8)
-                        WHERE rowid = NEW.rowid;
-                    END
-                ");
 
             migrationBuilder.CreateTable(
                 name: "UserGames",
@@ -420,7 +378,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     ExtraPoint = table.Column<int>(nullable: false),
                     RoundResultId = table.Column<int>(nullable: true),
@@ -442,7 +400,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     HandType = table.Column<int>(nullable: false),
                     RoundResultId = table.Column<int>(nullable: true),
@@ -468,7 +426,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -494,7 +453,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true);
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMsgs_AuthorId",

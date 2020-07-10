@@ -4,7 +4,6 @@
     {
         public WindSouth()
         {
-            Id = 42;
             TileType = TileType.Wind;
             TileValue = TileValue.WindSouth;
             Title = "WindSouth";

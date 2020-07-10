@@ -4,7 +4,6 @@
     {
         public Stick9()
         {
-            Id = 29;
             TileType = TileType.Stick;
             TileValue = TileValue.Nine;
             Title = "StickNine";

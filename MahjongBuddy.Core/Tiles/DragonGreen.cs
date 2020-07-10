@@ -4,7 +4,6 @@
     {
         public DragonGreen()
         {
-            Id = 31;
             TileType = TileType.Dragon;
             TileValue = TileValue.DragonGreen;
             Title = "DragonGreen";

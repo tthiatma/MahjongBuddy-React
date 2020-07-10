@@ -4,7 +4,6 @@
     {
         public Money9()
         {
-            Id = 9;
             TileType = TileType.Money;
             TileValue = TileValue.Nine;
             Title = "MoneyNine";

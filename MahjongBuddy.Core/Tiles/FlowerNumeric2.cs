@@ -4,7 +4,6 @@
     {
         public FlowerNumeric2()
         {
-            Id = 52;
             TileType = TileType.Flower;
             TileValue = TileValue.FlowerNumericTwo;
             Title = "FlowerNumericTwo";

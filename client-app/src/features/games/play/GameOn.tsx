@@ -9,7 +9,6 @@ import {
   Item,
   Divider,
   Segment,
-  Label,
 } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";

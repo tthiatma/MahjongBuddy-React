@@ -50,7 +50,7 @@ namespace MahjongBuddy.API
             services.AddDbContext<MahjongBuddyDbContext>(opt =>
             {
                 opt.UseLazyLoadingProxies();
-                opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             services.AddCors(opt =>

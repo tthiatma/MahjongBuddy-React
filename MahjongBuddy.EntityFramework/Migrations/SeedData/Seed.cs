@@ -11,9 +11,8 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         {
             var userBuilder = new DefaultUserBuilder(context, userManager);
             await userBuilder.Build();
-            new DefaultGameBuilder(context).Build();
             new DefaultTileBuilder(context).Build();
-            //new DefaultRoundTileBuilder(context).Build();
+            new DefaultGameBuilder(context).Build();
         }
     }
 }

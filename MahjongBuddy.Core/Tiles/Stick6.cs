@@ -4,7 +4,6 @@
     {
         public Stick6()
         {
-            Id = 26;
             TileType = TileType.Stick;
             TileValue = TileValue.Six;
             Title = "StickSix";

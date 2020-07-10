@@ -35,51 +35,56 @@ namespace MahjongBuddy.Application.Helpers
 
             for (var i = 1; i < 5; i++)
             {
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 1) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 2) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 3) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 4) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 5) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 6) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 7) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 8) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 9) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 11) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 12) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 13) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 14) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 15) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 16) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 17) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 18) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 19) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 21) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 22) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 23) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 24) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 25) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 26) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 27) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 28) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 29) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 31) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 32) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 33) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 41) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 42) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 43) });
-                tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 44) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.One) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Two) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Three) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Four) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Five) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Six) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Seven) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Eight) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Money && x.TileValue == TileValue.Nine) });
+
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.One) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Two) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Three) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Four) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Five) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Six) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Seven) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Eight) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Circle && x.TileValue == TileValue.Nine) });
+
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.One) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Two) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Three) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Four) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Five) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Six) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Seven) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Eight) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Stick && x.TileValue == TileValue.Nine) });
+
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Dragon && x.TileValue == TileValue.DragonGreen) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Dragon && x.TileValue == TileValue.DragonRed) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Dragon && x.TileValue == TileValue.DragonWhite) });
+
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Wind && x.TileValue == TileValue.WindEast) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Wind && x.TileValue == TileValue.WindSouth) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Wind && x.TileValue == TileValue.WindWest) });
+                tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Wind && x.TileValue == TileValue.WindNorth) });
+
             };
 
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 51) });
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 52) });
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 53) });
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 54) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerRomanOne) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerRomanTwo) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerRomanThree) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerRomanFour) });
 
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 61) });
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 62) });
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 63) });
-            tiles.Add(new RoundTile { RoundId = 1, Tile = allTiles.Find(x => x.Id == 64) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerNumericOne) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerNumericTwo) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerNumericThree) });
+            tiles.Add(new RoundTile {Tile = allTiles.Find(x => x.TileType == TileType.Flower && x.TileValue == TileValue.FlowerNumericFour) });
 
             return tiles;
         }
