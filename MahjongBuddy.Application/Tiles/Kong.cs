@@ -126,6 +126,9 @@ namespace MahjongBuddy.Application.Tiles
 
                 currentPlayer.IsMyTurn = true;
 
+                if (round.IsEnding)
+                    round.IsEnding = false;
+
                 var otherPlayerTurn = round.RoundPlayers.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
                 if(otherPlayerTurn != null)
                 {

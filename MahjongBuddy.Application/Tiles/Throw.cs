@@ -34,7 +34,6 @@ namespace MahjongBuddy.Application.Tiles
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                //TODO: when there is no more tiles, handle calling game is over
                 //TODO: when someone can pong/chow the tile, turn on the flag so client can show user the option
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<RoundPlayer>();
@@ -86,6 +85,11 @@ namespace MahjongBuddy.Application.Tiles
 
                 updatedPlayers.Add(currentPlayer);
                 updatedPlayers.Add(nextPlayerTurn);
+
+                //check if theres more remaining tile, if no more tiles, then set round to ending
+                var remainingTiles = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
+                if (remainingTiles == null)
+                    round.IsEnding = true;
 
                 var success = await _context.SaveChangesAsync() > 0;
 
