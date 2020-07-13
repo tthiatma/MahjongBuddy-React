@@ -201,8 +201,10 @@ export default class HubStore {
           });
         })
         .catch((error) => {
-          this.loading = false;
-          console.log("Error establishing connection", error);
+          runInAction(() => {
+            this.loading = false;
+          });
+        console.log("Error establishing connection", error);
         });
     } else if (this.hubConnection!.state === "Connected") {
       this.hubConnection?.invoke("AddToGroup", gameId);
@@ -322,8 +324,6 @@ export default class HubStore {
     }
   };
 
-  @action nextRound = async () => {};
-
   @action startRound = async () => {
     let values: any = {};
     values.gameId = parseInt(this.gameStore.game!.id);
@@ -348,8 +348,13 @@ export default class HubStore {
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         console.log('is hub connected and calling win')
-        this.hubConnection!.invoke("WinRound", this.getGameAndRoundProps());
-        this.loading = false;
+        this.hubConnection!.invoke("WinRound", this.getGameAndRoundProps())
+        .catch(err => {          
+          toast.error(`can't win`);
+        });
+        runInAction(() => {
+          this.loading = false;
+        });
       } else {
         toast.error("not connected to hub");
       }
@@ -443,7 +448,7 @@ export default class HubStore {
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         this.hubConnection!.invoke('PongTile', this.getGameAndRoundProps())
-        .catch(err => {
+        .catch(err => {          
           toast.error(`can't pong`);
         });
         runInAction(() => {
@@ -468,9 +473,13 @@ export default class HubStore {
     runInAction(() => {
       this.loading = true;
     });
+
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke('ChowTile', values);
+        this.hubConnection!.invoke('ChowTile', values)
+        .catch(err => {
+          toast.error(`can't chow`);
+        });        
         runInAction(() => {
           this.loading = false;
         });
@@ -494,7 +503,10 @@ export default class HubStore {
     values.TileValue = tileValue;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke('KongTile', values);
+        this.hubConnection!.invoke('KongTile', values)
+        .catch(err => {
+          toast.error(`can't kong`);
+        });
         runInAction(() => {
           this.loading = false;
         });
@@ -509,26 +521,6 @@ export default class HubStore {
     }
   }
 
-  @action win = async() => {
-    try {
-      this.loading = true;
-      if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection
-        .invoke("Win", this.getGameAndRoundProps())
-        .catch((e) => {
-          toast.error("Can't win");
-        });
-      } else {
-        toast.error("not connected to hub");
-      }
-    } catch (error) {
-      toast.error("problem calling win");
-    } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
-    }
-  }
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id;

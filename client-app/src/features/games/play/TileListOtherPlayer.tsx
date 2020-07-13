@@ -19,7 +19,7 @@ const TileListOtherPlayer: React.FC<IProps> = ({
     <Grid verticalAlign="middle">
       <Grid.Row centered className='playerStatusContainer' {...(player.isMyTurn && { className: 'playerTurn playerStatusContainer' })}>
         <span>
-          {player.userName} - {WindDirection[player.wind]} - {player.points}
+          {player.userName} | {WindDirection[player.wind]} | {player.points} pts
         </span>
       </Grid.Row>
       <Grid.Row centered>
@@ -29,8 +29,8 @@ const TileListOtherPlayer: React.FC<IProps> = ({
             .map((rt) => (
               <div key={rt.id}>
                 <img
-                  alt={rt.tile.title}
-                  src={rt.tile.imageSmall}
+                  alt={'face-down-tile'}
+                  src={'/assets/tiles/50px/face-down.png'}
                   style={{ overflow: "hidden" }}
                 />
               </div>

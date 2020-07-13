@@ -10,6 +10,7 @@ import {
   Divider,
   Segment,
 } from "semantic-ui-react";
+import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
@@ -73,8 +74,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leaveGroup,
     winRound,
     endingRound,
-    tiedRound,
-    throwAllTile,
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -105,11 +104,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;
 
-    const cancelEnding = () => {
-      runInAction(() => {
-        rootStore.roundStore.roundSimple!.isEnding = false;
-      })
-    }
   const doChow = () => {
     let chowTilesOptions: Array<IRoundTile[]> = [];
 
@@ -192,10 +186,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           }
         }
       } else {
-        console.log(
-          "not possible to chow tiles because possible chow tiles is " +
-            possibleTiles?.length
-        );
+        toast.error(`can't chow`);
       }
     }
     //remove dups
@@ -267,7 +258,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           ts,
           (t) => t.status !== TileStatus.UserGraveyard
         );
-        //console.log(userActive);
         if (
           userActive.length === 3 &&
           boardActiveTile &&
@@ -315,6 +305,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       let kt = toJS(validTileForKongs[0]);
       kong(kt.tile.tileType, kt.tile.tileValue);
     } else {
+      toast.error(`can't kong`);
       //display option which tile to kong
     }
 
@@ -405,7 +396,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     </Segment>
                     {round.isEnding && (
                       <Segment circular style={square}>
-                        <Header as="h3">{roundEndingCounter}</Header>
+                        <Header as="h3">Ending in {roundEndingCounter}</Header>
                       </Segment>
                     )}
                   </Grid.Row>
@@ -471,21 +462,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
-
-              <Button loading={loading} onClick={throwAllTile}>
-                Throw All
-              </Button>
-              <Button loading={loading} onClick={throwTile}>
-                Throw
-              </Button>
-              <Button disabled={!canPick} loading={loading} onClick={pickTile}>
+              <Button disabled={!canPick || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
                 Pick
                 {pickCounter > 0 && `(${pickCounter})`}
               </Button>
               <Button loading={loading} onClick={pong}>
                 Pong
               </Button>
-              <Button loading={loading} onClick={doChow}>
+              <Button loading={loading} onClick={doChow} disabled={!mainPlayer!.isMyTurn}>
                 Chow
               </Button>
               <Button loading={loading} onClick={doKong}>
@@ -494,23 +478,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              <Button disabled={!canPick} loading={loading} onClick={endingRound}>
-                Give Up
-              </Button>
-              <Button loading={loading} onClick={tiedRound}>
-                Over
-              </Button>
-              <Button onClick={cancelEnding}>
-                Cancel Ending
-              </Button>
-
-              {/* {remainingTiles === 1 &&
+              {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
                 mainPlayer!.isMyTurn && (
-                  <Button loading={loading} onClick={endRound}>
-                    Give Up
+                  <Button disabled={!canPick} loading={loading} onClick={endingRound}>
+                    Give Up {pickCounter > 0 && `(${pickCounter})`}
                   </Button>
-                )} */}
+                )}              
             </Grid.Row>
             <Grid.Row centered>
               <div
@@ -527,10 +501,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       lineHeight: "40px",
                     }}
                   >
-                    {mainPlayer.userName} - {WindDirection[mainPlayer.wind]} -{" "}
-                    {mainPlayer.points} - isover: {round?.isOver.toString()} -
-                    isEnding: {round?.isEnding.toString()}
-                    myTurn: {mainPlayer!.isMyTurn.toString()}
+                    {mainPlayer.userName} | {WindDirection[mainPlayer.wind]} | {mainPlayer.points} pts
                   </span>
                 )}
               </div>

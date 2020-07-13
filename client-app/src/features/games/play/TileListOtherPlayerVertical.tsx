@@ -29,7 +29,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
               className="rotate90"
               {...(isReversed && { className: "rotateMinus90" })}
             >
-              {player.userName} - {WindDirection[player.wind]} - {player.points}
+              {player.userName} | {WindDirection[player.wind]} | {player.points} pts
             </span>
           </div>
         </div>
@@ -41,8 +41,8 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
             .map((rt) => (
               <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
                 <img
-                  alt={rt.tile.title}
-                  src={rt.tile.imageSmall.replace("50px", "v50px")}
+                  alt='face-down-tile'
+                  src={'/assets/tiles/v50px/face-down.png'}
                 />
               </div>
             ))}

@@ -66,6 +66,10 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 
 export const setRoundProps = (round: IRound, user: IUser, roundStore: RoundStore) => {
   runInAction("Updating Round Players", () =>{
+
+    roundStore.roundResults = round.roundResults;
+
+
     let mainPlayer = round.roundPlayers.find(
       p => p.userName === user.userName
     );

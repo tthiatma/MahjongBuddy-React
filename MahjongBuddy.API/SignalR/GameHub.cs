@@ -118,8 +118,7 @@ namespace MahjongBuddy.API.SignalR
             }
             catch (RestException ex)
             {
-                var test = new HubException("Can't Pong", ex);
-                throw test;
+                throw new HubException("Can't Pong", ex);
             }
         }
 
@@ -127,8 +126,15 @@ namespace MahjongBuddy.API.SignalR
         {
             string userName = GetUserName();
             command.UserName = userName;
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            try
+            {
+                var round = await _mediator.Send(command);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            }
+            catch (RestException ex)
+            {
+                throw new HubException(ex.Message);
+            }
         }
 
         public async Task ChowTile(Chow.Command command)
@@ -151,8 +157,15 @@ namespace MahjongBuddy.API.SignalR
         {
             string userName = GetUserName();
             command.UserName = userName;
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            try
+            {
+                var round = await _mediator.Send(command);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            }
+            catch (RestException ex)
+            {
+                throw new HubException("Can't Win", ex);
+            }
         }
 
         private string GetUserName()
