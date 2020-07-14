@@ -5,6 +5,7 @@ import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundPlayer } from "../../../app/models/round";
 import { Grid } from "semantic-ui-react";
 import { WindDirection } from "../../../app/models/windEnum";
+import PlayerStatus from "./PlayerStatus";
 
 interface IProps {
   roundTiles: IRoundTile[];
@@ -19,7 +20,7 @@ const TileListOtherPlayer: React.FC<IProps> = ({
     <Grid verticalAlign="middle">
       <Grid.Row centered className='playerStatusContainer' {...(player.isMyTurn && { className: 'playerTurn playerStatusContainer' })}>
         <span>
-          {player.userName} | {WindDirection[player.wind]} | {player.points} pts
+        <PlayerStatus player={player} />
         </span>
       </Grid.Row>
       <Grid.Row centered>

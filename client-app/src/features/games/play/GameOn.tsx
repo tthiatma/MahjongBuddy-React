@@ -26,6 +26,7 @@ import _ from "lodash";
 import { TileStatus } from "../../../app/models/tileStatus";
 import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
+import PlayerStatus from "./PlayerStatus";
 
 interface DetailParams {
   roundId: string;
@@ -462,15 +463,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
-              <Button disabled={!canPick || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
-                Pick
-                {pickCounter > 0 && `(${pickCounter})`}
+              <Button loading={loading} onClick={doChow} disabled={!mainPlayer!.isMyTurn}>
+                Chow
               </Button>
               <Button loading={loading} onClick={pong}>
                 Pong
-              </Button>
-              <Button loading={loading} onClick={doChow} disabled={!mainPlayer!.isMyTurn}>
-                Chow
               </Button>
               <Button loading={loading} onClick={doKong}>
                 Kong
@@ -478,6 +475,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
+              <Button loading={loading} onClick={pickTile}>
+                Pick
+              </Button>
+              
+              {/* <Button disabled={!canPick || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
+                Pick
+                {pickCounter > 0 && `(${pickCounter})`}
+              </Button> */}
               {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
                 mainPlayer!.isMyTurn && (
@@ -501,7 +506,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       lineHeight: "40px",
                     }}
                   >
-                    {mainPlayer.userName} | {WindDirection[mainPlayer.wind]} | {mainPlayer.points} pts
+                    <PlayerStatus player={mainPlayer} />
                   </span>
                 )}
               </div>

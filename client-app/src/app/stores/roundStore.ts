@@ -59,15 +59,14 @@ export default class RoundStore {
           if (this.pickCounter === 0) runInAction(() => (this.canPick = true));
         } else {
           runInAction(() => {
-            this.pickCounter = 5;
+            this.pickCounter = 3;
             this.canPick = false;
           });
         }
       }
     );
   }
-
-  @observable pickCounter: number = 5;
+  @observable pickCounter: number = 3;
   @observable canPick: boolean = false;
   @observable isMyTurn: boolean = false;
   @observable showResult: boolean = false;

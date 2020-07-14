@@ -5,6 +5,7 @@ import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundPlayer } from "../../../app/models/round";
 import { Grid } from "semantic-ui-react";
 import { WindDirection } from "../../../app/models/windEnum";
+import PlayerStatus from "./PlayerStatus";
 
 interface IProps {
   roundTiles: IRoundTile[];
@@ -29,7 +30,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
               className="rotate90"
               {...(isReversed && { className: "rotateMinus90" })}
             >
-              {player.userName} | {WindDirection[player.wind]} | {player.points} pts
+              <PlayerStatus player={player} />
             </span>
           </div>
         </div>
