@@ -4,7 +4,6 @@ import { IRoundTile } from "../../../app/models/tile";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { IRoundPlayer } from "../../../app/models/round";
 import { Grid } from "semantic-ui-react";
-import { WindDirection } from "../../../app/models/windEnum";
 import PlayerStatus from "./PlayerStatus";
 
 interface IProps {
