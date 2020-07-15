@@ -70,7 +70,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
                   ))}
               {provided.placeholder}
             </div>
-            <div id="userGraveyard">
+            <div id="userJustPicked">
               {mainPlayerJustPickedTile && mainPlayerJustPickedTile
               .map((rt, index) => (
                     <Draggable draggableId={rt.id} index={index} key={rt.id}>
@@ -85,7 +85,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
                             style={{
                               backgroundImage: `url(${rt.tile.imageSmall}`,
                             }}
-                            className="flexTiles"
+                            className="flexTiles justPickedTile"
                           />
                         </div>
                       )}

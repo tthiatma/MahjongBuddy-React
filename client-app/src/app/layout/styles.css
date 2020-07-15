@@ -160,3 +160,9 @@ body {
 .playerTurn > span {
   color: #fff;
 }
+
+.justPickedTile{
+  border-style: solid;
+  border-color: #ef8921;
+  border-width: medium;
+}
