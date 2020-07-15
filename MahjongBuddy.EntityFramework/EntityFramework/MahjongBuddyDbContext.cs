@@ -1,6 +1,8 @@
 ﻿using MahjongBuddy.Core;
+using MahjongBuddy.Core.Enums;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace MahjongBuddy.EntityFramework.EntityFramework
 {
@@ -70,6 +72,8 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         {
             base.OnModelCreating(builder);
 
+            ConvertEnum(builder);
+
             builder.Entity<UserGame>(x => x.HasKey(ug => new { ug.GameId, ug.AppUserId }));
             builder.Entity<UserGame>()
                 .HasOne(u => u.AppUser)
@@ -94,6 +98,64 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 .HasOne(r => r.Round)
                 .WithMany(u => u.RoundPlayers)
                 .HasForeignKey(r => r.RoundId);
+        }
+
+        private void ConvertEnum(ModelBuilder builder)
+        {
+            builder.Entity<Game>()
+                .Property(e => e.Status)
+                .HasConversion(
+                v => v.ToString(),
+                v => (GameStatus)Enum.Parse(typeof(GameStatus), v));
+
+            builder.Entity<Round>()
+                .Property(e => e.Wind)
+                .HasConversion(
+                v => v.ToString(),
+                v => (WindDirection)Enum.Parse(typeof(WindDirection), v));
+
+            builder.Entity<RoundPlayer>()
+                .Property(e => e.Wind)
+                .HasConversion(
+                v => v.ToString(),
+                v => (WindDirection)Enum.Parse(typeof(WindDirection), v));
+
+            builder.Entity<RoundTile>()
+                .Property(e => e.TileSetGroup)
+                .HasConversion(
+                v => v.ToString(),
+                v => (TileSetGroup)Enum.Parse(typeof(TileSetGroup), v));
+
+            builder.Entity<RoundTile>()
+                .Property(e => e.Status)
+                .HasConversion(
+                v => v.ToString(),
+                v => (TileStatus)Enum.Parse(typeof(TileStatus), v));
+
+            builder.Entity<Tile>()
+                .Property(e => e.TileType)
+                .HasConversion(
+                v => v.ToString(),
+                v => (TileType)Enum.Parse(typeof(TileType), v));
+
+            builder.Entity<Tile>()
+                .Property(e => e.TileValue)
+                .HasConversion(
+                v => v.ToString(),
+                v => (TileValue)Enum.Parse(typeof(TileValue), v));
+
+            builder.Entity<RoundResultHand>()
+                .Property(e => e.HandType)
+                .HasConversion(
+                v => v.ToString(),
+                v => (HandType)Enum.Parse(typeof(HandType), v));
+
+            builder.Entity<RoundResultExtraPoint>()
+                .Property(e => e.ExtraPoint)
+                .HasConversion(
+                v => v.ToString(),
+                v => (ExtraPoint)Enum.Parse(typeof(ExtraPoint), v));
+
         }
     }
 }

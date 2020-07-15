@@ -133,8 +133,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("MinPoint")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -180,8 +181,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("TileCounter")
                         .HasColumnType("int");
 
-                    b.Property<int>("Wind")
-                        .HasColumnType("int");
+                    b.Property<string>("Wind")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -212,8 +214,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<int>("Wind")
-                        .HasColumnType("int");
+                    b.Property<string>("Wind")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RoundId", "AppUserId");
 
@@ -257,8 +260,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ExtraPoint")
-                        .HasColumnType("int");
+                    b.Property<string>("ExtraPoint")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -283,8 +287,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("HandType")
-                        .HasColumnType("int");
+                    b.Property<string>("HandType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -320,8 +325,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("RoundId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ThrownBy")
                         .HasColumnType("nvarchar(max)");
@@ -329,8 +335,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int?>("TileId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TileSetGroup")
-                        .HasColumnType("int");
+                    b.Property<string>("TileSetGroup")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TileSetGroupIndex")
                         .HasColumnType("int");
@@ -362,11 +369,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<string>("ImageSmall")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TileType")
-                        .HasColumnType("int");
+                    b.Property<string>("TileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TileValue")
-                        .HasColumnType("int");
+                    b.Property<string>("TileValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -384,14 +393,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("CurrentPoint")
-                        .HasColumnType("int");
-
                     b.Property<int>("InitialSeatWind")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsHost")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
 
                     b.Property<int?>("RoundId")
                         .HasColumnType("int");

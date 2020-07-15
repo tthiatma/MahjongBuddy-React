@@ -54,8 +54,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(nullable: true),
-                    TileType = table.Column<int>(nullable: false),
-                    TileValue = table.Column<int>(nullable: false),
+                    TileType = table.Column<string>(nullable: false),
+                    TileValue = table.Column<string>(nullable: false),
                     Image = table.Column<string>(nullable: true),
                     ImageSmall = table.Column<string>(nullable: true)
                 },
@@ -180,7 +180,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     MinPoint = table.Column<int>(nullable: false),
                     MaxPoint = table.Column<int>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    Status = table.Column<int>(nullable: false),
+                    Status = table.Column<string>(nullable: false),
                     HostId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -229,7 +229,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     RoundCounter = table.Column<int>(nullable: false),
                     TileCounter = table.Column<int>(nullable: false),
-                    Wind = table.Column<int>(nullable: false),
+                    Wind = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
                     IsHalted = table.Column<bool>(nullable: false),
                     IsOver = table.Column<bool>(nullable: false),
@@ -257,7 +257,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     RoundId = table.Column<int>(nullable: false),
                     IsDealer = table.Column<bool>(nullable: false),
                     IsMyTurn = table.Column<bool>(nullable: false),
-                    Wind = table.Column<int>(nullable: false),
+                    Wind = table.Column<string>(nullable: false),
                     Points = table.Column<int>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
@@ -316,9 +316,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Owner = table.Column<string>(nullable: true),
                     ThrownBy = table.Column<string>(nullable: true),
                     RoundId = table.Column<int>(nullable: false),
-                    TileSetGroup = table.Column<int>(nullable: false),
+                    TileSetGroup = table.Column<string>(nullable: false),
                     TileSetGroupIndex = table.Column<int>(nullable: false),
-                    Status = table.Column<int>(nullable: false),
+                    Status = table.Column<string>(nullable: false),
                     TileId = table.Column<int>(nullable: true),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
                 },
@@ -346,7 +346,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     AppUserId = table.Column<string>(nullable: false),
                     GameId = table.Column<int>(nullable: false),
                     IsHost = table.Column<bool>(nullable: false),
-                    CurrentPoint = table.Column<int>(nullable: false),
+                    Points = table.Column<int>(nullable: false),
                     InitialSeatWind = table.Column<int>(nullable: false),
                     RoundId = table.Column<int>(nullable: true)
                 },
@@ -380,7 +380,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
-                    ExtraPoint = table.Column<int>(nullable: false),
+                    ExtraPoint = table.Column<string>(nullable: false),
                     RoundResultId = table.Column<int>(nullable: true),
                     Point = table.Column<int>(nullable: false)
                 },
@@ -402,7 +402,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
-                    HandType = table.Column<int>(nullable: false),
+                    HandType = table.Column<string>(nullable: false),
                     RoundResultId = table.Column<int>(nullable: true),
                     Point = table.Column<int>(nullable: false)
                 },
