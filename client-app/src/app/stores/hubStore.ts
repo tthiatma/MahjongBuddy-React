@@ -482,9 +482,13 @@ export default class HubStore {
         this.hubConnection!.invoke('ChowTile', values)
         .catch(err => {
           toast.error(`can't chow`);
-        });        
-        runInAction(() => {
-          this.loading = false;
+        })        
+        .then( () => {
+          runInAction(() => {
+            this.loading = false;
+            this.roundStore.mustThrow = true;
+            this.roundStore.pickCounter = 0;
+          });  
         });
       } else {
         toast.error("not connected to hub");
