@@ -115,9 +115,6 @@ namespace MahjongBuddy.Application.Tiles
                 //add new tile for user
                 var newTiles = round.RoundTiles.PickTile(request.UserName);
 
-                //if(newTiles == null)
-                //TODO: check when there is no more tile then user kong and game is over?
-
                 //assign new tile to user that kong the tile
                 foreach (var tile in newTiles)
                 {
