@@ -1,4 +1,4 @@
-import { observable, action, runInAction, computed, reaction } from "mobx";
+import { observable, action, runInAction, computed, reaction, IReactionDisposer } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { setRoundProps, sortTiles } from "../common/util/util";
@@ -11,8 +11,11 @@ import {
 import { IRoundTile } from "../models/tile";
 import { TileStatus } from "../models/tileStatus";
 
+const pickDefaultCounter:number = 3;
+
 export default class RoundStore {
   rootStore: RootStore;
+  pickReaction: IReactionDisposer;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
 
@@ -48,25 +51,27 @@ export default class RoundStore {
         }
       }
     );
-
+    
     //reaction for countdown before user can pick tile
-    reaction(
+    this.pickReaction = reaction(
       () => this.mainPlayer?.isMyTurn && this.pickCounter,
       () => {
         if (this.mainPlayer?.isMyTurn) {
           this.pickCounter > 0 &&
             setTimeout(() => runInAction(() => this.pickCounter--), 1000);
-          if (this.pickCounter === 0) runInAction(() => (this.canPick = true));
+          if (this.pickCounter === 0) runInAction(() => this.canPick = true);
         } else {
           runInAction(() => {
-            this.pickCounter = 3;
+            this.pickCounter = pickDefaultCounter;
             this.canPick = false;
           });
         }
       }
     );
   }
-  @observable pickCounter: number = 3;
+
+  @observable pickCounter: number = pickDefaultCounter;
+  @observable mustThrow: boolean = false;
   @observable canPick: boolean = false;
   @observable isMyTurn: boolean = false;
   @observable showResult: boolean = false;

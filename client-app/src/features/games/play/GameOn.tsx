@@ -40,6 +40,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
   const {
     canPick,
+    mustThrow,
     pickCounter,
     loadingRoundInitial,
     roundSimple: round,
@@ -479,10 +480,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 Pick
               </Button>
               
-              {/* <Button disabled={!canPick || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
+              <Button disabled={!canPick || mustThrow || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
                 Pick
                 {pickCounter > 0 && `(${pickCounter})`}
-              </Button> */}
+              </Button>
               {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
                 mainPlayer!.isMyTurn && (

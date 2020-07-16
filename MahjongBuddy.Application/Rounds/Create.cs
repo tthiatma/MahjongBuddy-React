@@ -65,7 +65,7 @@ namespace MahjongBuddy.Application.Rounds
                     newRound.RoundCounter = 1;
                     foreach (var ug in game.UserGames)
                     {
-                        var rp = new RoundPlayer { AppUser = ug.AppUser, Round = newRound, Wind = ug.InitialSeatWind };
+                        var rp = new RoundPlayer { AppUser = ug.AppUser, Round = newRound, Wind = ug.InitialSeatWind, Points = ug.Points };
                         if (ug.AppUserId == firstDealer.Id)
                         {
                             rp.IsDealer = true;
@@ -154,6 +154,7 @@ namespace MahjongBuddy.Application.Rounds
                         AppUserId = lur.AppUserId,
                         IsDealer = lur.IsDealer,
                         IsMyTurn = lur.IsDealer,
+                        Points = lur.Points,
                         Wind = userWind
                     };
                     ret.Add(ur);

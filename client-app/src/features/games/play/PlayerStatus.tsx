@@ -11,7 +11,7 @@ const PlayerStatus: React.FC<IProps> = ({
   }) => {
     return(
         <Fragment>
-            {player.userName} | Wind[{WindDirection[player.wind]}] | Flower[{player.wind + 1}] | <span style={{color: (player.points > 0) ? 'green' : (player.points < 0) ? 'red' : 'black'}}>{player.points} pts</span>
+            {player.userName} | Wind[{WindDirection[player.wind]}] | Flower[{player.wind + 1}] | <span style={{color: (player.points > 0) ? '#75c775' : (player.points < 0) ? 'red' : 'black'}}>{player.points} pts</span>
         </Fragment>
     )
   };

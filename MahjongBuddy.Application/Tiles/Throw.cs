@@ -71,7 +71,7 @@ namespace MahjongBuddy.Application.Tiles
                     throw new RestException(HttpStatusCode.NotFound, new { RoundTile = "Could not find the tile" });
 
                 tileToThrow.ThrownBy = request.UserName;
-                tileToThrow.Owner = "board";
+                tileToThrow.Owner = DefaultValue.board;
                 tileToThrow.Status = TileStatus.BoardActive;
                 tileToThrow.BoardGraveyardCounter = round.TileCounter;
                 round.TileCounter++;

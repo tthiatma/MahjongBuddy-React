@@ -32,7 +32,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
         {
             if (round != null && !string.IsNullOrEmpty(winnerUserName))
             {
-                var boardTile = round.RoundTiles.FirstOrDefault(t => t.Owner == "board" && t.Status == TileStatus.BoardActive);
+                var boardTile = round.RoundTiles.FirstOrDefault(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
                 var userTiles = round.RoundTiles.Where(t => t.Owner == winnerUserName).ToList();
                 var justPicked = userTiles.FirstOrDefault(t => t.Status == TileStatus.UserJustPicked);
 

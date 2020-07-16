@@ -52,7 +52,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
             else
             {
-                lastTile.Owner = "board";
+                lastTile.Owner = DefaultValue.board;
                 lastTile.Status = TileStatus.BoardActive;
             }
 

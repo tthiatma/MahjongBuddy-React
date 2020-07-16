@@ -19,7 +19,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 }
 
                 var lastTile = oneRoundTiles.Last();
-                lastTile.Owner = "board";
+                lastTile.Owner = DefaultValue.board;
                 lastTile.Status = TileStatus.BoardActive;
             }
         }

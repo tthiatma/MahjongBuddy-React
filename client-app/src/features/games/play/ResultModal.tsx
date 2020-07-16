@@ -29,8 +29,6 @@ const ResultModal: React.FC<IProps> = ({
                rootStore.roundStore.showResult = false;
            }) 
         }
-
-        console.log('roundresult is :' + roundResults);
         if (roundResults) {
           winner = roundResults?.find((r) => r.isWinner === true)!;
           losers = roundResults!.filter((r) => r.isWinner === false);

@@ -46,6 +46,8 @@ export default class HubStore {
 
         if(round.isOver && round.roundResults){
           console.log(round.roundResults);  
+          //this.roundStore.redoPickReaction();
+
           runInAction("updating round results", () => {
             this.roundStore.roundOver = true;
             this.roundStore.roundResults = round.roundResults;                        
@@ -55,7 +57,6 @@ export default class HubStore {
         setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
         //update players
         if (round.updatedRoundPlayers) {
-          console.log("there is a new player update");
           round.updatedRoundPlayers.forEach((player) => {
             runInAction("updating players", () => {
               if (player.userName === this.roundStore.leftPlayer?.userName)
@@ -77,7 +78,6 @@ export default class HubStore {
 
         //update tiles
         if (round.updatedRoundTiles) {
-          console.log("there is a new updated tiles");
           round.updatedRoundTiles.forEach((tile) => {
             let objIndex = this.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === tile.id
@@ -90,9 +90,6 @@ export default class HubStore {
           console.log("no updated tiles");
         }
         runInAction("updating round", () => {
-          console.log('updating round');
-          console.log('is ending = ' + round.isEnding);
-
           this.roundStore.roundSimple = round;
         });
       });
@@ -386,6 +383,7 @@ export default class HubStore {
         this.hubConnection!.invoke("ThrowTile", values);
         runInAction(() => {
           this.loading = false;
+          this.roundStore.mustThrow = false;
         });
       } else {
         toast.error("not connected to hub");
@@ -450,9 +448,13 @@ export default class HubStore {
         this.hubConnection!.invoke('PongTile', this.getGameAndRoundProps())
         .catch(err => {          
           toast.error(`can't pong`);
-        });
-        runInAction(() => {
-          this.loading = false;
+        })
+        .then( () => {
+          runInAction(() => {
+            this.loading = false;
+            this.roundStore.mustThrow = true;
+            this.roundStore.pickCounter = 0;
+          });  
         });
       } else {
         toast.error("not connected to hub");
@@ -461,6 +463,7 @@ export default class HubStore {
       runInAction(() => {
         this.loading = false;
       });
+      console.log(error);
       toast.error("problem invoking pong to hub ");
     }
   }
@@ -506,9 +509,13 @@ export default class HubStore {
         this.hubConnection!.invoke('KongTile', values)
         .catch(err => {
           toast.error(`can't kong`);
-        });
-        runInAction(() => {
-          this.loading = false;
+        })
+        .then( () => {
+          runInAction(() => {
+            this.loading = false;
+            this.roundStore.mustThrow = true;
+            this.roundStore.pickCounter = 0;
+          });  
         });
       } else {
         toast.error("not connected to hub");

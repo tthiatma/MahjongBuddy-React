@@ -115,7 +115,10 @@ namespace MahjongBuddy.Application.Rounds
                     else
                     {
                         //otherwise there is only one loser that throw the tile to board
-                        var boardTile = round.RoundTiles.First(t => t.Owner == "Board" && t.Status == TileStatus.BoardActive);
+                        winner.Points += handWorth.Points;
+                        winnerResult.PointsResult = handWorth.Points;
+
+                        var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
                         var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
                         loser.Points -= handWorth.Points;
                         round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });

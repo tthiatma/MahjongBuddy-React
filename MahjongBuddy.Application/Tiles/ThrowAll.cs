@@ -70,7 +70,7 @@ namespace MahjongBuddy.Application.Tiles
                 foreach (var tileToThrow in unopenTiles.Take(tileCountMinusOne))
                 {
                     tileToThrow.ThrownBy = request.UserName;
-                    tileToThrow.Owner = "board";
+                    tileToThrow.Owner = DefaultValue.board;
                     tileToThrow.Status = TileStatus.BoardGraveyard;
                     tileToThrow.BoardGraveyardCounter = round.TileCounter;
                     round.TileCounter++;
