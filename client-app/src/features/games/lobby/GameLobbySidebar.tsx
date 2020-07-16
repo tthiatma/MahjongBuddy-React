@@ -27,7 +27,7 @@ const GameLobbySidebar: React.FC<IProps> = ({players}) => {
         <Grid.Row>
           <Grid.Column width={4}></Grid.Column>
           <Grid.Column textAlign="center" width={8}>
-            <GameLobbySeat wind={WindDirection.North} />
+            <GameLobbySeat wind={WindDirection.South} />
           </Grid.Column>
           <Grid.Column width={4}></Grid.Column>
         </Grid.Row>
@@ -47,7 +47,7 @@ const GameLobbySidebar: React.FC<IProps> = ({players}) => {
         <Grid.Row>
           <Grid.Column width={4}></Grid.Column>
           <Grid.Column textAlign="center" width={8}>
-            <GameLobbySeat wind={WindDirection.South} />
+            <GameLobbySeat wind={WindDirection.North} />
           </Grid.Column>
           <Grid.Column width={4}></Grid.Column>
         </Grid.Row>

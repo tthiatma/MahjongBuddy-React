@@ -28,6 +28,13 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     UserName = "Tonny",
                     Email = "tonny@gmail.com"
                 };
+                var rightPlayer = new AppUser
+                {
+                    Id = "b",
+                    DisplayName = "Mei",
+                    UserName = "Mei",
+                    Email = "mei@gmail.com"
+                };
                 var topPlayer = new AppUser
                 {
                     Id = "c",
@@ -36,13 +43,6 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Email = "peter@gmail.com"
                 };
                 var leftPlayer = new AppUser
-                {
-                    Id = "b",
-                    DisplayName = "Mei",
-                    UserName = "Mei",
-                    Email = "mei@gmail.com"
-                };
-                var rightPlayer = new AppUser
                 {
                     Id = "d",
                     DisplayName = "Jason",

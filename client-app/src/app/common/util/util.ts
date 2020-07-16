@@ -11,25 +11,25 @@ export const GetOtherUserWindPosition = (currentUserWind:WindDirection , directi
     case 'left':
       switch(currentUserWind){
         case WindDirection.East:
-          return WindDirection.South;
-        case WindDirection.South:
-          return WindDirection.West;
-        case WindDirection.West:
           return WindDirection.North;
-        case WindDirection.North:
+        case WindDirection.South:
           return WindDirection.East;
+        case WindDirection.West:
+          return WindDirection.South;
+        case WindDirection.North:
+          return WindDirection.West;
       }
     break;
     case 'right':
       switch(currentUserWind){
         case WindDirection.East:
-          return WindDirection.North;
-        case WindDirection.South:
-          return WindDirection.East;
-        case WindDirection.West:
           return WindDirection.South;
-        case WindDirection.North:
+        case WindDirection.South:
           return WindDirection.West;
+        case WindDirection.West:
+          return WindDirection.North;
+        case WindDirection.North:
+          return WindDirection.East;
       }
     break;    
     case 'top':

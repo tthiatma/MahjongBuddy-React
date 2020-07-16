@@ -110,16 +110,16 @@ namespace MahjongBuddy.Application.Tiles
                 switch (currentPlayerWind)
                 {
                     case WindDirection.East:
-                        ret = players.First(p => p.Wind == WindDirection.North);
-                        break;
-                    case WindDirection.South:
-                        ret = players.First(p => p.Wind == WindDirection.East);
-                        break;
-                    case WindDirection.West:
                         ret = players.First(p => p.Wind == WindDirection.South);
                         break;
-                    case WindDirection.North:
+                    case WindDirection.South:
                         ret = players.First(p => p.Wind == WindDirection.West);
+                        break;
+                    case WindDirection.West:
+                        ret = players.First(p => p.Wind == WindDirection.North);
+                        break;
+                    case WindDirection.North:
+                        ret = players.First(p => p.Wind == WindDirection.East);
                         break;
                     default:
                         throw new Exception("Error when getting next player");
