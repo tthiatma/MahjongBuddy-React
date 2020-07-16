@@ -17,7 +17,7 @@ const mainPlayerTiles = {
 
 const mainPlayerGraveyard = {
   display: 'flex',
-  marginRight: '5px'
+  marginRight: '10px',
 }
 
 const getListStyle = (isDraggingOver: boolean) => ({
@@ -31,13 +31,15 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
       <div style={mainPlayerGraveyard} id="userGraveyard">
         {mainPlayerGraveYardTiles && mainPlayerGraveYardTiles
             .map((rt) => (
-              <div
-                key={rt.id}
-                style={{
-                  backgroundImage: `url(${rt.tile.imageSmall}`,
-                }}
-                className="flexTiles"
-              />
+              <div className='tileHorizontalContainer'>
+                <div
+                  key={rt.id}
+                  style={{
+                    backgroundImage: `url(${rt.tile.imageSmall}`,
+                  }}
+                  className="flexTiles"
+                />
+              </div>
             ))}
       </div>
       <Droppable droppableId="tile" direction="horizontal">
