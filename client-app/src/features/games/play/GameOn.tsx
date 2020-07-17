@@ -464,10 +464,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
-              <Button loading={loading} onClick={doChow} disabled={!mainPlayer!.isMyTurn}>
+              <Button disabled={!mainPlayer!.isMyTurn || mustThrow} loading={loading} onClick={doChow}>
                 Chow
               </Button>
-              <Button loading={loading} onClick={pong}>
+              <Button disabled={mustThrow} loading={loading} onClick={pong}>
                 Pong
               </Button>
               <Button loading={loading} onClick={doKong}>
