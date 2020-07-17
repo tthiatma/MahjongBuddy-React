@@ -178,6 +178,7 @@ export default class HubStore {
         .withUrl(process.env.REACT_APP_API_GAME_HUB_URL!, {
           accessTokenFactory: () => this.rootStore.commonStore.token!,
         })
+        .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)
         .build();
       this.addHubConnectionHandler();

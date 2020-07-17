@@ -23,19 +23,18 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     loading,
     leaveGroup
   } = rootStore.hubStore;
+
   useEffect(() => {
-    loadGame(match.params.id);
     createHubConnection(match.params!.id);
     return () => {
       leaveGroup(match.params.id);
     };
-  }, [
-    createHubConnection,
-    leaveGroup,
-    loadGame,
-    match.params,
-    match.params.id,
-  ]);
+  }, [createHubConnection, leaveGroup, match.params]);
+
+  useEffect(() => {
+    loadGame(match.params!.id);
+  }, [loadGame, match.params, match.params.id]);
+
 
   if (loadingInitial || !game || loading)
     return <LoadingComponent content="Loading game..." />;
