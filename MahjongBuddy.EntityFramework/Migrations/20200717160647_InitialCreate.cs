@@ -255,6 +255,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     AppUserId = table.Column<string>(nullable: false),
                     RoundId = table.Column<int>(nullable: false),
+                    IsInitialDealer = table.Column<bool>(nullable: false),
                     IsDealer = table.Column<bool>(nullable: false),
                     IsMyTurn = table.Column<bool>(nullable: false),
                     Wind = table.Column<string>(nullable: false),

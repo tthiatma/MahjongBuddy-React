@@ -450,14 +450,12 @@ export default class HubStore {
         .catch(err => {          
           toast.error(`can't pong`);
         })
-        .then( () => {
-          runInAction(() => {
-            this.loading = false;
-            this.roundStore.mustThrow = true;
-            this.roundStore.pickCounter = 0;
-          });  
-        });
-      } else {
+        runInAction(() => {
+          this.loading = false;
+          this.roundStore.mustThrow = true;
+          this.roundStore.pickCounter = 0;
+        });  
+    } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
@@ -484,14 +482,12 @@ export default class HubStore {
         .catch(err => {
           toast.error(`can't chow`);
         })        
-        .then( () => {
-          runInAction(() => {
-            this.loading = false;
-            this.roundStore.mustThrow = true;
-            this.roundStore.pickCounter = 0;
-          });  
-        });
-      } else {
+        runInAction(() => {
+          this.loading = false;
+          this.roundStore.mustThrow = true;
+          this.roundStore.pickCounter = 0;
+        });  
+    } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
@@ -515,14 +511,12 @@ export default class HubStore {
         .catch(err => {
           toast.error(`can't kong`);
         })
-        .then( () => {
-          runInAction(() => {
-            this.loading = false;
-            this.roundStore.mustThrow = true;
-            this.roundStore.pickCounter = 0;
-          });  
-        });
-      } else {
+        runInAction(() => {
+          this.loading = false;
+          this.roundStore.mustThrow = true;
+          this.roundStore.pickCounter = 0;
+        });  
+    } else {
         toast.error("not connected to hub");
       }
     } catch (error) {

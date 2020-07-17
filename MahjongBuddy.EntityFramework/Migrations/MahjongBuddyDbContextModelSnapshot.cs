@@ -203,6 +203,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("IsDealer")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsInitialDealer")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsMyTurn")
                         .HasColumnType("bit");
 

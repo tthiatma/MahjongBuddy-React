@@ -52,6 +52,7 @@ export interface IRoundPlayer {
   userName: string;
   displayName: string;
   image: string;
+  isInitialDealer: boolean;
   isDealer: boolean;
   isMyTurn: boolean;
   canDoNoFlower: boolean;

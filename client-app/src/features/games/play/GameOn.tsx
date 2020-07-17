@@ -476,9 +476,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button loading={loading} onClick={winRound}>
                 Win
               </Button>
-              {/* <Button loading={loading} onClick={pickTile}>
+              <Button loading={loading} onClick={pickTile}>
                 Pick
-              </Button> */}
+              </Button>
               
               <Button disabled={!canPick || mustThrow || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
                 Pick

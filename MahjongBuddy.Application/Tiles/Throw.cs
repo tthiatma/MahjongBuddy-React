@@ -78,13 +78,17 @@ namespace MahjongBuddy.Application.Tiles
 
                 updatedTiles.Add(tileToThrow);
 
-                //take off turn from current player and figure out next player's turn
-                currentPlayer.IsMyTurn = false;
-                var nextPlayerTurn = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
-                nextPlayerTurn.IsMyTurn = true;
+                var nextPlayer = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
+                nextPlayer.IsMyTurn = true;
 
-                updatedPlayers.Add(currentPlayer);
-                updatedPlayers.Add(nextPlayerTurn);
+                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != nextPlayer.AppUser.UserName);
+                foreach (var otherPlayerTurn in otherPlayers)
+                {
+                    otherPlayerTurn.IsMyTurn = false;
+                    updatedPlayers.Add(otherPlayerTurn);
+                }
+
+                updatedPlayers.Add(nextPlayer);
 
                 //check if theres more remaining tile, if no more tiles, then set round to ending
                 var remainingTiles = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));

@@ -90,8 +90,8 @@ namespace MahjongBuddy.Application.Tiles
                 if (round.IsEnding)
                     round.IsEnding = false;
 
-                var otherPlayerTurn = round.RoundPlayers.FirstOrDefault(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
-                if(otherPlayerTurn != null)
+                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
+                foreach (var otherPlayerTurn in otherPlayers)
                 {
                     otherPlayerTurn.IsMyTurn = false;
                     updatedPlayers.Add(otherPlayerTurn);
