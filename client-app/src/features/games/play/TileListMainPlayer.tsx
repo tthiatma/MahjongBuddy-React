@@ -31,9 +31,8 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
       <div style={mainPlayerGraveyard} id="userGraveyard">
         {mainPlayerGraveYardTiles && mainPlayerGraveYardTiles
             .map((rt) => (
-              <div className='tileHorizontalContainer'>
-                <div
-                  key={rt.id}
+              <div key={rt.id} className='tileHorizontalContainer'>
+                <div                  
                   style={{
                     backgroundImage: `url(${rt.tile.imageSmall}`,
                   }}

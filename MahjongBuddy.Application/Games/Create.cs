@@ -37,6 +37,7 @@ namespace MahjongBuddy.Application.Games
             {
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
 
+                //TODO don't hard code min and maxpoint
                 var game = new Game
                 {
                     Title = request.Title,

@@ -34,6 +34,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Date = DateTime.Now,
                     HostId = "a",
                     MinPoint = 3,
+                    MaxPoint = 10,
                     UserGames = new List<UserGame>
                     {
                         //Tonny

@@ -6,6 +6,7 @@ import { Modal, Header, Button, Icon } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { runInAction } from "mobx";
+import { TileStatus } from "../../../app/models/tileStatus";
 
 interface IProps {
   roundResults: IRoundResult[] | null;
@@ -23,6 +24,7 @@ const ResultModal: React.FC<IProps> = ({
         let winner: IRoundResult | null = null;
         let losers: IRoundResult[] | null = null;
         let winnerTiles: IRoundTile[] | null = null;
+        let boardTile: IRoundTile | null = null;
 
         const closeModal = () => {
            runInAction(() => {
@@ -34,6 +36,7 @@ const ResultModal: React.FC<IProps> = ({
           losers = roundResults!.filter((r) => r.isWinner === false);
           winnerTiles = roundTiles!.filter((t) => t.owner === winner?.userName)!
             .sort(sortTiles);
+          boardTile = roundTiles!.find((t) => t.status === TileStatus.BoardActive)!;
         }
 
         return (
@@ -69,9 +72,16 @@ const ResultModal: React.FC<IProps> = ({
                                 style={{
                                   backgroundImage: `url(${rt.tile.imageSmall}`,
                                 }}
-                                className="flexTiles"
+                                className={rt.status === TileStatus.UserJustPicked ? "flexTiles justPickedTile" : "flexTiles"}  
                               />
                             ))}
+                            {losers!.length === 1 && boardTile && 
+                            <div
+                            style={{
+                              backgroundImage: `url(${boardTile.tile.imageSmall}`,
+                            }}
+                            className="flexTiles justPickedTile"
+                             />}
                         </div>
                         <h3>
                           {losers && (

@@ -92,9 +92,11 @@ namespace MahjongBuddy.Application.Rounds
                     }
 
 
-                    //now that we have the winner, check the loser
+                    //now that we have the winner hand type and extra point recorded, let's calculate the points
 
-                    var losingPoint = handWorth.Points * -1;
+                    //if the handworth exceed game max point, cap the point to game's max point 
+                    var cappedPoint = handWorth.Points > game.MaxPoint ? game.MaxPoint : handWorth.Points;
+                    var losingPoint = cappedPoint * -1;
 
                     if (isSelfPick)
                     {
@@ -102,32 +104,30 @@ namespace MahjongBuddy.Application.Rounds
                         var losers = round.RoundPlayers.Where(u => u.AppUser.UserName != request.UserName);
 
                         //points will be times 3
-                        var winningPoint = handWorth.Points * 3;
+                        var winningPoint = cappedPoint * 3;
                         winner.Points += winningPoint;
                         winnerResult.PointsResult = winningPoint;
 
                         foreach (var l in losers)
                         {
-                            l.Points -= handWorth.Points;
+                            l.Points -= cappedPoint;
                             round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser, PointsResult = losingPoint });
                         }
                     }
                     else
                     {
                         //otherwise there is only one loser that throw the tile to board
-                        winner.Points += handWorth.Points;
-                        winnerResult.PointsResult = handWorth.Points;
+                        winner.Points += cappedPoint;
+                        winnerResult.PointsResult = cappedPoint;
 
                         var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
                         var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
-                        loser.Points -= handWorth.Points;
+                        loser.Points -= cappedPoint;
                         round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });
                     }
                     round.RoundResults.Add(winnerResult);
 
-
                     //TODO implement more than one winner
-
 
                     var success = await _context.SaveChangesAsync() > 0;
 
