@@ -80,6 +80,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   //currently only support one winner
   const [chowOptions, setChowOptions] = useState<any[]>([]);
+  const [kongOptions, setKongOptions] = useState<any[]>([]);
   const square = { width: 50, height: 50, padding: "0.5em" };
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "lightgrey",
@@ -209,7 +210,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     if (chowTilesOptions.length === 1) {
       const ct = chowTilesOptions[0];
       chow([ct[0].id, ct[1].id]);
-    } else if (chowTilesOptions.length > 1) {
+    } 
+    else if (chowTilesOptions.length > 1) {
       let cardDisplay: CardProps[] = [];
       _.forEach(chowTilesOptions, function (tileSet) {
         let cardObj: CardProps = {};
@@ -229,7 +231,20 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       });
       setChowOptions(cardDisplay);
     }
+    else{
+      toast.error(`can't chow`);
+    }
   };
+
+  const selectTilesToKong = (event: SyntheticEvent, data: any) => {
+    try {
+      kong(data.kongtiles[0], data.kongtiles[1]);
+      setKongOptions([]);
+    } catch (ex) {
+      toast.error(`failed konging`);
+    }
+  };
+
 
   const selectTilesToChow = (event: SyntheticEvent, data: any) => {
     console.log("selected tiles to chow");
@@ -240,7 +255,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       chow(data.chowtiles);
       setChowOptions([]);
     } catch (ex) {
-      console.log("failed chowing");
+      toast.error(`failed chowing`);
     }
   };
 
@@ -299,31 +314,33 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         }
       }
     });
-    _.forEach(validTileForKongs, (t) => console.log(t));
 
     if (validTileForKongs.length === 1) {
       console.log("Valid tile to kong");
       console.log(toJS(validTileForKongs[0]));
       let kt = toJS(validTileForKongs[0]);
       kong(kt.tile.tileType, kt.tile.tileValue);
-    } else {
-      toast.error(`can't kong`);
-      //display option which tile to kong
+    } 
+    else if(validTileForKongs.length > 1){
+      let cardDisplay: CardProps[] = [];
+      _.forEach(validTileForKongs, function (rt) {
+        let cardObj: CardProps = {};      
+        cardObj.key = rt.id;
+        cardObj.className = "raised";
+        cardObj.content = (
+          <div className="content">
+            <Image src={rt.tile.image} />
+          </div>
+        );
+        cardObj.onClick = selectTilesToKong;
+        cardObj.kongtiles = [rt.tile.tileType, rt.tile.tileValue];
+        cardDisplay.push(cardObj);
+      });
+      setKongOptions(cardDisplay);
     }
-
-    // kong only possible when there are 3 or 4 tiles in user posession
-    // let sameTileType:any = _.groupBy(asd, 'tile.tileType');
-    // let rawr = _.forEach(sameTileType, function(value, key) {
-    //   sameTileType[key] = _.groupBy(sameTileType[key], 'tile.tileValue');
-    // });
-    // _.forEach(rawr, (v, k) => console.log(v))
-    //check board active tile where any tile that can be kong
-
-    //check if its user turn
-
-    //if its user's turn, its possible that it could be multiple kong
-
-    //TODO: present options which tile to kong
+    else {
+      toast.error(`can't kong`);
+    }
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -460,6 +477,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 roundResults={roundResults}
                 roundTiles={roundTiles}
               />
+
+              {kongOptions.length > 0 && (
+                <Card.Group centered itemsPerRow={4} items={kongOptions} />
+              )}
 
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
