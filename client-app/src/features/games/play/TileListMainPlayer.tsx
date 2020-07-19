@@ -2,8 +2,10 @@ import React from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import { IRoundPlayer } from "../../../app/models/round";
 
 interface IProps{
+  mainPlayer: IRoundPlayer | null;
   containerStyleName: string;
   tileStyleName: string;
   mainPlayerActiveTiles: IRoundTile[] | null;
@@ -25,7 +27,7 @@ const getListStyle = (isDraggingOver: boolean) => ({
   display: 'flex'
 });
 
-const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerActiveTiles,mainPlayerGraveYardTiles, mainPlayerJustPickedTile }) => {
+const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, mainPlayerActiveTiles,mainPlayerGraveYardTiles, mainPlayerJustPickedTile }) => {
   return (
     <div style={mainPlayerTiles}>
       <div style={mainPlayerGraveyard} id="userGraveyard">
@@ -41,7 +43,10 @@ const TileListMainPlayer: React.FC<IProps> = ({ containerStyleName, mainPlayerAc
               </div>
             ))}
       </div>
-      <Droppable droppableId="tile" direction="horizontal">
+      <Droppable
+      isDropDisabled={!mainPlayer!.isMyTurn}
+      droppableId="tile"
+       direction="horizontal">
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}

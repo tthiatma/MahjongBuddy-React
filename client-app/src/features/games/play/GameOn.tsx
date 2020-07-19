@@ -83,10 +83,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const [kongOptions, setKongOptions] = useState<any[]>([]);
   const square = { width: 50, height: 50, padding: "0.5em" };
   const getStyle = (isDraggingOver: boolean) => ({
-    background: isDraggingOver ? "lightblue" : "lightgrey",
+    background: isDraggingOver ? "lightblue" : "",
+    borderStyle: "dashed",
+    borderColor: "#a2a2f0",
     display: "flex",
     overflow: "auto",
     transitionDuration: `0.001s`,
+    alignItem: "center",
+    justifyContent: "center"
   });
 
   useEffect(() => {
@@ -210,8 +214,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     if (chowTilesOptions.length === 1) {
       const ct = chowTilesOptions[0];
       chow([ct[0].id, ct[1].id]);
-    } 
-    else if (chowTilesOptions.length > 1) {
+    } else if (chowTilesOptions.length > 1) {
       let cardDisplay: CardProps[] = [];
       _.forEach(chowTilesOptions, function (tileSet) {
         let cardObj: CardProps = {};
@@ -230,8 +233,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         cardDisplay.push(cardObj);
       });
       setChowOptions(cardDisplay);
-    }
-    else{
+    } else {
       toast.error(`can't chow`);
     }
   };
@@ -244,7 +246,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       toast.error(`failed konging`);
     }
   };
-
 
   const selectTilesToChow = (event: SyntheticEvent, data: any) => {
     console.log("selected tiles to chow");
@@ -320,11 +321,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       console.log(toJS(validTileForKongs[0]));
       let kt = toJS(validTileForKongs[0]);
       kong(kt.tile.tileType, kt.tile.tileValue);
-    } 
-    else if(validTileForKongs.length > 1){
+    } else if (validTileForKongs.length > 1) {
       let cardDisplay: CardProps[] = [];
       _.forEach(validTileForKongs, function (rt) {
-        let cardObj: CardProps = {};      
+        let cardObj: CardProps = {};
         cardObj.key = rt.id;
         cardObj.className = "raised";
         cardObj.content = (
@@ -337,8 +337,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         cardDisplay.push(cardObj);
       });
       setKongOptions(cardDisplay);
-    }
-    else {
+    } else {
       toast.error(`can't kong`);
     }
   };
@@ -350,15 +349,18 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     }
 
     if (destination.droppableId === "board")
-      if (mainPlayerActiveTiles) {
+      if (mainPlayer!.isMyTurn) {
         runInAction("throwingtile", () => {
           rootStore.roundStore.selectedTile = toJS(
             roundTiles!.find((t) => t.id === draggableId)!
           );
         });
         throwTile();
+      } else {
+        toast.warn("Not your turn");
       }
 
+    //TODO allow user to arrange tile manually
     if (destination.droppableId === "tile") console.log("dropped to tile");
   };
 
@@ -440,8 +442,16 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   <div
                     style={{
                       height: "50px",
+                      paddingTop: "10px"
                     }}
-                  />
+                  >
+                    <Header
+                      as="h2"
+                      style={{color:'#d4d4d5'}}
+                      content={`Drag and drop tile here`}
+                    />
+
+                    </div>
                   {provided.placeholder}
                 </div>
               )}
@@ -464,6 +474,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           <Grid.Column width={10}>
             <Grid.Row>
               <TileListMainPlayer
+                mainPlayer={mainPlayer}
                 tileStyleName="tileHorizontal"
                 containerStyleName="tileHorizontalContainer"
                 mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
@@ -485,7 +496,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               {chowOptions.length > 0 && (
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
-              <Button disabled={!mainPlayer!.isMyTurn || mustThrow} loading={loading} onClick={doChow}>
+              <Button
+                disabled={!mainPlayer!.isMyTurn || mustThrow}
+                loading={loading}
+                onClick={doChow}
+              >
                 Chow
               </Button>
               <Button disabled={mustThrow} loading={loading} onClick={pong}>
@@ -500,18 +515,31 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               {/* <Button loading={loading} onClick={pickTile}>
                 Pick
               </Button> */}
-              
-              <Button disabled={!canPick || mustThrow || !mainPlayer!.isMyTurn || mainPlayerJustPickedTile!.length > 0} loading={loading} onClick={pickTile}>
+
+              <Button
+                disabled={
+                  !canPick ||
+                  mustThrow ||
+                  !mainPlayer!.isMyTurn ||
+                  mainPlayerJustPickedTile!.length > 0
+                }
+                loading={loading}
+                onClick={pickTile}
+              >
                 Pick
                 {pickCounter > 0 && `(${pickCounter})`}
               </Button>
               {remainingTiles === 1 &&
                 mainPlayerJustPickedTile!.length === 0 &&
                 mainPlayer!.isMyTurn && (
-                  <Button disabled={!canPick} loading={loading} onClick={endingRound}>
+                  <Button
+                    disabled={!canPick}
+                    loading={loading}
+                    onClick={endingRound}
+                  >
                     Give Up {pickCounter > 0 && `(${pickCounter})`}
                   </Button>
-                )}              
+                )}
             </Grid.Row>
             <Grid.Row centered>
               <div
