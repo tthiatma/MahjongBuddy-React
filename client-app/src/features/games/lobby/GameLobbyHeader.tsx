@@ -1,35 +1,39 @@
-import React, { useContext } from 'react';
-import { Segment, Item, Header, Button, Image } from 'semantic-ui-react';
-import { IGame } from '../../../app/models/game';
-import { observer } from 'mobx-react-lite';
-import { Link } from 'react-router-dom';
-import {format} from 'date-fns';
-import { RootStoreContext } from '../../../app/stores/rootStore';
+import React, { useContext } from "react";
+import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
+import { IGame } from "../../../app/models/game";
+import { observer } from "mobx-react-lite";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
+import { RootStoreContext } from "../../../app/stores/rootStore";
+import { IRound } from "../../../app/models/round";
+import { GameStatus } from "../../../app/models/gameStatusEnum";
+import { toJS } from "mobx";
 
 const gameImageStyle = {
-  filter: 'brightness(30%)'
+  filter: "brightness(30%)",
 };
 
 const gameImageTextStyle = {
-  position: 'absolute',
-  bottom: '5%',
-  left: '5%',
-  width: '100%',
-  height: 'auto',
-  color: 'white'
+  position: "absolute",
+  bottom: "5%",
+  left: "5%",
+  width: "100%",
+  height: "auto",
+  color: "white",
 };
 
-const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
+const GameLobbyHeader: React.FC<{
+  game: IGame;
+  latestRound: IRound | null;
+}> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
-  const {loading, startRound} = rootStore.hubStore;
+  const { loading, startRound } = rootStore.hubStore;
+  console.log("latest round is" + latestRound);
+  console.log(toJS(latestRound));
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
-        <Image
-          src={`/assets/mahjong-tiles.jpg`}
-          fluid
-          style={gameImageStyle}
-        />
+        <Image src={`/assets/mahjong-tiles.jpg`} fluid style={gameImageStyle} />
         <Segment style={gameImageTextStyle} basic>
           <Item.Group>
             <Item>
@@ -49,19 +53,24 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
         </Segment>
       </Segment>
       <Segment clearing attached="bottom">
-        <Button loading={loading} onClick={startRound}>
+        {game.status === GameStatus.Created && game.isHost && (
+          <Button loading={loading} onClick={startRound}>
             Start Round
-        </Button>
-        {game.isHost && (<Button
+          </Button>
+        )}
+        {game.status === GameStatus.Playing && latestRound !== null && (
+          <Button
             as={Link}
-            to={`/manage/${game.id}`}
+            loading={loading}
+            to={`/games/${game.id}/rounds/${latestRound.id}`}
             color="orange"
             floated="right"
           >
-            Edit Game
-          </Button>)}
+            Play
+          </Button>
+        )}
 
-        {/* {game.isHost ? (
+        {/* {game.isHost && (
           <Button
             as={Link}
             to={`/manage/${game.id}`}
@@ -69,14 +78,6 @@ const GameLobbyHeader: React.FC<{game: IGame}> = ({game}) => {
             floated="right"
           >
             Edit Game
-          </Button>
-        ) : game.isCurrentPlayerConnected ? (
-          <Button loading={loading} onClick={disconnectFromGame}>
-            Leave
-          </Button>
-        ) : (
-          <Button loading={loading} onClick={connectToGame} color="teal">
-            Join
           </Button>
         )} */}
       </Segment>

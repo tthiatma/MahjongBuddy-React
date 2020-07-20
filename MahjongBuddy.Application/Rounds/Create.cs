@@ -4,6 +4,7 @@ using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Extensions;
 using MahjongBuddy.Application.Helpers;
 using MahjongBuddy.Core;
+using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,15 +37,15 @@ namespace MahjongBuddy.Application.Rounds
 
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.SingleOrDefaultAsync(x => x.Id == request.GameId);
+                Game game = await _context.Games.SingleOrDefaultAsync(x => x.Id == request.GameId);
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "Game does not exist" });
 
                 Round lastRound = _context.Rounds.OrderByDescending(r => r.DateCreated).FirstOrDefault(r => r.GameId == request.GameId);
 
-                //if (lastRound != null && !lastRound.IsOver)
-                //    throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
+                if (lastRound != null && !lastRound.IsOver)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Round = "Last round is not over" });
 
                 var newRound = new Round
                 {
@@ -60,6 +61,7 @@ namespace MahjongBuddy.Application.Rounds
                 List<RoundPlayer> roundPlayers = new List<RoundPlayer>();
                 if (lastRound == null)
                 {
+                    game.Status = GameStatus.Playing;
                     AppUser firstDealer = game.UserGames.First(u => u.InitialSeatWind == WindDirection.East).AppUser;
                     newRound.Wind = WindDirection.East;
                     newRound.RoundCounter = 1;

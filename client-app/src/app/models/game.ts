@@ -1,4 +1,5 @@
 import { WindDirection } from "./windEnum";
+import { GameStatus } from "./gameStatusEnum";
 
 export interface IGame{
     id: string;
@@ -6,7 +7,7 @@ export interface IGame{
     date: Date;
     isHost: boolean;
     hostUserName: string;
-    status: number;
+    status: GameStatus;
     initialSeatWind?: WindDirection;
     isCurrentPlayerConnected: boolean;
     players: IPlayer[];

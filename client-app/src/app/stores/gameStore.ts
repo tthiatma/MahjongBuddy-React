@@ -6,6 +6,7 @@ import { RootStore } from "./rootStore";
 import { history } from "../..";
 import { toast } from "react-toastify";
 import { setGameProps } from "../common/util/util";
+import { IRound } from "../models/round";
 
 export default class GameStore {
   rootStore: RootStore;
@@ -16,8 +17,10 @@ export default class GameStore {
   @observable gameRegistry = new Map();
   @observable game: IGame | null = null;
   @observable loadingGameInitial = false;
+  @observable loadingLatestRoundInitial = false;
   @observable submitting = false;
   @observable target = "";
+  @observable latestRound: IRound | null = null;
 
   @computed get gamesByDate() {
     return this.groupGamesByDate(Array.from(this.gameRegistry.values()));
@@ -41,6 +44,24 @@ export default class GameStore {
       console.log(error);
     }
   };
+  
+  @action getLatestRound = async (id: string) => {
+    this.loadingLatestRoundInitial = true;
+    try{
+      const latestRound = await agent.Games.latestRound(id);
+      console.log(latestRound);
+      runInAction("getting latest round", () => {
+        this.latestRound = latestRound;
+        this.loadingLatestRoundInitial = false;
+      })
+      return latestRound;
+    } catch (error) {
+      runInAction("getting game error", () => {
+        this.loadingLatestRoundInitial = false;
+      });
+      console.log(error);
+    }
+  }
 
   @action loadGame = async (id: string) => {
     let game = this.getGame(id);

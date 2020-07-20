@@ -24,6 +24,12 @@ namespace MahjongBuddy.API.Controllers
             return await Mediator.Send(new Detail.Query { Id = id });
         }
 
+        [HttpGet("{id}/latestRound")]
+        public async Task<ActionResult<RoundDto>> LatestRound(int id)
+        {
+            return await Mediator.Send(new LatestRound.Query { Id = id });
+        }
+
         [HttpPost]
         public async Task<ActionResult<GameDto>> Create(Create.Command command)
         {
