@@ -14,6 +14,9 @@ namespace MahjongBuddy.Core
         
         public bool IsDealer { get; set; }
         public bool IsMyTurn { get; set; }
+
+        public bool mustThrow { get; set; }
+
         public WindDirection Wind { get; set; }
         public int Points { get; set; }
         [Timestamp]

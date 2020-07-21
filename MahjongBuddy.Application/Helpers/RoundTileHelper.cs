@@ -91,6 +91,8 @@ namespace MahjongBuddy.Application.Helpers
 
         public static HandType DetermineHandCanWin(IEnumerable<RoundTile> tiles)
         {
+            //TODO leverage tile that already in user graveyard in determining user hand type
+
             //if all weird combo hand is checked, in order to win 
             //tiles needs to be either, chicken, straight, or triplet
 
