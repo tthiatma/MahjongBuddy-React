@@ -73,6 +73,7 @@ namespace MahjongBuddy.Application.Rounds
                             rp.IsInitialDealer = true;
                             rp.IsDealer = true;
                             rp.IsMyTurn = true;
+                            rp.MustThrow = true;
                         }
                         roundPlayers.Add(rp);
                     }
@@ -160,6 +161,7 @@ namespace MahjongBuddy.Application.Rounds
                         IsInitialDealer = lur.IsInitialDealer,
                         IsDealer = lur.Wind == windOfDealer,
                         IsMyTurn = lur.Wind == windOfDealer,
+                        MustThrow = lur.Wind == windOfDealer,
                         Points = lur.Points,
                         Wind = userWind
                     };

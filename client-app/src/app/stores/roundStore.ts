@@ -71,7 +71,6 @@ export default class RoundStore {
   }
 
   @observable pickCounter: number = pickDefaultCounter;
-  @observable mustThrow: boolean = false;
   @observable canPick: boolean = false;
   @observable isMyTurn: boolean = false;
   @observable showResult: boolean = false;

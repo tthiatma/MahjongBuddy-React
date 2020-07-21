@@ -40,7 +40,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const { loadingGameInitial, loadGame, game, getMainUser } = rootStore.gameStore;
   const {
     canPick,
-    mustThrow,
     pickCounter,
     loadingRoundInitial,
     roundSimple: round,
@@ -498,19 +497,19 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Card.Group centered itemsPerRow={3} items={chowOptions} />
               )}
               <Button
-                disabled={!mainPlayer!.isMyTurn || mustThrow}
+                disabled={!mainPlayer!.isMyTurn || mainPlayer!.mustThrow || round.isOver}
                 loading={loading}
                 onClick={doChow}
               >
                 Chow
               </Button>
-              <Button disabled={mustThrow} loading={loading} onClick={pong}>
+              <Button disabled={mainPlayer!.mustThrow || round.isOver} loading={loading} onClick={pong}>
                 Pong
               </Button>
-              <Button loading={loading} onClick={doKong}>
+              <Button disabled={round.isOver} loading={loading} onClick={doKong}>
                 Kong
               </Button>
-              <Button loading={loading} onClick={winRound}>
+              <Button disabled={round.isOver} loading={loading} onClick={winRound}>
                 Win
               </Button>
               {/* <Button loading={loading} onClick={pickTile}>
@@ -520,8 +519,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Button
                 disabled={
                   !canPick ||
-                  mustThrow ||
+                  mainPlayer!.mustThrow ||
                   !mainPlayer!.isMyTurn ||
+                  round.isOver ||
                   mainPlayerJustPickedTile!.length > 0
                 }
                 loading={loading}
@@ -534,7 +534,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 mainPlayerJustPickedTile!.length === 0 &&
                 mainPlayer!.isMyTurn && (
                   <Button
-                    disabled={!canPick}
+                    disabled={!canPick || round.isOver}
                     loading={loading}
                     onClick={endingRound}
                   >

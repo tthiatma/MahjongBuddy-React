@@ -209,6 +209,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("IsMyTurn")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("MustThrow")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Points")
                         .HasColumnType("int");
 
@@ -220,9 +223,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<string>("Wind")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("mustThrow")
-                        .HasColumnType("bit");
 
                     b.HasKey("RoundId", "AppUserId");
 

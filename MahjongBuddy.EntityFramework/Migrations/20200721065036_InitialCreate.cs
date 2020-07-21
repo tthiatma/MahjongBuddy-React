@@ -258,6 +258,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     IsInitialDealer = table.Column<bool>(nullable: false),
                     IsDealer = table.Column<bool>(nullable: false),
                     IsMyTurn = table.Column<bool>(nullable: false),
+                    MustThrow = table.Column<bool>(nullable: false),
                     Wind = table.Column<string>(nullable: false),
                     Points = table.Column<int>(nullable: false),
                     Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)

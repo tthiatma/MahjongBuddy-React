@@ -44,7 +44,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, 
             ))}
       </div>
       <Droppable
-      isDropDisabled={!mainPlayer!.isMyTurn}
+      isDropDisabled={!mainPlayer!.isMyTurn || !mainPlayer!.mustThrow}
       droppableId="tile"
        direction="horizontal">
         {(provided, snapshot) => (

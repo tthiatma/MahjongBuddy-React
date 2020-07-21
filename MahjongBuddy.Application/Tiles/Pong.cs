@@ -86,6 +86,7 @@ namespace MahjongBuddy.Application.Tiles
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 
                 currentPlayer.IsMyTurn = true;
+                currentPlayer.MustThrow = true;
 
                 if (round.IsEnding)
                     round.IsEnding = false;

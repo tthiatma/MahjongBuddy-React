@@ -122,6 +122,8 @@ namespace MahjongBuddy.Application.Tiles
                 }
 
                 currentPlayer.IsMyTurn = true;
+                //because new tile automatically added, player must throw set to true
+                currentPlayer.MustThrow = true;
 
                 if (round.IsEnding)
                     round.IsEnding = false;

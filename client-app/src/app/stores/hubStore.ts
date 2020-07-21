@@ -384,7 +384,6 @@ export default class HubStore {
         this.hubConnection!.invoke("ThrowTile", values);
         runInAction(() => {
           this.loading = false;
-          this.roundStore.mustThrow = false;
         });
       } else {
         toast.error("not connected to hub");
@@ -452,7 +451,6 @@ export default class HubStore {
         })
         runInAction(() => {
           this.loading = false;
-          this.roundStore.mustThrow = true;
           this.roundStore.pickCounter = 0;
         });  
     } else {
@@ -484,7 +482,6 @@ export default class HubStore {
         })        
         runInAction(() => {
           this.loading = false;
-          this.roundStore.mustThrow = true;
           this.roundStore.pickCounter = 0;
         });  
     } else {
@@ -513,7 +510,6 @@ export default class HubStore {
         })
         runInAction(() => {
           this.loading = false;
-          this.roundStore.mustThrow = true;
           this.roundStore.pickCounter = 0;
         });  
     } else {

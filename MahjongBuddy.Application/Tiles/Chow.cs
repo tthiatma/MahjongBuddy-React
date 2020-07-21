@@ -41,6 +41,7 @@ namespace MahjongBuddy.Application.Tiles
                 //assign tile ownership to current user
 
                 var updatedTiles = new List<RoundTile>();
+                var updatedPlayers = new List<RoundPlayer>();
 
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
@@ -92,6 +93,10 @@ namespace MahjongBuddy.Application.Tiles
                 var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
+                updatedPlayers.Add(currentPlayer);
+
+                currentPlayer.IsMyTurn = true;
+                currentPlayer.MustThrow = true;
 
                 if (round.IsEnding)
                     round.IsEnding = false;
@@ -102,6 +107,7 @@ namespace MahjongBuddy.Application.Tiles
                     var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
                     roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                     if (success) return roundToReturn;
                 }

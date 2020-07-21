@@ -34,7 +34,6 @@ namespace MahjongBuddy.Application.Tiles
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                //TODO: when someone can pong/chow the tile, turn on the flag so client can show user the option
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<RoundPlayer>();
                 var round = await _context.Rounds.FindAsync(request.RoundId);
@@ -87,6 +86,10 @@ namespace MahjongBuddy.Application.Tiles
                     otherPlayerTurn.IsMyTurn = false;
                     updatedPlayers.Add(otherPlayerTurn);
                 }
+
+                currentPlayer.MustThrow = false;
+
+                updatedPlayers.Add(currentPlayer);
 
                 updatedPlayers.Add(nextPlayer);
 

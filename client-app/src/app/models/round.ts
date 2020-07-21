@@ -55,6 +55,7 @@ export interface IRoundPlayer {
   isInitialDealer: boolean;
   isDealer: boolean;
   isMyTurn: boolean;
+  mustThrow: boolean;
   canDoNoFlower: boolean;
   wind: WindDirection;
   points: number;
