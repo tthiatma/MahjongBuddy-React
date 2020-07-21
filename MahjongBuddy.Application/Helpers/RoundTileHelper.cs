@@ -215,7 +215,36 @@ namespace MahjongBuddy.Application.Helpers
                 //try check all set
                 for (int i = 0; i < 4; i++)
                 {
-                    var anySet = GetAnySet(tilesWithoutEyes);
+                    var anySet = TryPongThenChowSet(tilesWithoutEyes);
+                    if (anySet == null)
+                    {
+                        break;
+                    }
+                    tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
+                    //if it gets all the way to last set
+                    if (i == 3)
+                        isChicken = true;
+                }
+            }
+            if (isChicken)
+                return HandType.Chicken;
+
+            //TODO definitely need to refactor this lol
+            //another try for chicken (not sure if below is needed)
+            //test for chicken
+            foreach (var eyes in eyeCollection)
+            {
+                //remove possible eyes from tiles
+                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
+                foreach (var t in eyes)
+                {
+                    tilesWithoutEyes.Remove(t);
+                }
+
+                //try check all set
+                for (int i = 0; i < 4; i++)
+                {
+                    var anySet = TryChowThenPongSet(tilesWithoutEyes);
                     if (anySet == null)
                     {
                         break;
@@ -243,13 +272,27 @@ namespace MahjongBuddy.Application.Helpers
             return null;
         }
 
-        public static IEnumerable<RoundTile> GetAnySet(IEnumerable<RoundTile> tiles)
+        public static IEnumerable<RoundTile> TryPongThenChowSet(IEnumerable<RoundTile> tiles)
         {
             foreach (var t in tiles)
             {
                 var temp = FindPongTiles(t, tiles);
                 if (temp.Count() == 0)
                     temp = FindStraightTiles(t, tiles);
+                if (temp != null && temp.Count() == 3)
+                    return temp;
+            }
+            return null;
+        }
+
+        //not sure if below is needed lollll
+        public static IEnumerable<RoundTile> TryChowThenPongSet(IEnumerable<RoundTile> tiles)
+        {
+            foreach (var t in tiles)
+            {
+                var temp = FindStraightTiles(t, tiles);
+                if (temp.Count() == 0)
+                    temp = FindPongTiles(t, tiles);
                 if (temp != null && temp.Count() == 3)
                     return temp;
             }
