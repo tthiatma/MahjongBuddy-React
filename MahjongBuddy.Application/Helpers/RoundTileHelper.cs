@@ -245,9 +245,9 @@ namespace MahjongBuddy.Application.Helpers
         {
             foreach (var t in tiles)
             {
-                var temp = FindStraightTiles(t, tiles);
+                var temp = FindPongTiles(t, tiles);
                 if (temp.Count() == 0)
-                    temp = FindPongTiles(t, tiles);
+                    temp = FindStraightTiles(t, tiles);
                 if (temp != null && temp.Count() == 3)
                     return temp;
             }

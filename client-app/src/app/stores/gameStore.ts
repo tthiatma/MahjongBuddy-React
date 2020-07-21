@@ -26,6 +26,14 @@ export default class GameStore {
     return this.groupGamesByDate(Array.from(this.gameRegistry.values()));
   }
 
+  @computed get getMainUser() {
+    return this.game && this.game.players
+    ? this.game.players.find(
+        (p) => p.userName === this.rootStore.userStore.user!.userName
+      )
+    : null;
+  } 
+
   @action loadGames = async () => {
     this.loadingGameInitial = true;
     try {

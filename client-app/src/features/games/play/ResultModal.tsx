@@ -11,112 +11,110 @@ import { TileStatus } from "../../../app/models/tileStatus";
 interface IProps {
   roundResults: IRoundResult[] | null;
   roundTiles: IRoundTile[] | null;
+  isHost: boolean;
 }
 
 const ResultModal: React.FC<IProps> = ({
   roundResults,
   roundTiles,
+  isHost,
 }) => {
-        const rootStore = useContext(RootStoreContext);
-        const {startRound} = rootStore.hubStore;
-        const {showResult} = rootStore.roundStore;
+  const rootStore = useContext(RootStoreContext);
+  const { startRound } = rootStore.hubStore;
+  const { showResult } = rootStore.roundStore;
 
-        let winner: IRoundResult | null = null;
-        let losers: IRoundResult[] | null = null;
-        let winnerTiles: IRoundTile[] | null = null;
-        let boardTile: IRoundTile | null = null;
+  let winner: IRoundResult | null = null;
+  let losers: IRoundResult[] | null = null;
+  let winnerTiles: IRoundTile[] | null = null;
+  let boardTile: IRoundTile | null = null;
 
-        const closeModal = () => {
-           runInAction(() => {
-               rootStore.roundStore.showResult = false;
-           }) 
-        }
-        if (roundResults) {
-          winner = roundResults?.find((r) => r.isWinner === true)!;
-          losers = roundResults!.filter((r) => r.isWinner === false);
-          winnerTiles = roundTiles!.filter((t) => t.owner === winner?.userName)!
-            .sort(sortTiles);
-          boardTile = roundTiles!.find((t) => t.status === TileStatus.BoardActive)!;
-        }
+  const closeModal = () => {
+    runInAction(() => {
+      rootStore.roundStore.showResult = false;
+    });
+  };
+  if (roundResults) {
+    winner = roundResults?.find((r) => r.isWinner === true)!;
+    losers = roundResults!.filter((r) => r.isWinner === false);
+    winnerTiles = roundTiles!
+      .filter((t) => t.owner === winner?.userName)!
+      .sort(sortTiles);
+    boardTile = roundTiles!.find((t) => t.status === TileStatus.BoardActive)!;
+  }
 
-        return (
-          <Modal
-            open={showResult}
-            onClose={closeModal}
-            size="small"
-          >
-            <Header icon="bullhorn" content="Result" />
+  return (
+    <Modal open={showResult} onClose={closeModal} size="small">
+      <Header icon="bullhorn" content="Result" />
 
-            {roundResults !== null && roundResults.length > 0   ? 
-                        <Modal.Content>
-                        <h3>
-                          Winner : {winner?.userName}: {winner?.pointsResult} pts
-                          <ul>
-                            {winner?.roundResultHands.map((h, i) => (
-                              <li key={i}>
-                                {h.name} : {h.point}
-                              </li>
-                            ))}
-                            {winner?.roundResultExtraPoints.map((e, i) => (
-                              <li key={i}>
-                                {e.name} : {e.point}
-                              </li>
-                            ))}
-                          </ul>
-                        </h3>
-                        <div className="flexTilesContainer">
-                          {winnerTiles &&
-                            winnerTiles.map((rt) => (
-                              <div
-                                key={rt.id}
-                                style={{
-                                  backgroundImage: `url(${rt.tile.imageSmall}`,
-                                }}
-                                className={rt.status === TileStatus.UserJustPicked ? "flexTiles justPickedTile" : "flexTiles"}  
-                              />
-                            ))}
-                            {losers!.length === 1 && boardTile && 
-                            <div
-                            style={{
-                              backgroundImage: `url(${boardTile.tile.imageSmall}`,
-                            }}
-                            className="flexTiles justPickedTile"
-                             />}
-                        </div>
-                        <h3>
-                          {losers && (
-                            <ul>
-                              {losers.map((l, i) => (
-                                <li key={i}>
-                                  {l.userName}: {l.pointsResult}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </h3>
-                      </Modal.Content>          
-            : 
-            <Modal.Content>
-              <h3>booooo it's a tie. nobody win</h3>
-            </Modal.Content>
-            }
-            <Modal.Actions>
-              <Button
-                color="green"
-                onClick={closeModal}
-                inverted
-              >
-                <Icon name="checkmark" /> Got it
-              </Button>
-              <Button
-                color="blue"
-                onClick={startRound}
-                inverted
-              >
-                <Icon name="play" /> Next Round
-              </Button>
-            </Modal.Actions>
-          </Modal>
-        );
-      };
+      {roundResults !== null && roundResults.length > 0 ? (
+        <Modal.Content>
+          <h3>
+            Winner : {winner?.userName}: {winner?.pointsResult} pts
+            <ul>
+              {winner?.roundResultHands.map((h, i) => (
+                <li key={i}>
+                  {h.name} : {h.point}
+                </li>
+              ))}
+              {winner?.roundResultExtraPoints.map((e, i) => (
+                <li key={i}>
+                  {e.name} : {e.point}
+                </li>
+              ))}
+            </ul>
+          </h3>
+          <div className="flexTilesContainer">
+            {winnerTiles &&
+              winnerTiles.map((rt) => (
+                <div
+                  key={rt.id}
+                  style={{
+                    backgroundImage: `url(${rt.tile.imageSmall}`,
+                  }}
+                  className={
+                    rt.status === TileStatus.UserJustPicked
+                      ? "flexTiles justPickedTile"
+                      : "flexTiles"
+                  }
+                />
+              ))}
+            {losers!.length === 1 && boardTile && (
+              <div
+                style={{
+                  backgroundImage: `url(${boardTile.tile.imageSmall}`,
+                }}
+                className="flexTiles justPickedTile"
+              />
+            )}
+          </div>
+          <h3>
+            {losers && (
+              <ul>
+                {losers.map((l, i) => (
+                  <li key={i}>
+                    {l.userName}: {l.pointsResult}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </h3>
+        </Modal.Content>
+      ) : (
+        <Modal.Content>
+          <h3>booooo it's a tie. nobody win</h3>
+        </Modal.Content>
+      )}
+      <Modal.Actions>
+        <Button color="green" onClick={closeModal} inverted>
+          <Icon name="checkmark" /> Got it
+        </Button>
+        {isHost && (
+          <Button color="blue" onClick={startRound} inverted>
+            <Icon name="play" /> Next Round
+          </Button>
+        )}
+      </Modal.Actions>
+    </Modal>
+  );
+};
 export default observer(ResultModal);

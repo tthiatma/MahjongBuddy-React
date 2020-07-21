@@ -37,7 +37,7 @@ interface DetailParams {
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
-  const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
+  const { loadingGameInitial, loadGame, game, getMainUser } = rootStore.gameStore;
   const {
     canPick,
     mustThrow,
@@ -487,6 +487,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <ResultModal
                 roundResults={roundResults}
                 roundTiles={roundTiles}
+                isHost={getMainUser!.isHost}
               />
 
               {kongOptions.length > 0 && (
