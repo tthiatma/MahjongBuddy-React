@@ -40,11 +40,21 @@ namespace MahjongBuddy.Application.Tiles
                 //-only 1 more tile to pick because player have an option not to take the last tile.
 
                 var updatedTiles = new List<RoundTile>();
+                var updatedPlayers = new List<RoundPlayer>();
+
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
-                
+
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+
+                if (currentPlayer == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
+
+                currentPlayer.MustThrow = true;
+                updatedPlayers.Add(currentPlayer);
+
                 //TODO only allow pick tile when it's player's turn
 
                 //we loop 8 times because there are total of 8 flowers. get more tiles if its a flower
@@ -80,6 +90,7 @@ namespace MahjongBuddy.Application.Tiles
                     var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
                     roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                     if (success)
                         return roundToReturn;

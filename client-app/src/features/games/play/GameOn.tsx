@@ -348,7 +348,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     }
 
     if (destination.droppableId === "board")
-      if (mainPlayer!.isMyTurn) {
+      if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow) {
         runInAction("throwingtile", () => {
           rootStore.roundStore.selectedTile = toJS(
             roundTiles!.find((t) => t.id === draggableId)!
@@ -356,7 +356,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         });
         throwTile();
       } else {
-        toast.warn("Not your turn");
+        toast.warn("Can't throw");
       }
 
     //TODO allow user to arrange tile manually

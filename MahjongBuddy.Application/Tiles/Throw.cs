@@ -79,6 +79,7 @@ namespace MahjongBuddy.Application.Tiles
 
                 var nextPlayer = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
                 nextPlayer.IsMyTurn = true;
+                nextPlayer.MustThrow = false;
 
                 var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != nextPlayer.AppUser.UserName);
                 foreach (var otherPlayerTurn in otherPlayers)

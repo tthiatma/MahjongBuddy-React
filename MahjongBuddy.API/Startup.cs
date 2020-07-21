@@ -47,6 +47,13 @@ namespace MahjongBuddy.API
             })
             .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Create>());
 
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(1);
+            });
+
             services.AddDbContext<MahjongBuddyDbContext>(opt =>
             {
                 opt.UseLazyLoadingProxies();
@@ -127,10 +134,14 @@ namespace MahjongBuddy.API
 
             if (env.IsDevelopment())
             {
-                //app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
-            //app.UseHttpsRedirection();
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
