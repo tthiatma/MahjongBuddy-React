@@ -25,7 +25,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { HandType.BigFourWind, 10 },
                 { HandType.Chicken, 0 },
                 { HandType.MixedOneSuit, 3 },
-                { HandType.SevenPairs, 7 },
+                { HandType.SevenPairs, 6 },
                 { HandType.SmallDragon, 5 },
                 { HandType.SmallFourWind, 10 },
                 { HandType.Straight, 1 },
@@ -58,9 +58,17 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 var handTypes = _handBuilder.GetHandType(round, winnerUserName);
             if(handTypes.Count() > 0)
             {
+
                 handTypes.ForEach(tp => totalPoints += HandTypeLookup[tp]);
 
                 var extraPoints = _pointBuider.GetExtraPoint(round, winnerUserName);
+
+                //if handtypes has seven pairs then take off concealed hand extrapoint
+                if(handTypes.Contains(HandType.SevenPairs))
+                {
+                    if (extraPoints.Contains(ExtraPoint.ConcealedHand)) extraPoints.Remove(ExtraPoint.ConcealedHand);
+                }
+
                 extraPoints.ForEach(ep => totalPoints += ExtraPointLookup[ep]);
 
                 ret.HandTypes = handTypes;
