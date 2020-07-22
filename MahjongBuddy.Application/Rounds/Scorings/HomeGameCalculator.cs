@@ -64,7 +64,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 var extraPoints = _pointBuider.GetExtraPoint(round, winnerUserName);
 
                 //if handtypes has seven pairs then take off concealed hand extrapoint
-                if(handTypes.Contains(HandType.SevenPairs))
+                if(handTypes.Contains(HandType.SevenPairs) || handTypes.Contains(HandType.ThirteenOrphans))
                 {
                     if (extraPoints.Contains(ExtraPoint.ConcealedHand)) extraPoints.Remove(ExtraPoint.ConcealedHand);
                 }
