@@ -183,11 +183,14 @@ export default class RoundStore {
       : null;
   }
 
-  @action loadRound = async (id: number) => {
+  @action loadRound = async (id: string, gameId: string) => {
     let round: IRound;
     this.loadingRoundInitial = true;
+    console.log('loadround');
+    console.log('roundId is ' + id);
+    console.log('gameId is ' + gameId);
     try {
-      round = await agent.Rounds.detail(id);
+      round = await agent.Rounds.detail(id, gameId);
       runInAction("getting round", () => {
         setRoundProps(round, this.rootStore.userStore.user!, this);
         this.roundSimple = round;

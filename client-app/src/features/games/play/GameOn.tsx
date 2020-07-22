@@ -104,8 +104,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [loadGame, match.params, match.params.id]);
 
   useEffect(() => {
-    loadRound(parseInt(match.params.roundId));
-  }, [loadRound, match.params.roundId]);
+    loadRound(match.params.roundId, match.params!.id);
+  }, [loadRound, match.params, match.params.roundId]);
 
   if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
     return <LoadingComponent content="Loading round..." />;

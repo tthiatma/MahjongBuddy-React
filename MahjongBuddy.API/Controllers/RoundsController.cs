@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Rounds;
 using Microsoft.AspNetCore.Mvc;
@@ -8,17 +7,16 @@ namespace MahjongBuddy.API.Controllers
 {
     public class RoundsController : BaseController
     {
-        [HttpGet("{id}/roundTiles")]
-        public async Task<ActionResult<List<RoundTileDto>>> RoundTile(int id)
+        [HttpPost("details")]
+        public async Task<ActionResult<RoundDto>> Details(RoundReq req)
         {
-            return await Mediator.Send(new GetRoundTiles.Command { Id = id });
+            return await Mediator.Send(new Detail.Query {Id = int.Parse(req.Id), GameId = int.Parse(req.GameId) });
         }
+    }
 
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RoundDto>> Details(int id)
-        {
-            return await Mediator.Send(new Detail.Query { Id = id });
-        }
+    public class RoundReq
+    {
+        public string Id { get; set; }
+        public string GameId { get; set; }
     }
 }

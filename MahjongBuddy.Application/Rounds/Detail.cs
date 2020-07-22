@@ -4,6 +4,7 @@ using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace MahjongBuddy.Application.Rounds
         public class Query : IRequest<RoundDto>
         {
             public int Id { get; set; }
+            public int GameId { get; set; }
         }
         public class Handler : IRequestHandler<Query, RoundDto>
         {
@@ -29,11 +31,13 @@ namespace MahjongBuddy.Application.Rounds
 
             public async Task<RoundDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var round = await _context.Rounds
-                    .FindAsync(request.Id);
+                var game = await _context.Games.FindAsync(request.GameId);
+                if (game == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
+                var round = game.Rounds.FirstOrDefault(r => r.Id == request.Id);
                 if (round == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { round = "Not Found" });
+                    throw new RestException(HttpStatusCode.NotFound, new { round = "Could Not find round" });
 
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 

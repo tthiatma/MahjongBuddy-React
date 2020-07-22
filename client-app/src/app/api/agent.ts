@@ -67,7 +67,7 @@ const Games = {
 }
 
 const Rounds = {
-    detail: (id: number) => request.get(`/rounds/${id}`)
+    detail: (id: string, gameId:string) => request.post(`/rounds/Details`, {'id': id, 'gameId': gameId})
 }
 
 const User = {

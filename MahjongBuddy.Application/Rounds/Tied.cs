@@ -35,11 +35,10 @@ namespace MahjongBuddy.Application.Rounds
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.FindAsync(request.GameId);
-                var round = await _context.Rounds.FindAsync(request.RoundId);
-
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
+                var round = game.Rounds.FirstOrDefault(r => r.Id == request.RoundId);
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
