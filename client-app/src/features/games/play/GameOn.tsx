@@ -134,7 +134,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         chowTilesOptions.push(twoThreeArray);
       }
     } else if (boardActiveTile?.tile.tileValue === TileValue.Nine) {
-      console.log("board tile is 9");
       const tileSeven = sameTypeChowTiles?.find(
         (t) => t.tile.tileValue === TileValue.Seven
       );
@@ -247,11 +246,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   };
 
   const selectTilesToChow = (event: SyntheticEvent, data: any) => {
-    console.log("selected tiles to chow");
-    console.log(data);
     try {
-      console.log("chowing");
-      console.log(data.chowtiles);
       chow(data.chowtiles);
       setChowOptions([]);
     } catch (ex) {
@@ -316,8 +311,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     });
 
     if (validTileForKongs.length === 1) {
-      console.log("Valid tile to kong");
-      console.log(toJS(validTileForKongs[0]));
       let kt = toJS(validTileForKongs[0]);
       kong(kt.tile.tileType, kt.tile.tileValue);
     } else if (validTileForKongs.length > 1) {
@@ -360,7 +353,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       }
 
     //TODO allow user to arrange tile manually
-    if (destination.droppableId === "tile") console.log("dropped to tile");
+    //if (destination.droppableId === "tile") console.log("dropped to tile");
   };
 
   return (

@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { IRound } from "../../../app/models/round";
 import { GameStatus } from "../../../app/models/gameStatusEnum";
-import { toJS } from "mobx";
 
 const gameImageStyle = {
   filter: "brightness(30%)",
@@ -28,8 +27,6 @@ const GameLobbyHeader: React.FC<{
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
   const { loading, startRound } = rootStore.hubStore;
-  console.log("latest round is" + latestRound);
-  console.log(toJS(latestRound));
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>

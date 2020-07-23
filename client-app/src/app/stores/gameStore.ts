@@ -57,7 +57,6 @@ export default class GameStore {
     this.loadingLatestRoundInitial = true;
     try{
       const latestRound = await agent.Games.latestRound(id);
-      console.log(latestRound);
       runInAction("getting latest round", () => {
         this.latestRound = latestRound;
         this.loadingLatestRoundInitial = false;

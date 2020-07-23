@@ -42,12 +42,7 @@ export default class HubStore {
     if (this.hubConnection) {
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
-        console.log("update round called");
-
         if(round.isOver && round.roundResults){
-          console.log(round.roundResults);  
-          //this.roundStore.redoPickReaction();
-
           runInAction("updating round results", () => {
             this.roundStore.roundOver = true;
             this.roundStore.roundResults = round.roundResults;                        
@@ -72,9 +67,7 @@ export default class HubStore {
                 this.roundStore.mainPlayer = player;
             });
           });
-        } else {
-          console.log("no updated players");
-        }
+        } 
 
         //update tiles
         if (round.updatedRoundTiles) {
@@ -86,9 +79,8 @@ export default class HubStore {
               this.roundStore.roundTiles![objIndex] = tile;
             });
           });
-        } else {
-          console.log("no updated tiles");
-        }
+        } 
+        
         runInAction("updating round", () => {
           this.roundStore.roundSimple = round;
         });
