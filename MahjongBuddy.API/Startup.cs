@@ -50,7 +50,7 @@ namespace MahjongBuddy.API
             services.AddHsts(options =>
             {
                 options.Preload = true;
-                options.IncludeSubDomains = true;
+                options.IncludeSubDomains = false;
                 options.MaxAge = TimeSpan.FromDays(365);
             });
 
