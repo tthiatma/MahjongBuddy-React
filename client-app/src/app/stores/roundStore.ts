@@ -183,6 +183,19 @@ export default class RoundStore {
       : null;
   }
 
+  @action openModal = () => {
+    runInAction(() => {
+      this.showResult = true;
+    });
+  };
+
+
+  @action closeModal = () => {
+    runInAction(() => {
+      this.showResult = false;
+    });
+  };
+
   @action loadRound = async (id: string, gameId: string) => {
     let round: IRound;
     this.loadingRoundInitial = true;

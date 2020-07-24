@@ -52,6 +52,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     getMainUser,
   } = rootStore.gameStore;
   const {
+    openModal,
+    showResult,
     canPick,
     pickCounter,
     loadingRoundInitial,
@@ -577,6 +579,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                           Give Up {pickCounter > 0 && `(${pickCounter})`}
                         </Button>
                       )}
+                      {!showResult && round.isOver && 
+                      (<Button
+                      onClick={openModal}
+                    >
+                      Result
+                    </Button>)}
+                    
                   </Grid.Row>
                   <Grid.Row centered>
                     <div

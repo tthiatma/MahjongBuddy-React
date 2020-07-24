@@ -22,6 +22,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
       <Grid.Column width={5} className="flexTilesVerticalContainer">
         <div className="playerStatusContainerVertical">
           <div
+          style={{minHeight: '500px'}}
             className="playerStatusHeaderVertical"
             {...(player.isMyTurn && { className: "playerTurn playerStatusHeaderVertical" })}
           >

@@ -5,7 +5,6 @@ import { IRoundResult } from "../../../app/models/round";
 import { Modal, Header, Button, Icon } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
-import { runInAction } from "mobx";
 import { TileStatus } from "../../../app/models/tileStatus";
 
 interface IProps {
@@ -21,18 +20,13 @@ const ResultModal: React.FC<IProps> = ({
 }) => {
   const rootStore = useContext(RootStoreContext);
   const { startRound } = rootStore.hubStore;
-  const { showResult } = rootStore.roundStore;
+  const { showResult, closeModal } = rootStore.roundStore;
 
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
   let winnerTiles: IRoundTile[] | null = null;
   let boardTile: IRoundTile | null = null;
 
-  const closeModal = () => {
-    runInAction(() => {
-      rootStore.roundStore.showResult = false;
-    });
-  };
   if (roundResults) {
     winner = roundResults?.find((r) => r.isWinner === true)!;
     losers = roundResults!.filter((r) => r.isWinner === false);
