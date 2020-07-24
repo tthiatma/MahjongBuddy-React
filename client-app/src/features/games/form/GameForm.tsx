@@ -6,11 +6,13 @@ import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from "react-final-form";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import TextInput from "../../../app/common/form/TextInput";
-import { combineValidators, isRequired } from "revalidate";
+import { combineValidators, isRequired, isNumeric } from "revalidate";
 import NavBar from "../../nav/NavBar";
 
 const validate = combineValidators({
-  title: isRequired({ message: "The event title is required" }),
+  title: isRequired({ message: "The game title is required" }),
+  minPoint: isNumeric({message:"The value has to be number"}),
+  maxPoint: isNumeric({message:"The value has to be number"})
 });
 
 interface DetailParams {
@@ -68,6 +70,20 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                       name="title"
                       placeholder="Title"
                       value={game.title}
+                      component={TextInput}
+                    />
+                    <Field                      
+                      disabled={true}
+                      name="minPoint"
+                      placeholder="Minimum point to win "
+                      value={game.minPoint}
+                      component={TextInput}
+                    />
+                    <Field
+                      disabled={true}
+                      name="maxPoint"
+                      placeholder="Maximum point player can win"
+                      value={game.maxPoint}
                       component={TextInput}
                     />
                     <Button

@@ -30,6 +30,8 @@ export interface IGameFormValues extends Partial<IGame> {
 export class GameFormValues implements IGameFormValues {
     id?: string = undefined;
     title: string = '';
+    minPoint: string = '3';
+    maxPoint: string = '10';
     date?: Date = undefined;
 
     constructor(init?: IGameFormValues) {
