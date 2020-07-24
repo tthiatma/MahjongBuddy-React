@@ -50,8 +50,8 @@ namespace MahjongBuddy.API
             services.AddHsts(options =>
             {
                 options.Preload = true;
-                options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(1);
+                options.IncludeSubDomains = false;
+                options.MaxAge = TimeSpan.FromDays(365);
             });
 
             services.AddDbContext<MahjongBuddyDbContext>(opt =>
@@ -141,6 +141,13 @@ namespace MahjongBuddy.API
                 app.UseHsts();
                 app.UseHttpsRedirection();
             }
+
+            app.Use(async (context, next) =>
+            {
+                context.Response.Headers.Add("Feature-Policy", "accelerometer 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'");
+                await next();
+            });
+
             app.UseXContentTypeOptions();
             app.UseReferrerPolicy(opt => opt.NoReferrer());
             app.UseXXssProtection(opt => opt.EnabledWithBlockMode());
