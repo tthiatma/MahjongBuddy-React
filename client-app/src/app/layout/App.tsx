@@ -1,6 +1,4 @@
 import React, { Fragment, useContext, useEffect } from "react";
-import { Container } from "semantic-ui-react";
-import NavBar from "../../features/nav/NavBar";
 import { observer } from "mobx-react-lite";
 import { Route, withRouter, RouteComponentProps, Switch } from "react-router-dom";
 import GameDashboard from "../../features/games/dashboard/GameDashboard";
@@ -42,8 +40,6 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         path={"/(.+)"}
         render={() => (
           <Fragment>
-            <NavBar />
-            <Container style={{ marginTop: "5em" }}>
               <Switch>
                 <PrivateRoute exact path="/games" component={GameDashboard} />
                 <PrivateRoute path="/games/:id/rounds/:roundId" component={GameOn} />
@@ -57,7 +53,6 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                 />
                 <Route component={NotFound} />
               </Switch>
-            </Container>
           </Fragment>
         )}
       />

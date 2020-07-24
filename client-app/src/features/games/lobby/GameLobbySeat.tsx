@@ -19,14 +19,14 @@ const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
       {playerWind && (
         <Fragment>
           <Item.Content>
+            <Label>{playerWind.displayName}</Label>
+          </Item.Content>
+          <Item.Content>
             <Image
               centered
               size="tiny"
               src={playerWind.image || "/assets/user.png"}
             />
-          </Item.Content>
-          <Item.Content>
-            <Label>{playerWind.displayName}</Label>
           </Item.Content>
         </Fragment>
       )}

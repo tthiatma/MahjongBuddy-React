@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useState, SyntheticEvent } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  SyntheticEvent,
+  Fragment,
+} from "react";
 import {
   Grid,
   Button,
@@ -9,6 +15,7 @@ import {
   Item,
   Divider,
   Segment,
+  Container,
 } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
@@ -27,6 +34,7 @@ import { TileStatus } from "../../../app/models/tileStatus";
 import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
 import PlayerStatus from "./PlayerStatus";
+import { Link } from "react-router-dom";
 
 interface DetailParams {
   roundId: string;
@@ -37,7 +45,12 @@ interface DetailParams {
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
-  const { loadingGameInitial, loadGame, game, getMainUser } = rootStore.gameStore;
+  const {
+    loadingGameInitial,
+    loadGame,
+    game,
+    getMainUser,
+  } = rootStore.gameStore;
   const {
     canPick,
     pickCounter,
@@ -89,7 +102,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     overflow: "auto",
     transitionDuration: `0.001s`,
     alignItem: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   });
 
   useEffect(() => {
@@ -357,209 +370,242 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Grid>
-        {/* Top Player */}
-        <Grid.Row className="zeroPadding">
-          <Grid.Column width={3} />
-          <Grid.Column width={10}>
-            <TileListOtherPlayer
-              player={topPlayer!}
-              roundTiles={topPlayerTiles!}
-            />
-          </Grid.Column>
-          <Grid.Column width={3} />
-        </Grid.Row>
-
-        <Grid.Row className="zeroPadding">
-          {/* Left Player */}
-          <Grid.Column width={3}>
-            <TileListOtherPlayerVertical
-              player={leftPlayer!}
-              roundTiles={leftPlayerTiles!}
-              isReversed={false}
-            />
-          </Grid.Column>
-
-          {/* Board */}
-          <Grid.Column width={10}>
-            <Grid.Row style={{ paddingTop: "1em" }}>
-              <Grid>
-                <Grid.Column width={6} />
-                <Grid.Column width={4}>
-                  <Grid.Row>
-                    <Segment circular style={square}>
-                      <Item.Group>
-                        <Item>
-                          <Item.Image
-                            size="mini"
-                            src="/assets/tiles/50px/face-down.png"
-                          />
-                          <Item.Content
-                            verticalAlign="middle"
-                            className="remainingTileHeader"
-                          >
-                            <Item.Header>{`${remainingTiles}`}</Item.Header>
-                          </Item.Content>
-                        </Item>
-                      </Item.Group>
-                    </Segment>
-                    <Segment circular style={square}>
-                      <Header as="h3">{WindDirection[round.wind]}</Header>
-                    </Segment>
-                    {round.isEnding && (
-                      <Segment circular style={square}>
-                        <Header as="h3">Ending in {roundEndingCounter}</Header>
-                      </Segment>
-                    )}
-                  </Grid.Row>
+    <Fragment>
+      <Container>
+        <Segment>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Grid>
+              {/* Top Player */}
+              <Grid.Row className="zeroPadding">
+                <Grid.Column width={3}>
+                  <Button basic size='small' circular icon='arrow circle left' as={Link} to={`/games/${game.id}`} />
                 </Grid.Column>
-                <Grid.Column width={6} />
-              </Grid>
-            </Grid.Row>
-            <Grid.Row>
-              <Divider />
-            </Grid.Row>
-            <TileListBoard
-              graveyardTiles={boardGraveyardTiles!}
-              activeTile={boardActiveTile!}
-            />
-            <Droppable droppableId="board">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  style={getStyle(snapshot.isDraggingOver)}
-                  {...provided.droppableProps}
-                >
-                  <div
-                    style={{
-                      height: "50px",
-                      paddingTop: "10px"
-                    }}
-                  >
-                    <Header
-                      as="h2"
-                      style={{color:'#d4d4d5'}}
-                      content={`Drag and drop tile here`}
+                <Grid.Column width={10}>
+                  <TileListOtherPlayer
+                    player={topPlayer!}
+                    roundTiles={topPlayerTiles!}
+                  />
+                </Grid.Column>
+                <Grid.Column width={3} />
+              </Grid.Row>
+
+              <Grid.Row className="zeroPadding">
+                {/* Left Player */}
+                <Grid.Column width={3}>
+                  <TileListOtherPlayerVertical
+                    player={leftPlayer!}
+                    roundTiles={leftPlayerTiles!}
+                    isReversed={false}
+                  />
+                </Grid.Column>
+
+                {/* Board */}
+                <Grid.Column width={10}>
+                  <Grid.Row style={{ paddingTop: "1em" }}>
+                    <Grid>
+                      <Grid.Column width={6} />
+                      <Grid.Column width={4}>
+                        <Grid.Row>
+                          <Segment circular style={square}>
+                            <Item.Group>
+                              <Item>
+                                <Item.Image
+                                  size="mini"
+                                  src="/assets/tiles/50px/face-down.png"
+                                />
+                                <Item.Content
+                                  verticalAlign="middle"
+                                  className="remainingTileHeader"
+                                >
+                                  <Item.Header>{`${remainingTiles}`}</Item.Header>
+                                </Item.Content>
+                              </Item>
+                            </Item.Group>
+                          </Segment>
+                          <Segment circular style={square}>
+                            <Header as="h3">{WindDirection[round.wind]}</Header>
+                          </Segment>
+                          {round.isEnding && (
+                            <Segment circular style={square}>
+                              <Header as="h3">
+                                Ending in {roundEndingCounter}
+                              </Header>
+                            </Segment>
+                          )}
+                        </Grid.Row>
+                      </Grid.Column>
+                      <Grid.Column width={6} />
+                    </Grid>
+                  </Grid.Row>
+                  <Grid.Row>
+                    <Divider />
+                  </Grid.Row>
+                  <TileListBoard
+                    graveyardTiles={boardGraveyardTiles!}
+                    activeTile={boardActiveTile!}
+                  />
+                  <Droppable droppableId="board">
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        style={getStyle(snapshot.isDraggingOver)}
+                        {...provided.droppableProps}
+                      >
+                        <div
+                          style={{
+                            height: "50px",
+                            paddingTop: "10px",
+                          }}
+                        >
+                          <Header
+                            as="h2"
+                            style={{ color: "#d4d4d5" }}
+                            content={`Drag and drop tile here`}
+                          />
+                        </div>
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </Grid.Column>
+
+                {/* Right Player */}
+                <Grid.Column width={3}>
+                  <TileListOtherPlayerVertical
+                    player={rightPlayer!}
+                    roundTiles={rightPlayerTiles!}
+                    isReversed={true}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+
+              {/* Main Player */}
+              <Grid.Row className="zeroPadding">
+                <Grid.Column width={3} />
+                <Grid.Column width={10}>
+                  <Grid.Row>
+                    <TileListMainPlayer
+                      mainPlayer={mainPlayer}
+                      tileStyleName="tileHorizontal"
+                      containerStyleName="tileHorizontalContainer"
+                      mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
+                      mainPlayerActiveTiles={mainPlayerActiveTiles!}
+                      mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
+                    />
+                  </Grid.Row>
+
+                  <Grid.Row>
+                    <ResultModal
+                      roundResults={roundResults}
+                      roundTiles={roundTiles}
+                      isHost={getMainUser!.isHost}
                     />
 
-                    </div>
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </Grid.Column>
+                    {kongOptions.length > 0 && (
+                      <Card.Group
+                        centered
+                        itemsPerRow={4}
+                        items={kongOptions}
+                      />
+                    )}
 
-          {/* Right Player */}
-          <Grid.Column width={3}>
-            <TileListOtherPlayerVertical
-              player={rightPlayer!}
-              roundTiles={rightPlayerTiles!}
-              isReversed={true}
-            />
-          </Grid.Column>
-        </Grid.Row>
-
-        {/* Main Player */}
-        <Grid.Row className="zeroPadding">
-          <Grid.Column width={3} />
-          <Grid.Column width={10}>
-            <Grid.Row>
-              <TileListMainPlayer
-                mainPlayer={mainPlayer}
-                tileStyleName="tileHorizontal"
-                containerStyleName="tileHorizontalContainer"
-                mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
-                mainPlayerActiveTiles={mainPlayerActiveTiles!}
-                mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
-              />
-            </Grid.Row>
-
-            <Grid.Row>
-              <ResultModal
-                roundResults={roundResults}
-                roundTiles={roundTiles}
-                isHost={getMainUser!.isHost}
-              />
-
-              {kongOptions.length > 0 && (
-                <Card.Group centered itemsPerRow={4} items={kongOptions} />
-              )}
-
-              {chowOptions.length > 0 && (
-                <Card.Group centered itemsPerRow={3} items={chowOptions} />
-              )}
-              <Button
-                disabled={!mainPlayer!.isMyTurn || mainPlayer!.mustThrow || round.isOver}
-                loading={loading}
-                onClick={doChow}
-              >
-                Chow
-              </Button>
-              <Button disabled={mainPlayer!.mustThrow || round.isOver} loading={loading} onClick={pong}>
-                Pong
-              </Button>
-              <Button disabled={round.isOver} loading={loading} onClick={doKong}>
-                Kong
-              </Button>
-              <Button disabled={round.isOver} loading={loading} onClick={winRound}>
-                Win
-              </Button>
-              {/* <Button loading={loading} onClick={pickTile}>
+                    {chowOptions.length > 0 && (
+                      <Card.Group
+                        centered
+                        itemsPerRow={3}
+                        items={chowOptions}
+                      />
+                    )}
+                    <Button
+                      disabled={
+                        !mainPlayer!.isMyTurn ||
+                        mainPlayer!.mustThrow ||
+                        round.isOver
+                      }
+                      loading={loading}
+                      onClick={doChow}
+                    >
+                      Chow
+                    </Button>
+                    <Button
+                      disabled={mainPlayer!.mustThrow || round.isOver}
+                      loading={loading}
+                      onClick={pong}
+                    >
+                      Pong
+                    </Button>
+                    <Button
+                      disabled={round.isOver}
+                      loading={loading}
+                      onClick={doKong}
+                    >
+                      Kong
+                    </Button>
+                    <Button
+                      disabled={round.isOver}
+                      loading={loading}
+                      onClick={winRound}
+                    >
+                      Win
+                    </Button>
+                    {/* <Button loading={loading} onClick={pickTile}>
                 Pick
               </Button> */}
 
-              <Button
-                disabled={
-                  !canPick ||
-                  mainPlayer!.mustThrow ||
-                  !mainPlayer!.isMyTurn ||
-                  round.isOver ||
-                  mainPlayerJustPickedTile!.length > 0
-                }
-                loading={loading}
-                onClick={pickTile}
-              >
-                Pick
-                {pickCounter > 0 && `(${pickCounter})`}
-              </Button>
-              {remainingTiles === 1 &&
-                mainPlayerJustPickedTile!.length === 0 &&
-                mainPlayer!.isMyTurn && (
-                  <Button
-                    disabled={!canPick || round.isOver}
-                    loading={loading}
-                    onClick={endingRound}
-                  >
-                    Give Up {pickCounter > 0 && `(${pickCounter})`}
-                  </Button>
-                )}
-            </Grid.Row>
-            <Grid.Row centered>
-              <div
-                className="playerStatusContainer"
-                {...(mainPlayer!.isMyTurn && {
-                  className: "playerTurn playerStatusContainer",
-                })}
-              >
-                {mainPlayer && (
-                  <span
-                    style={{
-                      width: "100%",
-                      textAlign: "center",
-                      lineHeight: "40px",
-                    }}
-                  >
-                    <PlayerStatus player={mainPlayer} />
-                  </span>
-                )}
-              </div>
-            </Grid.Row>
-          </Grid.Column>
-          <Grid.Column width={3} />
-        </Grid.Row>
-      </Grid>
-    </DragDropContext>
+                    <Button
+                      disabled={
+                        !canPick ||
+                        mainPlayer!.mustThrow ||
+                        !mainPlayer!.isMyTurn ||
+                        round.isOver ||
+                        mainPlayerJustPickedTile!.length > 0
+                      }
+                      loading={loading}
+                      onClick={pickTile}
+                    >
+                      Pick
+                      {pickCounter > 0 && `(${pickCounter})`}
+                    </Button>
+                    {remainingTiles === 1 &&
+                      mainPlayerJustPickedTile!.length === 0 &&
+                      mainPlayer!.isMyTurn && (
+                        <Button
+                          disabled={!canPick || round.isOver}
+                          loading={loading}
+                          onClick={endingRound}
+                        >
+                          Give Up {pickCounter > 0 && `(${pickCounter})`}
+                        </Button>
+                      )}
+                  </Grid.Row>
+                  <Grid.Row centered>
+                    <div
+                      className="playerStatusContainer"
+                      {...(mainPlayer!.isMyTurn && {
+                        className: "playerTurn playerStatusContainer",
+                      })}
+                    >
+                      {mainPlayer && (
+                        <span
+                          style={{
+                            width: "100%",
+                            textAlign: "center",
+                            lineHeight: "40px",
+                          }}
+                        >
+                          <PlayerStatus player={mainPlayer} />
+                        </span>
+                      )}
+                    </div>
+                  </Grid.Row>
+                </Grid.Column>
+                <Grid.Column width={3} />
+              </Grid.Row>
+            </Grid>
+          </DragDropContext>
+        </Segment>
+      </Container>
+    </Fragment>
   );
 };
 
