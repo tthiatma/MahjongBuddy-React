@@ -11,42 +11,45 @@ interface IProps {
   player: IRoundPlayer;
 }
 
-const TileListOtherPlayer: React.FC<IProps> = ({
-  roundTiles,
-  player
-}) => {
+const TileListOtherPlayer: React.FC<IProps> = ({ roundTiles, player }) => {
   return (
     <Grid verticalAlign="middle">
-      <Grid.Row centered className='playerStatusContainer' {...(player.isMyTurn && { className: 'playerTurn playerStatusContainer' })}>
+      <Grid.Row
+        centered
+        className="playerStatusContainer"
+        {...(player.isMyTurn && {
+          className: "playerTurn playerStatusContainer",
+        })}
+      >
         <span>
-        <PlayerStatus player={player} />
+          <PlayerStatus player={player} />
         </span>
       </Grid.Row>
-      <Grid.Row centered>
+      <Grid.Row centered style={{ padding: "1px" }}>
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
               <div key={rt.id}>
                 <img
-                  alt={'face-down-tile'}
-                  src={'/assets/tiles/50px/face-down.png'}
+                  alt={"face-down-tile"}
+                  src={"/assets/tiles/50px/face-down.png"}
                   style={{ overflow: "hidden" }}
                 />
               </div>
             ))}
       </Grid.Row>
-      <Grid.Row>
+      <Grid.Row centered style={{ padding: "1px" }}>
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserGraveyard)
             .map((rt) => (
-              <div
-                key={rt.id}
-                style={{
-                  backgroundImage: `url(${rt.tile.imageSmall}`,
-                }}
-              />
+              <div key={rt.id}>
+                <img
+                  alt={rt.tile.title}
+                  src={rt.tile.imageSmall}
+                />
+              </div>
             ))}
       </Grid.Row>
     </Grid>
