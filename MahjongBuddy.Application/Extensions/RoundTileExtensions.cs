@@ -6,13 +6,16 @@ namespace MahjongBuddy.Application.Extensions
 {
     public static class RoundTileExtensions
     {
-        public static ICollection<RoundTile> PickTile(this ICollection<RoundTile> tiles, string userName)
+        public static ICollection<RoundTile> PickTile(this ICollection<RoundTile> tiles, string userName, bool pickLast = false)
         {
             //loop 8 times because there are 8 flowers
             List<RoundTile> ret = new List<RoundTile>();
+            bool gotFlowerTile = false;
             for (var i = 0; i < 8; i++)
                 {
-                    var newTile = tiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
+                    var newTile = pickLast || gotFlowerTile ? 
+                            tiles.LastOrDefault(t => string.IsNullOrEmpty(t.Owner)) 
+                            : tiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
                     
                     if (newTile == null)
                         return null;
@@ -29,6 +32,7 @@ namespace MahjongBuddy.Application.Extensions
                     {
                         newTile.Status = TileStatus.UserGraveyard;
                         ret.Add(newTile);
+                        gotFlowerTile = true;
                     }
                 }
 

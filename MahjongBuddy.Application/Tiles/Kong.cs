@@ -113,7 +113,7 @@ namespace MahjongBuddy.Application.Tiles
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new { Kong = "Not possible to kong" });
                 //add new tile for user
-                var newTiles = round.RoundTiles.PickTile(request.UserName);
+                var newTiles = round.RoundTiles.PickTile(request.UserName, true);
 
                 //assign new tile to user that kong the tile
                 foreach (var tile in newTiles)
