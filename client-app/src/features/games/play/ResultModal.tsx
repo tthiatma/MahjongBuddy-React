@@ -67,8 +67,8 @@ const ResultModal: React.FC<IProps> = ({
                   }}
                   className={
                     rt.status === TileStatus.UserJustPicked
-                      ? "flexTiles justPickedTile"
-                      : "flexTiles"
+                      ? "flexTilesSmall justPickedTile"
+                      : "flexTilesSmall"
                   }
                 />
               ))}
@@ -77,7 +77,7 @@ const ResultModal: React.FC<IProps> = ({
                 style={{
                   backgroundImage: `url(${boardTile.tile.imageSmall}`,
                 }}
-                className="flexTiles justPickedTile"
+                className="flexTilesSmall justPickedTile"
               />
             )}
           </div>

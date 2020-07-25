@@ -61,8 +61,8 @@ body {
 }
 
 .tileHorizontalContainer {
-  width:34px;
-  height:50px;
+  width:43px;
+  height:64px;
   display:inline-block;
 }
 
@@ -102,9 +102,16 @@ body {
   justify-content: center;  
 }
 
-.flexTiles{
+.flexTilesSmall{
   height: 50px;
   width: 36px;
+  background-position:center;
+  background-repeat: no-repeat;
+}
+
+.flexTiles{
+  height: 64px;
+  width: 44px;
   background-position:center;
   background-repeat: no-repeat;
 }
@@ -140,7 +147,7 @@ body {
 }
 
 .playerStatusContainerVertical {
-  height: 100%;
+  min-width: 30px;
   border: 1px solid #ddd;
   background-color: #eee;
   display: flex;

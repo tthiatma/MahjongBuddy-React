@@ -14,46 +14,46 @@ interface IProps{
 }
 
 const mainPlayerTiles = {
-  display: 'flex',
+  // display: 'flex',
 };
 
 const mainPlayerGraveyard = {
-  display: 'flex',
+  // display: 'flex',
   marginRight: '10px',
 }
 
 const getListStyle = (isDraggingOver: boolean) => ({
-  background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  display: 'flex'
+  background: isDraggingOver ? 'lightblue' : '',
+  // display: 'flex',
 });
 
 const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, mainPlayerActiveTiles,mainPlayerGraveYardTiles, mainPlayerJustPickedTile }) => {
   return (
-    <div style={mainPlayerTiles}>
-      <div style={mainPlayerGraveyard} id="userGraveyard">
+    <div id='mainPlayerTiles' style={mainPlayerTiles}>
+      <span style={mainPlayerGraveyard} id="userGraveyard">
         {mainPlayerGraveYardTiles && mainPlayerGraveYardTiles
             .map((rt) => (
               <div key={rt.id} className='tileHorizontalContainer'>
                 <div                  
                   style={{
-                    backgroundImage: `url(${rt.tile.imageSmall}`,
+                    backgroundImage: `url(${rt.tile.image}`,
                   }}
                   className="flexTiles"
                 />
               </div>
             ))}
-      </div>
+      </span>
       <Droppable
       isDropDisabled={!mainPlayer!.isMyTurn || !mainPlayer!.mustThrow}
       droppableId="tile"
        direction="horizontal">
         {(provided, snapshot) => (
-          <div
+          <span
             ref={provided.innerRef}
             style={getListStyle(snapshot.isDraggingOver)}
             {...provided.droppableProps}
           >
-            <div>
+            <span>
             {mainPlayerActiveTiles && mainPlayerActiveTiles
             .map((rt, index) => (                  
                     <Draggable draggableId={rt.id} index={index} key={rt.id}>
@@ -66,7 +66,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, 
                         >
                           <div
                             style={{
-                              backgroundImage: `url(${rt.tile.imageSmall}`,
+                              backgroundImage: `url(${rt.tile.image}`,
                             }}
                             className="flexTiles"
                           />
@@ -75,8 +75,8 @@ const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, 
                     </Draggable>
                   ))}
               {provided.placeholder}
-            </div>
-            <div id="userJustPicked">
+            </span>
+            <span id="userJustPicked">
               {mainPlayerJustPickedTile && mainPlayerJustPickedTile
               .map((rt, index) => (
                     <Draggable draggableId={rt.id} index={index} key={rt.id}>
@@ -89,7 +89,7 @@ const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, 
                         >
                           <div
                             style={{
-                              backgroundImage: `url(${rt.tile.imageSmall}`,
+                              backgroundImage: `url(${rt.tile.image}`,
                             }}
                             className="flexTiles justPickedTile"
                           />
@@ -98,8 +98,8 @@ const TileListMainPlayer: React.FC<IProps> = ({ mainPlayer, containerStyleName, 
                     </Draggable>
                   ))}
               {provided.placeholder}
-            </div>
-          </div>
+            </span>
+          </span>
         )}
       </Droppable>
     </div>

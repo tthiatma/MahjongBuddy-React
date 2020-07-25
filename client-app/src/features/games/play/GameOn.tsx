@@ -101,10 +101,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     borderStyle: "dashed",
     borderColor: "#a2a2f0",
     display: "flex",
-    overflow: "auto",
+    overflow: "none",
     transitionDuration: `0.001s`,
     alignItem: "center",
     justifyContent: "center",
+    height: "45px",
   });
 
   useEffect(() => {
@@ -380,7 +381,14 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               {/* Top Player */}
               <Grid.Row className="zeroPadding">
                 <Grid.Column width={3}>
-                  <Button basic size='small' circular icon='arrow circle left' as={Link} to={`/games/${game.id}`} />
+                  <Button
+                    basic
+                    size="small"
+                    circular
+                    icon="arrow circle left"
+                    as={Link}
+                    to={`/games/${game.id}`}
+                  />
                 </Grid.Column>
                 <Grid.Column width={10}>
                   <TileListOtherPlayer
@@ -455,8 +463,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       >
                         <div
                           style={{
-                            height: "50px",
                             paddingTop: "10px",
+                            height: "45px",
                           }}
                         >
                           <Header
@@ -482,10 +490,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Grid.Row>
 
               {/* Main Player */}
-              <Grid.Row className="zeroPadding">
-                <Grid.Column width={3} />
-                <Grid.Column width={10}>
-                  <Grid.Row>
+              <Grid.Row centered className="zeroPadding">
+                <Grid.Column width={16}>
+                  <Grid.Row centered style={{ textAlign: "center" }}>
                     <TileListMainPlayer
                       mainPlayer={mainPlayer}
                       tileStyleName="tileHorizontal"
@@ -496,7 +503,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     />
                   </Grid.Row>
 
-                  <Grid.Row>
+                  <Grid.Row style={{ textAlign: "center" }}>
                     <ResultModal
                       roundResults={roundResults}
                       roundTiles={roundTiles}
@@ -579,36 +586,37 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                           Give Up {pickCounter > 0 && `(${pickCounter})`}
                         </Button>
                       )}
-                      {!showResult && round.isOver && 
-                      (<Button
-                      onClick={openModal}
-                    >
-                      Result
-                    </Button>)}
-                    
+                    {!showResult && round.isOver && (
+                      <Button onClick={openModal}>Result</Button>
+                    )}
                   </Grid.Row>
                   <Grid.Row centered>
-                    <div
-                      className="playerStatusContainer"
-                      {...(mainPlayer!.isMyTurn && {
-                        className: "playerTurn playerStatusContainer",
-                      })}
-                    >
-                      {mainPlayer && (
-                        <span
-                          style={{
-                            width: "100%",
-                            textAlign: "center",
-                            lineHeight: "40px",
-                          }}
+                    <Grid>
+                      <Grid.Column width={3} />
+                      <Grid.Column width={10}>
+                        <div
+                          className="playerStatusContainer"
+                          {...(mainPlayer!.isMyTurn && {
+                            className: "playerTurn playerStatusContainer",
+                          })}
                         >
-                          <PlayerStatus player={mainPlayer} />
-                        </span>
-                      )}
-                    </div>
+                          {mainPlayer && (
+                            <span
+                              style={{
+                                width: "100%",
+                                textAlign: "center",
+                                lineHeight: "40px",
+                              }}
+                            >
+                              <PlayerStatus player={mainPlayer} />
+                            </span>
+                          )}
+                        </div>
+                      </Grid.Column>
+                      <Grid.Column width={3} />
+                    </Grid>
                   </Grid.Row>
                 </Grid.Column>
-                <Grid.Column width={3} />
               </Grid.Row>
             </Grid>
           </DragDropContext>

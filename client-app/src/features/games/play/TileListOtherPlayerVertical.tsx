@@ -19,12 +19,11 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
 }) => {
   return (
     <Grid {...(isReversed && { reversed: "computer" })}>
-      <Grid.Column width={5} className="flexTilesVerticalContainer">
-        <div className="playerStatusContainerVertical">
+      <Grid.Column style={{ padding: "2px" }} width={3} className="flexTilesVerticalContainer">
+        <div className="playerStatusContainerVertical" {...(player.isMyTurn && { className: "playerTurn playerStatusHeaderVertical" })}>
           <div
-          style={{minHeight: '500px'}}
-            className="playerStatusHeaderVertical"
-            {...(player.isMyTurn && { className: "playerTurn playerStatusHeaderVertical" })}
+          style={{minHeight: '450px'}}
+            className="playerStatusHeaderVertical"            
           >
             <span
               className="rotate90"
@@ -35,12 +34,12 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
           </div>
         </div>
       </Grid.Column>
-      <Grid.Column width={5} className="flexTilesVerticalContainer">
+      <Grid.Column style={{ padding: "2px" }} width={5} className="flexTilesVerticalContainer">
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
-              <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
+              <div style={{ height: "34px" }} key={rt.id} {...(isReversed && { className: "rotate180" })}>
                 <img
                   alt='face-down-tile'
                   src={'/assets/tiles/v50px/face-down.png'}
@@ -49,7 +48,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
             ))}
       </Grid.Column>
 
-      <Grid.Column width={5} className="flexTilesVerticalContainer">
+      <Grid.Column style={{ padding: "2px" }} width={5} className="flexTilesVerticalContainer">
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserGraveyard)
