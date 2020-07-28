@@ -11,7 +11,6 @@ import _ from "lodash";
 import { toast } from "react-toastify";
 import { Button, Card, Image, CardProps } from "semantic-ui-react";
 
-
 const PlayerAction: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const {
@@ -26,7 +25,7 @@ const PlayerAction: React.FC = () => {
     boardActiveTile,
     remainingTiles,
   } = rootStore.roundStore;
-  
+
   const {
     pickTile,
     pong,
@@ -35,6 +34,7 @@ const PlayerAction: React.FC = () => {
     loading,
     winRound,
     endingRound,
+    skipAction,
   } = rootStore.hubStore;
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
@@ -156,7 +156,10 @@ const PlayerAction: React.FC = () => {
       </Button>
       <Button loading={loading} onClick={pickTile}>
         Pick
-        </Button>
+      </Button>
+      <Button loading={loading} onClick={skipAction}>
+        Skip
+      </Button>
 
       <Button
         disabled={

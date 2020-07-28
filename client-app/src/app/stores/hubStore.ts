@@ -515,6 +515,30 @@ export default class HubStore {
     }
   }
 
+  @action skipAction = async() => {
+    runInAction(() => {
+      this.loading = true;
+    });
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        this.hubConnection!.invoke("SkipAction", this.getGameAndRoundProps())
+        .catch(err => {
+          toast.error(`can't skip`);
+        });
+        runInAction(() => {
+          this.loading = false;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+      });
+      toast.error("problem skipping action");
+    }
+  };
+
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id;
