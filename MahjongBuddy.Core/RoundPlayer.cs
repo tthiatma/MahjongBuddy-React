@@ -13,6 +13,9 @@ namespace MahjongBuddy.Core
         public bool IsInitialDealer { get; set; }
         
         public bool IsDealer { get; set; }
+
+        public bool HasAction { get; set; }
+
         public bool IsMyTurn { get; set; }
 
         public bool MustThrow { get; set; }

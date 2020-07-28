@@ -1,7 +1,7 @@
 ﻿using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Tests.Fixtures;
 using MahjongBuddy.Application.Tests.Helpers;
-using MahjongBuddy.Application.Tiles;
+using MahjongBuddy.Application.PlayerAction;
 using MahjongBuddy.Core;
 using System;
 using System.Linq;

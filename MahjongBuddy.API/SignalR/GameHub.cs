@@ -2,7 +2,7 @@
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Games;
 using MahjongBuddy.Application.Rounds;
-using MahjongBuddy.Application.Tiles;
+using MahjongBuddy.Application.PlayerAction;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -151,6 +151,13 @@ namespace MahjongBuddy.API.SignalR
             {
                 throw new HubException(ex.Message);
             }
+        }
+
+        public async Task SkipAction(SkipAction.Command command)
+        {
+            command.UserName = GetUserName();
+            var round = await _mediator.Send(command);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }
 
         public async Task WinRound(Win.Command command)

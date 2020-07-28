@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using MahjongBuddy.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace MahjongBuddy.Application.Tiles
+namespace MahjongBuddy.Application.PlayerAction
 {
     public class Kong
     {

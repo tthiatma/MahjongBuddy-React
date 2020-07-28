@@ -11,7 +11,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MahjongBuddy.Application.Tiles
+namespace MahjongBuddy.Application.PlayerAction
 {
     public class Throw
     {
