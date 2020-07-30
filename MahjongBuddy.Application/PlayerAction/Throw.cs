@@ -90,7 +90,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //don't change user's turn if there is player with action 
                 //----------------------------------------------------------
-                var gotAction = AssignPlayerActionAndTurn(round, game);
+                var gotAction = AssignPlayerActionAndTurn(round, game, request.UserName);
 
                 if(gotAction)
                 {
@@ -147,12 +147,15 @@ namespace MahjongBuddy.Application.PlayerAction
             }
 
             
-            private bool AssignPlayerActionAndTurn(Round round, Game game)
+            private bool AssignPlayerActionAndTurn(Round round, Game game, string throwerUsername)
             {
                 //TODO: Support multiple winner 
                 bool foundActionForUser = false;
                 var roundTiles = round.RoundTiles;
-                var players = round.RoundPlayers;
+                
+                //there will be action except for the player that throw the tile 
+                var players = round.RoundPlayers.Where(rp => rp.AppUser.UserName != throwerUsername);
+
                 var boardActiveTile = roundTiles.FirstOrDefault(rt => rt.Status == TileStatus.BoardActive);
                 if(boardActiveTile == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find active board tile" });

@@ -17,6 +17,8 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool HasAction { get; set; }
 
+        public ICollection<RoundPlayerActionDto> RoundPlayerActions { get; set; }
+
         public bool MustThrow { get; set; }
 
         public WindDirection Wind { get; set; }

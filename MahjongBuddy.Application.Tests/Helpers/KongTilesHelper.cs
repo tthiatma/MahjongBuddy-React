@@ -9,16 +9,16 @@ namespace MahjongBuddy.Application.Tests.Helpers
         public static void SetupForBoard(MahjongBuddyDbContext context, string userId, TileType tileType, TileValue tileValue)
         {
             //setup tiles where user can kong from board active
-            var oneRoundTiles = context.RoundTiles.Where(t => t.Tile.TileType == tileType && t.Tile.TileValue == tileValue);
-            if(oneRoundTiles.Count() == 4)
+            var tilesToKong = context.RoundTiles.Where(t => t.Tile.TileType == tileType && t.Tile.TileValue == tileValue);
+            if(tilesToKong.Count() == 4)
             {
-                foreach (var t in oneRoundTiles.Take(3))
+                foreach (var t in tilesToKong.Take(3))
                 {
                     t.Owner = userId;
                     t.Status = TileStatus.UserActive;
                 }
 
-                var lastTile = oneRoundTiles.Last();
+                var lastTile = tilesToKong.Last();
                 lastTile.Owner = DefaultValue.board;
                 lastTile.Status = TileStatus.BoardActive;
             }
