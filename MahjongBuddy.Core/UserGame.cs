@@ -2,6 +2,7 @@
 {
     public class UserGame
     {
+        public int Id { get; set; }
         public string AppUserId { get; set; }
         public virtual AppUser AppUser { get; set; }
         public int GameId { get; set; }

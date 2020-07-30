@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Interfaces;
+using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -26,16 +28,25 @@ namespace MahjongBuddy.Application.PlayerAction
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
+            private readonly IPointsCalculator _pointCalculator;
 
-            public Handler(MahjongBuddyDbContext context, IMapper mapper)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper, IPointsCalculator pointCalculator)
             {
                 _context = context;
                 _mapper = mapper;
+                _pointCalculator = pointCalculator;
             }
+
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<RoundPlayer>();
+
+                var game = await _context.Games.FindAsync(request.GameId);
+
+                if (game == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
+
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -55,7 +66,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 }
 
                 var userJustPickedTile = round.RoundTiles.Where(t => t.Owner == request.UserName && t.Status == TileStatus.UserJustPicked);
-                if(userJustPickedTile != null && userJustPickedTile.Count() > 0)
+                if (userJustPickedTile != null && userJustPickedTile.Count() > 0)
                 {
                     foreach (var t in userJustPickedTile)
                     {
@@ -77,27 +88,50 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 updatedTiles.Add(tileToThrow);
 
-                var nextPlayer = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
-                nextPlayer.IsMyTurn = true;
-                nextPlayer.MustThrow = false;
+                //don't change user's turn if there is player with action 
+                //----------------------------------------------------------
+                var gotAction = AssignPlayerActionAndTurn(round, game);
 
-                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != nextPlayer.AppUser.UserName);
-                foreach (var otherPlayerTurn in otherPlayers)
+                if(gotAction)
                 {
-                    otherPlayerTurn.IsMyTurn = false;
-                    updatedPlayers.Add(otherPlayerTurn);
+                    //action has priority list: win > pong|kong > chow
+                    var winActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Win)).FirstOrDefault();
+                    if (winActionPlayer != null)
+                    {
+                        winActionPlayer.HasAction = true;
+                        updatedPlayers.Add(winActionPlayer);
+                    }
+                    else
+                    {
+                        var pongOrKongActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Pong || rpa.PlayerAction == ActionType.Kong)).FirstOrDefault();
+                        pongOrKongActionPlayer.HasAction = true;
+                        updatedPlayers.Add(pongOrKongActionPlayer);
+                    }
+                }
+                else
+                {
+                    var nextPlayer = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
+                    nextPlayer.IsMyTurn = true;
+                    nextPlayer.MustThrow = false;
+
+                    var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != nextPlayer.AppUser.UserName);
+                    foreach (var otherPlayerTurn in otherPlayers)
+                    {
+                        otherPlayerTurn.IsMyTurn = false;
+                        updatedPlayers.Add(otherPlayerTurn);
+                    }
+
+                    updatedPlayers.Add(nextPlayer);
+
+                    //check if theres more remaining tile, if no more tiles, then set round to ending
+                    var remainingTiles = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
+                    if (remainingTiles == null)
+                        round.IsEnding = true;
                 }
 
                 currentPlayer.MustThrow = false;
 
                 updatedPlayers.Add(currentPlayer);
-
-                updatedPlayers.Add(nextPlayer);
-
-                //check if theres more remaining tile, if no more tiles, then set round to ending
-                var remainingTiles = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
-                if (remainingTiles == null)
-                    round.IsEnding = true;
 
                 var success = await _context.SaveChangesAsync() > 0;
 
@@ -110,6 +144,78 @@ namespace MahjongBuddy.Application.PlayerAction
                     return roundToReturn;
 
                 throw new Exception("Problem throwing tile");
+            }
+
+            
+            private bool AssignPlayerActionAndTurn(Round round, Game game)
+            {
+                //TODO: Support multiple winner 
+                bool foundActionForUser = false;
+                var roundTiles = round.RoundTiles;
+                var players = round.RoundPlayers;
+                var boardActiveTile = roundTiles.FirstOrDefault(rt => rt.Status == TileStatus.BoardActive);
+                if(boardActiveTile == null)
+                    throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find active board tile" });
+
+                //there could be more than one possible action given user's turn  and the tile's thrown
+                foreach (var player in players)
+                {
+                    var userTiles = roundTiles.Where(rt => rt.Owner == player.AppUser.UserName);
+                    List<RoundPlayerAction> rpas = new List<RoundPlayerAction>();
+
+                    if (DetermineIfUserCanWin(game, round, player))
+                        rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Win});
+
+                    if(DetermineIfUserCanKongFromBoard(userTiles, boardActiveTile))
+                        rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Kong});
+
+                    if (DetermineIfUserCanPong(userTiles, boardActiveTile))
+                        rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Pong });
+
+                    if (rpas.Count() > 0)
+                    {
+                        foundActionForUser = true;
+                        foreach (var pa in rpas)
+                        {
+                            player.RoundPlayerActions.Add(pa);
+                        }
+                    }
+                }
+
+                return foundActionForUser;
+            }
+
+            private bool DetermineIfUserCanWin(Game game, Round round, RoundPlayer player)
+            {
+                HandWorth handWorth = _pointCalculator.Calculate(round, player.AppUser.UserName);
+                if (handWorth == null) return false;
+                return handWorth.Points >= game.MinPoint;
+            }
+
+            private bool DetermineIfUserCanKongFromBoard(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
+            {
+                //player tiles can't be in graveyard when kong from board
+                //when someone throw a tile, there should not be a justpicked status tile
+                playerTiles = playerTiles.Where(rt => rt.Status == TileStatus.UserActive);
+
+                var playerSameTilesAsBoard = playerTiles
+                .Where(t => t.Tile.TileType == boardTile.Tile.TileType
+                && t.Tile.TileValue == boardTile.Tile.TileValue);
+
+                return playerSameTilesAsBoard.Count() == 3;
+            }
+
+            private bool DetermineIfUserCanPong(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
+            {
+                //player tiles can't be in graveyard when pong from board
+                //when someone throw a tile, there should not be a justpicked status tile
+                playerTiles = playerTiles.Where(rt => rt.Status == TileStatus.UserActive);
+
+                var playerSameTilesAsBoard = playerTiles
+                .Where(t => t.Tile.TileType == boardTile.Tile.TileType
+                && t.Tile.TileValue == boardTile.Tile.TileValue);
+
+                return playerSameTilesAsBoard.Count() == 2;
             }
 
             private RoundPlayer GetNextPlayer(ICollection<RoundPlayer> players, WindDirection currentPlayerWind)

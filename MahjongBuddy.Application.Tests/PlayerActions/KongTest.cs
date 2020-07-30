@@ -9,7 +9,7 @@ using System.Net;
 using System.Threading;
 using Xunit;
 
-namespace MahjongBuddy.Application.Tests.Tiles
+namespace MahjongBuddy.Application.Tests.PlayerActions
 {
     public class KongTest : TestBase, IClassFixture<GameFixture>, IDisposable
     {
