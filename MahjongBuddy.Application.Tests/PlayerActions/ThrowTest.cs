@@ -20,12 +20,15 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
         public void Dispose()
         {
             _f.TestDataContext.RemoveRange(_f.TestDataContext.Rounds);
+            _f.TestDataContext.RemoveRange(_f.TestDataContext.RoundPlayers);
             _f.TestDataContext.SaveChanges();
             _f.CreateRound();
             _f.TestDataContext.SaveChanges();
             _f.RoundId = _f.TestDataContext.Rounds.First().Id;
             _f.MainPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == _f.MainPlayerUserName);
+            _f.MainPlayerRound.RoundPlayerActions.Clear();
             _f.OtherPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == _f.OtherPlayerName);
+            _f.OtherPlayerRound.RoundPlayerActions.Clear();
         }
 
         /// <summary>
@@ -36,7 +39,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
         {
             var context = _f.TestDataContext;
             var pongTile = ThrowTileHelper.SetupForPong(context, _f.MainPlayerUserName);
-            var round = context.Rounds.First();
+            var round = _f.TestDataContext.Rounds.First();
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -50,8 +53,8 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
 
             var throwCommand = new Throw.Command
             {
-                RoundId = _f.RoundId,
-                GameId = _f.GameId,
+                RoundId = round.Id,
+                GameId = round.Game.Id,
                 UserName = _f.OtherPlayerName,
                 TileId = pongTile.Id
             };
@@ -77,7 +80,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
         {
             var context = _f.TestDataContext;
             var kongTile = ThrowTileHelper.SetupForKong(context, _f.MainPlayerUserName);
-            var round = context.Rounds.First();
+            var round = _f.TestDataContext.Rounds.First();
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -91,8 +94,8 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
 
             var throwCommand = new Throw.Command
             {
-                RoundId = _f.RoundId,
-                GameId = _f.GameId,
+                RoundId = round.Id,
+                GameId = round.Game.Id,
                 UserName = _f.OtherPlayerName,
                 TileId = kongTile.Id
             };
@@ -118,7 +121,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
         {
             var context = _f.TestDataContext;
             var winTile = ThrowTileHelper.SetupForWin(context, _f.MainPlayerUserName);
-            var round = context.Rounds.First();
+            var round = _f.TestDataContext.Rounds.First();
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -132,8 +135,8 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
 
             var throwCommand = new Throw.Command
             {
-                RoundId = _f.RoundId,
-                GameId = _f.GameId,
+                RoundId = round.Id,
+                GameId = round.Game.Id,
                 UserName = _f.OtherPlayerName,
                 TileId = winTile.Id
             };
@@ -159,7 +162,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
         {
             var context = _f.TestDataContext;
             var chowTile = ThrowTileHelper.SetupForChow(context, _f.MainPlayerUserName);
-            var round = context.Rounds.First();
+            var round = _f.TestDataContext.Rounds.First();
 
             _f.OtherPlayerRound.IsMyTurn = true;
             _f.MainPlayerRound.IsMyTurn = false;
@@ -173,8 +176,8 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
 
             var throwCommand = new Throw.Command
             {
-                RoundId = _f.RoundId,
-                GameId = _f.GameId,
+                RoundId = round.Id,
+                GameId = round.Game.Id,
                 UserName = _f.OtherPlayerName,
                 TileId = chowTile.Id
             };

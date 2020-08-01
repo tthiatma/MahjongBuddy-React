@@ -30,6 +30,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
 
         public List<HandType> GetHandType(Round round, string winnerUserName)
         {
+            _handtypes = new List<HandType>();
             if (round != null && !string.IsNullOrEmpty(winnerUserName))
             {
                 var boardTile = round.RoundTiles.FirstOrDefault(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
