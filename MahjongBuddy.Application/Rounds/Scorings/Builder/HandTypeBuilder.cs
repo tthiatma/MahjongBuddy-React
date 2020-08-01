@@ -8,10 +8,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
     public class HandTypeBuilder
     {
         readonly FindHandType _initial;
-        List<HandType> _handtypes;
-        public HandTypeBuilder()
+         public HandTypeBuilder()
         {
-            _handtypes = new List<HandType>();
             _initial = new InitialHandType();
             FindHandType sevenPairs = new SevenPairs();
             FindHandType thirteenOrphans = new ThirteenOrphans();
@@ -30,7 +28,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
 
         public List<HandType> GetHandType(Round round, string winnerUserName)
         {
-            _handtypes = new List<HandType>();
+            var _handtypes = new List<HandType>();
             if (round != null && !string.IsNullOrEmpty(winnerUserName))
             {
                 var boardTile = round.RoundTiles.FirstOrDefault(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
