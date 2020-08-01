@@ -45,8 +45,21 @@ namespace MahjongBuddy.Application.PlayerAction
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
                 currentPlayer.HasAction = false;
+                currentPlayer.RoundPlayerActions.Clear();
 
                 updatedPlayers.Add(currentPlayer);
+
+                //now check other player that has action
+                var otherPlayer = round.RoundPlayers.FirstOrDefault(u => 
+                u.AppUser.UserName != currentPlayer.AppUser.UserName 
+                && u.IsMyTurn != true
+                && u.RoundPlayerActions.Count() > 0);
+
+                if(otherPlayer != null)
+                {
+                    otherPlayer.HasAction = true;
+                    updatedPlayers.Add(otherPlayer);
+                }
 
                 var success = await _context.SaveChangesAsync() > 0;
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Helpers;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Core;
@@ -90,9 +91,9 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //don't change user's turn if there is player with action 
                 //----------------------------------------------------------
-                var gotAction = AssignPlayerActionAndTurn(round, game, request.UserName);
+                var gotWinOrKongOrPongAction = AssignPlayerActionAndTurn(round, game, request.UserName);
 
-                if(gotAction)
+                if(gotWinOrKongOrPongAction)
                 {
                     //action has priority list: win > pong|kong > chow
                     var winActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Win)).FirstOrDefault();
@@ -114,13 +115,23 @@ namespace MahjongBuddy.Application.PlayerAction
                     nextPlayer.IsMyTurn = true;
                     nextPlayer.MustThrow = false;
 
-                    var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != nextPlayer.AppUser.UserName);
+                    var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true 
+                        && u.AppUser.UserName != nextPlayer.AppUser.UserName
+                        && u.AppUser.UserName != currentPlayer.AppUser.UserName);
                     foreach (var otherPlayerTurn in otherPlayers)
                     {
                         otherPlayerTurn.IsMyTurn = false;
                         updatedPlayers.Add(otherPlayerTurn);
                     }
 
+                    //check if next player has chow action 
+                    var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.AppUser.UserName);
+                    var gotChowAction = DetermineIfUserCanChow(nextPlayerTiles, tileToThrow);
+                    if(gotChowAction)
+                    {
+                        nextPlayer.HasAction = true;
+                        nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.Chow });
+                    }
                     updatedPlayers.Add(nextPlayer);
 
                     //check if theres more remaining tile, if no more tiles, then set round to ending
@@ -130,7 +141,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 }
 
                 currentPlayer.MustThrow = false;
-
+                currentPlayer.IsMyTurn = false;
                 updatedPlayers.Add(currentPlayer);
 
                 var success = await _context.SaveChangesAsync() > 0;
@@ -219,6 +230,15 @@ namespace MahjongBuddy.Application.PlayerAction
                 && t.Tile.TileValue == boardTile.Tile.TileValue);
 
                 return playerSameTilesAsBoard.Count() == 2;
+            }
+
+            private bool DetermineIfUserCanChow(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
+            {
+                //player tiles can't be in graveyard when pong from board
+                //when someone throw a tile, there should not be a justpicked status tile
+                var possibleChowTiles = RoundTileHelper.FindPossibleChowTiles(boardTile, playerTiles);
+
+                return possibleChowTiles.Count() >= 1;
             }
 
             private RoundPlayer GetNextPlayer(ICollection<RoundPlayer> players, WindDirection currentPlayerWind)

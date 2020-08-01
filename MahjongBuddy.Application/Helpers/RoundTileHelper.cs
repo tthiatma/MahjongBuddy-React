@@ -1,7 +1,10 @@
 ﻿using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
+using Microsoft.EntityFrameworkCore.Internal;
+using MoreLinq;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace MahjongBuddy.Application.Helpers
 {
@@ -323,25 +326,103 @@ namespace MahjongBuddy.Application.Helpers
                 if (sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue - 2)) && sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue - 1)))
                 {
                     ret.Add(t);
-                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue - 2)).First());
-                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue - 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue == (t.Tile.TileValue - 2)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue == (t.Tile.TileValue - 1)).First());
                     break;
                 }
 
-                if (sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue - 1)) && sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)))
+                if (sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue - 1)) && sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue + 1)))
                 {
                     ret.Add(t);
-                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue - 1)).First());
-                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue == (t.Tile.TileValue - 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue == (t.Tile.TileValue + 1)).First());
                     break;
                 }
 
-                if (sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)) && sameTypeTiles.Any(ti => ti.Tile.TileValue== (t.Tile.TileValue + 2)))
+                if (sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue + 1)) && sameTypeTiles.Any(ti => ti.Tile.TileValue == (t.Tile.TileValue + 2)))
                 {
                     ret.Add(t);
-                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue + 1)).First());
-                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue== (t.Tile.TileValue + 2)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue == (t.Tile.TileValue + 1)).First());
+                    ret.Add(sameTypeTiles.Where(ti => ti.Tile.TileValue == (t.Tile.TileValue + 2)).First());
                     break;
+                }
+            }
+            return ret;
+        }
+
+        public static List<List<RoundTile>> FindPossibleChowTiles(RoundTile theTile, IEnumerable<RoundTile> tiles)
+        {
+            var ret = new List<List<RoundTile>>();
+
+            var sameTypeTiles = tiles.Where(t => t.Tile.TileType == theTile.Tile.TileType && t.Status == TileStatus.UserActive);
+
+            if(theTile.Tile.TileValue == TileValue.One)
+            {
+                var tileTwo = sameTypeTiles.FirstOrDefault(t => t.Tile.TileValue == TileValue.Two);
+                var tileThree = sameTypeTiles.FirstOrDefault(t => t.Tile.TileValue == TileValue.Three);
+                if(tileTwo != null && tileThree != null)
+                {
+                    ret.Add(new List<RoundTile> { tileTwo, tileThree });
+                }
+            }
+            else if (theTile.Tile.TileValue == TileValue.Nine)
+            {
+                var tileEight = sameTypeTiles.FirstOrDefault(t => t.Tile.TileValue == TileValue.Eight);
+                var tileSeven = sameTypeTiles.FirstOrDefault(t => t.Tile.TileValue == TileValue.Seven);
+                if (tileEight != null && tileSeven != null)
+                {
+                    ret.Add(new List<RoundTile> { tileEight, tileSeven});
+                }
+            }
+            else
+            {
+                var possibleTiles = sameTypeTiles.Where(rt => 
+                rt.Tile.TileValue == theTile.Tile.TileValue - 2 ||
+                rt.Tile.TileValue == theTile.Tile.TileValue + 2 ||
+                rt.Tile.TileValue == theTile.Tile.TileValue - 1 ||
+                rt.Tile.TileValue == theTile.Tile.TileValue + 1);
+
+                if(possibleTiles.Count() > 1)
+                    possibleTiles = possibleTiles.DistinctBy(rt => rt.Tile.TileValue);
+
+                foreach (var t in possibleTiles)
+                {
+                    List<RoundTile> testChowTiles = new List<RoundTile>();
+                    testChowTiles.Add(t);
+                    testChowTiles.Add(theTile);
+                    testChowTiles.Sort((a, b) => a.Tile.TileValue - b.Tile.TileValue);
+
+                    RoundTile probableTile;
+                    if(((int)t.Tile.TileValue + (int)theTile.Tile.TileValue) % 2 != 0)
+                    {
+                        probableTile = possibleTiles.FirstOrDefault(rt => rt.Tile.TileValue == testChowTiles[1].Tile.TileValue + 1);
+                    }
+                    else
+                    {
+                        probableTile = possibleTiles.FirstOrDefault(rt => rt.Tile.TileValue == testChowTiles[0].Tile.TileValue + 1);
+                    }
+
+                    if(probableTile != null)
+                    {
+                        //check if its already exist
+                        bool alreadyExist = false;
+                        foreach (var rts in ret)
+                        {
+                            var existingTiles = rts.Where(rt => rt.Tile.TileValue == probableTile.Tile.TileValue || rt.Tile.TileValue == t.Tile.TileValue);
+                            if(existingTiles.Count() == 2)
+                            {
+                                alreadyExist = true;
+                                break;
+                            }
+                        }
+
+                        if(!alreadyExist)
+                        {
+                            var foundChowTile = new List<RoundTile> { probableTile, t };
+                            foundChowTile.Sort((a, b) => a.Tile.TileValue - b.Tile.TileValue);
+                            ret.Add(foundChowTile);
+                        }
+                    }
                 }
             }
             return ret;
