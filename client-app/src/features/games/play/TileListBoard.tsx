@@ -18,9 +18,7 @@ const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile }) => {
               <img src={rt.tile.imageSmall} alt="tile" />
             </div>
           ))}
-      </div>
-      <div style={{ display: "flex", justifyContent:'center' }}>
-        {activeTile && (
+          {activeTile && (
           <div>
             <img src={activeTile.tile.image} alt="tile" />
           </div>
