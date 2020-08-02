@@ -92,6 +92,35 @@ namespace MahjongBuddy.Application.Helpers
             return tiles;
         }
 
+        public static void PickTile(Round round, string pickerUserName, ref List<RoundTile> updatedTiles)
+        {
+            //we loop 8 times because there are total of 8 flowers. get more tiles if its a flower
+            for (var i = 0; i < 8; i++)
+            {
+                var newTile = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
+                if (newTile == null)
+                {
+                    round.IsOver = true;
+                    break;
+                }
+
+                newTile.Owner = pickerUserName;
+                round.IsHalted = true;
+
+                if (newTile.Tile.TileType != TileType.Flower)
+                {
+                    newTile.Status = TileStatus.UserJustPicked;
+                    updatedTiles.Add(newTile);
+                    break;
+                }
+                else
+                {
+                    newTile.Status = TileStatus.UserGraveyard;
+                    updatedTiles.Add(newTile);
+                }
+            }
+        }
+
         public static HandType DetermineHandCanWin(IEnumerable<RoundTile> tiles)
         {
             //TODO leverage tile that already in user graveyard in determining user hand type

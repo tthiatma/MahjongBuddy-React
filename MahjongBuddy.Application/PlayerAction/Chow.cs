@@ -98,6 +98,14 @@ namespace MahjongBuddy.Application.PlayerAction
                 currentPlayer.IsMyTurn = true;
                 currentPlayer.MustThrow = true;
 
+                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
+                foreach (var otherPlayerTurn in otherPlayers)
+                {
+                    otherPlayerTurn.IsMyTurn = false;
+                    otherPlayerTurn.MustThrow = false;
+                    updatedPlayers.Add(otherPlayerTurn);
+                }
+
                 if (round.IsEnding)
                     round.IsEnding = false;
 

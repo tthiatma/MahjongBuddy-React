@@ -2,6 +2,7 @@ import { WindDirection } from "./windEnum";
 import { IRoundTile } from "./tile";
 import { HandType } from "./handTypeEnum";
 import { ExtraPoint } from "./extraPointEnum";
+import { ActionType } from "./actionTypeEnum";
 
 export interface IRoundSimple {
   id: number;
@@ -48,6 +49,11 @@ export interface IRoundResultExtraPoint {
     point: number;
 }
 
+export interface IRoundPlayerAction{
+  id: number;
+  playerAction: ActionType;
+}
+
 export interface IRoundPlayer {
   userName: string;
   displayName: string;
@@ -56,6 +62,7 @@ export interface IRoundPlayer {
   isDealer: boolean;
   isMyTurn: boolean;
   hasAction: boolean;
+  roundPlayerActions: IRoundPlayerAction[];
   mustThrow: boolean;
   canDoNoFlower: boolean;
   wind: WindDirection;

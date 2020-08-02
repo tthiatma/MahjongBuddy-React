@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Helpers;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -34,37 +35,61 @@ namespace MahjongBuddy.Application.PlayerAction
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var updatedPlayers = new List<RoundPlayer>();
+                var updatedTiles = new List<RoundTile>();
+
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+                var playerThatSkippedAction = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
 
-                if (currentPlayer == null)
+                if (playerThatSkippedAction == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
-                currentPlayer.HasAction = false;
-                currentPlayer.RoundPlayerActions.Clear();
+                playerThatSkippedAction.HasAction = false;
+                playerThatSkippedAction.RoundPlayerActions.Clear();
 
-                updatedPlayers.Add(currentPlayer);
+                updatedPlayers.Add(playerThatSkippedAction);
 
-                //now check other player that has action
-                var otherPlayer = round.RoundPlayers.FirstOrDefault(u => 
-                u.AppUser.UserName != currentPlayer.AppUser.UserName 
-                && u.IsMyTurn != true
-                && u.RoundPlayerActions.Count() > 0);
+                //prioritize user that has pong or kong action 
+                var pongOrKongActionPlayer = round.RoundPlayers.Where(
+                rp => rp.AppUser.UserName != playerThatSkippedAction.AppUser.UserName
+                    && rp.RoundPlayerActions.Any(
+                    rpa => rpa.PlayerAction == ActionType.Pong ||
+                    rpa.PlayerAction == ActionType.Kong
+                    )
+                ).FirstOrDefault();
 
-                if(otherPlayer != null)
+                if(pongOrKongActionPlayer != null)
                 {
-                    otherPlayer.HasAction = true;
-                    updatedPlayers.Add(otherPlayer);
+                    pongOrKongActionPlayer.HasAction = true;
+                    updatedPlayers.Add(pongOrKongActionPlayer);
+                }
+                else
+                {
+                    //now check other player that has action
+                    var chowPlayerActions = round.RoundPlayers.FirstOrDefault(u =>
+                    u.AppUser.UserName != playerThatSkippedAction.AppUser.UserName
+                    && u.IsMyTurn != true
+                    && u.RoundPlayerActions.Count() > 0);
+
+                    if (chowPlayerActions != null)
+                    {
+                        chowPlayerActions.HasAction = true;
+                        updatedPlayers.Add(chowPlayerActions);
+                    }
+                    else
+                    {
+                        RoundHelper.SetNextPlayer(round, ref updatedPlayers, ref updatedTiles);
+                    }
                 }
 
                 var success = await _context.SaveChangesAsync() > 0;
 
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
+                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
                 roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                 if (success)

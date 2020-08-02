@@ -9,7 +9,6 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
     public class MahjongBuddyDbContext : IdentityDbContext<AppUser>
     {
         //dotnet ef migrations add "InitialCreate" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
-        //dotnet ef migrations add "PlayerHasAction" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
 
         //migrationBuilder.Sql(
         //        @"

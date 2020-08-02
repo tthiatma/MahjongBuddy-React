@@ -91,9 +91,9 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //don't change user's turn if there is player with action 
                 //----------------------------------------------------------
-                var gotWinOrKongOrPongAction = AssignPlayerActionAndTurn(round, game, request.UserName);
+                var gotAction = AssignPlayerActions(round, game, currentPlayer);
 
-                if(gotWinOrKongOrPongAction)
+                if(gotAction)
                 {
                     //action has priority list: win > pong|kong > chow
                     var winActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Win)).FirstOrDefault();
@@ -104,44 +104,41 @@ namespace MahjongBuddy.Application.PlayerAction
                     }
                     else
                     {
-                        var pongOrKongActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Pong || rpa.PlayerAction == ActionType.Kong)).FirstOrDefault();
-                        pongOrKongActionPlayer.HasAction = true;
-                        updatedPlayers.Add(pongOrKongActionPlayer);
+                        var pongOrKongActionPlayer = round.RoundPlayers.Where(
+                            rp => rp.RoundPlayerActions.Any(
+                                rpa => rpa.PlayerAction == ActionType.Pong || 
+                                rpa.PlayerAction == ActionType.Kong
+                                )
+                            ).FirstOrDefault();
+                        if (pongOrKongActionPlayer != null )
+                        {
+                            pongOrKongActionPlayer.HasAction = true;
+                            updatedPlayers.Add(pongOrKongActionPlayer);
+                        }
+                        else
+                        {
+                            //check if next player has chow action 
+                            var chowActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Chow)).FirstOrDefault();
+                            if (chowActionPlayer != null)
+                            {
+                                chowActionPlayer.HasAction = true;
+                                updatedPlayers.Add(chowActionPlayer);
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    var nextPlayer = GetNextPlayer(round.RoundPlayers, currentPlayer.Wind);
-                    nextPlayer.IsMyTurn = true;
-                    nextPlayer.MustThrow = false;
+                    RoundHelper.SetNextPlayer(round, ref updatedPlayers, ref updatedTiles);
 
-                    var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true 
-                        && u.AppUser.UserName != nextPlayer.AppUser.UserName
-                        && u.AppUser.UserName != currentPlayer.AppUser.UserName);
-                    foreach (var otherPlayerTurn in otherPlayers)
-                    {
-                        otherPlayerTurn.IsMyTurn = false;
-                        updatedPlayers.Add(otherPlayerTurn);
-                    }
-
-                    //check if next player has chow action 
-                    var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.AppUser.UserName);
-                    var gotChowAction = DetermineIfUserCanChow(nextPlayerTiles, tileToThrow);
-                    if(gotChowAction)
-                    {
-                        nextPlayer.HasAction = true;
-                        nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.Chow });
-                    }
-                    updatedPlayers.Add(nextPlayer);
+                    currentPlayer.IsMyTurn = false;
 
                     //check if theres more remaining tile, if no more tiles, then set round to ending
                     var remainingTiles = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
                     if (remainingTiles == null)
                         round.IsEnding = true;
                 }
-
                 currentPlayer.MustThrow = false;
-                currentPlayer.IsMyTurn = false;
                 updatedPlayers.Add(currentPlayer);
 
                 var success = await _context.SaveChangesAsync() > 0;
@@ -158,18 +155,20 @@ namespace MahjongBuddy.Application.PlayerAction
             }
 
             
-            private bool AssignPlayerActionAndTurn(Round round, Game game, string throwerUsername)
+            private bool AssignPlayerActions(Round round, Game game, RoundPlayer throwerPlayer)
             {
                 //TODO: Support multiple winner 
                 bool foundActionForUser = false;
                 var roundTiles = round.RoundTiles;
                 
                 //there will be action except for the player that throw the tile 
-                var players = round.RoundPlayers.Where(rp => rp.AppUser.UserName != throwerUsername);
+                var players = round.RoundPlayers.Where(rp => rp.AppUser.UserName != throwerPlayer.AppUser.UserName);
 
                 var boardActiveTile = roundTiles.FirstOrDefault(rt => rt.Status == TileStatus.BoardActive);
                 if(boardActiveTile == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find active board tile" });
+
+                var nextPlayer = RoundHelper.GetNextPlayer(round.RoundPlayers, throwerPlayer.Wind);
 
                 //there could be more than one possible action given user's turn  and the tile's thrown
                 foreach (var player in players)
@@ -185,6 +184,13 @@ namespace MahjongBuddy.Application.PlayerAction
 
                     if (DetermineIfUserCanPong(userTiles, boardActiveTile))
                         rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Pong });
+
+                    if(player.AppUser.UserName == nextPlayer.AppUser.UserName)
+                    {
+                        var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.AppUser.UserName);
+                        if(DetermineIfUserCanChow(nextPlayerTiles, boardActiveTile))
+                            rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Chow });
+                    }
 
                     if (rpas.Count() > 0)
                     {
@@ -231,7 +237,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 return playerSameTilesAsBoard.Count() == 2;
             }
-
             private bool DetermineIfUserCanChow(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
             {
                 //player tiles can't be in graveyard when pong from board
@@ -239,30 +244,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 var possibleChowTiles = RoundTileHelper.FindPossibleChowTiles(boardTile, playerTiles);
 
                 return possibleChowTiles.Count() >= 1;
-            }
-
-            private RoundPlayer GetNextPlayer(ICollection<RoundPlayer> players, WindDirection currentPlayerWind)
-            {
-                RoundPlayer ret;
-                switch (currentPlayerWind)
-                {
-                    case WindDirection.East:
-                        ret = players.First(p => p.Wind == WindDirection.South);
-                        break;
-                    case WindDirection.South:
-                        ret = players.First(p => p.Wind == WindDirection.West);
-                        break;
-                    case WindDirection.West:
-                        ret = players.First(p => p.Wind == WindDirection.North);
-                        break;
-                    case WindDirection.North:
-                        ret = players.First(p => p.Wind == WindDirection.East);
-                        break;
-                    default:
-                        throw new Exception("Error when getting next player");
-                }
-
-                return ret;
             }
         }
     }

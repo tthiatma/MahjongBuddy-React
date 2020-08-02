@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Helpers;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -57,31 +58,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //TODO only allow pick tile when it's player's turn
 
-                //we loop 8 times because there are total of 8 flowers. get more tiles if its a flower
-                for (var i = 0; i < 8; i++)
-                {
-                    var newTile = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
-                    if (newTile == null)
-                    {
-                        round.IsOver = true;
-                        break;
-                    }
-
-                    newTile.Owner = request.UserName;
-                    round.IsHalted = true;
-
-                    if (newTile.Tile.TileType != TileType.Flower)
-                    {
-                        newTile.Status = TileStatus.UserJustPicked;
-                        updatedTiles.Add(newTile);
-                        break;
-                    }
-                    else
-                    {
-                        newTile.Status = TileStatus.UserGraveyard;
-                        updatedTiles.Add(newTile);
-                    }
-                }
+                RoundTileHelper.PickTile(round, request.UserName, ref updatedTiles);
 
                 try
                 {

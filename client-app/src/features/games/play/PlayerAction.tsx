@@ -134,7 +134,7 @@ const PlayerAction: React.FC = () => {
 
       <Button
         disabled={
-          !mainPlayer!.isMyTurn || mainPlayer!.mustThrow || round!.isOver
+          mainPlayer!.mustThrow || round!.isOver
         }
         loading={loading}
         onClick={doChow}

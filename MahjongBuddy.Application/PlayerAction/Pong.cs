@@ -95,6 +95,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 foreach (var otherPlayerTurn in otherPlayers)
                 {
                     otherPlayerTurn.IsMyTurn = false;
+                    otherPlayerTurn.MustThrow = false;
                     updatedPlayers.Add(otherPlayerTurn);
                 }
 

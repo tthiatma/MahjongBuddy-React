@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200721065036_InitialCreate")]
+    [Migration("20200801220019_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -202,6 +202,12 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("HasAction")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDealer")
                         .HasColumnType("bit");
 
@@ -231,6 +237,33 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasIndex("AppUserId");
 
                     b.ToTable("RoundPlayers");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RoundPlayerAction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("PlayerAction")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RoundPlayerAppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("RoundPlayerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoundPlayerRoundId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoundPlayerRoundId", "RoundPlayerAppUserId");
+
+                    b.ToTable("RoundPlayerAction");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundResult", b =>
@@ -400,6 +433,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("InitialSeatWind")
                         .HasColumnType("int");
@@ -591,6 +627,15 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasOne("MahjongBuddy.Core.Round", "Round")
                         .WithMany("RoundPlayers")
                         .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RoundPlayerAction", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.RoundPlayer", "RoundPlayer")
+                        .WithMany("RoundPlayerActions")
+                        .HasForeignKey("RoundPlayerRoundId", "RoundPlayerAppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
