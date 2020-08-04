@@ -2,10 +2,12 @@
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Extensions;
+using MahjongBuddy.Application.Helpers;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,6 +110,15 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 if (round.IsEnding)
                     round.IsEnding = false;
+
+                //if user chow, then there's no way that user can win/pong/chow
+                var actionsToBeRemoved = currentPlayer.RoundPlayerActions.Where(a => a.PlayerAction != ActionType.SelfKong).ToList();
+                foreach (var action in actionsToBeRemoved)
+                {
+                    currentPlayer.RoundPlayerActions.Remove(action);
+                }
+                currentPlayer.HasAction = false;
+                RoundHelper.CheckPossibleSelfKong(round, currentPlayer);
 
                 try
                 {

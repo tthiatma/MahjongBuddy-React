@@ -1,6 +1,7 @@
 ﻿using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Primitives;
 using MoreLinq;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,67 @@ namespace MahjongBuddy.Application.Helpers
 {
     public static class RoundTileHelper
     {
+
+        //custom tile assignment for easy win and chow debugging
+        public static void SetupForChowAndWin(IEnumerable<RoundTile> roundTiles)
+        {
+            string tonny = "Tonny";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Three).Take(1).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserJustPicked; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.One).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Two).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Three).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Four).Take(1).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+
+            string mei = "Mei";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.One & string.IsNullOrEmpty(x.Owner)).Take(4).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Two & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Three & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Four & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Five).Take(1).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+
+            string peter = "Peter";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Five).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Six).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Seven & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+
+            string jason = "Jason";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Five).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Six).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Seven & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+        }
+
+
+        //custom tile assignment for easy kong debugging
+        public static void SetupForKong(IEnumerable<RoundTile> roundTiles)
+        {
+            string tonny = "Tonny";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Three).Take(1).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserJustPicked; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.One).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Two).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Three).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Four).Take(1).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+
+            string mei = "Mei";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.One).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Two).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Three & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Four).Take(2).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+
+            string peter = "Peter";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Five).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Six).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Seven & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+
+            string jason = "Jason";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Five).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Six).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Seven & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+        }
+
         public static void AssignTilesToUser(int tilesCount, string userId, IEnumerable<RoundTile> roundTiles)
         {
             var newTiles = roundTiles.Where(x => string.IsNullOrEmpty(x.Owner));

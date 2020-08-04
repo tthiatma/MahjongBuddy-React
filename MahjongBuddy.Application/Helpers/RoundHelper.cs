@@ -1,4 +1,7 @@
-﻿using MahjongBuddy.Core;
+﻿using MahjongBuddy.Application.Interfaces;
+using MahjongBuddy.Application.PlayerAction;
+using MahjongBuddy.Application.Rounds.Scorings;
+using MahjongBuddy.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +34,7 @@ namespace MahjongBuddy.Application.Helpers
             return ret;
         }
 
-        public static void SetNextPlayer(Round round, ref List<RoundPlayer> updatedPlayers, ref List<RoundTile> updatedTiles)
+        public static void SetNextPlayer(Round round, ref List<RoundPlayer> updatedPlayers, ref List<RoundTile> updatedTiles, IPointsCalculator pointCalculator)
         {
             var playerThatHasTurn = round.RoundPlayers.FirstOrDefault(p => p.IsMyTurn == true);
             playerThatHasTurn.IsMyTurn = false;
@@ -53,9 +56,47 @@ namespace MahjongBuddy.Application.Helpers
             }
 
             //automatically pick tile for next player
-            RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);
+            //unless remaining tile is 1, give user give up action
+            var unopenTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
+
+            if(unopenTiles.Count() == 1)            
+                nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.GiveUp });            
+            else           
+                RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);            
+
+            //check if there's any self action
+            //self win
+            if (DetermineIfUserCanWin(round, nextPlayer, pointCalculator))
+                nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.SelfWin });
+
+            //self kong
+            CheckPossibleSelfKong(round, nextPlayer);
+
             updatedPlayers.Add(nextPlayer);
             updatedPlayers.Add(playerThatHasTurn);
+        }
+
+        public static bool DetermineIfUserCanWin(Round round, RoundPlayer player, IPointsCalculator pointCalculator)
+        {
+            HandWorth handWorth = pointCalculator.Calculate(round, player.AppUser.UserName);
+            if (handWorth == null) return false;
+            return handWorth.Points >= round.Game.MinPoint;
+        }
+
+        public static void CheckPossibleSelfKong(Round round, RoundPlayer player)
+        {
+            var playerTiles = round.RoundTiles.Where(rt => rt.Owner == player.AppUser.UserName && rt.TileSetGroup != TileSetGroup.Kong && rt.TileSetGroup != TileSetGroup.Chow);
+            int possibleKongCount = playerTiles
+                .GroupBy(t => new { t.Tile.TileType, t.Tile.TileValue })
+                .Where(grp => grp.Count() == 4)
+                .Count(); ;
+            if (possibleKongCount > 0)
+            {
+                for (int i = 0; i < possibleKongCount; i++)
+                {
+                    player.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.SelfKong });
+                }
+            }
         }
     }
 }

@@ -115,11 +115,10 @@ export const GetPossibleKong = (
 ): IRoundTile[] => {
   const mainPlayerAliveTiles = _.filter(
     playerTiles,
-    (t) => t.status === TileStatus.UserActive
+    (t) => t.status === TileStatus.UserActive || t.status === TileStatus.UserJustPicked
   );
 
   let validTileForKongs: IRoundTile[] = [];
-  //   let mpt = playerTiles?.map((t) => toJS(t));
 
   var kongTiles = _.chain(playerTiles)
     .groupBy((asd) => `${asd.tile.tileType}-${asd.tile.tileValue}`)

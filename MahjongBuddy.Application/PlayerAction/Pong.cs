@@ -2,6 +2,7 @@
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Extensions;
+using MahjongBuddy.Application.Helpers;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -63,6 +64,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 var matchingUserTiles = round.RoundTiles
                     .Where(t => t.Owner == request.UserName 
+                        && t.Status == TileStatus.UserActive
                         && t.Tile.TileType == tileToPong.Tile.TileType 
                         && t.Tile.TileValue == tileToPong.Tile.TileValue);
                 
@@ -74,7 +76,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (justPickedTile != null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "someone already picked tile, no pong is allowed" });
 
-                foreach (var tile in matchingUserTiles)
+                foreach (var tile in matchingUserTiles.Take(2))
                 {
                     updatedTiles.Add(tile);
                 }
@@ -87,6 +89,14 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 currentPlayer.IsMyTurn = true;
                 currentPlayer.MustThrow = true;
+
+                var actionsToBeRemoved = currentPlayer.RoundPlayerActions.Where(a => a.PlayerAction != ActionType.SelfKong).ToList();
+                foreach (var action in actionsToBeRemoved)
+                {
+                    currentPlayer.RoundPlayerActions.Remove(action);
+                }
+                currentPlayer.HasAction = false;
+                RoundHelper.CheckPossibleSelfKong(round, currentPlayer);
 
                 if (round.IsEnding)
                     round.IsEnding = false;

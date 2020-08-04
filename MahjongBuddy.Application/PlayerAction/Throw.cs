@@ -7,6 +7,7 @@ using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,12 @@ namespace MahjongBuddy.Application.PlayerAction
                 if(currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
+                //clear all player actions initially every time throw command invoked
+                round.RoundPlayers.ForEach(p => {
+                    p.RoundPlayerActions.Clear();
+                    p.HasAction = false;
+                });
+                
                 //existing active tile on board to be no longer active
                 var existingActiveTileOnBoard = round.RoundTiles.FirstOrDefault(t => t.Status == TileStatus.BoardActive);
                 if (existingActiveTileOnBoard != null)
@@ -129,7 +136,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 }
                 else
                 {
-                    RoundHelper.SetNextPlayer(round, ref updatedPlayers, ref updatedTiles);
+                    RoundHelper.SetNextPlayer(round, ref updatedPlayers, ref updatedTiles, _pointCalculator);
 
                     currentPlayer.IsMyTurn = false;
 
@@ -176,7 +183,7 @@ namespace MahjongBuddy.Application.PlayerAction
                     var userTiles = roundTiles.Where(rt => rt.Owner == player.AppUser.UserName);
                     List<RoundPlayerAction> rpas = new List<RoundPlayerAction>();
 
-                    if (DetermineIfUserCanWin(game, round, player))
+                    if (RoundHelper.DetermineIfUserCanWin(round, player, _pointCalculator))
                         rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Win});
 
                     if(DetermineIfUserCanKongFromBoard(userTiles, boardActiveTile))
@@ -205,13 +212,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 return foundActionForUser;
             }
 
-            private bool DetermineIfUserCanWin(Game game, Round round, RoundPlayer player)
-            {
-                HandWorth handWorth = _pointCalculator.Calculate(round, player.AppUser.UserName);
-                if (handWorth == null) return false;
-                return handWorth.Points >= game.MinPoint;
-            }
-
             private bool DetermineIfUserCanKongFromBoard(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
             {
                 //player tiles can't be in graveyard when kong from board
@@ -235,7 +235,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 .Where(t => t.Tile.TileType == boardTile.Tile.TileType
                 && t.Tile.TileValue == boardTile.Tile.TileValue);
 
-                return playerSameTilesAsBoard.Count() == 2;
+                return playerSameTilesAsBoard.Count() >= 2;
             }
             private bool DetermineIfUserCanChow(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
             {

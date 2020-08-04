@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MahjongBuddy.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
+using MahjongBuddy.Application.Helpers;
 
 namespace MahjongBuddy.Application.PlayerAction
 {
@@ -47,6 +48,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 //assign tile ownership to current user
                 //weird situation is when it's user's turn, user can kong their active tiles and can kong board active tiles
 
+                bool selfKong = false;
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<RoundPlayer>();
 
@@ -75,6 +77,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     if(currentPlayer.IsMyTurn)
                     {
+                        selfKong = true;
                         //if its not konged already, then user can kong it
                         var kongedTile = tilesToKong.Where(t => t.TileSetGroup == TileSetGroup.Kong);
                         if (kongedTile.Count() == 0)
@@ -83,6 +86,8 @@ namespace MahjongBuddy.Application.PlayerAction
                         }
                     }
                 }
+
+                //this means that user need to kong from board
                 if (tilesToKong.Count() == 3)
                 {
                     //if user only have three and its already ponged, then player can't kong
@@ -90,11 +95,10 @@ namespace MahjongBuddy.Application.PlayerAction
                     if(tilesAlreadyPonged.Count() == 3)
                         throw new RestException(HttpStatusCode.BadRequest, new { Round = "Can't do kong when all tiles ponged" });
 
-                    var boardActiveTiles = round.RoundTiles.Where(t => t.Status == TileStatus.BoardActive);
-                    if (boardActiveTiles == null || boardActiveTiles.Count() > 1)
-                        throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are more than one tiles to kong" });
-                    var bat = boardActiveTiles.First();
-                    var boardActiveMatchedWithRequest = (bat.Tile.TileType == request.TileType && bat.Tile.TileValue == request.TileValue);
+                    var boardActiveTiles = round.RoundTiles.FirstOrDefault(t => t.Status == TileStatus.BoardActive);
+                    if (boardActiveTiles == null)
+                        throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no board active tile to kong" });
+                    var boardActiveMatchedWithRequest = (boardActiveTiles.Tile.TileType == request.TileType && boardActiveTiles.Tile.TileValue == request.TileValue);
 
                     if (boardActiveMatchedWithRequest)
                     {
@@ -103,7 +107,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         if (boardActiveMatchedWithRequest && allTilesAreActive.Count() == 3)
                         {
                             updatedTiles.AddRange(tilesToKong);
-                            updatedTiles.Add(bat);
+                            updatedTiles.Add(boardActiveTiles);
                         }
                     }
                 }                
@@ -112,7 +116,25 @@ namespace MahjongBuddy.Application.PlayerAction
                     updatedTiles.GoGraveyard(request.UserName, TileSetGroup.Kong, round.RoundTiles.GetLastGroupIndex(request.UserName));
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new { Kong = "Not possible to kong" });
-                //add new tile for user
+
+
+                //after kong from board, check for user self kong tile
+                if(!selfKong)
+                {
+                    RoundHelper.CheckPossibleSelfKong(round, currentPlayer);
+                    var tilesToCheckForSelfKong = currentUserTiles.Where(t => t.Status == TileStatus.UserActive);
+                }
+
+                //set existing justpicked tile to useractive;
+                var existingJustPicked = round.RoundTiles.FirstOrDefault(rt => rt.Owner == request.UserName && rt.Status == TileStatus.UserJustPicked);
+                if (existingJustPicked != null)
+                {
+                    existingJustPicked.Status = TileStatus.UserActive;
+                    updatedTiles.Add(existingJustPicked);
+                }
+
+
+                //add new tile for user                
                 var newTiles = round.RoundTiles.PickTile(request.UserName, true);
 
                 //assign new tile to user that kong the tile
@@ -124,6 +146,18 @@ namespace MahjongBuddy.Application.PlayerAction
                 currentPlayer.IsMyTurn = true;
                 //because new tile automatically added, player must throw set to true
                 currentPlayer.MustThrow = true;
+
+                if(selfKong)
+                {
+                    var selfKongAction = currentPlayer.RoundPlayerActions.First(a => a.PlayerAction == ActionType.SelfKong);
+                    currentPlayer.RoundPlayerActions.Remove(selfKongAction);
+                }
+                else
+                {
+                    var kongAction = currentPlayer.RoundPlayerActions.First(a => a.PlayerAction == ActionType.Kong);
+                    currentPlayer.RoundPlayerActions.Remove(kongAction);
+                    currentPlayer.HasAction = false;
+                }
 
                 if (round.IsEnding)
                     round.IsEnding = false;

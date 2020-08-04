@@ -16,25 +16,29 @@ const PlayerAction: React.FC = () => {
   const {
     openModal,
     showResult,
-    canPick,
-    pickCounter,
     roundSimple: round,
     mainPlayer,
     mainPlayerTiles,
-    mainPlayerJustPickedTile,
     boardActiveTile,
-    remainingTiles,
+    hasChowAction,
+    hasPongAction,
+    hasKongAction,
+    hasGiveUpAction,
+    hasWinAction,
+    hasSelfKongAction,
+    hasSelfWinAction,
   } = rootStore.roundStore;
 
   const {
     pickTile,
+    endingRound,
     pong,
     kong,
     chow,
     loading,
     winRound,
-    endingRound,
     skipAction,
+    throwAllTile
   } = rootStore.hubStore;
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
@@ -47,6 +51,15 @@ const PlayerAction: React.FC = () => {
     } catch (ex) {
       toast.error(`failed konging`);
     }
+  };
+
+  const clearChowOptions = () => {
+    setChowOptions([]);
+  };
+  
+  const doPong = () => {
+    clearChowOptions();
+    pong();
   };
 
   const doChow = () => {
@@ -69,10 +82,10 @@ const PlayerAction: React.FC = () => {
         cardObj.key = tileOne.id;
         cardObj.className = "raised";
         cardObj.content = (
-          <div className="content">
-            <Image src={tileOne.tile.image} />
-            <Image src={tileTwo.tile.image} />
-          </div>
+          <Fragment>
+            <Image src={tileOne.tile.imageSmall} />
+            <Image src={tileTwo.tile.imageSmall} />
+          </Fragment>
         );
         cardObj.onClick = selectTilesToChow;
         cardObj.chowtiles = [tileOne.id, tileTwo.id];
@@ -94,11 +107,13 @@ const PlayerAction: React.FC = () => {
   };
 
   const doKong = () => {
+    clearChowOptions();
     let validTileForKongs: IRoundTile[] = GetPossibleKong(
       mainPlayer!.isMyTurn,
       mainPlayerTiles!,
       boardActiveTile!
     );
+
     if (validTileForKongs.length === 1) {
       let kt = toJS(validTileForKongs[0]);
       kong(kt.tile.tileType, kt.tile.tileValue);
@@ -108,11 +123,7 @@ const PlayerAction: React.FC = () => {
         let cardObj: CardProps = {};
         cardObj.key = rt.id;
         cardObj.className = "raised";
-        cardObj.content = (
-          <div className="content">
-            <Image src={rt.tile.image} />
-          </div>
-        );
+        cardObj.content = <Image src={rt.tile.imageSmall} />;
         cardObj.onClick = selectTilesToKong;
         cardObj.kongtiles = [rt.tile.tileType, rt.tile.tileValue];
         cardDisplay.push(cardObj);
@@ -132,36 +143,92 @@ const PlayerAction: React.FC = () => {
         <Card.Group centered itemsPerRow={3} items={chowOptions} />
       )}
 
-      <Button
-        disabled={
-          mainPlayer!.mustThrow || round!.isOver
-        }
-        loading={loading}
-        onClick={doChow}
-      >
-        Chow
-      </Button>
-      <Button disabled={round!.isOver} loading={loading} onClick={doKong}>
-        Kong
-      </Button>
-      <Button
-        disabled={mainPlayer!.mustThrow || round!.isOver}
-        loading={loading}
-        onClick={pong}
-      >
-        Pong
-      </Button>
-      <Button disabled={round!.isOver} loading={loading} onClick={winRound}>
-        Win
-      </Button>
-      <Button loading={loading} onClick={pickTile}>
-        Pick
-      </Button>
-      <Button loading={loading} onClick={skipAction}>
-        Skip
+      {mainPlayer?.hasAction && hasChowAction && chowOptions.length === 0 && (
+        <Button
+          disabled={mainPlayer!.mustThrow || round!.isOver}
+          loading={loading}
+          onClick={doChow}
+          content="Chow"
+        />
+      )}
+
+      {chowOptions.length > 1 && (
+        <Button onClick={clearChowOptions} content="Cancel Chow" />
+      )}
+
+      {mainPlayer?.hasAction && hasPongAction && (
+        <Button
+          disabled={mainPlayer!.mustThrow || round!.isOver}
+          loading={loading}
+          onClick={doPong}
+          content="Pong"
+        />
+      )}
+
+      {((mainPlayer?.hasAction && hasKongAction) || hasSelfKongAction) && (
+        <Button
+          disabled={round!.isOver}
+          loading={loading}
+          onClick={doKong}
+          content="Kong"
+        />
+      )}
+
+      {mainPlayer?.hasAction && (
+        <Button
+          disabled={round!.isOver}
+          loading={loading}
+          onClick={skipAction}
+          content="Skip"
+        />
+      )}
+
+      {((mainPlayer?.hasAction && hasWinAction) || hasSelfWinAction) && (
+        <Button
+          disabled={round!.isOver}
+          loading={loading}
+          onClick={winRound}
+          content="Win"
+        />
+      )}
+
+{/* {remainingTiles === 1 &&
+        mainPlayerJustPickedTile!.length === 0 &&
+        mainPlayer!.isMyTurn && (
+          <Button
+            disabled={!canPick || round!.isOver}
+            loading={loading}
+            onClick={endingRound}
+          >
+            Give Up {pickCounter > 0 && `(${pickCounter})`}
+          </Button>
+        )} */}
+
+
+      {hasGiveUpAction && (
+        <Fragment>
+        <Button
+          disabled={round!.isOver}
+          loading={loading}
+          onClick={endingRound}
+          content="Give Up"
+        />
+        <Button
+          disabled={round!.isOver}
+          loading={loading}
+          onClick={pickTile}
+          content="Pick"
+        />
+        </Fragment>
+      )}
+
+
+
+      <Button loading={loading} onClick={throwAllTile}>
+        ThrowAll
       </Button>
 
-      <Button
+      {/* <Button
         disabled={
           !canPick ||
           mainPlayer!.mustThrow ||
@@ -174,18 +241,18 @@ const PlayerAction: React.FC = () => {
       >
         Pick
         {pickCounter > 0 && `(${pickCounter})`}
-      </Button>
-      {remainingTiles === 1 &&
-        mainPlayerJustPickedTile!.length === 0 &&
-        mainPlayer!.isMyTurn && (
-          <Button
-            disabled={!canPick || round!.isOver}
-            loading={loading}
-            onClick={endingRound}
-          >
-            Give Up {pickCounter > 0 && `(${pickCounter})`}
-          </Button>
-        )}
+      </Button> */}
+{/* 
+      {`mustThrow: ${mainPlayer!.mustThrow.toString()} `}
+      {`hasAction: ${mainPlayer?.hasAction.toString()} `}
+      {`hasChow: ${hasChowAction.toString()} `}
+      {`hasPong: ${hasPongAction.toString()} `}
+      {`hasKongAction: ${hasKongAction.toString()} `}
+      {`hasSelfKongAction: ${hasSelfKongAction.toString()} `}
+      {`hasWinAction: ${hasWinAction.toString()} `}
+      {`hasSelfWinAction: ${hasSelfWinAction.toString()} `}
+      {`hasGiveUpAction: ${hasGiveUpAction.toString()} `} */}
+
       {!showResult && round!.isOver && (
         <Button onClick={openModal}>Result</Button>
       )}

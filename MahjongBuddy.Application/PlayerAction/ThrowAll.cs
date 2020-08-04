@@ -65,7 +65,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 var unopenTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
 
                 //throw all but one
-                var tileCountMinusOne = unopenTiles.Count() - 2;
+                var tileCountMinusOne = unopenTiles.Count() - 1;
 
                 foreach (var tileToThrow in unopenTiles.Take(tileCountMinusOne))
                 {

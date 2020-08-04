@@ -19,15 +19,13 @@ import { LoadingComponent } from "../../../app/layout/LoadingComponent";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { WindDirection } from "../../../app/models/windEnum";
 import TileListBoard from "./TileListBoard";
-import TileListMainPlayer from "./TileListMainPlayer";
+import MainPlayerSection from "./MainPlayerSection";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { toJS, runInAction } from "mobx";
 import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
-import PlayerStatus from "./PlayerStatus";
 import { Link } from "react-router-dom";
-import PlayerAction from "./PlayerAction";
 
 interface DetailParams {
   roundId: string;
@@ -250,7 +248,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Grid.Row centered className="zeroPadding">
                 <Grid.Column width={16}>
                   <Grid.Row centered style={{ textAlign: "center" }}>
-                    <TileListMainPlayer
+                    <MainPlayerSection
                       mainPlayer={mainPlayer}
                       tileStyleName="tileHorizontal"
                       containerStyleName="tileHorizontalContainer"
@@ -259,40 +257,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
                     />
                   </Grid.Row>
-
-                  <Grid.Row style={{ textAlign: "center" }}>
-                    <ResultModal
+                  <Grid.Row centered>
+                  <ResultModal
                       roundResults={roundResults}
                       roundTiles={roundTiles}
                       isHost={getMainUser!.isHost}
                     />
-                    <PlayerAction />                    
-                  </Grid.Row>
-                  <Grid.Row centered>
-                    <Grid>
-                      <Grid.Column width={3} />
-                      <Grid.Column width={10}>
-                        <div
-                          className="playerStatusContainer"
-                          {...(mainPlayer!.isMyTurn && {
-                            className: "playerTurn playerStatusContainer",
-                          })}
-                        >
-                          {mainPlayer && (
-                            <span
-                              style={{
-                                width: "100%",
-                                textAlign: "center",
-                                lineHeight: "40px",
-                              }}
-                            >
-                              <PlayerStatus player={mainPlayer} />
-                            </span>
-                          )}
-                        </div>
-                      </Grid.Column>
-                      <Grid.Column width={3} />
-                    </Grid>
                   </Grid.Row>
                 </Grid.Column>
               </Grid.Row>
