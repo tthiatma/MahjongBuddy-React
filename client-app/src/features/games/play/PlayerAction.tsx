@@ -38,7 +38,6 @@ const PlayerAction: React.FC = () => {
     loading,
     winRound,
     skipAction,
-    throwAllTile
   } = rootStore.hubStore;
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
@@ -192,19 +191,6 @@ const PlayerAction: React.FC = () => {
         />
       )}
 
-{/* {remainingTiles === 1 &&
-        mainPlayerJustPickedTile!.length === 0 &&
-        mainPlayer!.isMyTurn && (
-          <Button
-            disabled={!canPick || round!.isOver}
-            loading={loading}
-            onClick={endingRound}
-          >
-            Give Up {pickCounter > 0 && `(${pickCounter})`}
-          </Button>
-        )} */}
-
-
       {hasGiveUpAction && (
         <Fragment>
         <Button
@@ -221,37 +207,6 @@ const PlayerAction: React.FC = () => {
         />
         </Fragment>
       )}
-
-
-
-      <Button loading={loading} onClick={throwAllTile}>
-        ThrowAll
-      </Button>
-
-      {/* <Button
-        disabled={
-          !canPick ||
-          mainPlayer!.mustThrow ||
-          !mainPlayer!.isMyTurn ||
-          round!.isOver ||
-          mainPlayerJustPickedTile!.length > 0
-        }
-        loading={loading}
-        onClick={pickTile}
-      >
-        Pick
-        {pickCounter > 0 && `(${pickCounter})`}
-      </Button> */}
-{/* 
-      {`mustThrow: ${mainPlayer!.mustThrow.toString()} `}
-      {`hasAction: ${mainPlayer?.hasAction.toString()} `}
-      {`hasChow: ${hasChowAction.toString()} `}
-      {`hasPong: ${hasPongAction.toString()} `}
-      {`hasKongAction: ${hasKongAction.toString()} `}
-      {`hasSelfKongAction: ${hasSelfKongAction.toString()} `}
-      {`hasWinAction: ${hasWinAction.toString()} `}
-      {`hasSelfWinAction: ${hasSelfWinAction.toString()} `}
-      {`hasGiveUpAction: ${hasGiveUpAction.toString()} `} */}
 
       {!showResult && round!.isOver && (
         <Button onClick={openModal}>Result</Button>

@@ -103,11 +103,14 @@ namespace MahjongBuddy.Application.PlayerAction
                 if(gotAction)
                 {
                     //action has priority list: win > pong|kong > chow
-                    var winActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Win)).FirstOrDefault();
-                    if (winActionPlayer != null)
+                    var winActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.PlayerAction == ActionType.Win));
+                    if (winActionPlayer.Count() > 0)
                     {
-                        winActionPlayer.HasAction = true;
-                        updatedPlayers.Add(winActionPlayer);
+                        foreach (var winner in winActionPlayer)
+                        {
+                            winner.HasAction = true;
+                            updatedPlayers.Add(winner);
+                        }
                     }
                     else
                     {

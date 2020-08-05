@@ -126,20 +126,21 @@ namespace MahjongBuddy.Application.Rounds
                 if(dealerId == null && theDealer.AppUser != null)
                     dealerId = theDealer.AppUser.Id;
 
-                RoundTileHelper.SetupForChowAndWin(newRound.RoundTiles);
+                //for debugging
+                //RoundTileHelper.SetupForWinPongChowPriority(newRound.RoundTiles);
 
                 //tiles assignment
-                //foreach (var player in players)
-                //{
-                //    if (player.Id == dealerId)
-                //    {
-                //        RoundTileHelper.AssignTilesToUser(14, player.UserName, newRound.RoundTiles);
-                //        //set one tile status to be justpicked
-                //        newRound.RoundTiles.First(rt => rt.Owner == player.UserName && rt.Tile.TileType != TileType.Flower).Status = TileStatus.UserJustPicked;
-                //    }
-                //    else
-                //        RoundTileHelper.AssignTilesToUser(13, player.UserName, newRound.RoundTiles);
-                //}
+                foreach (var player in players)
+                {
+                    if (player.Id == dealerId)
+                    {
+                        RoundTileHelper.AssignTilesToUser(14, player.UserName, newRound.RoundTiles);
+                        //set one tile status to be justpicked
+                        newRound.RoundTiles.First(rt => rt.Owner == player.UserName && rt.Tile.TileType != TileType.Flower).Status = TileStatus.UserJustPicked;
+                    }
+                    else
+                        RoundTileHelper.AssignTilesToUser(13, player.UserName, newRound.RoundTiles);
+                }
 
                 _context.Rounds.Add(newRound);
 
