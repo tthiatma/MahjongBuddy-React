@@ -244,6 +244,9 @@ namespace MahjongBuddy.Application.PlayerAction
             {
                 //player tiles can't be in graveyard when pong from board
                 //when someone throw a tile, there should not be a justpicked status tile
+                if (boardTile.Tile.TileType == TileType.Wind || boardTile.Tile.TileType == TileType.Dragon || boardTile.Tile.TileType == TileType.Flower)
+                    return false;
+
                 var possibleChowTiles = RoundTileHelper.FindPossibleChowTiles(boardTile, playerTiles);
 
                 return possibleChowTiles.Count() >= 1;

@@ -67,10 +67,6 @@ const GameLobbyHeader: React.FC<{
           </Button>
         )}
 
-        <Button loading={loading} onClick={startRound}>
-            Start Round
-        </Button>
-
         {/* {game.isHost && (
           <Button
             as={Link}

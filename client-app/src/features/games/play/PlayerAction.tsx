@@ -1,7 +1,7 @@
 import React, { Fragment, useContext, useState, SyntheticEvent } from "react";
 import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../../app/stores/rootStore";
-import { IRoundTile } from "../../../app/models/tile";
+import { IRoundTile, TileType } from "../../../app/models/tile";
 import {
   GetPossibleKong,
   GetPossibleChow,
@@ -63,6 +63,13 @@ const PlayerAction: React.FC = () => {
 
   const doChow = () => {
     let boardActiveTile = rootStore.roundStore.boardActiveTile;
+
+    //if board tile is dragon or wind then user cant chow
+    if(boardActiveTile?.tile.tileType === TileType.Dragon || boardActiveTile?.tile.tileType === TileType.Wind || boardActiveTile?.tile.tileType === TileType.Flower){
+      toast.error(`can't chow`);
+      return;
+    }
+
     let playerActiveTiles = rootStore.roundStore.mainPlayerActiveTiles;
     let chowTilesOptions: Array<IRoundTile[]> = GetPossibleChow(
       boardActiveTile!,
