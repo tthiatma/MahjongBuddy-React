@@ -157,7 +157,7 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            await Clients.Group(command.GameId.ToString()).SendAsync("SkipActionUpdateRound", round);
         }
 
         public async Task WinRound(Win.Command command)

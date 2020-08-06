@@ -244,8 +244,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("PlayerAction")
-                        .HasColumnType("int");
+                    b.Property<string>("PlayerAction")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RoundPlayerAppUserId")
                         .IsRequired()

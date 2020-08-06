@@ -384,7 +384,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PlayerAction = table.Column<int>(nullable: false),
+                    PlayerAction = table.Column<string>(nullable: false),
                     RoundPlayerId = table.Column<int>(nullable: false),
                     RoundPlayerRoundId = table.Column<int>(nullable: false),
                     RoundPlayerAppUserId = table.Column<string>(nullable: false)

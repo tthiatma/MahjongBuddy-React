@@ -65,7 +65,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   } = rootStore.roundStore;
   const {
     throwTile,
-    loading,
+    hubLoading,
     createHubConnection,
     stopHubConnection,
     leaveGroup,
@@ -100,7 +100,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loadRound(match.params.roundId, match.params!.id);
   }, [loadRound, match.params, match.params.roundId]);
 
-  if (loadingGameInitial || loadingRoundInitial || !game || !round || loading)
+  if (loadingGameInitial || loadingRoundInitial || !game || !round || hubLoading)
     return <LoadingComponent content="Loading round..." />;
 
   const onDragEnd = (result: DropResult) => {

@@ -26,7 +26,7 @@ const GameLobbyHeader: React.FC<{
   latestRound: IRound | null;
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
-  const { loading, startRound } = rootStore.hubStore;
+  const { hubLoading, startRound } = rootStore.hubStore;
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
@@ -51,14 +51,14 @@ const GameLobbyHeader: React.FC<{
       </Segment>
       <Segment clearing attached="bottom">
         {game.status === GameStatus.Created && game.isHost && (
-          <Button loading={loading} onClick={startRound}>
+          <Button loading={hubLoading} onClick={startRound}>
             Start Round
           </Button>
         )}
         {game.status === GameStatus.Playing && latestRound !== null && (
           <Button
             as={Link}
-            loading={loading}
+            loading={hubLoading}
             to={`/games/${game.id}/rounds/${latestRound.id}`}
             color="orange"
             floated="right"

@@ -35,7 +35,7 @@ const PlayerAction: React.FC = () => {
     pong,
     kong,
     chow,
-    loading,
+    hubActionLoading,
     winRound,
     skipAction,
   } = rootStore.hubStore;
@@ -152,7 +152,7 @@ const PlayerAction: React.FC = () => {
       {mainPlayer?.hasAction && hasChowAction && chowOptions.length === 0 && (
         <Button
           disabled={mainPlayer!.mustThrow || round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={doChow}
           content="Chow"
         />
@@ -165,7 +165,7 @@ const PlayerAction: React.FC = () => {
       {mainPlayer?.hasAction && hasPongAction && (
         <Button
           disabled={mainPlayer!.mustThrow || round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={doPong}
           content="Pong"
         />
@@ -174,7 +174,7 @@ const PlayerAction: React.FC = () => {
       {((mainPlayer?.hasAction && hasKongAction) || hasSelfKongAction) && (
         <Button
           disabled={round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={doKong}
           content="Kong"
         />
@@ -183,7 +183,7 @@ const PlayerAction: React.FC = () => {
       {mainPlayer?.hasAction && (
         <Button
           disabled={round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={skipAction}
           content="Skip"
         />
@@ -192,7 +192,7 @@ const PlayerAction: React.FC = () => {
       {((mainPlayer?.hasAction && hasWinAction) || hasSelfWinAction) && (
         <Button
           disabled={round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={winRound}
           content="Win"
         />
@@ -202,13 +202,13 @@ const PlayerAction: React.FC = () => {
         <Fragment>
         <Button
           disabled={round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={endingRound}
           content="Give Up"
         />
         <Button
           disabled={round!.isOver}
-          loading={loading}
+          loading={hubActionLoading}
           onClick={pickTile}
           content="Pick"
         />

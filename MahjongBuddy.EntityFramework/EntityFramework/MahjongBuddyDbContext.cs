@@ -156,6 +156,11 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 v => v.ToString(),
                 v => (ExtraPoint)Enum.Parse(typeof(ExtraPoint), v));
 
+            builder.Entity<RoundPlayerAction>()
+                .Property(e => e.PlayerAction)
+                .HasConversion(
+                v => v.ToString(),
+                v => (ActionType)Enum.Parse(typeof(ActionType), v));
         }
     }
 }

@@ -11,7 +11,7 @@ interface IProps {
 const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
   const rootStore = useContext(RootStoreContext);
   const { game } = rootStore.gameStore;
-  const { connectToGame, disconnectFromGame, loading } = rootStore.hubStore;
+  const { connectToGame, disconnectFromGame, hubLoading } = rootStore.hubStore;
   const playerWind = game?.players.find((p) => p.initialSeatWind === wind);
 
   return (
@@ -32,7 +32,7 @@ const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
       )}
       {game?.initialSeatWind === wind && (
         <Item.Content>
-          <Button loading={loading} onClick={disconnectFromGame}>
+          <Button loading={hubLoading} onClick={disconnectFromGame}>
             Leave
           </Button>
         </Item.Content>
@@ -41,7 +41,7 @@ const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
         !game?.players.some((p) => p.initialSeatWind === wind) && (
           <Item.Content>
             <Button
-              loading={loading}
+              loading={hubLoading}
               onClick={() => connectToGame(wind)}
               color="teal"
             >

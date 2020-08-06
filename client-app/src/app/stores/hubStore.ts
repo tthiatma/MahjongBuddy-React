@@ -9,23 +9,26 @@ import {
   LogLevel,
 } from "@microsoft/signalr";
 import { WindDirection } from "../models/windEnum";
-import { IRound } from "../models/round";
+import { IRound, IRoundPlayer } from "../models/round";
 import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
+import { TileStatus } from "../models/tileStatus";
 
 export default class HubStore {
   rootStore: RootStore;
   hubStore: HubStore;
   roundStore: RoundStore;
   gameStore: GameStore;
+  cooldownTime: number = 2000;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     this.hubStore = this.rootStore.hubStore;
     this.roundStore = this.rootStore.roundStore;
     this.gameStore = this.rootStore.gameStore;
   }
-  @observable loading = false;
+  @observable hubActionLoading = false;
+  @observable hubLoading = false;
   @observable.ref hubConnection: HubConnection | null = null;
 
   @action leaveGroup = (gameId: string) => {
@@ -38,49 +41,120 @@ export default class HubStore {
       this.hubConnection!.invoke("AddToGroup", gameId);
   };
 
+  sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  updateRoundTile(objIndex: number, tile: IRoundTile){
+    runInAction("updating tile", () => {
+      this.roundStore.roundTiles![objIndex] = tile;
+    })
+  }
+
+  updateRoundPlayer(updatedRoundPlayers: IRoundPlayer[]){
+    updatedRoundPlayers.forEach((player) => {
+      runInAction("updating players", () => {
+        if (player.userName === this.roundStore.leftPlayer?.userName)
+          this.roundStore.leftPlayer = player;
+
+        if (player.userName === this.roundStore.rightPlayer?.userName)
+          this.roundStore.rightPlayer = player;
+
+        if (player.userName === this.roundStore.topPlayer?.userName)
+          this.roundStore.topPlayer = player;
+
+        if (player.userName === this.roundStore.mainPlayer?.userName)
+          this.roundStore.mainPlayer = player;
+      });
+    });
+  }
+
   addHubConnectionHandler() {
     if (this.hubConnection) {
-
-      this.hubConnection.on("UpdateRound", (round: IRound) => {
-        if(round.isOver && round.roundResults){
+      this.hubConnection.on("SkipActionUpdateRound", (round: IRound) => {
+        if (round.isOver && round.roundResults) {
           runInAction("updating round results", () => {
             this.roundStore.roundOver = true;
-            this.roundStore.roundResults = round.roundResults;                        
-          })
+            this.roundStore.roundResults = round.roundResults;
+          });
         }
         
-        setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
-        //update players
-        if (round.updatedRoundPlayers) {
-          round.updatedRoundPlayers.forEach((player) => {
-            runInAction("updating players", () => {
-              if (player.userName === this.roundStore.leftPlayer?.userName)
-                this.roundStore.leftPlayer = player;
-
-              if (player.userName === this.roundStore.rightPlayer?.userName)
-                this.roundStore.rightPlayer = player;
-
-              if (player.userName === this.roundStore.topPlayer?.userName)
-                this.roundStore.topPlayer = player;
-
-              if (player.userName === this.roundStore.mainPlayer?.userName)
-                this.roundStore.mainPlayer = player;
-            });
-          });
-        } 
-
         //update tiles
         if (round.updatedRoundTiles) {
           round.updatedRoundTiles.forEach((tile) => {
             let objIndex = this.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === tile.id
             );
+            this.updateRoundTile(objIndex, tile);
+          });
+        }
+
+        //update players
+        if (round.updatedRoundPlayers) {
+          this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+        }
+
+        runInAction("updating round", () => {
+          this.roundStore.roundSimple = round;
+        });
+      });
+
+      this.hubConnection.on("UpdateRound", (round: IRound) => {
+        if (round.isOver && round.roundResults) {
+          runInAction("updating round results", () => {
+            this.roundStore.roundOver = true;
+            this.roundStore.roundResults = round.roundResults;
+          });
+        }
+        const noAction = round!.updatedRoundPlayers!.filter((p) => p.hasAction).length === 0;
+        const hasTileSetGroup = round!.updatedRoundTiles!.filter((t) => t.tileSetGroup !== 0).length > 0;
+        const hasJustPickedTile = round!.updatedRoundTiles!.filter((t) => t.status === TileStatus.UserJustPicked).length > 0;
+
+        console.log('hasTileGroup' + hasTileSetGroup.toString());
+        //update tiles
+        if (round.updatedRoundTiles) {
+          round.updatedRoundTiles.forEach((tile) => {
+            let objIndex = this.roundStore.roundTiles!.findIndex(
+              (obj) => obj.id === tile.id
+            );
+
+            if(noAction){
+              //find just picked tile and give assign it after cooldown time
+              if(tile.status === TileStatus.UserJustPicked){
+                this.sleep(this.cooldownTime).then(() => {
+                  this.updateRoundTile(objIndex, tile);
+                })
+              }else{
+                this.updateRoundTile(objIndex, tile);
+              }
+            }
+            else
+            {
+              this.updateRoundTile(objIndex, tile);
+            }
+
             runInAction("updating tile", () => {
-              this.roundStore.roundTiles![objIndex] = tile;
+              
             });
           });
-        } 
-        
+        }
+
+        //update players
+        if (round.updatedRoundPlayers) {
+          //check if there is any action
+          //give some time window of 2 seconds when there is no action
+          if ((noAction && !hasTileSetGroup) || hasJustPickedTile)
+          {
+            this.sleep(this.cooldownTime).then(() => {
+              this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+            });
+          }
+          else
+          {
+            this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+          }
+        }
+
         runInAction("updating round", () => {
           this.roundStore.roundSimple = round;
         });
@@ -90,7 +164,7 @@ export default class HubStore {
         if (this.roundStore.roundTiles) {
           tiles.forEach((tile) => {
             let objIndex = this.roundStore.roundTiles!.findIndex(
-              (obj) => obj.id === tile.id 
+              (obj) => obj.id === tile.id
             );
             runInAction("updating tile", () => {
               this.roundStore.roundTiles![objIndex] = tile;
@@ -177,7 +251,7 @@ export default class HubStore {
     }
     if (this.hubConnection!.state === "Disconnected") {
       runInAction(() => {
-        this.loading = true;
+        this.hubLoading = true;
       });
       this.hubConnection
         .start()
@@ -187,14 +261,14 @@ export default class HubStore {
         })
         .then(() => {
           runInAction(() => {
-            this.loading = false;
+            this.hubLoading = false;
           });
         })
         .catch((error) => {
           runInAction(() => {
-            this.loading = false;
+            this.hubLoading = false;
           });
-        console.log("Error establishing connection", error);
+          console.log("Error establishing connection", error);
         });
     } else if (this.hubConnection!.state === "Connected") {
       this.hubConnection?.invoke("AddToGroup", gameId);
@@ -204,20 +278,20 @@ export default class HubStore {
   @action stopHubConnection = (gameId: string) => {
     if (this.hubConnection!.state === "Connected") {
       runInAction(() => {
-        this.loading = true;
+        this.hubLoading = true;
       });
       this.hubConnection!.invoke("RemoveFromGroup", gameId)
         .then(() => {
           this.hubConnection!.stop().then(() => {
             runInAction(() => {
-              this.loading = false;
+              this.hubLoading = false;
             });
             console.log(`Connection State = ${this.hubConnection!.state}`);
           });
         })
         .catch((error) => {
           runInAction(() => {
-            this.loading = false;
+            this.hubLoading = false;
           });
           console.log(error);
         });
@@ -240,16 +314,16 @@ export default class HubStore {
     values.gameId = this.gameStore.game!.id;
     values.InitialSeatWind = seat;
     runInAction(() => {
-      this.loading = true;
+      this.hubLoading = true;
     });
     try {
       this.hubConnection!.invoke("ConnectToGame", values);
       runInAction(() => {
-        this.loading = false;
+        this.hubLoading = false;
       });
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubLoading = false;
       });
       toast.error("problem connecting to game");
     }
@@ -259,56 +333,56 @@ export default class HubStore {
     let values: any = {};
     values.gameId = this.gameStore.game!.id;
     runInAction(() => {
-      this.loading = true;
+      this.hubLoading = true;
     });
     try {
       this.hubConnection!.invoke("DisconnectFromGame", values);
       runInAction(() => {
-        this.loading = false;
+        this.hubLoading = false;
       });
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubLoading = false;
       });
       toast.error("problem disconnecting from game");
     }
   };
 
-  @action tiedRound = async() => {
-    this.loading = true;
+  @action tiedRound = async () => {
+    this.hubActionLoading = true;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        console.log('is hub connected and calling Tied Round')
+        console.log("is hub connected and calling Tied Round");
         this.hubConnection!.invoke("TiedRound", this.getGameAndRoundProps());
         runInAction(() => {
-          this.loading = false;
-        })
+          this.hubActionLoading = false;
+        });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
       });
       toast.error("problem calling TiedRound");
     }
   };
 
   @action endingRound = async () => {
-    this.loading = true;
+    this.hubActionLoading = true;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        console.log('is hub connected and calling Ending Round')
+        console.log("is hub connected and calling Ending Round");
         this.hubConnection!.invoke("EndingRound", this.getGameAndRoundProps());
         runInAction(() => {
-          this.loading = false;
-        })
+          this.hubActionLoading = false;
+        });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
       });
       toast.error("problem calling EndingRound");
     }
@@ -318,39 +392,40 @@ export default class HubStore {
     let values: any = {};
     values.gameId = parseInt(this.gameStore.game!.id);
     runInAction(() => {
-      this.loading = true;
+      this.hubLoading = true;
     });
     try {
       this.hubConnection!.invoke("StartRound", values);
       runInAction(() => {
-        this.loading = false;
+        this.hubLoading = false;
       });
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubLoading = false;
       });
       toast.error("problem disconnecting from game");
     }
   };
 
-  @action winRound = async() => {
-    this.loading = true;
+  @action winRound = async () => {
+    this.hubActionLoading = true;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        console.log('is hub connected and calling win')
-        this.hubConnection!.invoke("WinRound", this.getGameAndRoundProps())
-        .catch(err => {          
+        await this.hubConnection!.invoke(
+          "WinRound",
+          this.getGameAndRoundProps()
+        ).catch((err) => {
           toast.error(`can't win`);
         });
         runInAction(() => {
-          this.loading = false;
+          this.hubActionLoading = false;
         });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
       });
       toast.error("problem calling win");
     }
@@ -360,7 +435,7 @@ export default class HubStore {
     let values = this.getGameAndRoundProps();
     values.tileId = this.roundStore.selectedTile?.id;
     runInAction(() => {
-      this.loading = true;
+      this.hubActionLoading = true;
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
@@ -375,14 +450,14 @@ export default class HubStore {
         });
         this.hubConnection!.invoke("ThrowTile", values);
         runInAction(() => {
-          this.loading = false;
+          this.hubActionLoading = false;
         });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
       });
       toast.error("problem throwing tile");
     }
@@ -391,149 +466,156 @@ export default class HubStore {
   @action throwAllTile = async () => {
     let values = this.getGameAndRoundProps();
     runInAction(() => {
-      this.loading = true;
+      this.hubActionLoading = true;
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         this.hubConnection!.invoke("ThrowAllTiles", values);
         runInAction(() => {
-          this.loading = false;
+          this.hubActionLoading = false;
         });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
       });
       toast.error("problem throwing all tile");
     }
-  }
+  };
 
   @action pickTile = async () => {
     runInAction(() => {
-      this.loading = true;
+      this.hubActionLoading = true;
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke("PickTile", this.getGameAndRoundProps());
+        await this.hubConnection!.invoke("PickTile", this.getGameAndRoundProps());
         runInAction(() => {
-          this.loading = false;
+          this.hubActionLoading = false;
         });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
       });
       toast.error("problem picking tile");
     }
   };
 
-  @action pong = async() => {
+  @action pong = async () => {
     runInAction(() => {
-      this.loading = true;
+      this.hubActionLoading = true;
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke('PongTile', this.getGameAndRoundProps())
-        .catch(err => {          
+        await this.hubConnection!.invoke(
+          "PongTile",
+          this.getGameAndRoundProps()
+        ).catch((err) => {
           toast.error(`can't pong`);
-        })
-        runInAction(() => {
-          this.loading = false;
-          this.roundStore.pickCounter = 0;
-        });  
-    } else {
-        toast.error("not connected to hub");
-      }
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-      });
-      console.log(error);
-      toast.error("problem invoking pong to hub ");
-    }
-  }
-
-  @action chow = async(tiles: any[]) =>{
-
-    let values = this.getGameAndRoundProps();
-    values.ChowTiles = tiles;
-
-    runInAction(() => {
-      this.loading = true;
-    });
-
-    try {
-      if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke('ChowTile', values)
-        .catch(err => {
-          toast.error(`can't chow`);
-        })        
-        runInAction(() => {
-          this.loading = false;
-          this.roundStore.pickCounter = 0;
-        });  
-    } else {
-        toast.error("not connected to hub");
-      }
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-      });
-      toast.error("problem invoking chow to hub ");
-    }
-  }
-
-  @action kong = async(tileType: TileType, tileValue: TileValue) => {
-    let values = this.getGameAndRoundProps();
-    runInAction(() => {
-      this.loading = true;
-    });
-    values.TileType = tileType;
-    values.TileValue = tileValue;
-    try {
-      if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke('KongTile', values)
-        .catch(err => {
-          toast.error(`can't kong`);
-        })
-        runInAction(() => {
-          this.loading = false;
-          this.roundStore.pickCounter = 0;
-        });  
-    } else {
-        toast.error("not connected to hub");
-      }
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-      });
-      toast.error("problem invoking kong to hub ");
-    }
-  }
-
-  @action skipAction = async() => {
-    runInAction(() => {
-      this.loading = true;
-    });
-    try {
-      if (this.hubConnection && this.hubConnection.state === "Connected") {
-        this.hubConnection!.invoke("SkipAction", this.getGameAndRoundProps())
-        .catch(err => {
-          toast.error(`can't skip`);
         });
         runInAction(() => {
-          this.loading = false;
+          this.hubActionLoading = false;
+          this.roundStore.pickCounter = 0;
         });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.hubActionLoading = false;
+      });
+      console.log(error);
+      toast.error("problem invoking pong to hub ");
+    }
+  };
+
+  @action chow = async (tiles: any[]) => {
+    let values = this.getGameAndRoundProps();
+    values.ChowTiles = tiles;
+
+    runInAction(() => {
+      this.hubActionLoading = true;
+    });
+
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        await this.hubConnection!.invoke("ChowTile", values).catch((err) => {
+          toast.error(`can't chow`);
+        });
+        runInAction(() => {
+          this.hubActionLoading = false;
+          this.roundStore.pickCounter = 0;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.hubActionLoading = false;
+      });
+      toast.error("problem invoking chow to hub ");
+    }
+  };
+
+  @action kong = async (tileType: TileType, tileValue: TileValue) => {
+    let values = this.getGameAndRoundProps();
+    runInAction(() => {
+      this.hubActionLoading = true;
+    });
+    values.TileType = tileType;
+    values.TileValue = tileValue;
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        await this.hubConnection!.invoke("KongTile", values).catch((err) => {
+          toast.error(`can't kong`);
+        });
+        runInAction(() => {
+          this.hubActionLoading = false;
+          this.roundStore.pickCounter = 0;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.hubActionLoading = false;
+      });
+      toast.error("problem invoking kong to hub ");
+    }
+  };
+
+  @action skipAction = async () => {
+    runInAction(() => {
+      this.hubActionLoading = true;
+    });
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        await this.hubConnection!.invoke(
+          "SkipAction",
+          this.getGameAndRoundProps()
+        ).catch((err) => {
+          runInAction(() => {
+            this.roundStore.mainPlayer!.hasAction = true;
+            this.hubActionLoading = false;  
+          })  
+          toast.error(`can't skip`);
+        })
+        runInAction(() => {
+          this.roundStore.mainPlayer!.hasAction = false;
+          this.hubActionLoading = false;  
+        })
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.roundStore.mainPlayer!.hasAction = true;
+        this.hubActionLoading = false;
       });
       toast.error("problem skipping action");
     }
