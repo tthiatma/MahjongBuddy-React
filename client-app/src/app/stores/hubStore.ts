@@ -100,17 +100,41 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
+        
+        runInAction("updating round", () => {
+          this.roundStore.roundSimple = round;
+        });
+
         if (round.isOver && round.roundResults) {
           runInAction("updating round results", () => {
-            this.roundStore.roundOver = true;
             this.roundStore.roundResults = round.roundResults;
           });
         }
-        const noAction = round!.updatedRoundPlayers!.filter((p) => p.hasAction).length === 0;
-        const hasTileSetGroup = round!.updatedRoundTiles!.filter((t) => t.tileSetGroup !== 0).length > 0;
-        const hasJustPickedTile = round!.updatedRoundTiles!.filter((t) => t.status === TileStatus.UserJustPicked).length > 0;
 
-        console.log('hasTileGroup' + hasTileSetGroup.toString());
+        let noAction = false;
+        if (round.updatedRoundPlayers){
+          noAction = round.updatedRoundPlayers.filter((p) => p.hasAction).length === 0;
+        }
+
+        let hasTileSetGroup = false;
+        if(round.updatedRoundTiles){
+          hasTileSetGroup = round.updatedRoundTiles.filter((t) => t.tileSetGroup !== 0).length > 0;
+        }
+        
+        //update players
+        if (round.updatedRoundPlayers) {        
+          if ((noAction && !hasTileSetGroup))
+          {
+            this.sleep(this.cooldownTime).then(() => {
+              this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+            });
+          }
+          else
+          {
+            this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+          }
+        }
+
         //update tiles
         if (round.updatedRoundTiles) {
           round.updatedRoundTiles.forEach((tile) => {
@@ -138,26 +162,6 @@ export default class HubStore {
             });
           });
         }
-
-        //update players
-        if (round.updatedRoundPlayers) {
-          //check if there is any action
-          //give some time window of 2 seconds when there is no action
-          if ((noAction && !hasTileSetGroup) || hasJustPickedTile)
-          {
-            this.sleep(this.cooldownTime).then(() => {
-              this.updateRoundPlayer(round!.updatedRoundPlayers!);              
-            });
-          }
-          else
-          {
-            this.updateRoundPlayer(round!.updatedRoundPlayers!);              
-          }
-        }
-
-        runInAction("updating round", () => {
-          this.roundStore.roundSimple = round;
-        });
       });
 
       this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {

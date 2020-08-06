@@ -247,7 +247,7 @@ namespace MahjongBuddy.Application.Helpers
             foreach (var t in tiles)
             {
                 var sameTiles = tiles.Where(ti => ti.Tile.TileValue == t.Tile.TileValue 
-                && ti.Tile.TileType == t.Tile.TileType);
+                && ti.Tile.TileType == t.Tile.TileType && ti.TileSetGroup == TileSetGroup.None);
 
                 if (sameTiles != null && sameTiles.Count() > 1)
                 {
@@ -446,7 +446,10 @@ namespace MahjongBuddy.Application.Helpers
         public static List<RoundTile> FindStraightTiles(RoundTile theTile, IEnumerable<RoundTile> tiles)
         {
             var ret = new List<RoundTile>();
-
+            //make sure not to include dragon and wind and flower
+            tiles = tiles.Where(t => t.Tile.TileType != TileType.Dragon 
+            && t.Tile.TileType != TileType.Wind 
+            && t.Tile.TileType != TileType.Flower);
             var sameTypeTiles = tiles.Where(t => t.Tile.TileType == theTile.Tile.TileType);
             foreach (var t in sameTypeTiles)
             {
