@@ -103,6 +103,30 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   if (loadingGameInitial || loadingRoundInitial || !game || !round || hubLoading)
     return <LoadingComponent content="Loading round..." />;
 
+  const getActiveTileAnimation = (): string => {
+    let animationStyle: string = '';
+
+    switch(boardActiveTile?.thrownBy){
+      case leftPlayer?.userName:{
+        animationStyle = 'fly right'
+        break;
+      } 
+      case rightPlayer?.userName:{
+        animationStyle = 'fly left'
+        break;
+      } 
+      case topPlayer?.userName:{
+        animationStyle = 'fly down'
+        break;
+      } 
+      case mainPlayer?.userName:{
+        animationStyle = 'fly up'
+        break;
+      } 
+    }
+    return animationStyle;
+  }
+
   const onDragEnd = (result: DropResult) => {
 
     const { destination, draggableId } = result;
@@ -208,6 +232,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   <TileListBoard
                     graveyardTiles={boardGraveyardTiles!}
                     activeTile={boardActiveTile!}
+                    activeTileAnimation={getActiveTileAnimation()}
                   />
                   <Droppable droppableId="board">
                     {(provided, snapshot) => (

@@ -5,6 +5,7 @@ export interface IRoundTile{
     boardGraveyardCounter: number;
     activeTileCounter: number;
     owner: string;
+    thrownBy: string;
     roundId: number;
     isWinner: boolean;
     tileSetGroup: TileSetGroup;

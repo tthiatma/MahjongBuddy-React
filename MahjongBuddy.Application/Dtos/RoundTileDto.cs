@@ -12,6 +12,8 @@ namespace MahjongBuddy.Application.Dtos
         public int ActiveTileCounter { get; set; }
         //userId that own the tile
         public string Owner { get; set; }
+        public string ThrownBy { get; set; }
+
         public int RoundId { get; set; }
         //when someone won, mark the tile as winner tile
         public bool IsWinner { get; set; }
