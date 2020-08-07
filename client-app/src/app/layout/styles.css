@@ -173,3 +173,13 @@ body {
   border-color: #ef8921;
   border-width: medium;
 }
+
+.justPickedTile:hover{
+  position: relative;
+  top: -5px;
+}
+
+.activeTiles:hover{
+  position: relative;
+  top: -5px;
+}

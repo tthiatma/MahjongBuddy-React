@@ -59,6 +59,9 @@ namespace MahjongBuddy.Application.PlayerAction
                 if(currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
+                if (!currentPlayer.MustThrow)
+                    throw new RestException(HttpStatusCode.NotFound, new { Round = "Player not suppose to throw" });
+
                 //clear all player actions initially every time throw command invoked
                 round.RoundPlayers.ForEach(p => {
                     p.RoundPlayerActions.Clear();

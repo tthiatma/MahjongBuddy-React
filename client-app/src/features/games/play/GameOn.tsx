@@ -1,8 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  Fragment,
-} from "react";
+import React, { useContext, useEffect, Fragment } from "react";
 import {
   Grid,
   Button,
@@ -100,37 +96,42 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loadRound(match.params.roundId, match.params!.id);
   }, [loadRound, match.params, match.params.roundId]);
 
-  if (loadingGameInitial || loadingRoundInitial || !game || !round || hubLoading)
+  if (
+    loadingGameInitial ||
+    loadingRoundInitial ||
+    !game ||
+    !round ||
+    hubLoading
+  )
     return <LoadingComponent content="Loading round..." />;
 
   const getActiveTileAnimation = (): string => {
-    let animationStyle: string = '';
+    let animationStyle: string = "";
 
-    switch(boardActiveTile?.thrownBy){
-      case leftPlayer?.userName:{
-        animationStyle = 'fly right'
+    switch (boardActiveTile?.thrownBy) {
+      case leftPlayer?.userName: {
+        animationStyle = "fly right";
         break;
-      } 
-      case rightPlayer?.userName:{
-        animationStyle = 'fly left'
+      }
+      case rightPlayer?.userName: {
+        animationStyle = "fly left";
         break;
-      } 
-      case topPlayer?.userName:{
-        animationStyle = 'fly down'
+      }
+      case topPlayer?.userName: {
+        animationStyle = "fly down";
         break;
-      } 
-      case mainPlayer?.userName:{
-        animationStyle = 'fly up'
+      }
+      case mainPlayer?.userName: {
+        animationStyle = "fly up";
         break;
-      } 
+      }
     }
     return animationStyle;
-  }
+  };
 
   const onDragEnd = (result: DropResult) => {
-
     const { destination, draggableId } = result;
-    
+
     if (!destination) {
       return;
     }
@@ -142,7 +143,16 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
             roundTiles!.find((t) => t.id === draggableId)!
           );
         });
-        throwTile();
+        try{
+          runInAction(() => {
+            mainPlayer!.mustThrow = false;
+          })
+          throwTile();
+        }catch{
+          runInAction(() => {
+            mainPlayer!.mustThrow = true;
+          })
+        }
       } else {
         toast.warn("Can't throw");
       }
@@ -234,29 +244,31 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     activeTile={boardActiveTile!}
                     activeTileAnimation={getActiveTileAnimation()}
                   />
-                  <Droppable droppableId="board">
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        style={getStyle(snapshot.isDraggingOver)}
-                        {...provided.droppableProps}
-                      >
+                  {mainPlayer?.mustThrow && (
+                    <Droppable droppableId="board">
+                      {(provided, snapshot) => (
                         <div
-                          style={{
-                            paddingTop: "10px",
-                            height: "45px",
-                          }}
+                          ref={provided.innerRef}
+                          style={getStyle(snapshot.isDraggingOver)}
+                          {...provided.droppableProps}
                         >
-                          <Header
-                            as="h2"
-                            style={{ color: "#d4d4d5" }}
-                            content={`Drag and drop tile here`}
-                          />
+                          <div
+                            style={{
+                              paddingTop: "10px",
+                              height: "45px",
+                            }}
+                          >
+                            <Header
+                              as="h2"
+                              style={{ color: "#d4d4d5" }}
+                              content={`Drag and drop tile here`}
+                            />
+                          </div>
+                          {provided.placeholder}
                         </div>
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
+                      )}
+                    </Droppable>
+                  )}
                 </Grid.Column>
 
                 {/* Right Player */}
@@ -283,7 +295,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     />
                   </Grid.Row>
                   <Grid.Row centered>
-                  <ResultModal
+                    <ResultModal
                       roundResults={roundResults}
                       roundTiles={roundTiles}
                       isHost={getMainUser!.isHost}

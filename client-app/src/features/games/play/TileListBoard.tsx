@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Transition, Image, Container } from "semantic-ui-react";
@@ -10,19 +10,6 @@ interface IProps {
 }
 
 const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile, activeTileAnimation }) => {
-  const [visible, setVisible] = useState<boolean>(false);
-
-  const sleep = (ms: number) => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  useEffect(() => {
-    setVisible(false);
-    sleep(1).then(() => {
-      setVisible(true);
-    })
-  }, [activeTile]);
-
   return (
     <Container>
       <div
@@ -43,7 +30,7 @@ const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile, activeTil
           ))}
 
         {activeTile && (
-          <Transition visible={visible} animation={activeTileAnimation} duration={1000}>
+          <Transition transitionOnMount={true} animation={activeTileAnimation} duration={1000}>
             <Image src={activeTile.tile.image} alt="tile" />
           </Transition>
         )}

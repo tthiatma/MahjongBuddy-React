@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Droppable, Draggable } from "react-beautiful-dnd";
@@ -62,11 +62,11 @@ const MainPlayerSection: React.FC<IProps> = ({
                             {...provided.dragHandleProps}
                             className={containerStyleName}
                           >
-                            <div
+                            <div                            
                               style={{
                                 backgroundImage: `url(${rt.tile.image}`,
                               }}
-                              className="flexTiles"
+                              className="flexTiles activeTiles"
                             />
                           </div>
                         )}
