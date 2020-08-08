@@ -282,7 +282,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               </Grid.Row>
 
               {/* Main Player */}
-              <Grid.Row centered className="zeroPadding">
+              <Grid.Row centered>
                 <Grid.Column width={16}>
                   <Grid.Row centered style={{ textAlign: "center" }}>
                     <MainPlayerSection

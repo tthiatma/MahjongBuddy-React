@@ -9,7 +9,14 @@ import {
 import { toJS } from "mobx";
 import _ from "lodash";
 import { toast } from "react-toastify";
-import { Button, Card, Image, CardProps } from "semantic-ui-react";
+import {
+  Button,
+  Card,
+  Image,
+  CardProps,
+  Transition,
+  Container,
+} from "semantic-ui-react";
 
 const PlayerAction: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
@@ -43,6 +50,9 @@ const PlayerAction: React.FC = () => {
   const [kongOptions, setKongOptions] = useState<any[]>([]);
   const [chowOptions, setChowOptions] = useState<any[]>([]);
 
+  const buttonAnimation = "jiggle";
+  const buttonAnimationDuration = 500;
+
   const selectTilesToKong = (event: SyntheticEvent, data: any) => {
     try {
       kong(data.kongtiles[0], data.kongtiles[1]);
@@ -55,7 +65,7 @@ const PlayerAction: React.FC = () => {
   const clearChowOptions = () => {
     setChowOptions([]);
   };
-  
+
   const doPong = () => {
     clearChowOptions();
     pong();
@@ -65,7 +75,11 @@ const PlayerAction: React.FC = () => {
     let boardActiveTile = rootStore.roundStore.boardActiveTile;
 
     //if board tile is dragon or wind then user cant chow
-    if(boardActiveTile?.tile.tileType === TileType.Dragon || boardActiveTile?.tile.tileType === TileType.Wind || boardActiveTile?.tile.tileType === TileType.Flower){
+    if (
+      boardActiveTile?.tile.tileType === TileType.Dragon ||
+      boardActiveTile?.tile.tileType === TileType.Wind ||
+      boardActiveTile?.tile.tileType === TileType.Flower
+    ) {
       toast.error(`can't chow`);
       return;
     }
@@ -140,7 +154,7 @@ const PlayerAction: React.FC = () => {
     }
   };
   return (
-    <Fragment>
+    <Container>
       {kongOptions.length > 0 && (
         <Card.Group centered itemsPerRow={4} items={kongOptions} />
       )}
@@ -150,12 +164,21 @@ const PlayerAction: React.FC = () => {
       )}
 
       {mainPlayer?.hasAction && hasChowAction && chowOptions.length === 0 && (
-        <Button
-          disabled={mainPlayer!.mustThrow || round!.isOver}
-          loading={hubActionLoading}
-          onClick={doChow}
-          content="Chow"
-        />
+        <Transition
+          transitionOnMount={true}
+          animation={buttonAnimation}
+          duration={buttonAnimationDuration}
+        >
+          <Button
+            className='actionButton'
+            circular
+            color="olive"
+            disabled={mainPlayer!.mustThrow || round!.isOver}
+            loading={hubActionLoading}
+            onClick={doChow}
+            content="Chow"
+          />
+        </Transition>
       )}
 
       {chowOptions.length > 1 && (
@@ -163,62 +186,101 @@ const PlayerAction: React.FC = () => {
       )}
 
       {mainPlayer?.hasAction && hasPongAction && (
-        <Button
-          disabled={mainPlayer!.mustThrow || round!.isOver}
-          loading={hubActionLoading}
-          onClick={doPong}
-          content="Pong"
-        />
+        <Transition
+          transitionOnMount={true}
+          animation={buttonAnimation}
+          duration={buttonAnimationDuration}
+        >
+          <Button
+            className='actionButton'
+            circular
+            color="orange"
+            disabled={mainPlayer!.mustThrow || round!.isOver}
+            loading={hubActionLoading}
+            onClick={doPong}
+            content="Pong"
+          />
+        </Transition>
       )}
 
       {((mainPlayer?.hasAction && hasKongAction) || hasSelfKongAction) && (
-        <Button
-          disabled={round!.isOver}
-          loading={hubActionLoading}
-          onClick={doKong}
-          content="Kong"
-        />
+        <Transition
+          transitionOnMount={true}
+          animation={buttonAnimation}
+          duration={buttonAnimationDuration}
+        >
+          <Button
+            className='actionButton'
+            circular
+            color="violet"
+            disabled={round!.isOver}
+            loading={hubActionLoading}
+            onClick={doKong}
+            content="Kong"
+          />
+        </Transition>
       )}
 
       {mainPlayer?.hasAction && (
-        <Button
-          disabled={round!.isOver}
-          loading={hubActionLoading}
-          onClick={skipAction}
-          content="Skip"
-        />
+        <Transition
+          transitionOnMount={true}
+          animation={buttonAnimation}
+          duration={buttonAnimationDuration}
+        >
+          <Button
+            circular
+            disabled={round!.isOver}
+            loading={hubActionLoading}
+            onClick={skipAction}
+            content="Skip"
+          />
+        </Transition>
       )}
 
       {((mainPlayer?.hasAction && hasWinAction) || hasSelfWinAction) && (
-        <Button
-          disabled={round!.isOver}
-          loading={hubActionLoading}
-          onClick={winRound}
-          content="Win"
-        />
+        <Transition
+          transitionOnMount={true}
+          animation={buttonAnimation}
+          duration={buttonAnimationDuration}
+        >
+          <Button
+            className='actionButton'
+            circular
+            color="green"
+            disabled={round!.isOver}
+            loading={hubActionLoading}
+            onClick={winRound}
+            content="Win"
+          />
+        </Transition>
       )}
 
       {hasGiveUpAction && (
-        <Fragment>
-        <Button
-          disabled={round!.isOver}
-          loading={hubActionLoading}
-          onClick={endingRound}
-          content="Give Up"
-        />
-        <Button
-          disabled={round!.isOver}
-          loading={hubActionLoading}
-          onClick={pickTile}
-          content="Pick"
-        />
-        </Fragment>
+        <Button.Group>
+          <Button
+            circular
+            color="grey"
+            disabled={round!.isOver}
+            loading={hubActionLoading}
+            onClick={endingRound}
+            content="Give Up"
+          />
+          <Button.Or/>
+          <Button
+            circular
+            color="brown"
+            disabled={round!.isOver}
+            loading={hubActionLoading}
+            onClick={pickTile}
+            content="Pick"
+          />
+        </Button.Group>
       )}
 
       {!showResult && round!.isOver && (
         <Button onClick={openModal}>Result</Button>
       )}
-    </Fragment>
+    </Container>
   );
 };
 
