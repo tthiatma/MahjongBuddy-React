@@ -89,7 +89,7 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
         }
 
         public async Task ThrowTile(Throw.Command command)
@@ -114,7 +114,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
             }
             catch (RestException ex)
             {
@@ -129,7 +129,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
             }
             catch (RestException ex)
             {
@@ -145,7 +145,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
             }
             catch (RestException ex)
             {
@@ -157,7 +157,7 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("SkipActionUpdateRound", round);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
         }
 
         public async Task WinRound(Win.Command command)
@@ -167,7 +167,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
             }
             catch (RestException ex)
             {

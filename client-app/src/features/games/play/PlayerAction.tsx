@@ -44,7 +44,7 @@ const PlayerAction: React.FC = () => {
     chow,
     hubActionLoading,
     winRound,
-    skipAction,
+    skipAction
   } = rootStore.hubStore;
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
@@ -53,13 +53,8 @@ const PlayerAction: React.FC = () => {
   const buttonAnimation = "jiggle";
   const buttonAnimationDuration = 500;
 
-  const selectTilesToKong = (event: SyntheticEvent, data: any) => {
-    try {
-      kong(data.kongtiles[0], data.kongtiles[1]);
-      setKongOptions([]);
-    } catch (ex) {
-      toast.error(`failed konging`);
-    }
+  const clearKongOptions = () => {
+    setKongOptions([]);
   };
 
   const clearChowOptions = () => {
@@ -69,6 +64,15 @@ const PlayerAction: React.FC = () => {
   const doPong = () => {
     clearChowOptions();
     pong();
+  };
+
+  const selectTilesToKong = (event: SyntheticEvent, data: any) => {
+    try {
+      kong(data.kongtiles[0], data.kongtiles[1]);
+      clearKongOptions();
+    } catch (ex) {
+      toast.error(`failed konging`);
+    }
   };
 
   const doChow = () => {
@@ -120,19 +124,19 @@ const PlayerAction: React.FC = () => {
   const selectTilesToChow = (event: SyntheticEvent, data: any) => {
     try {
       chow(data.chowtiles);
-      setChowOptions([]);
+      clearChowOptions();
     } catch (ex) {
       toast.error(`failed chowing`);
     }
   };
 
   const doKong = () => {
-    clearChowOptions();
     let validTileForKongs: IRoundTile[] = GetPossibleKong(
       mainPlayer!.isMyTurn,
       mainPlayerTiles!,
       boardActiveTile!
     );
+    clearChowOptions();
 
     if (validTileForKongs.length === 1) {
       let kt = toJS(validTileForKongs[0]);
@@ -163,6 +167,24 @@ const PlayerAction: React.FC = () => {
         <Card.Group centered itemsPerRow={3} items={chowOptions} />
       )}
 
+      {((mainPlayer?.hasAction && hasWinAction) || hasSelfWinAction) && (
+        <Transition
+          transitionOnMount={true}
+          animation={buttonAnimation}
+          duration={buttonAnimationDuration}
+        >
+          <Button
+            className="actionButton"
+            circular
+            color="green"
+            disabled={round!.isOver}
+            loading={hubActionLoading}
+            onClick={winRound}
+            content="WIN"
+          />
+        </Transition>
+      )}
+
       {mainPlayer?.hasAction && hasChowAction && chowOptions.length === 0 && (
         <Transition
           transitionOnMount={true}
@@ -170,19 +192,23 @@ const PlayerAction: React.FC = () => {
           duration={buttonAnimationDuration}
         >
           <Button
-            className='actionButton'
+            className="actionButton"
             circular
             color="olive"
             disabled={mainPlayer!.mustThrow || round!.isOver}
             loading={hubActionLoading}
             onClick={doChow}
-            content="Chow"
+            content="CHOW"
           />
         </Transition>
       )}
 
       {chowOptions.length > 1 && (
-        <Button onClick={clearChowOptions} content="Cancel Chow" />
+        <Button onClick={clearChowOptions} content="Cancel CHOW" />
+      )}
+
+      {kongOptions.length > 1 && (
+        <Button onClick={clearKongOptions} content="Cancel KONG" />
       )}
 
       {mainPlayer?.hasAction && hasPongAction && (
@@ -192,13 +218,13 @@ const PlayerAction: React.FC = () => {
           duration={buttonAnimationDuration}
         >
           <Button
-            className='actionButton'
+            className="actionButton"
             circular
             color="orange"
             disabled={mainPlayer!.mustThrow || round!.isOver}
             loading={hubActionLoading}
             onClick={doPong}
-            content="Pong"
+            content="PONG"
           />
         </Transition>
       )}
@@ -210,13 +236,13 @@ const PlayerAction: React.FC = () => {
           duration={buttonAnimationDuration}
         >
           <Button
-            className='actionButton'
+            className="actionButton"
             circular
             color="violet"
             disabled={round!.isOver}
             loading={hubActionLoading}
             onClick={doKong}
-            content="Kong"
+            content="KONG"
           />
         </Transition>
       )}
@@ -232,25 +258,7 @@ const PlayerAction: React.FC = () => {
             disabled={round!.isOver}
             loading={hubActionLoading}
             onClick={skipAction}
-            content="Skip"
-          />
-        </Transition>
-      )}
-
-      {((mainPlayer?.hasAction && hasWinAction) || hasSelfWinAction) && (
-        <Transition
-          transitionOnMount={true}
-          animation={buttonAnimation}
-          duration={buttonAnimationDuration}
-        >
-          <Button
-            className='actionButton'
-            circular
-            color="green"
-            disabled={round!.isOver}
-            loading={hubActionLoading}
-            onClick={winRound}
-            content="Win"
+            content="SKIP"
           />
         </Transition>
       )}
@@ -263,16 +271,16 @@ const PlayerAction: React.FC = () => {
             disabled={round!.isOver}
             loading={hubActionLoading}
             onClick={endingRound}
-            content="Give Up"
+            content="GIVE UP"
           />
-          <Button.Or/>
+          <Button.Or />
           <Button
             circular
             color="brown"
             disabled={round!.isOver}
             loading={hubActionLoading}
             onClick={pickTile}
-            content="Pick"
+            content="PICK"
           />
         </Button.Group>
       )}

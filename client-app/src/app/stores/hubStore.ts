@@ -71,7 +71,7 @@ export default class HubStore {
 
   addHubConnectionHandler() {
     if (this.hubConnection) {
-      this.hubConnection.on("SkipActionUpdateRound", (round: IRound) => {
+      this.hubConnection.on("UpdateRoundNoLag", (round: IRound) => {
         if (round.isOver && round.roundResults) {
           runInAction("updating round results", () => {
             this.roundStore.roundOver = true;
