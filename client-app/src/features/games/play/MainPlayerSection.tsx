@@ -14,11 +14,11 @@ interface IProps {
   mainPlayerActiveTiles: IRoundTile[] | null;
   mainPlayerGraveYardTiles: IRoundTile[] | null;
   mainPlayerJustPickedTile: IRoundTile[] | null;
+  doThrowTile: (tileId: string) => void;
 }
 
 const getListStyle = (isDraggingOver: boolean) => ({
-  background: isDraggingOver ? "lightblue" : "",
-  // display: 'flex',
+  background: isDraggingOver ? "lightblue" : ""
 });
 
 const MainPlayerSection: React.FC<IProps> = ({
@@ -27,7 +27,9 @@ const MainPlayerSection: React.FC<IProps> = ({
   mainPlayerActiveTiles,
   mainPlayerGraveYardTiles,
   mainPlayerJustPickedTile,
+  doThrowTile
 }) => {
+
   return (
     <Grid id="mainPlayerTiles">
       <Grid.Column width={3}>
@@ -57,6 +59,7 @@ const MainPlayerSection: React.FC<IProps> = ({
                       <Draggable draggableId={rt.id} index={index} key={rt.id}>
                         {(provided) => (
                           <div
+                            onDoubleClick={() => doThrowTile(rt.id)}
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}

@@ -18,7 +18,7 @@ import TileListBoard from "./TileListBoard";
 import MainPlayerSection from "./MainPlayerSection";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
-import { toJS, runInAction } from "mobx";
+import { runInAction } from "mobx";
 import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
 import { Link } from "react-router-dom";
@@ -72,7 +72,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "",
     borderStyle: "dashed",
-    borderColor: "#a2a2f0",
+    borderColor: "rgb(211 211 244)",
     display: "flex",
     overflow: "none",
     transitionDuration: `0.001s`,
@@ -129,6 +129,25 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     return animationStyle;
   };
 
+  const doThrowTile = (tileId: string) => {
+    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow) {
+      runInAction("throwingtile", () => {
+        rootStore.roundStore.selectedTile = roundTiles!.find((t) => t.id === tileId)!
+      });
+      try{
+        runInAction(() => {
+          mainPlayer!.mustThrow = false;
+        })
+        throwTile();
+      }catch{
+        runInAction(() => {
+          mainPlayer!.mustThrow = true;
+        })
+      }
+    } else {
+      toast.warn("Can't throw");
+    }
+  }
   const onDragEnd = (result: DropResult) => {
     const { destination, draggableId } = result;
 
@@ -137,26 +156,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     }
 
     if (destination.droppableId === "board")
-      if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow) {
-        runInAction("throwingtile", () => {
-          rootStore.roundStore.selectedTile = toJS(
-            roundTiles!.find((t) => t.id === draggableId)!
-          );
-        });
-        try{
-          runInAction(() => {
-            mainPlayer!.mustThrow = false;
-          })
-          throwTile();
-        }catch{
-          runInAction(() => {
-            mainPlayer!.mustThrow = true;
-          })
-        }
-      } else {
-        toast.warn("Can't throw");
-      }
-
+      doThrowTile(draggableId);
     //TODO allow user to arrange tile manually
     //if (destination.droppableId === "tile") console.log("dropped to tile");
   };
@@ -259,9 +259,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                             }}
                           >
                             <Header
-                              as="h2"
+                              as="h3"
                               style={{ color: "#d4d4d5" }}
-                              content={`Drag and drop tile here`}
+                              content={`Throw tile by double clicking/drag and drop it here`}
                             />
                           </div>
                           {provided.placeholder}
@@ -292,6 +292,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
                       mainPlayerActiveTiles={mainPlayerActiveTiles!}
                       mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
+                      doThrowTile={doThrowTile}
                     />
                   </Grid.Row>
                   <Grid.Row centered>
