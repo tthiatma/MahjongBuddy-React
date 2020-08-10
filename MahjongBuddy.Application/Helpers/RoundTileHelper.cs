@@ -11,6 +11,37 @@ namespace MahjongBuddy.Application.Helpers
 {
     public static class RoundTileHelper
     {
+        public static void SetupForInvalidWin(IEnumerable<RoundTile> roundTiles)
+        {
+            string tonny = "Tonny";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.One).Take(1).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserJustPicked; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Four).Take(1).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.One).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Two).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Three).ForEach(rt => { rt.Owner = tonny; rt.Status = TileStatus.UserActive; });
+
+            //mei can do invalid win
+            string mei = "Mei";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Two & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserGraveyard; rt.TileSetGroup = TileSetGroup.Pong; rt.TileSetGroupIndex = 1; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Three & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserGraveyard; rt.TileSetGroup = TileSetGroup.Pong; rt.TileSetGroupIndex = 2; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Four & string.IsNullOrEmpty(x.Owner)).Take(2).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Five & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Eight & string.IsNullOrEmpty(x.Owner)).Take(2).ForEach(rt => { rt.Owner = mei; rt.Status = TileStatus.UserActive; });
+
+            string peter = "Peter";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Five).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Six).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Eight).Take(3).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Nine & string.IsNullOrEmpty(x.Owner)).Take(2).ForEach(rt => { rt.Owner = peter; rt.Status = TileStatus.UserActive; });
+
+            string jason = "Jason";
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Nine).Take(1).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Seven).Take(1).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Three).Take(3).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Four).Take(3).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Five).Take(3).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+            roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
+        }
 
         //custom setup for win, pong, and chow priority
         public static void SetupForWinPongChowPriority(IEnumerable<RoundTile> roundTiles)
@@ -221,8 +252,6 @@ namespace MahjongBuddy.Application.Helpers
 
         public static HandType DetermineHandCanWin(IEnumerable<RoundTile> tiles)
         {
-            //TODO leverage tile that already in user graveyard in determining user hand type
-
             //if all weird combo hand is checked, in order to win 
             //tiles needs to be either, chicken, straight, or triplet
 
@@ -270,29 +299,40 @@ namespace MahjongBuddy.Application.Helpers
             if (eyeCollection.Count() == 0)
                 return HandType.None;
 
+            var userGraveyardGroupCount = tiles.Where(rt => rt.Status == TileStatus.UserGraveyard).GroupBy(rt => new { rt.TileSetGroupIndex, rt.TileSetGroup }).Count();
+            bool hasChowGroup = tiles.Where(rt => rt.Status == TileStatus.UserGraveyard && rt.TileSetGroup == TileSetGroup.Chow).Count() > 0;
+            bool hasPongGroup = tiles.Where(rt => rt.Status == TileStatus.UserGraveyard && rt.TileSetGroup == TileSetGroup.Pong).Count() > 0;
+            bool hasKongGroup = tiles.Where(rt => rt.Status == TileStatus.UserGraveyard && rt.TileSetGroup == TileSetGroup.Kong).Count() > 0;
+
+            var tilesWithoutUserGraveyard = tiles.Where(rt => rt.Status != TileStatus.UserGraveyard);
+
             //test for triplet first because it has higher point
             bool allPong = false;
-            foreach (var eyes in eyeCollection)
+            //if there's chow tilesetgroup then don't bother checking
+            if (!hasChowGroup)
             {
-                //remove possible eyes from tiles
-                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
-                foreach (var t in eyes)
+                foreach (var eyes in eyeCollection)
                 {
-                    tilesWithoutEyes.Remove(t);
-                }
-
-                //try check all pong
-                for (int i = 0; i < 4; i++)
-                {
-                    var pongSet = GetPongSet(tilesWithoutEyes);
-                    if(pongSet == null)
+                    //remove possible eyes from tiles
+                    var tilesWithoutEyes = tilesWithoutUserGraveyard.OrderBy(t => t.Tile.TileValue).ToList();
+                    foreach (var t in eyes)
                     {
-                        break;
+                        tilesWithoutEyes.Remove(t);
                     }
-                    tilesWithoutEyes = tilesWithoutEyes.Except(pongSet).ToList();
-                    //if it gets all the way to last set
-                    if (i == 3)
-                        allPong = true;
+
+                    //try check all pong
+                    for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
+                    {
+                        var pongSet = GetPongSet(tilesWithoutEyes);
+                        if (pongSet == null)
+                        {
+                            break;
+                        }
+                        tilesWithoutEyes = tilesWithoutEyes.Except(pongSet).ToList();
+                        //if it gets all the way to last set
+                        if (i == 3 - userGraveyardGroupCount)
+                            allPong = true;
+                    }
                 }
             }
             if (allPong)
@@ -303,31 +343,36 @@ namespace MahjongBuddy.Application.Helpers
             bool allStraight = false;
 
             //if there are 3+ wind or 3+ dragon, then its not possible for the tiless to be straight
+            //TODO
             var windOrDragonTiles = tiles.Where(t => t.Tile.TileType == TileType.Dragon || t.Tile.TileType == TileType.Wind);
 
-            foreach (var eyes in eyeCollection)
+            if(!hasPongGroup || !hasKongGroup)
             {
-                //remove possible eyes from tiles
-                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
-                foreach (var t in eyes)
+                foreach (var eyes in eyeCollection)
                 {
-                    tilesWithoutEyes.Remove(t);
-                }
-
-                //try check all straight
-                for (int i = 0; i < 4; i++)
-                {
-                    var straightSet = GetStraightSet(tilesWithoutEyes);
-                    if (straightSet == null)
+                    //remove possible eyes from tiles
+                    var tilesWithoutEyes = tilesWithoutUserGraveyard.OrderBy(t => t.Tile.TileValue).ToList();
+                    foreach (var t in eyes)
                     {
-                        break;
+                        tilesWithoutEyes.Remove(t);
                     }
-                    tilesWithoutEyes = tilesWithoutEyes.Except(straightSet).ToList();
-                    //if it gets all the way to last set
-                    if (i == 3)
-                        allStraight = true;
+
+                    //try check all straight
+                    for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
+                    {
+                        var straightSet = GetStraightSet(tilesWithoutEyes);
+                        if (straightSet == null)
+                        {
+                            break;
+                        }
+                        tilesWithoutEyes = tilesWithoutEyes.Except(straightSet).ToList();
+                        //if it gets all the way to last set
+                        if (i == 3 - userGraveyardGroupCount)
+                            allStraight = true;
+                    }
                 }
             }
+            
             if (allStraight)
                 return HandType.Straight;
 
@@ -336,14 +381,14 @@ namespace MahjongBuddy.Application.Helpers
             foreach (var eyes in eyeCollection)
             {
                 //remove possible eyes from tiles
-                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
+                var tilesWithoutEyes = tilesWithoutUserGraveyard.OrderBy(t => t.Tile.TileValue).ToList();
                 foreach (var t in eyes)
                 {
                     tilesWithoutEyes.Remove(t);
                 }
 
                 //try check all set
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
                 {
                     var anySet = TryPongThenChowSet(tilesWithoutEyes);
                     if (anySet == null)
@@ -352,7 +397,7 @@ namespace MahjongBuddy.Application.Helpers
                     }
                     tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
                     //if it gets all the way to last set
-                    if (i == 3)
+                    if (i == 3 - userGraveyardGroupCount)
                         isChicken = true;
                 }
             }
@@ -365,14 +410,14 @@ namespace MahjongBuddy.Application.Helpers
             foreach (var eyes in eyeCollection)
             {
                 //remove possible eyes from tiles
-                var tilesWithoutEyes = tiles.OrderBy(t => t.Tile.TileValue).ToList();
+                var tilesWithoutEyes = tilesWithoutUserGraveyard.OrderBy(t => t.Tile.TileValue).ToList();
                 foreach (var t in eyes)
                 {
                     tilesWithoutEyes.Remove(t);
                 }
 
                 //try check all set
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
                 {
                     var anySet = TryChowThenPongSet(tilesWithoutEyes);
                     if (anySet == null)
@@ -381,7 +426,7 @@ namespace MahjongBuddy.Application.Helpers
                     }
                     tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
                     //if it gets all the way to last set
-                    if (i == 3)
+                    if (i == 3 - userGraveyardGroupCount)
                         isChicken = true;
                 }
             }

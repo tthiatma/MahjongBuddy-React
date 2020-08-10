@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using MahjongBuddy.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MahjongBuddy.Application.Helpers;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace MahjongBuddy.Application.PlayerAction
 {
@@ -149,13 +150,16 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 if(selfKong)
                 {
-                    var selfKongAction = currentPlayer.RoundPlayerActions.First(a => a.PlayerAction == ActionType.SelfKong);
-                    currentPlayer.RoundPlayerActions.Remove(selfKongAction);
+                    var selfKongAction = currentPlayer.RoundPlayerActions.FirstOrDefault(a => a.PlayerAction == ActionType.SelfKong);
+                    if(selfKongAction != null)
+                        currentPlayer.RoundPlayerActions.Remove(selfKongAction);
                 }
                 else
                 {
-                    var kongAction = currentPlayer.RoundPlayerActions.First(a => a.PlayerAction == ActionType.Kong);
-                    currentPlayer.RoundPlayerActions.Remove(kongAction);
+                    var kongAction = currentPlayer.RoundPlayerActions.FirstOrDefault(a => a.PlayerAction == ActionType.Kong);
+                    if(kongAction != null)
+                        currentPlayer.RoundPlayerActions.Remove(kongAction);
+
                     currentPlayer.HasAction = false;
                 }
 

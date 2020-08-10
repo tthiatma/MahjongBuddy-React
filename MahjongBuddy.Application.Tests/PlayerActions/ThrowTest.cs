@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using Xunit;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace MahjongBuddy.Application.Tests.PlayerActions
 {
@@ -41,8 +42,12 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
             var pongTile = ThrowTileHelper.SetupForPong(context, _f.MainPlayerUserName);
             var round = _f.TestDataContext.Rounds.First();
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
+            var otherPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.OtherPlayerName);
+            otherPlayer.IsMyTurn = true;
+            otherPlayer.MustThrow = true;
+
+            var mainPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.MainPlayerUserName);
+            mainPlayer.IsMyTurn = false;
 
             //for simplicity remove 2 other players
             var westPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == "west");
@@ -82,8 +87,12 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
             var kongTile = ThrowTileHelper.SetupForKong(context, _f.MainPlayerUserName);
             var round = _f.TestDataContext.Rounds.First();
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
+            var otherPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.OtherPlayerName);
+            otherPlayer.IsMyTurn = true;
+            otherPlayer.MustThrow = true;
+
+            var mainPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.MainPlayerUserName);
+            mainPlayer.IsMyTurn = false;
 
             //for simplicity remove 2 other players
             var westPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == "west");
@@ -106,11 +115,10 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
 
             var playerThatHasAction = result.UpdatedRoundPlayers.Where(p => p.RoundPlayerActions.Count() > 0).First();
 
+            var kongAction = playerThatHasAction.RoundPlayerActions.FirstOrDefault(a => a.PlayerAction == ActionType.Kong);
+
             Assert.Equal(2, result.UpdatedRoundPlayers.Count());
-
-            Assert.Single(playerThatHasAction.RoundPlayerActions);
-
-            Assert.Equal(ActionType.Kong, playerThatHasAction.RoundPlayerActions.First().PlayerAction);
+            Assert.NotNull(kongAction);
         }
 
         /// <summary>
@@ -123,8 +131,12 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
             var winTile = ThrowTileHelper.SetupForWin(context, _f.MainPlayerUserName);
             var round = _f.TestDataContext.Rounds.First();
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
+            var otherPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.OtherPlayerName);
+            otherPlayer.IsMyTurn = true;
+            otherPlayer.MustThrow = true;
+
+            var mainPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.MainPlayerUserName);
+            mainPlayer.IsMyTurn = false;
 
             //for simplicity remove 2 other players
             var westPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == "west");
@@ -164,8 +176,12 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
             var chowTile = ThrowTileHelper.SetupForChow(context, _f.MainPlayerUserName);
             var round = _f.TestDataContext.Rounds.First();
 
-            _f.OtherPlayerRound.IsMyTurn = true;
-            _f.MainPlayerRound.IsMyTurn = false;
+            var otherPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.OtherPlayerName);
+            otherPlayer.IsMyTurn = true;
+            otherPlayer.MustThrow = true;
+
+            var mainPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == _f.MainPlayerUserName);
+            mainPlayer.IsMyTurn = false;
 
             //for simplicity remove 2 other players
             var westPlayer = round.RoundPlayers.First(rp => rp.AppUser.UserName == "west");

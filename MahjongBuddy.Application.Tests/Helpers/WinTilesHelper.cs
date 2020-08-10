@@ -426,7 +426,7 @@ namespace MahjongBuddy.Application.Tests.Helpers
             foreach (var t in userTiles)
             {
                 t.Owner = userId;
-                t.Status = TileStatus.UserGraveyard;
+                t.Status = TileStatus.UserActive;
             }
 
             var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.Seven
