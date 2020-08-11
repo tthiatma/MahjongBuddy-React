@@ -83,6 +83,7 @@ const MainPlayerSection: React.FC<IProps> = ({
                       <Draggable draggableId={rt.id} index={index} key={rt.id}>
                         {(provided) => (
                           <div
+                            onDoubleClick={() => doThrowTile(rt.id)}
                             ref={provided.innerRef}
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
