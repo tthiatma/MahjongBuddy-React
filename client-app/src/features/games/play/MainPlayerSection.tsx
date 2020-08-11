@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundTile } from "../../../app/models/tile";
+import { IRoundTile, TileType, TileValue } from "../../../app/models/tile";
 import { Droppable, Draggable } from "react-beautiful-dnd";
 import { IRoundPlayer } from "../../../app/models/round";
 import { Grid } from "semantic-ui-react";
@@ -21,6 +21,38 @@ const getListStyle = (isDraggingOver: boolean) => ({
   background: isDraggingOver ? "lightblue" : ""
 });
 
+const isPlayerFlower = (rt : IRoundTile, player: IRoundPlayer ) : boolean =>{  
+  if(rt.tile.tileType !== TileType.Flower)
+    return false;
+
+  const userFlowerNum = player.wind + 1;
+  const tv = rt.tile.tileValue;
+  let isUserFlower = false;
+  switch(userFlowerNum){
+    case 1: {
+      if(tv === TileValue.FlowerNumericOne || tv === TileValue.FlowerRomanOne)
+        isUserFlower = true
+      break;
+    }
+    case 2: {
+      if(tv === TileValue.FlowerNumericTwo || tv === TileValue.FlowerRomanTwo)      
+      isUserFlower = true
+      break;
+    }
+    case 3: {
+      if(tv === TileValue.FlowerNumericThree || tv === TileValue.FlowerRomanThree)    
+      isUserFlower = true
+      break;
+    }
+    case 4: {
+      if(tv === TileValue.FlowerNumericFour || tv === TileValue.FlowerRomanFour)
+      isUserFlower = true
+      break;
+    }  
+  }
+  return isUserFlower;  
+}
+
 const MainPlayerSection: React.FC<IProps> = ({
   mainPlayer,
   containerStyleName,
@@ -36,7 +68,9 @@ const MainPlayerSection: React.FC<IProps> = ({
         <Grid.Row centered style={{ padding: "1px" }}>
           {mainPlayerGraveYardTiles &&
             mainPlayerGraveYardTiles.map((rt) => (
-              <img key={rt.id} alt={rt.tile.title} src={rt.tile.imageSmall} />
+              <img {...((isPlayerFlower(rt, mainPlayer!)) && {
+                className: "goodFlowerTile",
+              })} key={rt.id} alt={rt.tile.title} src={rt.tile.imageSmall} />
             ))}
         </Grid.Row>
       </Grid.Column>
@@ -106,7 +140,7 @@ const MainPlayerSection: React.FC<IProps> = ({
           </Droppable>
         </Grid.Row>
         <Grid.Row>
-          <div
+          <div style={{borderRadius: "25px"}}
             className="playerStatusContainer"
             {...(mainPlayer!.isMyTurn && {
               className: "playerTurn playerStatusContainer",
