@@ -122,9 +122,11 @@ namespace MahjongBuddy.API
                 });
             services.AddScoped<IJwtGenerator, JwtGenerator>();
             services.AddScoped<IUserAccessor, UserAccessor>();
-            services.AddTransient<IPointsCalculator, HomeGameCalculator>();
-            services.AddTransient<HandTypeBuilder, HandTypeBuilder>();
-            services.AddTransient<ExtraPointBuilder, ExtraPointBuilder>();
+            services.AddScoped<IFacebookAccessor, FacebookAccessor>();
+            services.AddScoped<IPointsCalculator, HomeGameCalculator>();
+            services.AddScoped<HandTypeBuilder, HandTypeBuilder>();
+            services.AddScoped<ExtraPointBuilder, ExtraPointBuilder>();
+            services.Configure<FacebookAppSettings>(Configuration.GetSection("Authentication:Facebook"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
