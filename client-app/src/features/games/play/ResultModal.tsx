@@ -33,6 +33,8 @@ const ResultModal: React.FC<IProps> = ({
   if (roundResults) {
     winner = roundResults?.find((r) => r.isWinner === true)!;
     losers = roundResults!.filter((r) => r.isWinner === false);
+    if (!winner) tiePlayers = roundPlayers!;
+
     if (losers && losers.length === 1) {
       tiePlayers = roundPlayers?.filter(
         (p) =>
@@ -120,6 +122,8 @@ const ResultModal: React.FC<IProps> = ({
                       .map((rt) => (
                         <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
                       ))}
+                    <br />
+                    <br />
                   </Fragment>
                 ))}
               </ul>
@@ -128,7 +132,26 @@ const ResultModal: React.FC<IProps> = ({
         </Modal.Content>
       ) : (
         <Modal.Content>
-          <h3>booooo it's a tie. nobody win</h3>
+          <h3>
+            booooo it's a tie. nobody win
+            {tiePlayers && (
+              <ul>
+                {tiePlayers.map((p, i) => (
+                  <Fragment>
+                    <li>{p.userName}</li>
+                    {roundTiles!
+                      .filter((t) => t.owner === p.userName)!
+                      .sort(sortTiles)
+                      .map((rt) => (
+                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                      ))}
+                    <br />
+                    <br />
+                  </Fragment>
+                ))}
+              </ul>
+            )}
+          </h3>
         </Modal.Content>
       )}
       <Modal.Actions>

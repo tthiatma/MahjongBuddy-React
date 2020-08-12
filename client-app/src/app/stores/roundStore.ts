@@ -246,7 +246,6 @@ export default class RoundStore {
     try {
       round = await agent.Rounds.detail(id, gameId);
       runInAction("getting round", () => {
-        debugger;
         setRoundProps(round, this.rootStore.userStore.user!, this);
         this.roundSimple = round;
         this.roundTiles = round.roundTiles;
