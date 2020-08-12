@@ -151,6 +151,7 @@ body {
   border: 1px solid #ddd;
   background-color: #eee;
   display: flex;
+  border-radius: 25px;
 }
 .playerStatusHeaderVertical {
   flex: 0 0 40px;
@@ -158,13 +159,17 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  border-radius: 25px;
 }
 
 .playerTurn{
-  background-color: #1976d2 !important;
+  background-color: #09840b !important;
 }
 
 .playerTurn > span {
+  color: #fff;
+}
+.playerTurn > div > span {
   color: #fff;
 }
 
@@ -181,9 +186,15 @@ body {
 
 .activeTiles:hover{
   position: relative;
-  top: -5px;
+  top: -15px;
 }
 
 .actionButton{
   margin-bottom: 5px !important; 
+}
+
+.goodFlowerTile{
+  border-style: dotted;
+  border-color: #c7ff8a;
+  border-width: medium;
 }

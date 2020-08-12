@@ -38,6 +38,8 @@ namespace MahjongBuddy.Application.Rounds
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
+                var updatedPlayers = new List<RoundPlayer>();
+
                 var game = await _context.Games.FindAsync(request.GameId);
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
@@ -108,6 +110,9 @@ namespace MahjongBuddy.Application.Rounds
                         winner.Points += winningPoint;
                         winnerResult.PointsResult = winningPoint;
 
+                        updatedPlayers.Add(winner);
+                        updatedPlayers.AddRange(losers);
+
                         foreach (var l in losers)
                         {
                             l.Points -= cappedPoint;
@@ -124,6 +129,9 @@ namespace MahjongBuddy.Application.Rounds
                         var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
                         loser.Points -= cappedPoint;
                         round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });
+
+                        updatedPlayers.Add(winner);
+                        updatedPlayers.Add(loser);
                     }
                     round.RoundResults.Add(winnerResult);
 
@@ -134,9 +142,9 @@ namespace MahjongBuddy.Application.Rounds
                     if (success)
                     {
                         var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                        roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
                         return roundToReturn;
                     }
-
                 }
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new {Win = "Not enough point to win with this hand" });
