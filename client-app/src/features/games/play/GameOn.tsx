@@ -42,6 +42,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loadingRoundInitial,
     roundSimple: round,
     loadRound,
+    roundPlayers,
     mainPlayer,
     leftPlayer,
     rightPlayer,
@@ -54,7 +55,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayerTiles,
     topPlayerTiles,
     rightPlayerTiles,
-    roundTiles,
+    roundTiles,    
     remainingTiles,
     roundResults,
     roundEndingCounter,
@@ -310,6 +311,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   <Grid.Row centered>
                     <ResultModal
                       roundResults={roundResults}
+                      roundPlayers={roundPlayers}
                       roundTiles={roundTiles}
                       isHost={getMainUser!.isHost}
                     />
