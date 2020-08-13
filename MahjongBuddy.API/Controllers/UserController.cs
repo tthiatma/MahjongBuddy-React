@@ -1,7 +1,9 @@
 ﻿using MahjongBuddy.Application.Users;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+
 
 namespace MahjongBuddy.API.Controllers
 {
@@ -25,6 +27,13 @@ namespace MahjongBuddy.API.Controllers
         public async Task<ActionResult<User>> CurrentUser()
         {
             return await Mediator.Send(new CurrentUser.Query());
+        }
+
+        [AllowAnonymous]
+        [HttpPost("facebook")]
+        public async Task<ActionResult<User>> FacebookLogin(ExternalLogin.Query query)
+        {
+            return await Mediator.Send(query);
         }
     }
 }
