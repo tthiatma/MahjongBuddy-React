@@ -14,6 +14,8 @@ import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
 import { TileStatus } from "../models/tileStatus";
+import jwt from 'jsonwebtoken';
+import agent from "../api/agent";
 
 export default class HubStore {
   rootStore: RootStore;
@@ -67,6 +69,22 @@ export default class HubStore {
           this.roundStore.mainPlayer = player;
       });
     });
+  }
+
+  checkTokenAndRefreshIfExpired = async () => {
+    const token = localStorage.getItem('jwt');
+    const refreshToken = localStorage.getItem('refreshToken');
+    if(token && refreshToken){
+      const decodedToken: any = jwt.decode(token);
+      if(decodedToken && Date.now() >= decodedToken.exp * 1000 - 5000){
+        try {
+          return await agent.User.refreshToken(token, refreshToken);
+        }
+        catch(error){
+          toast.error('Problem connecting to the game');
+        }
+      }
+    }
   }
 
   addHubConnectionHandler() {
@@ -246,7 +264,7 @@ export default class HubStore {
     if (!this.hubConnection) {
       this.hubConnection = new HubConnectionBuilder()
         .withUrl(process.env.REACT_APP_API_GAME_HUB_URL!, {
-          accessTokenFactory: () => this.rootStore.commonStore.token!,
+          accessTokenFactory: () => this.checkTokenAndRefreshIfExpired(),
         })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Information)

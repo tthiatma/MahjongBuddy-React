@@ -7,6 +7,7 @@ using System.Net;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
+using System;
 
 namespace MahjongBuddy.Application.Users
 {
@@ -51,10 +52,16 @@ namespace MahjongBuddy.Application.Users
 
                 if(result.Succeeded)
                 {
+                    user.RefreshToken = _jwtGenerator.GenerateRefreshToken();
+                    user.RefreshTokenExpiry = DateTime.Now.AddDays(30);
+
+                    await _userManager.UpdateAsync(user);
+
                     return new User
                     { 
                         DisplayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
+                        RefreshToken = user.RefreshToken,
                         UserName = user.UserName,
                         Image = null
                     };                            
