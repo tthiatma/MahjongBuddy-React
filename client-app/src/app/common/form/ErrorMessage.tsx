@@ -8,8 +8,6 @@ interface IProps {
 }
 
 export const ErrorMessage : React.FC<IProps> = ({error, text}) => {
-    console.log(error);
-    debugger;
     return (
       <Message error>
         <Message.Header>{error.statusText}</Message.Header>
