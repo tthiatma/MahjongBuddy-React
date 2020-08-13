@@ -81,6 +81,7 @@ export default class RoundStore {
   @observable roundSimple: IRoundSimple | null = null;
   @observable.shallow roundTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
+  @observable.shallow roundPlayers: IRoundPlayer[] | null = null;
   @observable mainPlayer: IRoundPlayer | null = null;
   @observable leftPlayer: IRoundPlayer | null = null;
   @observable rightPlayer: IRoundPlayer | null = null;

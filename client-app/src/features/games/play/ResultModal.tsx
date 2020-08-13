@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
-import { IRoundResult } from "../../../app/models/round";
+import { IRoundResult, IRoundPlayer } from "../../../app/models/round";
 import { Modal, Header, Button, Icon } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
@@ -11,12 +11,14 @@ interface IProps {
   roundResults: IRoundResult[] | null;
   roundTiles: IRoundTile[] | null;
   isHost: boolean;
+  roundPlayers: IRoundPlayer[] | null;
 }
 
 const ResultModal: React.FC<IProps> = ({
   roundResults,
   roundTiles,
   isHost,
+  roundPlayers,
 }) => {
   const rootStore = useContext(RootStoreContext);
   const { startRound } = rootStore.hubStore;
@@ -24,15 +26,25 @@ const ResultModal: React.FC<IProps> = ({
 
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
+  let tiePlayers: IRoundPlayer[] | undefined = undefined;
   let winnerTiles: IRoundTile[] | null = null;
   let boardTile: IRoundTile | null = null;
 
   if (roundResults) {
     winner = roundResults?.find((r) => r.isWinner === true)!;
     losers = roundResults!.filter((r) => r.isWinner === false);
+    if (!winner) tiePlayers = roundPlayers!;
+
+    if (losers && losers.length === 1) {
+      tiePlayers = roundPlayers?.filter(
+        (p) =>
+          p.userName !== winner?.userName && p.userName !== losers![0].userName
+      );
+    }
     winnerTiles = roundTiles!
       .filter((t) => t.owner === winner?.userName)!
       .sort(sortTiles);
+
     boardTile = roundTiles!.find((t) => t.status === TileStatus.BoardActive)!;
   }
 
@@ -85,9 +97,34 @@ const ResultModal: React.FC<IProps> = ({
             {losers && (
               <ul>
                 {losers.map((l, i) => (
-                  <li key={i}>
-                    {l.userName}: {l.pointsResult}
-                  </li>
+                  <Fragment>
+                    <li>
+                      Loser : {l.userName}: {l.pointsResult}
+                    </li>
+                    {roundTiles!
+                      .filter((t) => t.owner === l.userName)!
+                      .sort(sortTiles)
+                      .map((rt) => (
+                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                      ))}
+                  </Fragment>
+                ))}
+              </ul>
+            )}
+            {tiePlayers && (
+              <ul>
+                {tiePlayers.map((p, i) => (
+                  <Fragment>
+                    <li>{p.userName}</li>
+                    {roundTiles!
+                      .filter((t) => t.owner === p.userName)!
+                      .sort(sortTiles)
+                      .map((rt) => (
+                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                      ))}
+                    <br />
+                    <br />
+                  </Fragment>
                 ))}
               </ul>
             )}
@@ -95,7 +132,26 @@ const ResultModal: React.FC<IProps> = ({
         </Modal.Content>
       ) : (
         <Modal.Content>
-          <h3>booooo it's a tie. nobody win</h3>
+          <h3>
+            booooo it's a tie. nobody win
+            {tiePlayers && (
+              <ul>
+                {tiePlayers.map((p, i) => (
+                  <Fragment>
+                    <li>{p.userName}</li>
+                    {roundTiles!
+                      .filter((t) => t.owner === p.userName)!
+                      .sort(sortTiles)
+                      .map((rt) => (
+                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                      ))}
+                    <br />
+                    <br />
+                  </Fragment>
+                ))}
+              </ul>
+            )}
+          </h3>
         </Modal.Content>
       )}
       <Modal.Actions>

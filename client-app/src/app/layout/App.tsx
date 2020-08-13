@@ -12,6 +12,7 @@ import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import PrivateRoute from "./PrivateRoute";
 import HomePage from "../../features/home/HomePage";
+import PrivacyPolicy from "../../features/policy/PrivacyPolicy";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 
@@ -39,6 +40,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         render={() => (
           <Fragment>
               <Switch>
+                <Route exact path="/privacypolicy" component={PrivacyPolicy} />
                 <PrivateRoute exact path="/games" component={GameDashboard} />
                 <PrivateRoute path="/games/:id/rounds/:roundId" component={GameOn} />
                 <PrivateRoute path="/games/:id" component={GameLobby} />

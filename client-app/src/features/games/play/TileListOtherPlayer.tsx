@@ -14,7 +14,7 @@ interface IProps {
 const TileListOtherPlayer: React.FC<IProps> = ({ roundTiles, player }) => {
   return (
     <Grid verticalAlign="middle">
-      <Grid.Row
+      <Grid.Row style={{borderRadius: "25px"}}
         centered
         className="playerStatusContainer"
         {...(player.isMyTurn && {
