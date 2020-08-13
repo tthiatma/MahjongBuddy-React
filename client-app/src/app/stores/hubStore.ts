@@ -84,7 +84,10 @@ export default class HubStore {
           toast.error('Problem connecting to the game');
         }
       }
-    }
+      else {
+        return token;
+      }
+    } 
   }
 
   addHubConnectionHandler() {
