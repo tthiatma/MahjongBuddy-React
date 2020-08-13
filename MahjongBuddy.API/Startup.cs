@@ -103,7 +103,7 @@ namespace MahjongBuddy.API
                         ValidateAudience = false,
                         ValidateIssuer = false,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
+                        ClockSkew = TimeSpan.FromMinutes(3)
                     };
                     opt.Events = new JwtBearerEvents
                     {
