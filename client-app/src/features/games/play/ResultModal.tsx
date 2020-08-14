@@ -137,7 +137,7 @@ const ResultModal: React.FC<IProps> = ({
             {tiePlayers && (
               <ul>
                 {tiePlayers.map((p, i) => (
-                  <Fragment>
+                  <Fragment key={p.userName}>
                     <li>{p.userName}</li>
                     {roundTiles!
                       .filter((t) => t.owner === p.userName)!
