@@ -1,7 +1,7 @@
 import { observable, action, runInAction, computed, reaction, IReactionDisposer } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
-import { setRoundProps, sortTiles } from "../common/util/util";
+import { setRoundProps, sortTiles, sortByActiveCounter } from "../common/util/util";
 import {
   IRound,
   IRoundPlayer,
@@ -74,12 +74,13 @@ export default class RoundStore {
   @observable pickCounter: number = pickDefaultCounter;
   @observable canPick: boolean = false;
   @observable isMyTurn: boolean = false;
+  @observable isManualSort: boolean = false;
   @observable showResult: boolean = false;
   @observable roundOver: boolean = false;
   @observable roundEndingCounter: number = 5;
   @observable.shallow selectedTile: IRoundTile | null = null;
   @observable roundSimple: IRoundSimple | null = null;
-  @observable.shallow roundTiles: IRoundTile[] | null = null;
+  @observable roundTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
   @observable.shallow roundPlayers: IRoundPlayer[] | null = null;
   @observable mainPlayer: IRoundPlayer | null = null;
@@ -87,7 +88,7 @@ export default class RoundStore {
   @observable rightPlayer: IRoundPlayer | null = null;
   @observable topPlayer: IRoundPlayer | null = null;
   @observable roundResults: IRoundResult[] | null = null;
-  
+
   @computed get hasSelfKongAction(){
     return this.mainPlayer!.roundPlayerActions    
       ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.SelfKong).length > 0
@@ -165,7 +166,7 @@ export default class RoundStore {
               (rt.status === TileStatus.UserActive ||
                 rt.status === TileStatus.UserJustPicked)
           )
-          .sort(sortTiles)
+          .sort(sortByActiveCounter)
       : null;
   }
 
@@ -177,7 +178,7 @@ export default class RoundStore {
               rt.owner === this.rootStore.userStore.user!.userName &&
               rt.status === TileStatus.UserActive
           )
-          .sort(sortTiles)
+          .sort(sortByActiveCounter)
       : null;
   }
 

@@ -154,6 +154,13 @@ namespace MahjongBuddy.Application.PlayerAction
                 currentPlayer.MustThrow = false;
                 updatedPlayers.Add(currentPlayer);
 
+                if(!currentPlayer.IsManualSort)
+                {
+                    var playerAliveTiles = round.RoundTiles.Where(rt => rt.Owner == request.UserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked)).ToList();
+                    RoundTileHelper.AssignAliveTileCounter(playerAliveTiles);
+                    playerAliveTiles.ForEach(rt => updatedTiles.Add(rt));
+                }
+
                 var success = await _context.SaveChangesAsync() > 0;
 
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
