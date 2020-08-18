@@ -18,10 +18,11 @@ import TileListBoard from "./TileListBoard";
 import MainPlayerSection from "./MainPlayerSection";
 import TileListOtherPlayer from "./TileListOtherPlayer";
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
-import { runInAction } from "mobx";
+import { runInAction, toJS } from "mobx";
 import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
 import { Link } from "react-router-dom";
+import { IRoundTile } from "../../../app/models/tile";
 
 interface DetailParams {
   roundId: string;
@@ -47,9 +48,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayer,
     rightPlayer,
     topPlayer,
-    mainPlayerActiveTiles,
+    mainPlayerAliveTiles,
     mainPlayerGraveYardTiles,
-    mainPlayerJustPickedTile,
     boardActiveTile,
     boardGraveyardTiles,
     leftPlayerTiles,
@@ -62,6 +62,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   } = rootStore.roundStore;
   const {
     throwTile,
+    orderTiles,
     hubLoading,
     createHubConnection,
     stopHubConnection,
@@ -76,7 +77,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     borderColor: "rgb(211 211 244)",
     display: "flex",
     overflow: "none",
-    transitionDuration: `0.001s`,
     alignItem: "center",
     justifyContent: "center",
     height: "45px",
@@ -106,7 +106,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   )
     return <LoadingComponent content="Loading round..." />;
 
-  const getActiveTileAnimation = (): string => {
+    const getActiveTileAnimation = (): string => {
     let animationStyle: string = "";
 
     switch (boardActiveTile?.thrownBy) {
@@ -151,16 +151,44 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       toast.warn("Can't throw");
     }
   };
-  const onDragEnd = (result: DropResult) => {
-    const { destination, draggableId } = result;
+
+  const reorderTiles = (activeTiles: IRoundTile[], startIndex: number, endIndex: number ) => {
+    const result = Array.from(activeTiles);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    for(let i = 0; i< result.length; i++){
+      runInAction(() => {
+        result[i].activeTileCounter = i;
+      })
+    }
+    return result;
+  }
+
+  const onDragEnd = async (result: DropResult) => {
+    const { destination, source, draggableId } = result;
 
     if (!destination) {
       return;
     }
 
     if (destination.droppableId === "board") doThrowTile(draggableId);
-    //TODO allow user to arrange tile manually
-    //if (destination.droppableId === "tile") console.log("dropped to tile");
+
+    if (destination.droppableId === "tile"){
+
+      if(source.index === destination.index)
+        return;
+      
+      const beforeOrderingTiles = Array.from(toJS(mainPlayerAliveTiles!, {recurseEverything : true}));
+      const beforeOrderingManualSortValue = toJS(rootStore.roundStore.isManualSort);
+  
+      const reorderedTiles = reorderTiles(mainPlayerAliveTiles!, source.index, destination.index);
+      
+      runInAction("manual Sort", () => {
+        rootStore.roundStore.isManualSort = true;
+      })      
+
+      await orderTiles(reorderedTiles, beforeOrderingTiles, beforeOrderingManualSortValue);
+    } 
   };
 
   return (
@@ -190,7 +218,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={3} />
               </Grid.Row>
 
-              <Grid.Row className="zeroPadding">
+              <Grid.Row>
                 {/* Left Player */}
                 <Grid.Column width={3}>
                   <TileListOtherPlayerVertical
@@ -303,8 +331,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       tileStyleName="tileHorizontal"
                       containerStyleName="tileHorizontalContainer"
                       mainPlayerGraveYardTiles={mainPlayerGraveYardTiles!}
-                      mainPlayerActiveTiles={mainPlayerActiveTiles!}
-                      mainPlayerJustPickedTile={mainPlayerJustPickedTile!}
+                      mainPlayerAliveTiles={mainPlayerAliveTiles!}
                       doThrowTile={doThrowTile}
                     />
                   </Grid.Row>

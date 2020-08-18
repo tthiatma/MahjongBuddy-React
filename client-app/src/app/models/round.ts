@@ -11,7 +11,7 @@ export interface IRoundSimple {
   wind: WindDirection;
   dateCreated: Date;
   isHalted: boolean;
-  isEnding:boolean;
+  isEnding: boolean;
   isOver: boolean;
   isPaused: boolean;
   isTied: boolean;
@@ -61,6 +61,7 @@ export interface IRoundPlayer {
   isInitialDealer: boolean;
   isDealer: boolean;
   isMyTurn: boolean;
+  isManualSort: boolean;
   hasAction: boolean;
   roundPlayerActions: IRoundPlayerAction[];
   mustThrow: boolean;

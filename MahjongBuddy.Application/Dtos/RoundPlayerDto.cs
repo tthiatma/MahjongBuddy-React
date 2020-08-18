@@ -13,6 +13,8 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool IsInitialDealer { get; set; }
 
+        public bool IsManualSort { get; set; }
+
         public bool IsMyTurn { get; set; }
 
         public bool HasAction { get; set; }

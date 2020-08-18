@@ -29,8 +29,9 @@ export default class HubStore {
     this.roundStore = this.rootStore.roundStore;
     this.gameStore = this.rootStore.gameStore;
   }
-  @observable hubActionLoading = false;
-  @observable hubLoading = false;
+  
+  @observable hubActionLoading:boolean = false;
+  @observable hubLoading:boolean = false;
   @observable.ref hubConnection: HubConnection | null = null;
 
   @action leaveGroup = (gameId: string) => {
@@ -65,8 +66,10 @@ export default class HubStore {
         if (player.userName === this.roundStore.topPlayer?.userName)
           this.roundStore.topPlayer = player;
 
-        if (player.userName === this.roundStore.mainPlayer?.userName)
+        if (player.userName === this.roundStore.mainPlayer?.userName){
           this.roundStore.mainPlayer = player;
+          this.roundStore.isManualSort = player.isManualSort;
+        }
       });
     });
   }
@@ -270,7 +273,7 @@ export default class HubStore {
           accessTokenFactory: () => this.checkTokenAndRefreshIfExpired(),
         })
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.Information)
+        .configureLogging(LogLevel.None)
         .build();
       this.addHubConnectionHandler();
     }
@@ -311,7 +314,6 @@ export default class HubStore {
             runInAction(() => {
               this.hubLoading = false;
             });
-            console.log(`Connection State = ${this.hubConnection!.state}`);
           });
         })
         .catch((error) => {
@@ -326,7 +328,7 @@ export default class HubStore {
   @action addChatMsg = async (values: any) => {
     values.gameId = this.gameStore.game!.id;
     try {
-      this.hubConnection!.invoke("SendChatMsg", values).catch((e) => {
+      this.hubConnection!.invoke("SendChatMsg", values).catch(() => {
         toast.error("Unable to send chat message");
       });
     } catch (error) {
@@ -377,7 +379,6 @@ export default class HubStore {
     this.hubActionLoading = true;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        console.log("is hub connected and calling Tied Round");
         this.hubConnection!.invoke("TiedRound", this.getGameAndRoundProps());
         runInAction(() => {
           this.hubActionLoading = false;
@@ -397,7 +398,6 @@ export default class HubStore {
     this.hubActionLoading = true;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        console.log("is hub connected and calling Ending Round");
         this.hubConnection!.invoke("EndingRound", this.getGameAndRoundProps());
         runInAction(() => {
           this.hubActionLoading = false;
@@ -439,7 +439,7 @@ export default class HubStore {
         await this.hubConnection!.invoke(
           "WinRound",
           this.getGameAndRoundProps()
-        ).catch((err) => {
+        ).catch(() => {
           toast.error(`can't win`);
         });
         runInAction(() => {
@@ -455,6 +455,45 @@ export default class HubStore {
       toast.error("problem calling win");
     }
   };
+
+  @action orderTiles = async (reorderedTiles: IRoundTile[], originalTiles: IRoundTile[], originalManualSort: boolean) => {
+    let values = this.getGameAndRoundProps();
+    values.RoundTiles = reorderedTiles;
+    values.IsManualSort = this.rootStore.roundStore.isManualSort;
+    runInAction(() => {
+      this.hubActionLoading = true;
+    });
+    try {
+      if (this.hubConnection && this.hubConnection.state === "Connected") {
+        await this.hubConnection!.invoke("SortTiles", values).catch(() => {
+          toast.error(`failed ordering tile`);
+          for(let i = 0; i< originalTiles!.length; i++){
+
+            let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
+              (obj) => obj.id === originalTiles![i].id
+            );    
+            runInAction("updating reordered tile", () => {
+              this.rootStore.roundStore.roundTiles![objIndex].activeTileCounter = originalTiles![i].activeTileCounter;
+            })  
+          }
+    
+          runInAction("manual Sort", () => {
+            this.rootStore.roundStore.isManualSort = originalManualSort;
+          }) 
+        });
+        runInAction(() => {
+          this.hubActionLoading = false;
+        });
+      } else {
+        toast.error("not connected to hub");
+      }
+    } catch (error) {
+      runInAction(() => {
+        this.hubActionLoading = false;
+      });
+      toast.error("problem ordering tile");
+    }
+  }
 
   @action throwTile = async () => {
     let values = this.getGameAndRoundProps();
@@ -540,7 +579,7 @@ export default class HubStore {
         await this.hubConnection!.invoke(
           "PongTile",
           this.getGameAndRoundProps()
-        ).catch((err) => {
+        ).catch(() => {
           toast.error(`can't pong`);
         });
         runInAction(() => {
@@ -569,7 +608,7 @@ export default class HubStore {
 
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        await this.hubConnection!.invoke("ChowTile", values).catch((err) => {
+        await this.hubConnection!.invoke("ChowTile", values).catch(() => {
           toast.error(`can't chow`);
         });
         runInAction(() => {
@@ -596,7 +635,7 @@ export default class HubStore {
     values.TileValue = tileValue;
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        await this.hubConnection!.invoke("KongTile", values).catch((err) => {
+        await this.hubConnection!.invoke("KongTile", values).catch(() => {
           toast.error(`can't kong`);
         });
         runInAction(() => {
@@ -623,7 +662,7 @@ export default class HubStore {
         await this.hubConnection!.invoke(
           "SkipAction",
           this.getGameAndRoundProps()
-        ).catch((err) => {
+        ).catch(() => {
           runInAction(() => {
             this.roundStore.mainPlayer!.hasAction = true;
             this.hubActionLoading = false;  

@@ -9,6 +9,22 @@ namespace MahjongBuddy.Application.Rounds.Scorings
     {
         public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
+
+            //if theres tiles in groupset then its not possible to have thirteen wonders
+            var tilesInGroupSet = tiles.Where(t => t.TileSetGroup == TileSetGroup.Chow || t.TileSetGroup == TileSetGroup.Pong || t.TileSetGroup == TileSetGroup.Kong);
+            if (tilesInGroupSet.Count() > 0)
+            {
+                if (_successor != null)
+                {
+                    return _successor.HandleRequest(tiles, handTypes);
+                }
+                else
+                {
+                    return handTypes;
+                }
+            }
+
+
             var thirteenWonderTiles = TileHelper.BuildThirteenWonder();
             bool foundEyesFor13Wonders = false;
             bool is13Wonders = true;

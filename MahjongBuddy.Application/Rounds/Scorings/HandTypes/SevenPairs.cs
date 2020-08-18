@@ -12,6 +12,20 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             if (tiles == null)
                 return handTypes;
 
+            //if theres tiles in groupset then its not possible to have 7 pairs
+            var tilesInGroupSet = tiles.Where(t => t.TileSetGroup == TileSetGroup.Chow || t.TileSetGroup == TileSetGroup.Pong || t.TileSetGroup == TileSetGroup.Kong);
+            if (tilesInGroupSet.Count() > 0)
+            {
+                if (_successor != null)
+                {
+                    return _successor.HandleRequest(tiles, handTypes);
+                }
+                else
+                {
+                    return handTypes;
+                }
+            }
+
             //check al pairs      
             bool isAllPair = true;
             foreach (var t in tiles)
