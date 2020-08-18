@@ -202,13 +202,12 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         {
             var context = _f.TestDataContext;
 
-            WinTilesHelper.SetupForExtraPointLastTile(context, _f.MainPlayerUserName, selfPick: false);
+            WinTilesHelper.SetupForExtraPointLastTile(context, _f.MainPlayerUserName, selfPick: true);
 
             var round = _f.TestDataContext.Rounds.First();
 
             var result = new ExtraPointBuilder().GetExtraPoint(round, _f.MainPlayerUserName);
 
-            Assert.Single(result);
             Assert.Contains(ExtraPoint.WinOnLastTile, result);
         }
     }
