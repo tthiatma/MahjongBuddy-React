@@ -35,7 +35,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
             if (greenDragonTiles.Count() >= 3)
                 extraPoints.Add(ExtraPoint.GreenDragon);
 
-
             var whiteDragonTiles = totalTiles.Where(t => t.Tile.TileValue == TileValue.DragonWhite);
             if (whiteDragonTiles.Count() >= 3)
                 extraPoints.Add(ExtraPoint.WhiteDragon);
@@ -44,7 +43,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
                 return _successor.HandleRequest(round, winnerUserName, extraPoints);
             else
                 return extraPoints;
-
         }
     }
 }

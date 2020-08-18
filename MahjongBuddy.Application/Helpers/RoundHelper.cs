@@ -59,8 +59,11 @@ namespace MahjongBuddy.Application.Helpers
             //unless remaining tile is 1, give user give up action
             var unopenTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
 
-            if(unopenTiles.Count() == 1)            
-                nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.GiveUp });            
+            if(unopenTiles.Count() == 1)
+            {
+                nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.GiveUp });
+                nextPlayer.MustThrow = false;
+            }            
             else           
                 RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);            
 

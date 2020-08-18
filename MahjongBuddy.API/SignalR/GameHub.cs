@@ -104,7 +104,7 @@ namespace MahjongBuddy.API.SignalR
             string userName = GetUserName();
             command.UserName = userName;
             var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
         }
 
         public async Task PongTile(Pong.Command command)
