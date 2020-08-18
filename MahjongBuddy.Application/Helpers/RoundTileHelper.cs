@@ -249,9 +249,22 @@ namespace MahjongBuddy.Application.Helpers
             roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
         }
 
+        public static void AssignAliveTileCounter(List<RoundTile> playerTiles)
+        {
+            playerTiles.Sort(new SortAliveTiles());
+
+            int x = 0;
+            foreach (var rt in playerTiles)
+            {
+                rt.ActiveTileCounter = x;
+                x++;
+            }
+        }
+
         public static void AssignTilesToUser(int tilesCount, string userId, IEnumerable<RoundTile> roundTiles)
         {
             var newTiles = roundTiles.Where(x => string.IsNullOrEmpty(x.Owner));
+
             int x = 0;
             foreach (var playTile in newTiles)
             {
@@ -334,6 +347,9 @@ namespace MahjongBuddy.Application.Helpers
         public static void PickTile(Round round, string pickerUserName, ref List<RoundTile> updatedTiles)
         {
             //we loop 8 times because there are total of 8 flowers. get more tiles if its a flower
+            var playerAliveTiles = round.RoundTiles.Where(rt => rt.Owner == pickerUserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked));
+            var activeTilecounter = playerAliveTiles.Max(t => t.ActiveTileCounter) + 1;
+
             for (var i = 0; i < 8; i++)
             {
                 var newTile = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
@@ -349,6 +365,7 @@ namespace MahjongBuddy.Application.Helpers
                 if (newTile.Tile.TileType != TileType.Flower)
                 {
                     newTile.Status = TileStatus.UserJustPicked;
+                    newTile.ActiveTileCounter = activeTilecounter;
                     updatedTiles.Add(newTile);
                     break;
                 }

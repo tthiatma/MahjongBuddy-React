@@ -129,7 +129,7 @@ namespace MahjongBuddy.Application.Rounds
                 //for debugging
                 //RoundTileHelper.SetupForChowAndWin(newRound.RoundTiles);
 
-                //tiles assignment
+                //tiles assignment and sorting
                 foreach (var player in players)
                 {
                     if (player.Id == dealerId)
@@ -137,9 +137,15 @@ namespace MahjongBuddy.Application.Rounds
                         RoundTileHelper.AssignTilesToUser(14, player.UserName, newRound.RoundTiles);
                         //set one tile status to be justpicked
                         newRound.RoundTiles.First(rt => rt.Owner == player.UserName && rt.Tile.TileType != TileType.Flower).Status = TileStatus.UserJustPicked;
+                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == player.UserName && rt.Status == TileStatus.UserActive).ToList();
+                        RoundTileHelper.AssignAliveTileCounter(playerTiles);
                     }
                     else
+                    {
                         RoundTileHelper.AssignTilesToUser(13, player.UserName, newRound.RoundTiles);
+                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == player.UserName && rt.Status == TileStatus.UserActive).ToList();
+                        RoundTileHelper.AssignAliveTileCounter(playerTiles);
+                    }
                 }
 
                 _context.Rounds.Add(newRound);
@@ -172,15 +178,6 @@ namespace MahjongBuddy.Application.Rounds
                 }
 
                 return ret;
-            }
-
-            private WindDirection NextRoundWind(Round lastRound, WindDirection lastRoundWind)
-            {
-                var lastRoundDealer = lastRound.RoundPlayers.First(u => u.IsDealer);
-                if (lastRoundDealer.Wind != WindDirection.North)
-                    return lastRoundWind;
-                else
-                    return NextWindClockWise(lastRoundWind);
             }
 
             private WindDirection NextWindAntiClockwise(WindDirection wind)

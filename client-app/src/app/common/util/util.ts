@@ -47,7 +47,15 @@ export const GetOtherUserWindPosition = (currentUserWind:WindDirection , directi
   }
 }
 
+export const sortByActiveCounter = (a: IRoundTile, b:IRoundTile) => {
+  if(a.activeTileCounter > b.activeTileCounter) return  1;
+  if(a.activeTileCounter < b.activeTileCounter) return  -1;
+  return 0;
+}
+
 export const sortTiles = (a: IRoundTile, b: IRoundTile) => {
+  if(a.status > b.status) return -1;    
+  if(a.status < b.status) return 1;    
   if(a.tileSetGroupIndex < b.tileSetGroupIndex) return -1;
   if(a.tileSetGroupIndex > b.tileSetGroupIndex) return 1;
   if(a.tile.tileType > b.tile.tileType) return -1;
@@ -74,6 +82,7 @@ export const setRoundProps = (round: IRound, user: IUser, roundStore: RoundStore
     );
       if(mainPlayer){
       roundStore.mainPlayer = mainPlayer;
+      roundStore.isManualSort = mainPlayer.isManualSort;
 
       let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");
       roundStore.leftPlayer = round.roundPlayers.find(p => p.wind === leftUserWind)!;
