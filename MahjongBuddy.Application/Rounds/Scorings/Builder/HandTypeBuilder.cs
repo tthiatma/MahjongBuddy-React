@@ -17,13 +17,14 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
             FindHandType oneSuit = new OneSuit();
             FindHandType dragon = new Dragon();
             FindHandType fourWind = new FourWind();
-
+            FindHandType hiddenTreasure = new HiddenTreasure();
             _initial.SetSuccessor(sevenPairs);
             sevenPairs.SetSuccessor(thirteenOrphans);
             thirteenOrphans.SetSuccessor(legitSet);
             legitSet.SetSuccessor(oneSuit);
             oneSuit.SetSuccessor(dragon);
             dragon.SetSuccessor(fourWind);
+            fourWind.SetSuccessor(hiddenTreasure);
         }
 
         public List<HandType> GetHandType(Round round, string winnerUserName)

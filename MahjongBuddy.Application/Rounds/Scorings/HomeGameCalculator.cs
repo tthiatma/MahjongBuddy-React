@@ -22,16 +22,17 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             {
                 { HandType.AllOneSuit, 7 },
                 { HandType.BigDragon, 10 },
-                { HandType.BigFourWind, 10 },
+                { HandType.BigFourWind, 13 },
                 { HandType.Chicken, 0 },
                 { HandType.MixedOneSuit, 3 },
                 { HandType.SevenPairs, 6 },
                 { HandType.SmallDragon, 5 },
                 { HandType.SmallFourWind, 10 },
                 { HandType.Straight, 1 },
-                { HandType.ThirteenOrphans, 10 },
+                { HandType.ThirteenOrphans, 13 },
                 { HandType.Triplets, 3 },
-                { HandType.None, -10 },
+                { HandType.HiddenTreasure, 13},
+                { HandType.None, 0 },
             };
             ExtraPointLookup = new Dictionary<ExtraPoint, int>()
             {
@@ -49,8 +50,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { ExtraPoint.WhiteDragon, 1 },
                 { ExtraPoint.WinOnLastTile, 1 },
             };
-
         }
+
         public HandWorth Calculate(Round round, string winnerUserName)
         {
             HandWorth ret = new HandWorth();
@@ -58,7 +59,6 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 var handTypes = _handBuilder.GetHandType(round, winnerUserName);
             if(handTypes.Count() > 0)
             {
-
                 handTypes.ForEach(tp => totalPoints += HandTypeLookup[tp]);
 
                 var extraPoints = _pointBuider.GetExtraPoint(round, winnerUserName);
@@ -67,6 +67,27 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 if(handTypes.Contains(HandType.SevenPairs) || handTypes.Contains(HandType.ThirteenOrphans))
                 {
                     if (extraPoints.Contains(ExtraPoint.ConcealedHand)) extraPoints.Remove(ExtraPoint.ConcealedHand);
+                }
+
+                //if handtypes has small dragon or big dragon then take off dragon extrapoint 
+                if (handTypes.Contains(HandType.SmallDragon) || handTypes.Contains(HandType.BigDragon))
+                {
+                    if (extraPoints.Contains(ExtraPoint.GreenDragon)) extraPoints.Remove(ExtraPoint.GreenDragon);
+                    if (extraPoints.Contains(ExtraPoint.RedDragon)) extraPoints.Remove(ExtraPoint.RedDragon);
+                    if (extraPoints.Contains(ExtraPoint.WhiteDragon)) extraPoints.Remove(ExtraPoint.WhiteDragon);
+                }
+
+                //if handtypes has small wind or big wind then take off wind exrapoint
+                if (handTypes.Contains(HandType.SmallFourWind) || handTypes.Contains(HandType.BigFourWind))
+                {
+                    if (extraPoints.Contains(ExtraPoint.PrevailingWind)) extraPoints.Remove(ExtraPoint.PrevailingWind);
+                    if (extraPoints.Contains(ExtraPoint.SeatWind)) extraPoints.Remove(ExtraPoint.SeatWind);
+                }
+
+                //if handtypes contain hidden treasure, then triplets wont count anymore
+                if (handTypes.Contains(HandType.HiddenTreasure))
+                {
+                    if (handTypes.Contains(HandType.Triplets)) handTypes.Remove(HandType.Triplets);
                 }
 
                 extraPoints.ForEach(ep => totalPoints += ExtraPointLookup[ep]);

@@ -84,6 +84,34 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         }
 
         [Fact]
+        public void Detect_HiddenTreasure()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForHiddenTreasure(context, _f.MainPlayerUserName);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.Contains(HandType.HiddenTreasure, result);
+        }
+
+        [Fact]
+        public void Detect_Not_HiddenTreasure()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForTriplets(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.DoesNotContain(HandType.HiddenTreasure, result);
+        }
+
+        [Fact]
         public void Detect_Straight()
         {
             var context = _f.TestDataContext;
@@ -154,7 +182,6 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
-            Assert.Equal(2, result.Count());
             Assert.Contains(HandType.AllOneSuit, result);
             Assert.Contains(HandType.Triplets, result);
         }
@@ -202,7 +229,6 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
-            Assert.Equal(3, result.Count());
             Assert.Contains(HandType.BigFourWind, result);
             Assert.Contains(HandType.MixedOneSuit, result);
             Assert.Contains(HandType.Triplets, result);

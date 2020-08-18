@@ -2,6 +2,7 @@
 using MahjongBuddy.EntityFramework.EntityFramework;
 using System.Linq;
 using System.Collections.Generic;
+using MoreLinq;
 
 namespace MahjongBuddy.Application.Tests.Helpers
 {
@@ -223,11 +224,44 @@ namespace MahjongBuddy.Application.Tests.Helpers
             return userTiles;
         }
 
-        public static IEnumerable<RoundTile> SetupForTriplets(MahjongBuddyDbContext context, string userId, bool selfPick)
+        public static IEnumerable<RoundTile> SetupForHiddenTreasure(MahjongBuddyDbContext context, string userId)
         {
             List<RoundTile> userTiles = new List<RoundTile>();
 
             userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money).Take(3));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.WindEast));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
+            var lastTile = context.RoundTiles.Last(t => t.Tile.TileValue == TileValue.WindEast);
+
+            lastTile.Owner = userId;
+            lastTile.Status = TileStatus.UserJustPicked;
+
+            userTiles.Add(lastTile);
+
+            context.SaveChanges();
+
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForTriplets(MahjongBuddyDbContext context, string userId, bool selfPick)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+            var pongedTiles = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle).Take(3);
+            pongedTiles.ForEach(rt => { rt.TileSetGroup = TileSetGroup.Pong; rt.TileSetGroupIndex = 1; });
+            userTiles.AddRange(pongedTiles);
 
             userTiles.AddRange(context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle).Take(3));
 

@@ -10,7 +10,7 @@
         //ping wu
         Straight,
 
-        //pong
+        //deoi deoi wu
         Triplets,
 
         //wan jat sik
@@ -36,15 +36,15 @@
         //daai sei hei
         BigFourWind,
 
+        //Four pong and all concealed, and win by self pick
+        HiddenTreasure,
+
         //TODO: implement below
         //jiu gau
         //one nine one nine
         //Orphans,
 
         //AllKong,
-
-        //Four pong and all concealed, and win by self pick
-        //HiddenTreasure,
 
         //zi jat sik
         //AllHonors,
