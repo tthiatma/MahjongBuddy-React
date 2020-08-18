@@ -138,11 +138,15 @@ namespace MahjongBuddy.Application.PlayerAction
                 //add new tile for user                
                 var newTiles = round.RoundTiles.PickTile(request.UserName, true);
 
-                //assign new tile to user that kong the tile
-                foreach (var tile in newTiles)
+                if(newTiles.Count() > 0)
                 {
-                    updatedTiles.Add(tile);
+                    //assign new tile to user that kong the tile
+                    foreach (var tile in newTiles)
+                    {
+                        updatedTiles.Add(tile);
+                    }
                 }
+                //TODO: what if user kong when there is no more tile
 
                 currentPlayer.IsMyTurn = true;
                 //because new tile automatically added, player must throw set to true

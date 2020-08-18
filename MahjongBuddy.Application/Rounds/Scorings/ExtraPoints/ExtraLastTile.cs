@@ -19,7 +19,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
 
             var stillMoreTiles = allTiles.Any(t => string.IsNullOrEmpty(t.Owner));
 
-            if (!stillMoreTiles)
+            if (!stillMoreTiles && extraPoints.Contains(ExtraPoint.SelfPick))
                 extraPoints.Add(ExtraPoint.WinOnLastTile);            
 
             if (_successor != null)

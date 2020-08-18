@@ -2,6 +2,7 @@
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Helpers;
+using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
@@ -27,11 +28,13 @@ namespace MahjongBuddy.Application.PlayerAction
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
+            private readonly IPointsCalculator _pointCalculator;
 
-            public Handler(MahjongBuddyDbContext context, IMapper mapper)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper, IPointsCalculator pointCalculator)
             {
                 _context = context;
                 _mapper = mapper;
+                _pointCalculator = pointCalculator;
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
@@ -54,11 +57,24 @@ namespace MahjongBuddy.Application.PlayerAction
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
                 currentPlayer.MustThrow = true;
-                updatedPlayers.Add(currentPlayer);
 
                 //TODO only allow pick tile when it's player's turn
 
                 RoundTileHelper.PickTile(round, request.UserName, ref updatedTiles);
+
+                //pick action now only available on last tile
+                //check if user can win if they pick on last tile
+                var remainingTiles = round.RoundTiles.FirstOrDefault(t => string.IsNullOrEmpty(t.Owner));
+                if (remainingTiles == null)
+                {
+                    currentPlayer.RoundPlayerActions.Clear();
+                    currentPlayer.HasAction = false;
+                    if (RoundHelper.DetermineIfUserCanWin(round, currentPlayer, _pointCalculator))
+                    {
+                        currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.Win });
+                    }
+                }
+                updatedPlayers.Add(currentPlayer);
 
                 try
                 {

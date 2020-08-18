@@ -44,7 +44,7 @@ const PlayerAction: React.FC = () => {
     chow,
     hubActionLoading,
     winRound,
-    skipAction
+    skipAction,
   } = rootStore.hubStore;
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
@@ -167,7 +167,7 @@ const PlayerAction: React.FC = () => {
         <Card.Group centered itemsPerRow={3} items={chowOptions} />
       )}
 
-      {((mainPlayer?.hasAction && hasWinAction) || hasSelfWinAction) && (
+      {(hasWinAction || hasSelfWinAction) && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -229,7 +229,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {((mainPlayer?.hasAction && hasKongAction) || hasSelfKongAction) && (
+      {((mainPlayer?.hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -263,7 +263,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {hasGiveUpAction && (
+      {hasGiveUpAction && !round!.isEnding && !mainPlayer!.mustThrow && (
         <Button.Group>
           <Button
             circular

@@ -11,7 +11,7 @@ export interface IRoundSimple {
   wind: WindDirection;
   dateCreated: Date;
   isHalted: boolean;
-  isEnding:boolean;
+  isEnding: boolean;
   isOver: boolean;
   isPaused: boolean;
   isTied: boolean;
