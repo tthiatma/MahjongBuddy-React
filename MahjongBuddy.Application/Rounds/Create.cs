@@ -137,7 +137,7 @@ namespace MahjongBuddy.Application.Rounds
                         RoundTileHelper.AssignTilesToUser(14, player.UserName, newRound.RoundTiles);
                         //set one tile status to be justpicked
                         newRound.RoundTiles.First(rt => rt.Owner == player.UserName && rt.Tile.TileType != TileType.Flower).Status = TileStatus.UserJustPicked;
-                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == player.UserName && rt.Status == TileStatus.UserActive).ToList();
+                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == player.UserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked )).ToList();
                         RoundTileHelper.AssignAliveTileCounter(playerTiles);
                     }
                     else

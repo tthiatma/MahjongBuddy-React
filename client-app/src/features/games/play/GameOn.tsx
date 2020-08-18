@@ -178,7 +178,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       if(source.index === destination.index)
         return;
       
-        const beforeOrderingTiles = Array.from(toJS(mainPlayerAliveTiles!, {recurseEverything : true}));
+      const beforeOrderingTiles = Array.from(toJS(mainPlayerAliveTiles!, {recurseEverything : true}));
       const beforeOrderingManualSortValue = toJS(rootStore.roundStore.isManualSort);
   
       const reorderedTiles = reorderTiles(mainPlayerAliveTiles!, source.index, destination.index);
@@ -188,17 +188,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       })      
 
       await orderTiles(reorderedTiles, beforeOrderingTiles, beforeOrderingManualSortValue);
-
-      // for(let i = 0; i< reorderedTiles.length; i++){
-
-      //   let objIndex = rootStore.roundStore.roundTiles!.findIndex(
-      //     (obj) => obj.id === reorderedTiles[i].id
-      //   );
-
-      //   runInAction("updating reordered tile", () => {
-      //     rootStore.roundStore.roundTiles![objIndex].activeTileCounter = i;
-      //   })  
-      // }
     } 
   };
 
@@ -229,7 +218,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={3} />
               </Grid.Row>
 
-              <Grid.Row className="zeroPadding">
+              <Grid.Row>
                 {/* Left Player */}
                 <Grid.Column width={3}>
                   <TileListOtherPlayerVertical

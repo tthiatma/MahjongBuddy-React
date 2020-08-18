@@ -34,7 +34,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
           </div>
         </div>
       </Grid.Column>
-      <Grid.Column style={{ padding: "2px" }} width={5} className="flexTilesVerticalContainer">
+      <Grid.Column width={5} className="flexTilesVerticalContainer">
         {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
