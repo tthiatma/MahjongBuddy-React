@@ -39,10 +39,11 @@
         //Four pong and all concealed, and win by self pick
         HiddenTreasure,
 
-        //TODO: implement below
         //jiu gau
         //one nine one nine
-        //Orphans,
+        AllTerminals,
+
+        //TODO: implement below
 
         //AllKong,
 

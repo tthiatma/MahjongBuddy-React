@@ -70,6 +70,34 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         }
 
         [Fact]
+        public void Detect_AllTerminals()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllTerminals(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.Contains(HandType.AllTerminals, result);
+        }
+
+        [Fact]
+        public void Detect_Not_AllTerminals()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllOneSuitStraight(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.DoesNotContain(HandType.AllTerminals, result);
+        }
+
+        [Fact]
         public void Detect_Triplets()
         {
             var context = _f.TestDataContext;

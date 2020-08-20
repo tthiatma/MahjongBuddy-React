@@ -32,6 +32,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { HandType.ThirteenOrphans, 13 },
                 { HandType.Triplets, 3 },
                 { HandType.HiddenTreasure, 13},
+                { HandType.AllTerminals, 10},
                 { HandType.None, 0 },
             };
             ExtraPointLookup = new Dictionary<ExtraPoint, int>()
@@ -85,7 +86,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 }
 
                 //if handtypes contain hidden treasure, then triplets wont count anymore
-                if (handTypes.Contains(HandType.HiddenTreasure))
+                if (handTypes.Contains(HandType.HiddenTreasure) || handTypes.Contains(HandType.AllTerminals))
                 {
                     if (handTypes.Contains(HandType.Triplets)) handTypes.Remove(HandType.Triplets);
                 }
