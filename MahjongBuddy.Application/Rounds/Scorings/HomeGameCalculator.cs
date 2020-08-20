@@ -20,6 +20,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
             _handBuilder = handBuilder;
             HandTypeLookup = new Dictionary<HandType, int>()
             {
+                { HandType.None, 0 },
                 { HandType.AllOneSuit, 7 },
                 { HandType.BigDragon, 10 },
                 { HandType.BigFourWind, 13 },
@@ -33,7 +34,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { HandType.Triplets, 3 },
                 { HandType.HiddenTreasure, 13},
                 { HandType.AllTerminals, 10},
-                { HandType.None, 0 },
+                { HandType.AllKongs, 13 },
+                { HandType.AllHonors, 10 },
             };
             ExtraPointLookup = new Dictionary<ExtraPoint, int>()
             {

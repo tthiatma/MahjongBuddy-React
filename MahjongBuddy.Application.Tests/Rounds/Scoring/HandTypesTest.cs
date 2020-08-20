@@ -70,6 +70,62 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         }
 
         [Fact]
+        public void Detect_AllHonors()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllHonors(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.Contains(HandType.AllHonors, result);
+        }
+
+        [Fact]
+        public void Detect_No_AllHonors()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllTerminals(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.DoesNotContain(HandType.AllHonors, result);
+        }
+
+        [Fact]
+        public void Detect_AllKongs()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllKongs(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.Contains(HandType.AllKongs, result);
+        }
+
+        [Fact]
+        public void Detect_No_AllKongs()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllOneSuitTriplets(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.DoesNotContain(HandType.AllKongs, result);
+        }
+
+        [Fact]
         public void Detect_AllTerminals()
         {
             var context = _f.TestDataContext;

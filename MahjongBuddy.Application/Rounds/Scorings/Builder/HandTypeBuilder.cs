@@ -19,6 +19,9 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
             FindHandType fourWind = new FourWind();
             FindHandType hiddenTreasure = new HiddenTreasure();
             FindHandType allTerminals = new AllTerminals();
+            FindHandType allKongs = new AllKongs();
+            FindHandType allHonors = new AllHonors();
+
             _initial.SetSuccessor(sevenPairs);
             sevenPairs.SetSuccessor(thirteenOrphans);
             thirteenOrphans.SetSuccessor(legitSet);
@@ -27,6 +30,8 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
             dragon.SetSuccessor(fourWind);
             fourWind.SetSuccessor(hiddenTreasure);
             hiddenTreasure.SetSuccessor(allTerminals);
+            allTerminals.SetSuccessor(allKongs);
+            allKongs.SetSuccessor(allHonors);
         }
 
         public List<HandType> GetHandType(Round round, string winnerUserName)

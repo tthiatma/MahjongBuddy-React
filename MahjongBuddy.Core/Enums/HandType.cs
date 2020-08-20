@@ -43,13 +43,13 @@
         //one nine one nine
         AllTerminals,
 
-        //TODO: implement below
-
-        //AllKong,
+        AllKongs,
 
         //zi jat sik
-        //AllHonors,
+        AllHonors,
 
+        //TODO: implement below
+        //this is so rare....
         //gau zi lin waan
         //one suit 1112345678999
         //NineGates
