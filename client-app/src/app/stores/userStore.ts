@@ -25,6 +25,7 @@ export default class UserStore {
         this.user = user;
       });
       this.rootStore.commonStore.setToken(user.token);
+      this.rootStore.commonStore.setRefreshToken(user.refreshToken);
       this.rootStore.modalStore.closeModal();
       history.push("/games");
     } catch (error) {
@@ -39,6 +40,7 @@ export default class UserStore {
         this.user = user;
       });
       this.rootStore.commonStore.setToken(user.token);
+      this.rootStore.commonStore.setRefreshToken(user.refreshToken);
       this.rootStore.modalStore.closeModal();
       history.push("/games");
     } catch (error) {
@@ -59,6 +61,7 @@ export default class UserStore {
 
   @action logout = () => {
     this.rootStore.commonStore.setToken(null);
+    this.rootStore.commonStore.setRefreshToken(null);
     this.user = null;
     history.push("/");
   };
@@ -71,6 +74,7 @@ export default class UserStore {
       runInAction(() => {
         this.user = user;
         this.rootStore.commonStore.setToken(user.token);
+        this.rootStore.commonStore.setRefreshToken(user.refreshToken);
         this.rootStore.modalStore.closeModal();
         this.loading = false;
       });

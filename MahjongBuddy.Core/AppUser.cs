@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace MahjongBuddy.Core
@@ -10,5 +11,9 @@ namespace MahjongBuddy.Core
         public virtual ICollection<UserGame> UserGames { get; set; }
 
         public virtual ICollection<RoundPlayer> UserRounds { get; set; }
+
+        public string RefreshToken { get; set; }
+
+        public DateTime RefreshTokenExpiry { get; set; }
     }
 }

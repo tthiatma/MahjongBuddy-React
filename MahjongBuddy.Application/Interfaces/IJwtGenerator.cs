@@ -4,6 +4,7 @@ namespace MahjongBuddy.Application.Interfaces
 {
     public interface IJwtGenerator
     {
-        public string CreateToken(AppUser user);
+        string CreateToken(AppUser user);
+        string GenerateRefreshToken();
     }
 }

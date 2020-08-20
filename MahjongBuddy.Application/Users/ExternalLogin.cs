@@ -3,6 +3,7 @@ using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,7 +48,9 @@ namespace MahjongBuddy.Application.Users
                         DisplayName = userInfo.Name,
                         Id = userInfo.Id,
                         Email = userInfo.Email,
-                        UserName = "fb_" + userInfo.Id
+                        UserName = "fb_" + userInfo.Id,
+                        RefreshToken = _jwtGenerator.GenerateRefreshToken(),
+                        RefreshTokenExpiry = DateTime.Now.AddDays(30)
                     };
 
                     //var photo = new Photo
@@ -70,6 +73,7 @@ namespace MahjongBuddy.Application.Users
                     DisplayName = user.DisplayName,
                     Token = _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
+                    RefreshToken = user.RefreshToken,
                     //Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
 
                 };
