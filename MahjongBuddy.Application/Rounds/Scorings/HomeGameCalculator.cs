@@ -87,8 +87,12 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                     if (extraPoints.Contains(ExtraPoint.SeatWind)) extraPoints.Remove(ExtraPoint.SeatWind);
                 }
 
-                //if handtypes contain hidden treasure, then triplets wont count anymore
-                if (handTypes.Contains(HandType.HiddenTreasure) || handTypes.Contains(HandType.AllTerminals))
+                //if handtypes contain below, then triplets wont count anymore
+                if (handTypes.Contains(HandType.HiddenTreasure) || 
+                    handTypes.Contains(HandType.AllTerminals) ||
+                    handTypes.Contains(HandType.AllHonors) ||
+                    handTypes.Contains(HandType.AllKongs) 
+                    )
                 {
                     if (handTypes.Contains(HandType.Triplets)) handTypes.Remove(HandType.Triplets);
                 }
