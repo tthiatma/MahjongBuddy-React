@@ -2,6 +2,7 @@
 using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@ namespace MahjongBuddy.Application.Users
                     Id = user.Id,
                     DisplayName = user.DisplayName,
                     UserName = user.UserName,
-                    Image = null,
+                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
                     Token = _jwtGenerator.CreateToken(user),
                     RefreshToken = user.RefreshToken
                 };

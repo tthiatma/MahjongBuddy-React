@@ -10,6 +10,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
     {
         //dotnet ef migrations add "InitialCreate" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
         //dotnet ef migrations add "RefreshToken" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
+        //dotnet ef migrations add "PhotoEntityAdded" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
 
         //migrationBuilder.Sql(
         //        @"
@@ -68,6 +69,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         public DbSet<RoundPlayer> RoundPlayers { get; set; }
         public DbSet<RoundResultHand> RoundHands { get; set; }
         public DbSet<RoundResultExtraPoint> RoundExtraPoints { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

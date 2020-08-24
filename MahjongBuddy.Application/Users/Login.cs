@@ -8,6 +8,7 @@ using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using System;
+using System.Linq;
 
 namespace MahjongBuddy.Application.Users
 {
@@ -63,7 +64,7 @@ namespace MahjongBuddy.Application.Users
                         Token = _jwtGenerator.CreateToken(user),
                         RefreshToken = user.RefreshToken,
                         UserName = user.UserName,
-                        Image = null
+                        Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
                     };                            
                 }
 
