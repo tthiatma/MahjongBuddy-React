@@ -3,6 +3,7 @@ using MahjongBuddy.EntityFramework.EntityFramework;
 using System.Linq;
 using System.Collections.Generic;
 using MoreLinq;
+using System.Runtime.CompilerServices;
 
 namespace MahjongBuddy.Application.Tests.Helpers
 {
@@ -426,6 +427,91 @@ namespace MahjongBuddy.Application.Tests.Helpers
             }
 
             userTiles.Add(lastTile);
+
+            context.SaveChanges();
+
+            return userTiles;
+        }
+
+        public static IEnumerable<RoundTile> SetupForBaoAllOneSuit(MahjongBuddyDbContext context, string userId)
+        {
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            var firstSet = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Nine && t.Tile.TileType == TileType.Circle).Take(3);
+                firstSet.ForEach(t => 
+                { 
+                    t.TileSetGroup = TileSetGroup.Pong; 
+                    t.TileSetGroupIndex = 1;
+                    t.Status = TileStatus.UserGraveyard;
+                    t.Owner = userId;
+                });
+            //TODO fix magix string username
+            firstSet.First().ThrownBy = "west";
+            userTiles.AddRange(firstSet);
+
+
+            var secondSet = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Eight && t.Tile.TileType == TileType.Circle).Take(3);
+            secondSet.ForEach(t =>
+            {
+                t.TileSetGroup = TileSetGroup.Pong;
+                t.TileSetGroupIndex = 2;
+                t.Status = TileStatus.UserGraveyard;
+                t.Owner = userId;
+            });
+            secondSet.First().ThrownBy = "west";
+            userTiles.AddRange(secondSet);
+
+            var thidChowSetOne = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Circle);
+            var thidChowSetTwo = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Circle);
+            var thidChowSetThree = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Circle);
+
+            var thirdSet = new List<RoundTile>
+            {
+                thidChowSetOne,
+                thidChowSetTwo,
+                thidChowSetThree
+            };         
+
+            thirdSet.ForEach(t =>
+            {
+                t.TileSetGroup = TileSetGroup.Chow;
+                t.TileSetGroupIndex = 3;
+                t.Status = TileStatus.UserGraveyard;
+                t.Owner = userId;
+            });
+            thirdSet.First().ThrownBy = "west";
+            userTiles.AddRange(thirdSet);
+
+            var fourthChowSetOne = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle);
+            var fourthChowSetTwo = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle);
+            var fourthChowSetThree = context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle);
+
+            var fourthSet = new List<RoundTile>
+            {
+                fourthChowSetOne,
+                fourthChowSetTwo,
+                fourthChowSetThree
+            };
+
+            fourthSet.ForEach(t =>
+            {
+                t.TileSetGroup = TileSetGroup.Chow;
+                t.TileSetGroupIndex = 4;
+                t.Status = TileStatus.UserGraveyard;
+                t.Owner = userId;
+            });
+            fourthSet.First().ThrownBy = "south";
+            userTiles.AddRange(fourthSet);
+
+
+            var matchingEye = context.RoundTiles.Where(t => t.Tile.TileValue == TileValue.Seven && t.Tile.TileType == TileType.Circle && string.IsNullOrEmpty(t.Owner)).Take(2);
+            
+            matchingEye.First().Owner = userId;
+            matchingEye.First().Status = TileStatus.UserActive;
+            matchingEye.Last().Owner = userId;
+            matchingEye.Last().Status = TileStatus.UserJustPicked;
+
+            userTiles.AddRange(matchingEye);
 
             context.SaveChanges();
 

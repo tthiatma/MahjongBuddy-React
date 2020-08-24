@@ -49,9 +49,19 @@
         AllHonors,
 
         //TODO: implement below
+
         //this is so rare....
         //gau zi lin waan
         //one suit 1112345678999
         //NineGates
+
+        //jade dragon
+        //all pong with stick and green dragon
+
+        //ruby dragon
+        //all pong with money and red dragon
+
+        //pearl dragon
+        //all pong with circle and white dragon
     }
 }

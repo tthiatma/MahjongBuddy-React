@@ -7,6 +7,7 @@ using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MahjongBuddy.Application.Rounds
+namespace MahjongBuddy.Application.PlayerAction
 {
     public class Win
     {
@@ -56,7 +57,7 @@ namespace MahjongBuddy.Application.Rounds
                 //if its a valid win:
                 HandWorth handWorth = _pointCalculator.Calculate(round, request.UserName);
 
-                if(handWorth == null)
+                if (handWorth == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Win = "Invalid combination hand" });
 
                 if (handWorth.Points >= game.MinPoint)
@@ -69,7 +70,7 @@ namespace MahjongBuddy.Application.Rounds
                     RoundResult winnerResult = new RoundResult
                     {
                         AppUser = winner.AppUser,
-                        IsWinner = true,                                                
+                        IsWinner = true,
                     };
 
                     if (round.RoundResults == null)
@@ -81,7 +82,7 @@ namespace MahjongBuddy.Application.Rounds
                     foreach (var h in handWorth.HandTypes)
                     {
                         var point = _pointCalculator.HandTypeLookup[h];
-                        winnerResult.RoundResultHands.Add(new RoundResultHand {HandType = h, Point = point, Name = h.ToString() });
+                        winnerResult.RoundResultHands.Add(new RoundResultHand { HandType = h, Point = point, Name = h.ToString() });
                     }
 
                     foreach (var e in handWorth.ExtraPoints)
@@ -102,21 +103,73 @@ namespace MahjongBuddy.Application.Rounds
 
                     if (isSelfPick)
                     {
-                        //if its self pick, then all 3 other players needs to record the loss
-                        var losers = round.RoundPlayers.Where(u => u.AppUser.UserName != request.UserName);
+                        //check if "bao"
+                        //if there is AllOneSuit or SmallDragon or BigDragon or smallFourWind or bigFourWind
+                        //then the one that "bao" will be the only one that pays to the winner 
 
-                        //points will be times 3
-                        var winningPoint = cappedPoint * 3;
-                        winner.Points += winningPoint;
-                        winnerResult.PointsResult = winningPoint;
-
-                        updatedPlayers.Add(winner);
-                        updatedPlayers.AddRange(losers);
-
-                        foreach (var l in losers)
+                        bool isLoserBao = false;
+                        string baoPlayerUserName = string.Empty;
+                        //check for allonesuit
+                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.AppUser.UserName);
+                        if (handWorth.HandTypes.Contains(HandType.AllOneSuit) 
+                            || handWorth.HandTypes.Contains(HandType.SmallFourWind)
+                            || handWorth.HandTypes.Contains(HandType.BigFourWind))
                         {
-                            l.Points -= cappedPoint;
-                            round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser, PointsResult = losingPoint });
+                            //check if the 4th tilesetgroupindex has thrownby value 
+                            var fourthGroupTileIndex = winnerTiles.FirstOrDefault(t => t.TileSetGroupIndex == 4 && !string.IsNullOrEmpty(t.ThrownBy));
+                            if (fourthGroupTileIndex != null)
+                            {
+                                isLoserBao = true;
+                                baoPlayerUserName = fourthGroupTileIndex.ThrownBy;
+                            }
+                        }
+
+                        //check for dragon
+                        if (handWorth.HandTypes.Contains(HandType.SmallDragon) || handWorth.HandTypes.Contains(HandType.BigDragon))
+                        {
+                            //find the index of first pong dragon
+                            var pongOrKongDragons = winnerTiles.Where(t => (t.TileSetGroup == TileSetGroup.Pong || t.TileSetGroup == TileSetGroup.Kong) 
+                            && t.Tile.TileType == TileType.Dragon && !string.IsNullOrEmpty(t.ThrownBy));
+
+                            //if there is 3rd set of dragon pong/kong, then its not a bao 
+                            //weird rule ever
+                            //then find the index of second pong dragon and check thrown by
+                            if (pongOrKongDragons.Count() == 2)
+                            {
+                                isLoserBao = true;
+                                baoPlayerUserName = pongOrKongDragons.OrderBy(t => t.TileSetGroupIndex).Last().ThrownBy;
+                            }
+                        }
+
+                        if (isLoserBao)
+                        {
+                            //the loser that bao will pay the winning point times three
+                            var winningPoint = cappedPoint * 3;
+                            winner.Points += winningPoint;
+                            winnerResult.PointsResult = winningPoint;
+
+                            var loser = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == baoPlayerUserName);
+                            updatedPlayers.Add(loser);
+
+                            round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint * 3 });
+                        }
+                        else
+                        {
+                            //if its self pick, and no bao, then all 3 other players needs to record the loss
+                            var losers = round.RoundPlayers.Where(u => u.AppUser.UserName != request.UserName);
+
+                            //points will be times 3
+                            var winningPoint = cappedPoint * 3;
+                            winner.Points += winningPoint;
+                            winnerResult.PointsResult = winningPoint;
+
+                            updatedPlayers.AddRange(losers);
+
+                            foreach (var l in losers)
+                            {
+                                l.Points -= cappedPoint;
+                                round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser, PointsResult = losingPoint });
+                            }
                         }
                     }
                     else
@@ -130,9 +183,9 @@ namespace MahjongBuddy.Application.Rounds
                         loser.Points -= cappedPoint;
                         round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });
 
-                        updatedPlayers.Add(winner);
                         updatedPlayers.Add(loser);
                     }
+                    updatedPlayers.Add(winner);
                     round.RoundResults.Add(winnerResult);
 
                     //TODO implement more than one winner
@@ -147,7 +200,7 @@ namespace MahjongBuddy.Application.Rounds
                     }
                 }
                 else
-                    throw new RestException(HttpStatusCode.BadRequest, new {Win = "Not enough point to win with this hand" });
+                    throw new RestException(HttpStatusCode.BadRequest, new { Win = "Not enough point to win with this hand" });
 
                 throw new Exception("Problem calling win");
             }

@@ -400,16 +400,20 @@ namespace MahjongBuddy.Application.Helpers
 
             //get possible eyes
             List<IEnumerable<RoundTile>> eyeCollection = new List<IEnumerable<RoundTile>>();
-            foreach (var t in tiles)
+            var noneGroupSetTile = tiles.Where(t => t.TileSetGroup == TileSetGroup.None);
+            foreach (var t in noneGroupSetTile)
             {
-                var sameTiles = tiles.Where(ti => (ti.Tile.TileValue == t.Tile.TileValue 
-                && ti.Tile.TileType == t.Tile.TileType) && ti.TileSetGroup == TileSetGroup.None);
+                var sameTiles = tiles.Where(
+                    ti => ti.Tile.TileValue == t.Tile.TileValue && 
+                    ti.Tile.TileType == t.Tile.TileType);
 
                 if (sameTiles != null && sameTiles.Count() > 1)
                 {
                     bool exist = false;
                     var tv = sameTiles.First().Tile.TileValue;
                     var tp = sameTiles.First().Tile.TileType;
+                    
+                    //check for duplicate eye
                     foreach (IEnumerable<RoundTile> e in eyeCollection)
                     {
                         if (e.Where(t => t.Tile.TileType == tp && t.Tile.TileValue == tv).Count() > 0)
@@ -447,18 +451,26 @@ namespace MahjongBuddy.Application.Helpers
                         tilesWithoutEyes.Remove(t);
                     }
 
-                    //try check all pong
-                    for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
+                    //if after removing the eyes and there is no remaining tiles then the remaining tiles is the eye
+                    if (tilesWithoutEyes.Count() == 0)
                     {
-                        var pongSet = GetPongSet(tilesWithoutEyes);
-                        if (pongSet == null)
+                        allPong = true;
+                    }
+                    else
+                    {
+                        //try check all pong
+                        for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
                         {
-                            break;
+                            var pongSet = GetPongSet(tilesWithoutEyes);
+                            if (pongSet == null)
+                            {
+                                break;
+                            }
+                            tilesWithoutEyes = tilesWithoutEyes.Except(pongSet).ToList();
+                            //if it gets all the way to last set
+                            if (i == 3 - userGraveyardGroupCount)
+                                allPong = true;
                         }
-                        tilesWithoutEyes = tilesWithoutEyes.Except(pongSet).ToList();
-                        //if it gets all the way to last set
-                        if (i == 3 - userGraveyardGroupCount)
-                            allPong = true;
                     }
                 }
             }
@@ -484,18 +496,26 @@ namespace MahjongBuddy.Application.Helpers
                         tilesWithoutEyes.Remove(t);
                     }
 
-                    //try check all straight
-                    for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
+                    //if after removing the eyes and there is no remaining tiles then the remaining tiles is the eye
+                    if (tilesWithoutEyes.Count() == 0)
                     {
-                        var straightSet = GetStraightSet(tilesWithoutEyes);
-                        if (straightSet == null)
+                        allStraight = true;
+                    }
+                    else
+                    {
+                        //try check all straight
+                        for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
                         {
-                            break;
+                            var straightSet = GetStraightSet(tilesWithoutEyes);
+                            if (straightSet == null)
+                            {
+                                break;
+                            }
+                            tilesWithoutEyes = tilesWithoutEyes.Except(straightSet).ToList();
+                            //if it gets all the way to last set
+                            if (i == 3 - userGraveyardGroupCount)
+                                allStraight = true;
                         }
-                        tilesWithoutEyes = tilesWithoutEyes.Except(straightSet).ToList();
-                        //if it gets all the way to last set
-                        if (i == 3 - userGraveyardGroupCount)
-                            allStraight = true;
                     }
                 }
             }
@@ -514,18 +534,26 @@ namespace MahjongBuddy.Application.Helpers
                     tilesWithoutEyes.Remove(t);
                 }
 
-                //try check all set
-                for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
+                //if after removing the eyes and there is no remaining tiles then the remaining tiles is the eye
+                if(tilesWithoutEyes.Count() == 0)
                 {
-                    var anySet = TryPongThenChowSet(tilesWithoutEyes);
-                    if (anySet == null)
+                    isChicken = true;
+                }
+                else
+                {
+                    //try check all set
+                    for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
                     {
-                        break;
+                        var anySet = TryPongThenChowSet(tilesWithoutEyes);
+                        if (anySet == null)
+                        {
+                            break;
+                        }
+                        tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
+                        //if it gets all the way to last set
+                        if (i == 3 - userGraveyardGroupCount)
+                            isChicken = true;
                     }
-                    tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
-                    //if it gets all the way to last set
-                    if (i == 3 - userGraveyardGroupCount)
-                        isChicken = true;
                 }
             }
             if (isChicken)
@@ -543,18 +571,26 @@ namespace MahjongBuddy.Application.Helpers
                     tilesWithoutEyes.Remove(t);
                 }
 
-                //try check all set
-                for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
+                //if after removing the eyes and there is no remaining tiles then the remaining tiles is the eye
+                if (tilesWithoutEyes.Count() == 0)
                 {
-                    var anySet = TryChowThenPongSet(tilesWithoutEyes);
-                    if (anySet == null)
+                    isChicken = true;
+                }
+                else
+                {
+                    //try check all set
+                    for (int i = 0; i < 4 - userGraveyardGroupCount; i++)
                     {
-                        break;
+                        var anySet = TryChowThenPongSet(tilesWithoutEyes);
+                        if (anySet == null)
+                        {
+                            break;
+                        }
+                        tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
+                        //if it gets all the way to last set
+                        if (i == 3 - userGraveyardGroupCount)
+                            isChicken = true;
                     }
-                    tilesWithoutEyes = tilesWithoutEyes.Except(anySet).ToList();
-                    //if it gets all the way to last set
-                    if (i == 3 - userGraveyardGroupCount)
-                        isChicken = true;
                 }
             }
             if (isChicken)

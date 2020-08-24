@@ -7,11 +7,9 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
     public class ExtraPointBuilder
     {
         readonly FindExtraPoint _initial;
-        List<ExtraPoint> _extraPoints;
 
         public ExtraPointBuilder()
         {
-            _extraPoints = new List<ExtraPoint>();
             _initial = new ExtraConcealed();
             FindExtraPoint dragon = new ExtraDragon();
             FindExtraPoint flower = new ExtraFlower();
@@ -29,10 +27,11 @@ namespace MahjongBuddy.Application.Rounds.Scorings.Builder
 
         public List<ExtraPoint> GetExtraPoint(Round round, string winnerUserName)
         {
+            List<ExtraPoint> extraPoints = new List<ExtraPoint>();
             if (round != null && !string.IsNullOrEmpty(winnerUserName))
-                return _initial.HandleRequest(round, winnerUserName, _extraPoints);
+                return _initial.HandleRequest(round, winnerUserName, extraPoints);
             else
-                return _extraPoints;
+                return extraPoints;
         }
     }
 }
