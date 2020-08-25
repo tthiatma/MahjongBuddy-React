@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20200813171557_RefreshToken")]
-    partial class RefreshToken
+    [Migration("20200824170145_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -155,6 +158,27 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Photos");
+                });
+
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>
                 {
                     b.Property<int>("Id")
@@ -218,6 +242,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsInitialDealer")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsManualSort")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsMyTurn")
@@ -612,6 +639,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasOne("MahjongBuddy.Core.AppUser", "Host")
                         .WithMany()
                         .HasForeignKey("HostId");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>

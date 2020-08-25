@@ -27,6 +27,7 @@ const GameLobbyHeader: React.FC<{
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
   const { hubLoading, startRound } = rootStore.hubStore;
+  const host = game.players.filter((p) => p.isHost)[0];
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
@@ -42,7 +43,7 @@ const GameLobbyHeader: React.FC<{
                 />
                 <p>{format(new Date(game.date), "eeee do MMMM")}</p>
                 <p>
-                  Hosted by <strong>{game.hostUserName}</strong>
+                  Hosted by <Link to={`/profile/${host.userName}`}><strong>{game.hostUserName}</strong></Link> 
                 </p>
               </Item.Content>
             </Item>

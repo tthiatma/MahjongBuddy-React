@@ -27,6 +27,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -151,6 +154,27 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasIndex("HostId");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsMain")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>
@@ -613,6 +637,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasOne("MahjongBuddy.Core.AppUser", "Host")
                         .WithMany()
                         .HasForeignKey("HostId");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.AppUser", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("AppUserId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>

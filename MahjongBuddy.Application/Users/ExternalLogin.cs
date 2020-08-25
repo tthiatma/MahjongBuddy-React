@@ -4,6 +4,7 @@ using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,14 +54,14 @@ namespace MahjongBuddy.Application.Users
                         RefreshTokenExpiry = DateTime.Now.AddDays(30)
                     };
 
-                    //var photo = new Photo
-                    //{
-                    //    IdentityBuilder = "fb_" + userInfo.Id,
-                    //    Url = userInfo.Picture.Data.Url,
-                    //    IsMain = true
-                    //};
+                    var photo = new Photo
+                    {
+                        Id = "fb_" + userInfo.Id,
+                        Url = userInfo.Picture.Data.Url,
+                        IsMain = true
+                    };
 
-                    //user.Photos.Add(photo);
+                    user.Photos.Add(photo);
 
                     var result = await _userManager.CreateAsync(user);
 
@@ -74,8 +75,7 @@ namespace MahjongBuddy.Application.Users
                     Token = _jwtGenerator.CreateToken(user),
                     UserName = user.UserName,
                     RefreshToken = user.RefreshToken,
-                    //Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
-
+                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
                 };
             }
         }
