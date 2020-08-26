@@ -14,6 +14,8 @@ using MahjongBuddy.Application.Extensions;
 using Microsoft.EntityFrameworkCore;
 using MahjongBuddy.Application.Helpers;
 using Microsoft.EntityFrameworkCore.Internal;
+using MahjongBuddy.Application.Interfaces;
+using MoreLinq;
 
 namespace MahjongBuddy.Application.PlayerAction
 {
@@ -31,11 +33,13 @@ namespace MahjongBuddy.Application.PlayerAction
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
+            private readonly IPointsCalculator _pointsCalculator;
 
-            public Handler(MahjongBuddyDbContext context, IMapper mapper)
+            public Handler(MahjongBuddyDbContext context, IMapper mapper, IPointsCalculator pointsCalculator)
             {
                 _context = context;
                 _mapper = mapper;
+                _pointsCalculator = pointsCalculator;
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
@@ -49,7 +53,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 //assign tile ownership to current user
                 //weird situation is when it's user's turn, user can kong their active tiles and can kong board active tiles
 
-                bool selfKong = false;
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<RoundPlayer>();
 
@@ -78,7 +81,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     if(currentPlayer.IsMyTurn)
                     {
-                        selfKong = true;
                         //if its not konged already, then user can kong it
                         var kongedTile = tilesToKong.Where(t => t.TileSetGroup == TileSetGroup.Kong);
                         if (kongedTile.Count() == 0)
@@ -118,14 +120,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new { Kong = "Not possible to kong" });
 
-
-                //after kong from board, check for user self kong tile
-                if(!selfKong)
-                {
-                    RoundHelper.CheckPossibleSelfKong(round, currentPlayer);
-                    var tilesToCheckForSelfKong = currentUserTiles.Where(t => t.Status == TileStatus.UserActive);
-                }
-
                 //set existing justpicked tile to useractive;
                 var existingJustPicked = round.RoundTiles.FirstOrDefault(rt => rt.Owner == request.UserName && rt.Status == TileStatus.UserJustPicked);
                 if (existingJustPicked != null)
@@ -134,6 +128,8 @@ namespace MahjongBuddy.Application.PlayerAction
                     updatedTiles.Add(existingJustPicked);
                 }
 
+                //clear existing action
+                currentPlayer.RoundPlayerActions.Clear();
 
                 //add new tile for user                
                 var newTiles = round.RoundTiles.PickTile(request.UserName, true);
@@ -145,27 +141,16 @@ namespace MahjongBuddy.Application.PlayerAction
                     {
                         updatedTiles.Add(tile);
                     }
+                    RoundHelper.CheckSelfAction(round, currentPlayer, _pointsCalculator);
                 }
-                //TODO: what if user kong when there is no more tile
+                else
+                {
+                    //TODO: what if user kong when there is no more tile
+                }
 
                 currentPlayer.IsMyTurn = true;
                 //because new tile automatically added, player must throw set to true
                 currentPlayer.MustThrow = true;
-
-                if(selfKong)
-                {
-                    var selfKongAction = currentPlayer.RoundPlayerActions.FirstOrDefault(a => a.PlayerAction == ActionType.SelfKong);
-                    if(selfKongAction != null)
-                        currentPlayer.RoundPlayerActions.Remove(selfKongAction);
-                }
-                else
-                {
-                    var kongAction = currentPlayer.RoundPlayerActions.FirstOrDefault(a => a.PlayerAction == ActionType.Kong);
-                    if(kongAction != null)
-                        currentPlayer.RoundPlayerActions.Remove(kongAction);
-
-                    currentPlayer.HasAction = false;
-                }
 
                 if (round.IsEnding)
                     round.IsEnding = false;

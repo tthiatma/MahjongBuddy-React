@@ -22,7 +22,7 @@ export default class HubStore {
   hubStore: HubStore;
   roundStore: RoundStore;
   gameStore: GameStore;
-  cooldownTime: number = 2000;
+  cooldownTime: number = 2500;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     this.hubStore = this.rootStore.hubStore;

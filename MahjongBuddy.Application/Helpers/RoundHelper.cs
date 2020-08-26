@@ -34,6 +34,14 @@ namespace MahjongBuddy.Application.Helpers
             return ret;
         }
 
+        public static void CheckSelfAction(Round round, RoundPlayer roundPlayer, IPointsCalculator pointsCalculator)
+        {
+            if(DetermineIfUserCanWin(round, roundPlayer, pointsCalculator))
+                roundPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.SelfWin });
+
+            CheckPossibleSelfKong(round, roundPlayer);
+        }
+
         public static void SetNextPlayer(Round round, ref List<RoundPlayer> updatedPlayers, ref List<RoundTile> updatedTiles, IPointsCalculator pointCalculator)
         {
             var playerThatHasTurn = round.RoundPlayers.FirstOrDefault(p => p.IsMyTurn == true);
@@ -65,15 +73,9 @@ namespace MahjongBuddy.Application.Helpers
                 nextPlayer.MustThrow = false;
             }            
             else           
-                RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);            
+                RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);
 
-            //check if there's any self action
-            //self win
-            if (DetermineIfUserCanWin(round, nextPlayer, pointCalculator))
-                nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.SelfWin });
-
-            //self kong
-            CheckPossibleSelfKong(round, nextPlayer);
+            CheckSelfAction(round, nextPlayer, pointCalculator);
 
             updatedPlayers.Add(nextPlayer);
             updatedPlayers.Add(playerThatHasTurn);

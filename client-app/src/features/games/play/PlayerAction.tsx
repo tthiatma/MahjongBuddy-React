@@ -229,7 +229,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {((mainPlayer?.hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
+      {((mainPlayer!.hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -247,7 +247,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {mainPlayer?.hasAction && (
+      {mainPlayer?.hasAction && !mainPlayer!.mustThrow && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
