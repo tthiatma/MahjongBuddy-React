@@ -75,7 +75,7 @@ namespace MahjongBuddy.Application.Users
                         DisplayName = user.DisplayName,
                         Token = _jwtGenerator.CreateToken(user),
                         RefreshToken = user.RefreshToken,
-                        Image = null
+                        Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
                     };
                 }
 

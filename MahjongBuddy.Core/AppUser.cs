@@ -8,9 +8,13 @@ namespace MahjongBuddy.Core
     {
         public string DisplayName { get; set; }
 
+        public string Bio { get; set; }
+
         public virtual ICollection<UserGame> UserGames { get; set; }
 
         public virtual ICollection<RoundPlayer> UserRounds { get; set; }
+
+        public virtual ICollection<Photo> Photos { get; set; }
 
         public string RefreshToken { get; set; }
 

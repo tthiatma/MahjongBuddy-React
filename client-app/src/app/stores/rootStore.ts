@@ -6,6 +6,7 @@ import CommonStore from "./commonStore";
 import ModalStore from "./modalStore";
 import RoundStore from "./roundStore";
 import HubStore from "./hubStore";
+import ProfileStore from "./profileStore";
 
 configure({ enforceActions: "always" });
 
@@ -16,6 +17,7 @@ export class RootStore{
     modalStore: ModalStore;
     roundStore: RoundStore;
     hubStore: HubStore;
+    profileStore: ProfileStore;
     
     constructor(){
         this.gameStore = new GameStore(this);
@@ -24,6 +26,7 @@ export class RootStore{
         this.modalStore = new ModalStore(this);
         this.roundStore = new RoundStore(this);
         this.hubStore = new HubStore(this);
+        this.profileStore = new ProfileStore(this);
     }
 }
 
