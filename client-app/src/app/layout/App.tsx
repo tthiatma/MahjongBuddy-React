@@ -14,6 +14,8 @@ import PrivateRoute from "./PrivateRoute";
 import HomePage from "../../features/home/HomePage";
 import PrivacyPolicy from "../../features/policy/PrivacyPolicy";
 import ProfilePage from "../../features/profiles/ProfilePage";
+import RegisterSuccess from "../../features/user/RegisterSuccess";
+import VerifyEmail from "../../features/user/VerifyEmail";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 
@@ -50,7 +52,9 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   path={["/createGame", "/manage/:id"]}
                   component={GameForm}
                 />
-                <Route path='/profile/:username' component={ProfilePage} />
+                <PrivateRoute path='/profile/:username' component={ProfilePage} />
+                <Route path='/user/registerSuccess' component={RegisterSuccess} />
+                <Route path='/user/verifyEmail' component={VerifyEmail} />
                 <Route component={NotFound} />
               </Switch>
           </Fragment>

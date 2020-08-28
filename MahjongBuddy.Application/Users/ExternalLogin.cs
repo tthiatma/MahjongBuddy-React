@@ -51,7 +51,8 @@ namespace MahjongBuddy.Application.Users
                         Email = userInfo.Email,
                         UserName = "fb_" + userInfo.Id,
                         RefreshToken = _jwtGenerator.GenerateRefreshToken(),
-                        RefreshTokenExpiry = DateTime.Now.AddDays(30)
+                        RefreshTokenExpiry = DateTime.Now.AddDays(30),
+                        EmailConfirmed = true
                     };
 
                     var photo = new Photo

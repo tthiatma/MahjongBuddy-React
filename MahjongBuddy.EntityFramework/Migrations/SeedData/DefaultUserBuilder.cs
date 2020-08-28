@@ -26,28 +26,32 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = "a",
                     DisplayName = "Tonny",
                     UserName = "Tonny",
-                    Email = "tonny@gmail.com"
+                    Email = "tonny@gmail.com",
+                    EmailConfirmed = true
                 };
                 var rightPlayer = new AppUser
                 {
                     Id = "b",
                     DisplayName = "Mei",
                     UserName = "Mei",
-                    Email = "mei@gmail.com"
+                    Email = "mei@gmail.com",
+                    EmailConfirmed = true
                 };
                 var topPlayer = new AppUser
                 {
                     Id = "c",
                     DisplayName = "Peter",
                     UserName = "Peter",
-                    Email = "peter@gmail.com"
+                    Email = "peter@gmail.com",
+                    EmailConfirmed = true
                 };
                 var leftPlayer = new AppUser
                 {
                     Id = "d",
                     DisplayName = "Jason",
                     UserName = "Jason",
-                    Email = "jason@gmail.com"
+                    Email = "jason@gmail.com",
+                    EmailConfirmed = true
                 };
 
                 var users = new List<AppUser>

@@ -129,6 +129,10 @@ const User = {
       return res.data.token;
     });
   },
+  verifyEmail: (token: string, email: string): Promise<void> =>
+    requests.post(`/user/verifyEmail`, { token, email }),
+  resendVerifyEmailConfirm: (email: string): Promise<void> =>
+    requests.get(`/user/resendEmailVerification?email=${email}`),
 };
 
 const Profiles = {
@@ -139,7 +143,7 @@ const Profiles = {
   setMainPhoto: (id: string) => requests.post(`/photos/${id}/setMain`, {}),
   deletePhoto: (id: string) => requests.del(`/photos/${id}`),
   updateProfile: (profile: Partial<IProfile>) =>
-    requests.put(`/profiles`, profile)
+    requests.put(`/profiles`, profile),
 };
 
 export default {
