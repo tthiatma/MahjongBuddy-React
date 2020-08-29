@@ -42,9 +42,14 @@ const GameLobbyHeader: React.FC<{
                   style={{ color: "white" }}
                 />
                 <p>{format(new Date(game.date), "eeee do MMMM")}</p>
-                <p>
-                  Hosted by <Link to={`/profile/${host.userName}`}><strong>{game.hostUserName}</strong></Link> 
-                </p>
+                {host && (
+                  <p>
+                    Hosted by{" "}
+                    <Link to={`/profile/${host.userName}`}>
+                      <strong>{game.hostUserName}</strong>
+                    </Link>
+                  </p>
+                )}
               </Item.Content>
             </Item>
           </Item.Group>
