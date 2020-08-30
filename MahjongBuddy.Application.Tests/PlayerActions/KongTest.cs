@@ -55,7 +55,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
                 TileValue = one
             };
 
-            var sut = new Kong.Handler(context, _f.RoundMapper);
+            var sut = new Kong.Handler(context, _f.RoundMapper, _f.PointCalculator);
 
             var result = sut.Handle(kongCommand, CancellationToken.None).Result;
 
@@ -87,7 +87,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
                 TileValue = one
             };
 
-            var sut = new Kong.Handler(context, _f.RoundMapper);
+            var sut = new Kong.Handler(context, _f.RoundMapper, _f.PointCalculator);
 
             var result = sut.Handle(kongCommand, CancellationToken.None).Result;
 
@@ -119,7 +119,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
                 TileValue = one
             };
 
-            var sut = new Kong.Handler(context, _f.RoundMapper);
+            var sut = new Kong.Handler(context, _f.RoundMapper, _f.PointCalculator);
 
             var result = sut.Handle(kongCommand, CancellationToken.None).Result;
 
@@ -150,7 +150,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
                 TileValue = one
             };
 
-            var sut = new Kong.Handler(context, _f.RoundMapper);
+            var sut = new Kong.Handler(context, _f.RoundMapper, _f.PointCalculator);
 
             var result = sut.Handle(kongCommand, CancellationToken.None).Result;
 
@@ -181,7 +181,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
                 TileValue = one
             };
 
-            var sut = new Kong.Handler(context, _f.RoundMapper);
+            var sut = new Kong.Handler(context, _f.RoundMapper, _f.PointCalculator);
 
             var ex = await Assert.ThrowsAsync<RestException>(() => sut.Handle(kongCommand, CancellationToken.None));
 

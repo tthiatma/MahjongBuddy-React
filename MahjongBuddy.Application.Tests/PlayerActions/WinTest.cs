@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.PlayerAction;
 using MahjongBuddy.Application.Rounds;
 using MahjongBuddy.Application.Tests.Fixtures;
@@ -6,6 +7,7 @@ using MahjongBuddy.Application.Tests.Helpers;
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MahjongBuddy.Application.Tests.PlayerActions
@@ -59,6 +61,25 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
             var winner = result.RoundPlayers.First(u => u.UserName == winnerResult.UserName);
             Assert.Equal(9, winner.Points);
             Assert.Equal(4, result.RoundResults.Count());
+        }
+
+        [Fact]
+        public async Task Should_Be_Invalid_Win()
+        {
+            var context = _f.TestDataContext;
+
+            //setup common scenario can't win
+            WinTilesHelper.SetupForInvalidWin(context, _f.MainPlayerUserName);
+
+            var winCommand = new Win.Command
+            {
+                GameId = _f.GameId,
+                RoundId = _f.RoundId,
+                UserName = _f.MainPlayerUserName
+            };
+
+            var sut = new Win.Handler(context, _mapper, _f.PointCalculator);
+            await Assert.ThrowsAsync<RestException>(() => sut.Handle(winCommand, CancellationToken.None));
         }
 
         [Fact]

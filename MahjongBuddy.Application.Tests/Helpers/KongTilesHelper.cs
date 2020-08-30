@@ -1,5 +1,6 @@
 ﻿using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MahjongBuddy.Application.Tests.Helpers
@@ -22,6 +23,27 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 lastTile.Owner = DefaultValue.board;
                 lastTile.Status = TileStatus.BoardActive;
             }
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Stick));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
         }
 
         public static void SetupForSelfActive(MahjongBuddyDbContext context, string userId, TileType tileType, TileValue tileValue)
@@ -36,6 +58,27 @@ namespace MahjongBuddy.Application.Tests.Helpers
                     t.Status = TileStatus.UserActive;
                 }
             }
+
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
         }
 
         public static void SetupForPongUser(MahjongBuddyDbContext context, string userId, TileType tileType, TileValue tileValue)
@@ -55,6 +98,29 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 lastTile.Owner = userId;
                 lastTile.Status = TileStatus.UserActive;
             }
+
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Stick));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
         }
         public static void SetupForPongBoard(MahjongBuddyDbContext context, string userId, TileType tileType, TileValue tileValue)
         {
@@ -73,6 +139,29 @@ namespace MahjongBuddy.Application.Tests.Helpers
                 lastTile.Owner = "board";
                 lastTile.Status = TileStatus.BoardActive;
             }
+
+            List<RoundTile> userTiles = new List<RoundTile>();
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Circle));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Circle));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.One && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Two && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Three && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Five && t.Tile.TileType == TileType.Money));
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Six && t.Tile.TileType == TileType.Money));
+
+            userTiles.Add(context.RoundTiles.First(t => t.Tile.TileValue == TileValue.Four && t.Tile.TileType == TileType.Stick));
+
+            foreach (var t in userTiles)
+            {
+                t.Owner = userId;
+                t.Status = TileStatus.UserActive;
+            }
+
         }
 
         public static void SetupForChowUser(MahjongBuddyDbContext context, string userId, TileType tileType, TileValue tileValue)
