@@ -164,8 +164,8 @@ namespace MahjongBuddy.API
                     .FontSources(s => s.Self().CustomSources("https://fonts.gstatic.com", "data:"))
                     .FormActions(s => s.Self())
                     .FrameAncestors(s => s.Self())
-                    .ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "blob:", "data:"))
-                    //.ScriptSources(s => s.Self().CustomSources("sha256-ma5XxS1EBgt17N22Qq31rOxxRWRfzUTQS1KOtfYwuNo="))
+                    //.ImageSources(s => s.Self().CustomSources("https://res.cloudinary.com", "blob:", "data:").CustomSources("https://www.facebook.com", "data:"))
+                //.ScriptSources(s => s.Self().CustomSources("sha256-ma5XxS1EBgt17N22Qq31rOxxRWRfzUTQS1KOtfYwuNo="))
                 );
 
             app.UseDefaultFiles();
