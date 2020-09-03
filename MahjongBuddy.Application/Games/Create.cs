@@ -49,8 +49,7 @@ namespace MahjongBuddy.Application.Games
                     UserGames = new List<UserGame>{
                         new UserGame {
                             IsHost = true,
-                            AppUser = user,
-                            InitialSeatWind = WindDirection.East
+                            AppUser = user
                         }
                     }
                 };

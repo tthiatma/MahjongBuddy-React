@@ -469,7 +469,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.Property<int>("InitialSeatWind")
+                    b.Property<int?>("InitialSeatWind")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsHost")
