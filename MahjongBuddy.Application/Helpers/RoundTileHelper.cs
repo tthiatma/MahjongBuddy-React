@@ -412,12 +412,12 @@ namespace MahjongBuddy.Application.Helpers
             if (tiles.Count() != 14)
                 return HandType.None;
 
-            //get possible eyes
+            //get possible eyes from alive tiles
             List<IEnumerable<RoundTile>> eyeCollection = new List<IEnumerable<RoundTile>>();
-            var noneGroupSetTile = tiles.Where(t => t.TileSetGroup == TileSetGroup.None);
-            foreach (var t in noneGroupSetTile)
+            var aliveTiles = tiles.Where(t => t.TileSetGroup == TileSetGroup.None);
+            foreach (var t in aliveTiles)
             {
-                var sameTiles = tiles.Where(
+                var sameTiles = aliveTiles.Where(
                     ti => ti.Tile.TileValue == t.Tile.TileValue && 
                     ti.Tile.TileType == t.Tile.TileType);
 

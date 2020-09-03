@@ -26,8 +26,10 @@ const GameLobbyHeader: React.FC<{
   latestRound: IRound | null;
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
-  const { hubLoading, startRound } = rootStore.hubStore;
+  const { hubLoading, startRound, joinGame, leaveGame, randomizeWind } = rootStore.hubStore;
   const host = game.players.filter((p) => p.isHost)[0];
+  const userNoWind = game.players.some((p) => p.initialSeatWind === null);
+
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
@@ -42,20 +44,34 @@ const GameLobbyHeader: React.FC<{
                   style={{ color: "white" }}
                 />
                 <p>{format(new Date(game.date), "eeee do MMMM")}</p>
-                <p>
-                  Hosted by <Link to={`/profile/${host.userName}`}><strong>{game.hostUserName}</strong></Link> 
-                </p>
+                {host && (
+                  <p>
+                    Hosted by
+                    <Link to={`/profile/${host.userName}`}>
+                      <strong>{host.displayName}</strong>
+                    </Link>
+                  </p>
+                )}
               </Item.Content>
             </Item>
           </Item.Group>
         </Segment>
       </Segment>
       <Segment clearing attached="bottom">
-        {game.status === GameStatus.Created && game.isHost && (
-          <Button loading={hubLoading} onClick={startRound}>
-            Start Round
-          </Button>
-        )}
+        {game.status === GameStatus.Created &&
+          game.isHost &&
+          game.players.length === 4 && !userNoWind && (
+            <Button loading={hubLoading} onClick={startRound}>
+              Start
+            </Button>
+          )}
+          {game.status === GameStatus.Created &&
+          game.isHost &&
+          game.players.length === 4 &&  (
+            <Button loading={hubLoading} onClick={randomizeWind}>
+              Randomize
+            </Button>
+          )}
         {game.status === GameStatus.Playing && latestRound !== null && (
           <Button
             as={Link}
@@ -65,6 +81,17 @@ const GameLobbyHeader: React.FC<{
             floated="right"
           >
             Play
+          </Button>
+        )}
+        {game.isCurrentPlayerConnected && !game.isHost && game.status === GameStatus.Created && (
+          <Button floated="right" loading={hubLoading} onClick={leaveGame}>
+            Leave Game
+          </Button>
+        )}
+
+        {!game.isCurrentPlayerConnected && !game.isHost && game.status === GameStatus.Created && (
+          <Button floated="right" loading={hubLoading} onClick={joinGame} color="teal">
+            Join Game
           </Button>
         )}
 

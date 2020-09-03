@@ -11,7 +11,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
             //short circuit if there is chow tiles
             var chowTiles = tiles.Where(rt => rt.TileSetGroup == TileSetGroup.Chow);
             var dragonOrWindTiles = tiles.Where(rt => rt.Tile.TileType == TileType.Wind || rt.Tile.TileType == TileType.Dragon);
-            if(chowTiles.Count() > 0 || dragonOrWindTiles.Count() > 0)
+            if(chowTiles.Count() > 0)
             {
                 if (_successor != null)
                     return _successor.HandleRequest(tiles, handTypes);
@@ -33,7 +33,10 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 
             if(notOneOrNine.Count() == 0)
             {
-                handTypes.Add(HandType.AllTerminals);
+                if(dragonOrWindTiles.Count() > 0)
+                    handTypes.Add(HandType.MixedAllTerminal);
+                else
+                    handTypes.Add(HandType.AllTerminals);
             }
 
             if (_successor != null)

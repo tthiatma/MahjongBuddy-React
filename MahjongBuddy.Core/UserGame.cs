@@ -9,6 +9,6 @@
         public virtual Game Game { get; set; }
         public bool IsHost { get; set; }
         public int Points { get; set; }
-        public WindDirection InitialSeatWind { get; set; }
+        public WindDirection? InitialSeatWind { get; set; }
     }
 }

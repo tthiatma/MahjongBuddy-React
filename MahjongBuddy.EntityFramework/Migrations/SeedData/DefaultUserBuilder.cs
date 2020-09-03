@@ -29,6 +29,13 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Email = "tonny@gmail.com",
                     EmailConfirmed = true
                 };
+                mainPlayer.Photos.Add(new Photo
+                {
+                    Id = "ps9p70gkirosjaudenvl",
+                    Url = "https://res.cloudinary.com/mahjongbuddy/image/upload/v1598673581/ps9p70gkirosjaudenvl.jpg",
+                    IsMain = true
+                });
+
                 var rightPlayer = new AppUser
                 {
                     Id = "b",
@@ -37,6 +44,13 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Email = "mei@gmail.com",
                     EmailConfirmed = true
                 };
+                rightPlayer.Photos.Add(new Photo
+                {
+                    Id = "akrhqqhnjsrsnycub48x",
+                    Url = "https://res.cloudinary.com/mahjongbuddy/image/upload/v1598673644/akrhqqhnjsrsnycub48x.jpg",
+                    IsMain = true
+                });
+
                 var topPlayer = new AppUser
                 {
                     Id = "c",
@@ -45,6 +59,13 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Email = "peter@gmail.com",
                     EmailConfirmed = true
                 };
+                topPlayer.Photos.Add(new Photo
+                {
+                    Id = "qzqes8q87s5q0acs0tos",
+                    Url = "https://res.cloudinary.com/mahjongbuddy/image/upload/v1598673707/qzqes8q87s5q0acs0tos.jpg",
+                    IsMain = true
+                });
+
                 var leftPlayer = new AppUser
                 {
                     Id = "d",
@@ -53,6 +74,12 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Email = "jason@gmail.com",
                     EmailConfirmed = true
                 };
+                leftPlayer.Photos.Add(new Photo
+                {
+                    Id = "u6st5f6gbr9enrxbeeqa",
+                    Url = "https://res.cloudinary.com/mahjongbuddy/image/upload/v1598673746/u6st5f6gbr9enrxbeeqa.jpg",
+                    IsMain = true
+                });
 
                 var users = new List<AppUser>
                 {

@@ -48,7 +48,16 @@ namespace MahjongBuddy.API.SignalR
             await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }
 
-        public async Task DisconnectFromGame(Disconnect.Command command)
+        public async Task JoinGame(Join.Command command)
+        {
+            command.UserName = GetUserName();
+
+            var player = await _mediator.Send(command);
+
+            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerConnected", player);
+        }
+
+        public async Task LeaveGame(Leave.Command command)
         {
             command.UserName = GetUserName();
 
@@ -57,13 +66,31 @@ namespace MahjongBuddy.API.SignalR
             await Clients.Group(command.GameId.ToString()).SendAsync("PlayerDisconnected", player);
         }
 
-        public async Task ConnectToGame(Connect.Command command)
+        public async Task StandUpGame(StandUp.Command command)
         {
             command.UserName = GetUserName();
 
             var player = await _mediator.Send(command);
 
-            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerConnected", player);
+            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerStoodUp", player);
+        }
+
+        public async Task SitGame(Sit.Command command)
+        {
+            command.UserName = GetUserName();
+
+            var player = await _mediator.Send(command);
+
+            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerSat", player);
+        }
+
+        public async Task RandomizeWind(RandomizeWind.Command command)
+        {
+            command.UserName = GetUserName();
+
+            var players = await _mediator.Send(command);
+
+            await Clients.Group(command.GameId.ToString()).SendAsync("UpdatePlayersWind", players);
         }
 
         public async Task SendChatMsg(CreateChatMsg.Command command)
@@ -100,6 +127,7 @@ namespace MahjongBuddy.API.SignalR
             var round = await _mediator.Send(command);
             await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
         }
+
         public async Task SortTiles(SortTiles.Command command)
         {
             command.UserName = GetUserName();

@@ -169,7 +169,7 @@ export default class GameStore {
 
   groupGamesByDate(games: IGame[]) {
     const sortedGames = games.sort(
-      (a, b) => a.date.getTime() - b.date.getTime()
+      (a, b) => b.date.getTime() - a.date.getTime()
     );
     return Object.entries(
       sortedGames.reduce((games, game) => {

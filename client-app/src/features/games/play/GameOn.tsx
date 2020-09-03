@@ -131,7 +131,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   };
 
   const doThrowTile = (tileId: string) => {
-    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow) {
+    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver) {
       const tempPlayerAction = Array.from(mainPlayer!.roundPlayerActions);
       runInAction("throwingtile", () => {
         rootStore.roundStore.selectedTile = roundTiles!.find(
@@ -288,7 +288,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     activeTile={boardActiveTile!}
                     activeTileAnimation={getActiveTileAnimation()}
                   />
-                  {mainPlayer?.mustThrow && (
+                  {mainPlayer?.mustThrow && !round.isOver && (
                     <Droppable droppableId="board">
                       {(provided, snapshot) => (
                         <div

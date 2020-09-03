@@ -126,6 +126,34 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
         }
 
         [Fact]
+        public void Detect_MixedAllTerminals()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForMixedAllTerminals(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.Contains(HandType.MixedAllTerminal, result);
+        }
+
+        [Fact]
+        public void Detect_Not_MixedAllTerminals()
+        {
+            var context = _f.TestDataContext;
+
+            WinTilesHelper.SetupForAllTerminals(context, _f.MainPlayerUserName, selfPick: true);
+
+            var round = _f.TestDataContext.Rounds.First();
+
+            var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
+
+            Assert.DoesNotContain(HandType.MixedAllTerminal, result);
+        }
+
+        [Fact]
         public void Detect_AllTerminals()
         {
             var context = _f.TestDataContext;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Item, Button, Segment, Icon, Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { IGame } from "../../../app/models/game";
@@ -23,8 +23,14 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
                 {game.title}
               </Item.Header>
               <Item.Description>
-                Hosted by
-                <Link to={`profile/${host.userName}`}>{host?.displayName}</Link>
+                {host && (
+                  <Fragment>
+                    Hosted by 
+                    <Link to={`profile/${host.userName}`}>
+                      {host?.displayName}
+                    </Link>
+                  </Fragment>
+                )}
               </Item.Description>
               {game.isHost && (
                 <Item.Description>
