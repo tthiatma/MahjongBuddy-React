@@ -43,6 +43,8 @@
         //one nine one nine
         AllTerminals,
 
+        MixedAllTerminal,
+
         AllKongs,
 
         //zi jat sik

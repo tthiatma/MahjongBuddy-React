@@ -34,6 +34,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { HandType.Triplets, 3 },
                 { HandType.HiddenTreasure, 13},
                 { HandType.AllTerminals, 10},
+                { HandType.MixedAllTerminal, 7},
                 { HandType.AllKongs, 13 },
                 { HandType.AllHonors, 10 },
             };
@@ -80,7 +81,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                     if (extraPoints.Contains(ExtraPoint.WhiteDragon)) extraPoints.Remove(ExtraPoint.WhiteDragon);
                 }
 
-                //if handtypes has small wind or big wind then take off wind exrapoint
+                //if handtypes has small wind or big wind then take off wind extrapoint
                 if (handTypes.Contains(HandType.SmallFourWind) || handTypes.Contains(HandType.BigFourWind))
                 {
                     if (extraPoints.Contains(ExtraPoint.PrevailingWind)) extraPoints.Remove(ExtraPoint.PrevailingWind);
@@ -90,6 +91,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 //if handtypes contain below, then triplets wont count anymore
                 if (handTypes.Contains(HandType.HiddenTreasure) || 
                     handTypes.Contains(HandType.AllTerminals) ||
+                    handTypes.Contains(HandType.MixedAllTerminal) ||
                     handTypes.Contains(HandType.AllHonors) ||
                     handTypes.Contains(HandType.AllKongs) 
                     )
