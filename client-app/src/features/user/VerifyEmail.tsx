@@ -1,12 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import queryString from "query-string";
 import agent from "../../app/api/agent";
-import { Button, Segment, Header, Icon } from "semantic-ui-react";
+import { Button, Segment, Header, Icon, Container } from "semantic-ui-react";
 import LoginForm from "./LoginForm";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
+import NavBar from "../nav/NavBar";
 
 const VerifyEmail: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -48,7 +49,12 @@ const VerifyEmail: React.FC<RouteComponentProps> = ({ location }) => {
             <p>
               Verification failed - you can try resending the verification email
             </p>
-            <Button onClick={handleConfirmEmailResend} primary size="huge" content="Resend email" />
+            <Button
+              onClick={handleConfirmEmailResend}
+              primary
+              size="huge"
+              content="Resend email"
+            />
           </div>
         );
       case Status.Success:
@@ -67,13 +73,18 @@ const VerifyEmail: React.FC<RouteComponentProps> = ({ location }) => {
   };
 
   return (
-    <Segment placeholder>
-      <Header icon>
-        <Icon name="envelope" />
-        Email Verification
-      </Header>
-      <Segment.Inline>{getBody()}</Segment.Inline>
-    </Segment>
+    <Fragment>
+      <NavBar />
+      <Container style={{ paddingTop: "5em" }}>
+        <Segment placeholder>
+          <Header icon>
+            <Icon name="envelope" />
+            Email Verification
+          </Header>
+          <Segment.Inline>{getBody()}</Segment.Inline>
+        </Segment>
+      </Container>
+    </Fragment>
   );
 };
 
