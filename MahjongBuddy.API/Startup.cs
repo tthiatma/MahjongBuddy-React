@@ -25,6 +25,7 @@ using System;
 using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Application.Rounds.Scorings.Builder;
 using MahjongBuddy.Infrastructure.Photos;
+using MahjongBuddy.Infrastructure.Email;
 
 namespace MahjongBuddy.API
 {
@@ -78,11 +79,15 @@ namespace MahjongBuddy.API
             services.AddMediatR(typeof(Create.Handler).Assembly);
             services.AddAutoMapper(typeof(Create.Handler));
             services.AddSignalR();
-            var builder = services.AddIdentityCore<AppUser>();
+            var builder = services.AddIdentityCore<AppUser>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = true;
+            });
 
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<MahjongBuddyDbContext>();
             identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+            identityBuilder.AddDefaultTokenProviders();
 
             services.AddAuthorization(opt =>
             {
@@ -128,8 +133,10 @@ namespace MahjongBuddy.API
             services.AddScoped<IPointsCalculator, HomeGameCalculator>();
             services.AddScoped<HandTypeBuilder, HandTypeBuilder>();
             services.AddScoped<ExtraPointBuilder, ExtraPointBuilder>();
+            services.AddScoped<IEmailSender, EmailSender>();
             services.Configure<FacebookAppSettings>(Configuration.GetSection("Authentication:Facebook"));
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
+            services.Configure<SendGridSettings>(Configuration.GetSection("SendGrid"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

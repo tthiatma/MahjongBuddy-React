@@ -26,7 +26,8 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = "a",
                     DisplayName = "Tonny",
                     UserName = "Tonny",
-                    Email = "tonny@gmail.com" 
+                    Email = "tonny@gmail.com",
+                    EmailConfirmed = true
                 };
                 mainPlayer.Photos.Add(new Photo
                 {
@@ -40,7 +41,8 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = "b",
                     DisplayName = "Mei",
                     UserName = "Mei",
-                    Email = "mei@gmail.com"
+                    Email = "mei@gmail.com",
+                    EmailConfirmed = true
                 };
                 rightPlayer.Photos.Add(new Photo
                 {
@@ -54,7 +56,8 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     Id = "c",
                     DisplayName = "Peter",
                     UserName = "Peter",
-                    Email = "peter@gmail.com"
+                    Email = "peter@gmail.com",
+                    EmailConfirmed = true
                 };
                 topPlayer.Photos.Add(new Photo
                 {
@@ -69,6 +72,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     DisplayName = "Jason",
                     UserName = "Jason",
                     Email = "jason@gmail.com",
+                    EmailConfirmed = true
                 };
                 leftPlayer.Photos.Add(new Photo
                 {

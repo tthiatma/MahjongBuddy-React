@@ -20,14 +20,9 @@ export default class UserStore {
 
   @action register = async (values: IUserFormValues) => {
     try {
-      const user = await agent.User.register(values);
-      runInAction(() => {
-        this.user = user;
-      });
-      this.rootStore.commonStore.setToken(user.token);
-      this.rootStore.commonStore.setRefreshToken(user.refreshToken);
+      await agent.User.register(values);
       this.rootStore.modalStore.closeModal();
-      history.push("/games");
+      history.push(`/user/registerSuccess?email=${values.email}`);
     } catch (error) {
       throw error;
     }
