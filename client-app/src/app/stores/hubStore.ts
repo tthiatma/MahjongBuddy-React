@@ -14,47 +14,41 @@ import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
 import { TileStatus } from "../models/tileStatus";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 import agent from "../api/agent";
+import { IPlayer } from "../models/game";
+import UserStore from "./userStore";
 
 export default class HubStore {
   rootStore: RootStore;
   hubStore: HubStore;
   roundStore: RoundStore;
   gameStore: GameStore;
+  userStore: UserStore;
   cooldownTime: number = 2500;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     this.hubStore = this.rootStore.hubStore;
     this.roundStore = this.rootStore.roundStore;
     this.gameStore = this.rootStore.gameStore;
+    this.userStore = this.rootStore.userStore;
   }
-  
-  @observable hubActionLoading:boolean = false;
-  @observable hubLoading:boolean = false;
+
+  @observable hubActionLoading: boolean = false;
+  @observable hubLoading: boolean = false;
   @observable.ref hubConnection: HubConnection | null = null;
-
-  @action leaveGroup = (gameId: string) => {
-    if (this.hubConnection!.state === "Connected")
-      this.hubConnection!.invoke("RemoveFromGroup", gameId);
-  };
-
-  @action joinGroup = (gameId: string) => {
-    if (this.hubConnection!.state === "Connected")
-      this.hubConnection!.invoke("AddToGroup", gameId);
-  };
 
   sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  updateRoundTile(objIndex: number, tile: IRoundTile){
+  updateRoundTile(objIndex: number, tile: IRoundTile) {
     runInAction("updating tile", () => {
       this.roundStore.roundTiles![objIndex] = tile;
-    })
+    });
   }
 
-  updateRoundPlayer(updatedRoundPlayers: IRoundPlayer[]){
+  updateRoundPlayer(updatedRoundPlayers: IRoundPlayer[]) {
     updatedRoundPlayers.forEach((player) => {
       runInAction("updating players", () => {
         if (player.userName === this.roundStore.leftPlayer?.userName)
@@ -66,7 +60,7 @@ export default class HubStore {
         if (player.userName === this.roundStore.topPlayer?.userName)
           this.roundStore.topPlayer = player;
 
-        if (player.userName === this.roundStore.mainPlayer?.userName){
+        if (player.userName === this.roundStore.mainPlayer?.userName) {
           this.roundStore.mainPlayer = player;
           this.roundStore.isManualSort = player.isManualSort;
         }
@@ -75,26 +69,58 @@ export default class HubStore {
   }
 
   checkTokenAndRefreshIfExpired = async () => {
-    const token = localStorage.getItem('jwt');
-    const refreshToken = localStorage.getItem('refreshToken');
-    if(token && refreshToken){
+    const token = localStorage.getItem("jwt");
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (token && refreshToken) {
       const decodedToken: any = jwt.decode(token);
-      if(decodedToken && Date.now() >= decodedToken.exp * 1000 - 5000){
+      if (decodedToken && Date.now() >= decodedToken.exp * 1000 - 5000) {
         try {
           return await agent.User.refreshToken(token, refreshToken);
+        } catch (error) {
+          toast.error("Problem connecting to the game");
         }
-        catch(error){
-          toast.error('Problem connecting to the game');
-        }
-      }
-      else {
+      } else {
         return token;
       }
-    } 
-  }
+    }
+  };
 
   addHubConnectionHandler() {
     if (this.hubConnection) {
+      this.hubConnection.on("UpdatePlayersWind", (players: IPlayer[]) => {
+        runInAction(() => {
+          players.forEach((p) => {
+            let curPlayer = this.rootStore.gameStore.game?.players.find(
+              (x) => x.userName === p.userName
+            );
+            if (curPlayer) {
+              curPlayer.initialSeatWind = p.initialSeatWind;
+
+              if(curPlayer.userName === this.userStore.user?.userName)
+                this.rootStore.gameStore.game!.initialSeatWind = p.initialSeatWind
+            }
+          });
+        });
+      });
+
+      this.hubConnection.on("PlayerStoodUp", (player: IPlayer) => {
+        runInAction(() => {
+          let curPlayer = this.rootStore.gameStore.game?.players.find(
+            (x) => x.userName === player.userName
+          );
+          if (curPlayer) curPlayer.initialSeatWind = undefined;
+        });
+      });
+
+      this.hubConnection.on("PlayerSat", (player: IPlayer) => {
+        runInAction(() => {
+          let curPlayer = this.rootStore.gameStore.game?.players.find(
+            (x) => x.userName === player.userName
+          );
+          if (curPlayer) curPlayer.initialSeatWind = player.initialSeatWind;
+        });
+      });
+
       this.hubConnection.on("UpdateRoundNoLag", (round: IRound) => {
         if (round.isOver && round.roundResults) {
           runInAction("updating round results", () => {
@@ -102,7 +128,7 @@ export default class HubStore {
             this.roundStore.roundResults = round.roundResults;
           });
         }
-        
+
         //update tiles
         if (round.updatedRoundTiles) {
           round.updatedRoundTiles.forEach((tile) => {
@@ -115,7 +141,7 @@ export default class HubStore {
 
         //update players
         if (round.updatedRoundPlayers) {
-          this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+          this.updateRoundPlayer(round!.updatedRoundPlayers!);
         }
 
         runInAction("updating round", () => {
@@ -124,7 +150,6 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
-        
         runInAction("updating round", () => {
           this.roundStore.roundSimple = round;
         });
@@ -136,26 +161,26 @@ export default class HubStore {
         }
 
         let noAction = false;
-        if (round.updatedRoundPlayers){
-          noAction = round.updatedRoundPlayers.filter((p) => p.hasAction).length === 0;
+        if (round.updatedRoundPlayers) {
+          noAction =
+            round.updatedRoundPlayers.filter((p) => p.hasAction).length === 0;
         }
 
         let hasTileSetGroup = false;
-        if(round.updatedRoundTiles){
-          hasTileSetGroup = round.updatedRoundTiles.filter((t) => t.tileSetGroup !== 0).length > 0;
+        if (round.updatedRoundTiles) {
+          hasTileSetGroup =
+            round.updatedRoundTiles.filter((t) => t.tileSetGroup !== 0).length >
+            0;
         }
-        
+
         //update players
-        if (round.updatedRoundPlayers) {        
-          if ((noAction && !hasTileSetGroup))
-          {
+        if (round.updatedRoundPlayers) {
+          if (noAction && !hasTileSetGroup) {
             this.sleep(this.cooldownTime).then(() => {
-              this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+              this.updateRoundPlayer(round!.updatedRoundPlayers!);
             });
-          }
-          else
-          {
-            this.updateRoundPlayer(round!.updatedRoundPlayers!);              
+          } else {
+            this.updateRoundPlayer(round!.updatedRoundPlayers!);
           }
         }
 
@@ -166,24 +191,20 @@ export default class HubStore {
               (obj) => obj.id === tile.id
             );
 
-            if(noAction){
+            if (noAction) {
               //find just picked tile and give assign it after cooldown time
-              if(tile.status === TileStatus.UserJustPicked){
+              if (tile.status === TileStatus.UserJustPicked) {
                 this.sleep(this.cooldownTime).then(() => {
                   this.updateRoundTile(objIndex, tile);
-                })
-              }else{
+                });
+              } else {
                 this.updateRoundTile(objIndex, tile);
               }
-            }
-            else
-            {
+            } else {
               this.updateRoundTile(objIndex, tile);
             }
 
-            runInAction("updating tile", () => {
-              
-            });
+            runInAction("updating tile", () => {});
           });
         }
       });
@@ -266,6 +287,16 @@ export default class HubStore {
     }
   }
 
+  @action leaveGroup = (gameId: string) => {
+    if (this.hubConnection!.state === "Connected")
+      this.hubConnection!.invoke("RemoveFromGroup", gameId);
+  };
+
+  @action joinGroup = (gameId: string) => {
+    if (this.hubConnection!.state === "Connected")
+      this.hubConnection!.invoke("AddToGroup", gameId);
+  };
+
   @action createHubConnection = (gameId: string) => {
     if (!this.hubConnection) {
       this.hubConnection = new HubConnectionBuilder()
@@ -336,7 +367,44 @@ export default class HubStore {
     }
   };
 
-  @action connectToGame = async (seat: WindDirection) => {
+  @action joinGame = async () => {
+    let values: any = {};
+    values.gameId = this.gameStore.game!.id;
+    runInAction(() => {
+      this.hubLoading = true;
+    });
+    try {
+      this.hubConnection!.invoke("JoinGame", values);
+      runInAction(() => {
+        this.hubLoading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.hubLoading = false;
+      });
+      toast.error("problem joining to game");
+    }
+  };
+
+  @action leaveGame = async () => {
+    let values: any = {};
+    values.gameId = this.gameStore.game!.id;
+    runInAction(() => {
+      this.hubLoading = true;
+    });
+    try {
+      this.hubConnection!.invoke("LeaveGame", values);
+      runInAction(() => {
+        this.hubLoading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.hubLoading = false;
+      });
+      toast.error("problem leaving from game");
+    }
+  };
+  @action sitGame = async (seat: WindDirection) => {
     let values: any = {};
     values.gameId = this.gameStore.game!.id;
     values.InitialSeatWind = seat;
@@ -344,7 +412,7 @@ export default class HubStore {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("ConnectToGame", values);
+      this.hubConnection!.invoke("SitGame", values);
       runInAction(() => {
         this.hubLoading = false;
       });
@@ -356,14 +424,14 @@ export default class HubStore {
     }
   };
 
-  @action disconnectFromGame = async () => {
+  @action standUpGame = async () => {
     let values: any = {};
     values.gameId = this.gameStore.game!.id;
     runInAction(() => {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("DisconnectFromGame", values);
+      this.hubConnection!.invoke("StandUpGame", values);
       runInAction(() => {
         this.hubLoading = false;
       });
@@ -372,6 +440,25 @@ export default class HubStore {
         this.hubLoading = false;
       });
       toast.error("problem disconnecting from game");
+    }
+  };
+
+  @action randomizeWind = async () => {
+    let values: any = {};
+    values.gameId = this.gameStore.game!.id;
+    runInAction(() => {
+      this.hubLoading = true;
+    });
+    try {
+      this.hubConnection!.invoke("RandomizeWind", values);
+      runInAction(() => {
+        this.hubLoading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.hubLoading = false;
+      });
+      toast.error("problem randomizing game's wind");
     }
   };
 
@@ -456,7 +543,11 @@ export default class HubStore {
     }
   };
 
-  @action orderTiles = async (reorderedTiles: IRoundTile[], originalTiles: IRoundTile[], originalManualSort: boolean) => {
+  @action orderTiles = async (
+    reorderedTiles: IRoundTile[],
+    originalTiles: IRoundTile[],
+    originalManualSort: boolean
+  ) => {
     let values = this.getGameAndRoundProps();
     values.RoundTiles = reorderedTiles;
     values.IsManualSort = this.rootStore.roundStore.isManualSort;
@@ -467,19 +558,20 @@ export default class HubStore {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         await this.hubConnection!.invoke("SortTiles", values).catch(() => {
           toast.error(`failed ordering tile`);
-          for(let i = 0; i< originalTiles!.length; i++){
-
+          for (let i = 0; i < originalTiles!.length; i++) {
             let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
               (obj) => obj.id === originalTiles![i].id
-            );    
+            );
             runInAction("updating reordered tile", () => {
-              this.rootStore.roundStore.roundTiles![objIndex].activeTileCounter = originalTiles![i].activeTileCounter;
-            })  
+              this.rootStore.roundStore.roundTiles![
+                objIndex
+              ].activeTileCounter = originalTiles![i].activeTileCounter;
+            });
           }
-    
+
           runInAction("manual Sort", () => {
             this.rootStore.roundStore.isManualSort = originalManualSort;
-          }) 
+          });
         });
         runInAction(() => {
           this.hubActionLoading = false;
@@ -493,7 +585,7 @@ export default class HubStore {
       });
       toast.error("problem ordering tile");
     }
-  }
+  };
 
   @action throwTile = async () => {
     let values = this.getGameAndRoundProps();
@@ -555,7 +647,10 @@ export default class HubStore {
     });
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
-        await this.hubConnection!.invoke("PickTile", this.getGameAndRoundProps());
+        await this.hubConnection!.invoke(
+          "PickTile",
+          this.getGameAndRoundProps()
+        );
         runInAction(() => {
           this.hubActionLoading = false;
         });
@@ -665,14 +760,14 @@ export default class HubStore {
         ).catch(() => {
           runInAction(() => {
             this.roundStore.mainPlayer!.hasAction = true;
-            this.hubActionLoading = false;  
-          })  
+            this.hubActionLoading = false;
+          });
           toast.error(`can't skip`);
-        })
+        });
         runInAction(() => {
           this.roundStore.mainPlayer!.hasAction = false;
-          this.hubActionLoading = false;  
-        })
+          this.hubActionLoading = false;
+        });
       } else {
         toast.error("not connected to hub");
       }

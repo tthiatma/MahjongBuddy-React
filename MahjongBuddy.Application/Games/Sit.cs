@@ -2,6 +2,7 @@
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Core;
+using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace MahjongBuddy.Application.Games
 {
-    public class Connect
+    public class Sit
     {
         public class Command : IRequest<PlayerDto>
         {
@@ -38,32 +39,23 @@ namespace MahjongBuddy.Application.Games
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
-                var usersInGame = game.UserGames.Count;
-                if(usersInGame == 4)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
+                if (game.Status == GameStatus.Playing || game.Status == GameStatus.Over)
+                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Can't sit on game that's already started/over" });
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var connected = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
-                if(connected != null)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already in the game" });
+                if(playerInGame == null)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player not in the game" });
 
-                connected = new UserGame
-                {
-                    Game = game,
-                    AppUser = user,
-                    IsHost = game.HostId == user.Id,
-                    InitialSeatWind = request.InitialSeatWind
-                };
-
-                _context.UserGames.Add(connected);
+                playerInGame.InitialSeatWind = request.InitialSeatWind;
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return _mapper.Map<PlayerDto>(connected);
+                if (success) return _mapper.Map<PlayerDto>(playerInGame);
 
-                throw new Exception("Problem connecting to game");
+                throw new Exception("Problem sitting to game");
             }
         }
     }

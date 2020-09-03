@@ -8,7 +8,7 @@ namespace MahjongBuddy.Application.Dtos
 
         public string DisplayName { get; set; }
 
-        public WindDirection InitialSeatWind { get; set; }
+        public WindDirection? InitialSeatWind { get; set; }
 
         public string Image { get; set; }
 

@@ -376,7 +376,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<int>(nullable: false),
                     IsHost = table.Column<bool>(nullable: false),
                     Points = table.Column<int>(nullable: false),
-                    InitialSeatWind = table.Column<int>(nullable: false),
+                    InitialSeatWind = table.Column<int>(nullable: true),
                     RoundId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
