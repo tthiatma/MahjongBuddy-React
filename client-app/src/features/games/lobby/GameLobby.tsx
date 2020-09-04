@@ -51,7 +51,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   return (
     <Fragment>
       <NavBar />
-      <Container style={{ marginTop: "5em" }}>
+      <Container style={{ paddingTop: "5em" }}>
         <Grid>
           <Grid.Column width={8}>
             <GameLobbyHeader game={game} latestRound={latestRound} />

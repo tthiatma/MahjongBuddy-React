@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Segment, Item, Header, Button, Image } from "semantic-ui-react";
+import { Segment, Item, Header, Button, Image, Icon } from "semantic-ui-react";
 import { IGame } from "../../../app/models/game";
 import { observer } from "mobx-react-lite";
 import { Link } from "react-router-dom";
@@ -26,7 +26,13 @@ const GameLobbyHeader: React.FC<{
   latestRound: IRound | null;
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
-  const { hubLoading, startRound, joinGame, leaveGame, randomizeWind } = rootStore.hubStore;
+  const {
+    hubLoading,
+    startRound,
+    joinGame,
+    leaveGame,
+    randomizeWind,
+  } = rootStore.hubStore;
   const host = game.players.filter((p) => p.isHost)[0];
   const userNoWind = game.players.some((p) => p.initialSeatWind === null);
 
@@ -60,16 +66,18 @@ const GameLobbyHeader: React.FC<{
       <Segment clearing attached="bottom">
         {game.status === GameStatus.Created &&
           game.isHost &&
-          game.players.length === 4 && !userNoWind && (
-            <Button loading={hubLoading} onClick={startRound}>
-              Start
+          game.players.length === 4 &&
+          !userNoWind && (
+            <Button icon labelPosition='right' floated="right" color="blue" loading={hubLoading} onClick={startRound}>
+              Start Game
+              <Icon name='play' />
             </Button>
           )}
-          {game.status === GameStatus.Created &&
+        {game.status === GameStatus.Created &&
           game.isHost &&
-          game.players.length === 4 &&  (
-            <Button loading={hubLoading} onClick={randomizeWind}>
-              Randomize
+          game.players.length === 4 && (
+            <Button color="orange" loading={hubLoading} onClick={randomizeWind}>
+              Shuffle Seat
             </Button>
           )}
         {game.status === GameStatus.Playing && latestRound !== null && (
@@ -77,23 +85,32 @@ const GameLobbyHeader: React.FC<{
             as={Link}
             loading={hubLoading}
             to={`/games/${game.id}/rounds/${latestRound.id}`}
-            color="orange"
+            color="blue"
             floated="right"
           >
-            Play
+            Go to game
           </Button>
         )}
-        {game.isCurrentPlayerConnected && !game.isHost && game.status === GameStatus.Created && (
-          <Button floated="right" loading={hubLoading} onClick={leaveGame}>
-            Leave Game
-          </Button>
-        )}
+        {game.isCurrentPlayerConnected &&
+          !game.isHost &&
+          game.status === GameStatus.Created && (
+            <Button floated="right" loading={hubLoading} onClick={leaveGame}>
+              Leave Game
+            </Button>
+          )}
 
-        {!game.isCurrentPlayerConnected && !game.isHost && game.status === GameStatus.Created && (
-          <Button floated="right" loading={hubLoading} onClick={joinGame} color="teal">
-            Join Game
-          </Button>
-        )}
+        {!game.isCurrentPlayerConnected &&
+          !game.isHost &&
+          game.status === GameStatus.Created && (
+            <Button
+              floated="right"
+              loading={hubLoading}
+              onClick={joinGame}
+              color="teal"
+            >
+              Join Game
+            </Button>
+          )}
 
         {/* {game.isHost && (
           <Button

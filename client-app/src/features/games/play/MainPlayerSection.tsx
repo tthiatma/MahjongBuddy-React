@@ -69,28 +69,34 @@ const MainPlayerSection: React.FC<IProps> = ({
   const { orderTiles } = rootStore.hubStore;
 
   const autoSort = async () => {
-
-    const beforeOrderingTiles = toJS(mainPlayerAliveTiles!, {recurseEverything : true});
-    const beforeOrderingManualSortValue = toJS(rootStore.roundStore.isManualSort);
+    const beforeOrderingTiles = toJS(mainPlayerAliveTiles!, {
+      recurseEverything: true,
+    });
+    const beforeOrderingManualSortValue = toJS(
+      rootStore.roundStore.isManualSort
+    );
 
     const sortedTile = mainPlayerAliveTiles!;
     sortedTile.sort(sortTiles);
-    for(let i = 0; i< sortedTile.length; i++){
-
+    for (let i = 0; i < sortedTile.length; i++) {
       let objIndex = rootStore.roundStore.roundTiles!.findIndex(
         (obj) => obj.id === sortedTile[i].id
       );
 
       runInAction("updating reordered tile", () => {
         rootStore.roundStore.roundTiles![objIndex].activeTileCounter = i;
-      })  
+      });
     }
     runInAction("autosort", () => {
       rootStore.roundStore.isManualSort = false;
-    })
+    });
 
-    await orderTiles(sortedTile, beforeOrderingTiles, beforeOrderingManualSortValue);    
-  }
+    await orderTiles(
+      sortedTile,
+      beforeOrderingTiles,
+      beforeOrderingManualSortValue
+    );
+  };
 
   return (
     <Grid id="mainPlayerTiles">
@@ -111,14 +117,11 @@ const MainPlayerSection: React.FC<IProps> = ({
       </Grid.Column>
       <Grid.Column width={10}>
         <Grid.Row>
-          <Droppable
-            droppableId="tile"
-            direction="horizontal"
-          >
+          <Droppable droppableId="tile" direction="horizontal">
             {(provided, snapshot) => (
               <Fragment>
                 <DraggableTile
-                  doThrowTile = {doThrowTile}
+                  doThrowTile={doThrowTile}
                   containerStyleName={containerStyleName}
                   tiles={mainPlayerAliveTiles!}
                   droppableSnapshot={snapshot}

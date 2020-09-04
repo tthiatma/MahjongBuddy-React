@@ -7,7 +7,7 @@ const NotFound = () => {
   return (
     <Fragment>
       <NavBar />
-      <Container style={{ marginTop: "5em" }}>
+      <Container style={{ paddingTop: "5em" }}>
         <Segment placeholder>
           <Header icon>
             <Icon name="search" />

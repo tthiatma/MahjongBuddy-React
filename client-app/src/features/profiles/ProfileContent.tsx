@@ -4,8 +4,8 @@ import ProfilePhotos from './ProfilePhotos';
 import ProfileDescription from './ProfileDescription';
 
 const panes = [
-  { menuItem: 'About', render: () => <ProfileDescription /> },
   { menuItem: 'Photos', render: () => <ProfilePhotos /> },
+  { menuItem: 'About', render: () => <ProfileDescription /> },
 ];
 
 interface IProps {

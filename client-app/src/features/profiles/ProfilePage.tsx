@@ -34,7 +34,7 @@ const ProfilePage: React.FC<IProps> = ({ match }) => {
   return (
     <Fragment>
       <NavBar />
-      <Container style={{ marginTop: "5em" }}>
+      <Container style={{ paddingTop: "5em" }}>
         <Grid>
           <Grid.Column width={16}>
             <ProfileHeader

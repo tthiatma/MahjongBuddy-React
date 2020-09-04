@@ -7,7 +7,7 @@ const PrivacyPolicy = () => {
     <Fragment>
       <NavBar />
 
-      <Container style={{ marginTop: "5em" }}>
+      <Container style={{ paddingTop: "5em" }}>
         <Segment>
           <h1>Privacy Policy</h1>
 
