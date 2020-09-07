@@ -95,6 +95,12 @@ export default class GameStore {
     }
   };
 
+  @action joinGameById = async (gameId: string) => {
+      await agent.Games.detail(gameId);
+      history.push(`/games/${gameId}`);
+      this.rootStore.modalStore.closeModal();
+}
+
   @action createGame = async (game: IGame) => {
     this.submitting = true;
     try {
