@@ -34,7 +34,7 @@ namespace MahjongBuddy.Application.Games
                     .FindAsync(request.Id);
 
                 if (game == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { game = "Not Found" });
+                    throw new RestException(HttpStatusCode.BadRequest, new { game = "Not Found" });
 
                 var gameToReturn = _mapper.Map<Game, GameDto>(game);
 
