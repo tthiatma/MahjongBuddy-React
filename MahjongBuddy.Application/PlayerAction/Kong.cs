@@ -130,6 +130,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //clear existing action
                 currentPlayer.RoundPlayerActions.Clear();
+                currentPlayer.HasAction = false;
 
                 //add new tile for user                
                 var newTiles = RoundTileHelper.PickTile(round, request.UserName, ref updatedTiles, true);

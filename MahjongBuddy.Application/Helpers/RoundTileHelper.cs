@@ -247,18 +247,18 @@ namespace MahjongBuddy.Application.Helpers
             roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Seven & string.IsNullOrEmpty(x.Owner)).Take(3).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
             roundTiles.Where(x => x.Tile.TileType == TileType.Stick && x.Tile.TileValue == TileValue.Eight).Take(2).ForEach(rt => { rt.Owner = jason; rt.Status = TileStatus.UserActive; });
 
-            var remainingTiles = roundTiles.Where(x => x.Owner == null);
-            foreach (var tile in remainingTiles)
-            {
-                tile.Owner = DefaultValue.board;
-                tile.Status = TileStatus.BoardGraveyard;
-            }
+            //var remainingTiles = roundTiles.Where(x => x.Owner == null);
+            //foreach (var tile in remainingTiles)
+            //{
+            //    tile.Owner = DefaultValue.board;
+            //    tile.Status = TileStatus.BoardGraveyard;
+            //}
 
-            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Four && x.Owner == DefaultValue.board).Take(1).ForEach(rt =>
-            {
-                rt.Owner = null;
-                rt.Status = TileStatus.Unrevealed;
-            });
+            //roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Four && x.Owner == DefaultValue.board).Take(1).ForEach(rt =>
+            //{
+            //    rt.Owner = null;
+            //    rt.Status = TileStatus.Unrevealed;
+            //});
         }
 
         public static void SetupForBao(IEnumerable<RoundTile> roundTiles)
