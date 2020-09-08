@@ -25,7 +25,7 @@ export default class HubStore {
   roundStore: RoundStore;
   gameStore: GameStore;
   userStore: UserStore;
-  cooldownTime: number = 2500;
+  cooldownTime: number = 2800;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     this.hubStore = this.rootStore.hubStore;
@@ -186,22 +186,22 @@ export default class HubStore {
 
         //update tiles
         if (round.updatedRoundTiles) {
-          round.updatedRoundTiles.forEach((tile) => {
+          round.updatedRoundTiles.forEach((roundTile) => {
             let objIndex = this.roundStore.roundTiles!.findIndex(
-              (obj) => obj.id === tile.id
+              (obj) => obj.id === roundTile.id
             );
 
             if (noAction) {
               //find just picked tile and give assign it after cooldown time
-              if (tile.status === TileStatus.UserJustPicked) {
+              if (roundTile.status === TileStatus.UserJustPicked || roundTile.tile.tileType === TileType.Flower) {
                 this.sleep(this.cooldownTime).then(() => {
-                  this.updateRoundTile(objIndex, tile);
+                  this.updateRoundTile(objIndex, roundTile);
                 });
               } else {
-                this.updateRoundTile(objIndex, tile);
+                this.updateRoundTile(objIndex, roundTile);
               }
             } else {
-              this.updateRoundTile(objIndex, tile);
+              this.updateRoundTile(objIndex, roundTile);
             }
 
             runInAction("updating tile", () => {});

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { IRoundTile, TileType, TileValue } from "../../../app/models/tile";
 import { Droppable } from "react-beautiful-dnd";
 import { IRoundPlayer } from "../../../app/models/round";
-import { Grid, Button } from "semantic-ui-react";
+import { Grid, Button, Transition, Image } from "semantic-ui-react";
 import PlayerAction from "./PlayerAction";
 import PlayerStatus from "./PlayerStatus";
 import DraggableTile from "./DraggableTile";
@@ -102,17 +102,37 @@ const MainPlayerSection: React.FC<IProps> = ({
     <Grid id="mainPlayerTiles">
       <Grid.Column width={3}>
         <Grid.Row centered style={{ padding: "1px" }}>
-          {mainPlayerGraveYardTiles &&
-            mainPlayerGraveYardTiles.map((rt) => (
-              <img
-                {...(isPlayerFlower(rt, mainPlayer!) && {
-                  className: "goodFlowerTile",
-                })}
-                key={rt.id}
-                alt={rt.tile.title}
-                src={rt.tile.imageSmall}
-              />
-            ))}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "flex-start",
+              alignContent: "flex-start",
+            }}
+          >
+            {mainPlayerGraveYardTiles &&
+              mainPlayerGraveYardTiles.map((rt) => (
+                <Fragment key={rt.id}>
+                  {rt.tile.tileType === TileType.Flower ? (
+                    <Transition
+                      transitionOnMount={true}
+                      animation="shake"
+                      duration={1000}
+                    >
+                      <Image
+                        {...(isPlayerFlower(rt, mainPlayer!) && {
+                          className: "goodFlowerTile",
+                        })}
+                        alt={rt.tile.title}
+                        src={rt.tile.imageSmall}
+                      />
+                    </Transition>
+                  ) : (
+                    <Image alt={rt.tile.title} src={rt.tile.imageSmall} />
+                  )}
+                </Fragment>
+              ))}
+          </div>
         </Grid.Row>
       </Grid.Column>
       <Grid.Column width={10}>

@@ -132,7 +132,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 currentPlayer.RoundPlayerActions.Clear();
 
                 //add new tile for user                
-                var newTiles = round.RoundTiles.PickTile(request.UserName, true);
+                var newTiles = RoundTileHelper.PickTile(round, request.UserName, ref updatedTiles, true);
 
                 if(newTiles.Count() > 0)
                 {

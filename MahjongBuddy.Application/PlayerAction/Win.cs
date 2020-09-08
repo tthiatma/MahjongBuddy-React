@@ -149,6 +149,7 @@ namespace MahjongBuddy.Application.PlayerAction
                             winnerResult.PointsResult = winningPoint;
 
                             var loser = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == baoPlayerUserName);
+                            loser.Points -= winningPoint;
                             updatedPlayers.Add(loser);
 
                             round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint * 3 });

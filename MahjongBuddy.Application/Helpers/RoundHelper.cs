@@ -72,10 +72,14 @@ namespace MahjongBuddy.Application.Helpers
                 nextPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.GiveUp });
                 nextPlayer.MustThrow = false;
             }            
-            else           
-                RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);
+            else
+            {
+                var newTiles = RoundTileHelper.PickTile(round, nextPlayer.AppUser.UserName, ref updatedTiles);
+                if (newTiles == null)
+                    round.IsEnding = true;
+                CheckSelfAction(round, nextPlayer, pointCalculator);
+            }
 
-            CheckSelfAction(round, nextPlayer, pointCalculator);
 
             updatedPlayers.Add(nextPlayer);
             updatedPlayers.Add(playerThatHasTurn);
@@ -90,6 +94,10 @@ namespace MahjongBuddy.Application.Helpers
 
         public static void CheckPossibleSelfKong(Round round, RoundPlayer player)
         {
+            var unopenTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
+            if (unopenTiles.Count() == 0)
+                return;
+
             var playerTiles = round.RoundTiles.Where(rt => rt.Owner == player.AppUser.UserName && rt.TileSetGroup != TileSetGroup.Kong && rt.TileSetGroup != TileSetGroup.Chow);
             int possibleKongCount = playerTiles
                 .GroupBy(t => new { t.Tile.TileType, t.Tile.TileValue })

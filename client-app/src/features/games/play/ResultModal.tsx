@@ -6,6 +6,7 @@ import { Modal, Header, Button, Icon } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { TileStatus } from "../../../app/models/tileStatus";
+import { ExtraPoint } from "../../../app/models/extraPointEnum";
 
 interface IProps {
   roundResults: IRoundResult[] | null;
@@ -84,7 +85,7 @@ const ResultModal: React.FC<IProps> = ({
                   }
                 />
               ))}
-            {losers!.length === 1 && boardTile && (
+            {!winner!.roundResultExtraPoints.some((ep) => ep.extraPoint === ExtraPoint.SelfPick) && boardTile && (
               <div
                 style={{
                   backgroundImage: `url(${boardTile.tile.imageSmall}`,
