@@ -7,6 +7,7 @@ namespace MahjongBuddy.Application.Dtos
         public int Id { get; set; }
         public bool IsWinner { get; set; }
         public string UserName { get; set; }
+        public string DisplayName { get; set; }
         public ICollection<RoundResultHandDto> RoundResultHands { get; set; }
         public ICollection<RoundResultExtraPointDto> RoundResultExtraPoints { get; set; }
         public int PointsResult { get; set; }

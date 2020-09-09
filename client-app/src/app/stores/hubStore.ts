@@ -257,7 +257,7 @@ export default class HubStore {
               this.gameStore.game
             );
             if (this.rootStore.userStore.user?.userName !== player.userName)
-              toast.info(`${player.userName} has left the Game`);
+              toast.info(`${player.displayName} has left the Game`);
           }
         })
       );
@@ -276,7 +276,7 @@ export default class HubStore {
               this.gameStore.game
             );
             if (this.rootStore.userStore.user?.userName !== player.userName)
-              toast.info(`${player.userName} has joined the Game`);
+              toast.info(`${player.displayName} has joined the Game`);
           }
         })
       );

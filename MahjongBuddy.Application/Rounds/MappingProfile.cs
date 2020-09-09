@@ -10,7 +10,6 @@ namespace MahjongBuddy.Application.Rounds
         {
             CreateMap<Round, RoundDto>();
             CreateMap<RoundTile, RoundTileDto>();
-            CreateMap<RoundResult, RoundResultDto>();
             CreateMap<RoundResultHand, RoundResultHandDto>();
             CreateMap<RoundResultExtraPoint, RoundResultExtraPointDto>();
             CreateMap<RoundPlayerAction, RoundPlayerActionDto>();
@@ -18,7 +17,8 @@ namespace MahjongBuddy.Application.Rounds
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.AppUser.UserName))
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName));
             CreateMap<RoundResult, RoundResultDto>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.AppUser.UserName));
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.AppUser.UserName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName));
         }
     }
 }

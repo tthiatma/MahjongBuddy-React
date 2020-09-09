@@ -56,7 +56,7 @@ const ResultModal: React.FC<IProps> = ({
       {roundResults !== null && roundResults.length > 0 ? (
         <Modal.Content>
           <h3>
-            Winner : {winner?.userName}: {winner?.pointsResult} pts
+            Winner : {winner?.displayName}: {winner?.pointsResult} pts
             <ul>
               {winner?.roundResultHands.map((h, i) => (
                 <li key={i}>
@@ -100,7 +100,7 @@ const ResultModal: React.FC<IProps> = ({
                 {losers.map((l, i) => (
                   <Fragment key={l.userName}>
                     <li>
-                      Loser : {l.userName}: {l.pointsResult}
+                      Loser : {l.displayName}: {l.pointsResult}
                     </li>
                     {roundTiles!
                       .filter((t) => t.owner === l.userName)!
@@ -116,7 +116,7 @@ const ResultModal: React.FC<IProps> = ({
               <ul>
                 {tiePlayers.map((p, i) => (
                   <Fragment key={p.userName}>
-                    <li>{p.userName}</li>
+                    <li>{p.displayName}</li>
                     {roundTiles!
                       .filter((t) => t.owner === p.userName)!
                       .sort(sortTiles)
@@ -139,7 +139,7 @@ const ResultModal: React.FC<IProps> = ({
               <ul>
                 {tiePlayers.map((p, i) => (
                   <Fragment key={p.userName}>
-                    <li>{p.userName}</li>
+                    <li>{p.displayName}</li>
                     {roundTiles!
                       .filter((t) => t.owner === p.userName)!
                       .sort(sortTiles)

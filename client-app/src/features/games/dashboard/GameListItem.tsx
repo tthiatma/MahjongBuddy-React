@@ -25,7 +25,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
               <Item.Description>
                 {host && (
                   <Fragment>
-                    Hosted by 
+                    Hosted by{" "}
                     <Link to={`profile/${host.userName}`}>
                       {host?.displayName}
                     </Link>

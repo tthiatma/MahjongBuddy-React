@@ -30,6 +30,7 @@ export interface IRoundResult {
   id: number;
   isWinner: boolean;
   userName: string;
+  displayName: string;
   roundResultHands: IRoundResultHand[];
   roundResultExtraPoints: IRoundResultExtraPoint[];
   pointsResult: number;

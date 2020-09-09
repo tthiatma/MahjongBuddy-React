@@ -52,7 +52,7 @@ const GameLobbyHeader: React.FC<{
                 <p>{format(new Date(game.date), "eeee do MMMM")}</p>
                 {host && (
                   <p>
-                    Hosted by
+                    Hosted by {" "}
                     <Link to={`/profile/${host.userName}`}>
                       <strong>{host.displayName}</strong>
                     </Link>
