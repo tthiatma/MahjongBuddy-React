@@ -5,6 +5,8 @@ export interface IGame{
     id: string;
     title: string;
     date: Date;
+    minPoint: string;
+    maxPoint: string;
     isHost: boolean;
     hostUserName: string;
     status: GameStatus;
@@ -30,8 +32,8 @@ export interface IGameFormValues extends Partial<IGame> {
 export class GameFormValues implements IGameFormValues {
     id?: string = undefined;
     title: string = '';
-    minPoint: string = '3';
-    maxPoint: string = '10';
+    minPoint: string = '';
+    maxPoint: string = '';
     date?: Date = undefined;
 
     constructor(init?: IGameFormValues) {

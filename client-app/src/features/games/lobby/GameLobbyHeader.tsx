@@ -34,7 +34,7 @@ const GameLobbyHeader: React.FC<{
     randomizeWind,
   } = rootStore.hubStore;
   const host = game.players.filter((p) => p.isHost)[0];
-  const userNoWind = game.players.some((p) => p.initialSeatWind === null);
+  const userNoWind = game.players.some((p) => p.initialSeatWind === undefined);
 
   return (
     <Segment.Group>
@@ -64,6 +64,12 @@ const GameLobbyHeader: React.FC<{
         </Segment>
       </Segment>
       <Segment clearing attached="bottom">
+      <Button icon labelPosition='right' floated="right" color="blue" loading={hubLoading} onClick={startRound}>
+              Start Game
+              <Icon name='play' />
+            </Button>
+
+        {game.players.length < 4 && <p>Waiting for 4 players to be in the game...</p>}
         {game.status === GameStatus.Created &&
           game.isHost &&
           game.players.length === 4 &&

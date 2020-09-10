@@ -1,28 +1,24 @@
-import React from 'react';
-import { Segment, Grid, Icon } from 'semantic-ui-react';
-import { IGame } from '../../../app/models/game';
-import {format} from 'date-fns';
+import React from "react";
+import { Segment, Grid, Icon, Label } from "semantic-ui-react";
+import { IGame } from "../../../app/models/game";
 
-const GameLobbyInfo: React.FC<{game: IGame}> = ({game}) => {
+const GameLobbyInfo: React.FC<{ game: IGame }> = ({ game }) => {
   return (
     <Segment.Group>
-      <Segment attached='top'>
+      <Segment attached="top">
         <Grid>
           <Grid.Column width={1}>
-            <Icon size='large' color='teal' name='info' />
+            <Icon size="large" color="teal" name="cog" />
           </Grid.Column>
           <Grid.Column width={15}>
-            <p>{game.title}</p>
-          </Grid.Column>
-        </Grid>
-      </Segment>
-      <Segment attached>
-        <Grid verticalAlign='middle'>
-          <Grid.Column width={1}>
-            <Icon name='calendar' size='large' color='teal' />
-          </Grid.Column>
-          <Grid.Column width={15}>
-            <span>{format(game.date, 'eeee do MMMM')} at {format(game.date!, 'h:mm a')}</span>
+            <strong>
+              <Label>
+                {`Min Point: ${game.minPoint} pts`}
+              </Label>
+              <Label>
+                {`Max Point: ${game.maxPoint} pts`}
+              </Label>
+            </strong>
           </Grid.Column>
         </Grid>
       </Segment>

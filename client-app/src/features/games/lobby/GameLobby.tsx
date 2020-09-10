@@ -8,6 +8,7 @@ import GameLobbyChat from "./GameLobbyChat";
 import GameLobbyHeader from "./GameLobbyHeader";
 import GameLobbySidebar from "./GameLobbySidebar";
 import NavBar from "../../nav/NavBar";
+import GameLobbyInfo from "./GameLobbyInfo";
 
 interface DetailParams {
   id: string;
@@ -55,6 +56,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
         <Grid>
           <Grid.Column width={8}>
             <GameLobbyHeader game={game} latestRound={latestRound} />
+            <GameLobbyInfo game={game} />
             <GameLobbyChat />
           </Grid.Column>
           <Grid.Column width={8}>

@@ -11,7 +11,7 @@ interface IProps {
 
 const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
   const rootStore = useContext(RootStoreContext);
-  const { game } = rootStore.gameStore;
+  const { game, getMainUser } = rootStore.gameStore;
   const { sitGame, standUpGame, hubLoading } = rootStore.hubStore;
   const playerWind = game?.players.find((p) => p.initialSeatWind === wind);
 
@@ -30,7 +30,7 @@ const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
               src={playerWind.image || "/assets/user.png"}
             />
           </Item.Content>
-          {game?.status === GameStatus.Created && game?.initialSeatWind === wind &&  (
+          {game?.status === GameStatus.Created && getMainUser?.initialSeatWind === wind &&  (
             <Item.Content>
               <Button loading={hubLoading} onClick={standUpGame}>
                 Stand-Up

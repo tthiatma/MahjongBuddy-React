@@ -18,7 +18,8 @@ namespace MahjongBuddy.Application.Games
         public class Command : IRequest<GameDto>
         {
             public string Title { get; set; }
-
+            public string MinPoint { get; set; }
+            public string MaxPoint { get; set; }
         }
         public class Handler : IRequestHandler<Command, GameDto>
         {
@@ -37,6 +38,8 @@ namespace MahjongBuddy.Application.Games
             {
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
 
+                var minPoint = int.Parse(request.MinPoint);
+                var maxPoint = int.Parse(request.MaxPoint);
                 //TODO don't hard code min and maxpoint
                 var game = new Game
                 {
@@ -44,8 +47,8 @@ namespace MahjongBuddy.Application.Games
                     Date = DateTime.Now,
                     Host = user,
                     Status = GameStatus.Created,
-                    MinPoint = 3,
-                    MaxPoint = 10,
+                    MinPoint = minPoint,
+                    MaxPoint = maxPoint == 0 ? 10 : maxPoint,
                     UserGames = new List<UserGame>{
                         new UserGame {
                             IsHost = true,
