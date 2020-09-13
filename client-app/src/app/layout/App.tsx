@@ -16,6 +16,7 @@ import PrivacyPolicy from "../../features/policy/PrivacyPolicy";
 import ProfilePage from "../../features/profiles/ProfilePage";
 import RegisterSuccess from "../../features/user/RegisterSuccess";
 import VerifyEmail from "../../features/user/VerifyEmail";
+import RulesPage from "../../features/rules/RulesPage";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
 
@@ -44,6 +45,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
           <Fragment>
               <Switch>
                 <Route exact path="/privacypolicy" component={PrivacyPolicy} />
+                <Route exact path="/rules" component={RulesPage} />
                 <PrivateRoute exact path="/games" component={GameDashboard} />
                 <PrivateRoute path="/games/:id/rounds/:roundId" component={GameOn} />
                 <PrivateRoute path="/games/:id" component={GameLobby} />

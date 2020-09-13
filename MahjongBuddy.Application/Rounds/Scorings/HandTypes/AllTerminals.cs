@@ -34,7 +34,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
             if(notOneOrNine.Count() == 0)
             {
                 if(dragonOrWindTiles.Count() > 0)
-                    handTypes.Add(HandType.MixedAllTerminal);
+                    handTypes.Add(HandType.MixedTerminals);
                 else
                     handTypes.Add(HandType.AllTerminals);
             }

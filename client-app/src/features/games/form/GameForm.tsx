@@ -106,7 +106,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                       onClick={
                         game.id
                           ? () => history.push(`/games/${game.id}`)
-                          : () => history.push("/games")
+                          : () => history.push("/")
                       }
                       disabled={loading}
                       floated="right"

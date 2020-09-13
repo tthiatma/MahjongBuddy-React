@@ -35,7 +35,7 @@ const JoinGameForm = () => {
         <Form onSubmit={handleSubmit} error autoComplete="off">
           <Header
             as="h2"
-            content="Enter Game #"
+            content="Join Game"
             color="teal"
             textAlign="center"
           />

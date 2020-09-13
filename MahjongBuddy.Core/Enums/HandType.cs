@@ -43,7 +43,7 @@
         //one nine one nine
         AllTerminals,
 
-        MixedAllTerminal,
+        MixedTerminals,
 
         AllKongs,
 

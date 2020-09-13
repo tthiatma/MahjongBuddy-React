@@ -37,7 +37,6 @@ export default class UserStore {
       this.rootStore.commonStore.setToken(user.token);
       this.rootStore.commonStore.setRefreshToken(user.refreshToken);
       this.rootStore.modalStore.closeModal();
-      history.push("/games");
     } catch (error) {
       throw error;
     }
@@ -73,7 +72,7 @@ export default class UserStore {
         this.rootStore.modalStore.closeModal();
         this.loading = false;
       });
-      history.push("/games");
+      // history.push("/games");
     } catch (error) {
       runInAction(() => {
         this.loading = false;

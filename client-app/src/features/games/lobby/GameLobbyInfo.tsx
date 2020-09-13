@@ -8,16 +8,24 @@ const GameLobbyInfo: React.FC<{ game: IGame }> = ({ game }) => {
       <Segment attached="top">
         <Grid>
           <Grid.Column width={1}>
+            <Icon size="large" color="teal" name="info" />
+          </Grid.Column>
+          <Grid.Column width={15}>
+            <Label>Game# {game.id}</Label> tell your buddy to enter{" "}
+            <strong>{game.id}</strong> to join your game
+          </Grid.Column>
+        </Grid>
+      </Segment>
+
+      <Segment>
+        <Grid>
+          <Grid.Column width={1}>
             <Icon size="large" color="teal" name="cog" />
           </Grid.Column>
           <Grid.Column width={15}>
             <strong>
-              <Label>
-                {`Min Point: ${game.minPoint} pts`}
-              </Label>
-              <Label>
-                {`Max Point: ${game.maxPoint} pts`}
-              </Label>
+              <Label>{`Min Point: ${game.minPoint} pts`}</Label>
+              <Label>{`Max Point: ${game.maxPoint} pts`}</Label>
             </strong>
           </Grid.Column>
         </Grid>

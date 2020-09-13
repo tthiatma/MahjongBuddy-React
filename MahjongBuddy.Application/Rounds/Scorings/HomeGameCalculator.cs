@@ -28,13 +28,13 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 { HandType.MixedOneSuit, 3 },
                 { HandType.SevenPairs, 6 },
                 { HandType.SmallDragon, 5 },
-                { HandType.SmallFourWind, 10 },
+                { HandType.SmallFourWind, 13 },
                 { HandType.Straight, 1 },
                 { HandType.ThirteenOrphans, 13 },
                 { HandType.Triplets, 3 },
                 { HandType.HiddenTreasure, 13},
-                { HandType.AllTerminals, 10},
-                { HandType.MixedAllTerminal, 7},
+                { HandType.AllTerminals, 13},
+                { HandType.MixedTerminals, 7},
                 { HandType.AllKongs, 13 },
                 { HandType.AllHonors, 10 },
             };
@@ -91,7 +91,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings
                 //if handtypes contain below, then triplets wont count anymore
                 if (handTypes.Contains(HandType.HiddenTreasure) || 
                     handTypes.Contains(HandType.AllTerminals) ||
-                    handTypes.Contains(HandType.MixedAllTerminal) ||
+                    handTypes.Contains(HandType.MixedTerminals) ||
                     handTypes.Contains(HandType.AllHonors) ||
                     handTypes.Contains(HandType.AllKongs) 
                     )

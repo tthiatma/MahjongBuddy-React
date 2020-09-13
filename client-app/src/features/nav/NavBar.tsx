@@ -1,13 +1,14 @@
-import React, { useContext } from "react";
-import { Menu, Container, Button, Dropdown, Image } from 'semantic-ui-react';
+import React, { useContext, Fragment } from "react";
+import { Menu, Container, Dropdown, Image } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { NavLink, Link } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
+import JoinGameForm from "../user/JoinGameForm";
 
 const NavBar: React.FC = () => {
-
   const rootStore = useContext(RootStoreContext);
-  const { user, logout} = rootStore.userStore;
+  const { user, logout } = rootStore.userStore;
+  const { openModal } = rootStore.modalStore;
 
   return (
     <Menu fixed="top" inverted>
@@ -16,15 +17,17 @@ const NavBar: React.FC = () => {
           <img src="/assets/logo.png" alt="logo" style={{ marginRight: 10 }} />
           MahjongBuddy
         </Menu.Item>
-        <Menu.Item name="Games" as={NavLink} to="/games" />
-        <Menu.Item>
-          <Button
-            as={NavLink}
-            to="/createGame"
-            positive
-            content="Create Game"
-          />
-        </Menu.Item>
+        {user && (
+          <Fragment>
+            <Menu.Item
+              name="Join Game"
+              onClick={() => openModal(<JoinGameForm />)}
+            />
+            <Menu.Item as={NavLink} name="Create Game" to="/createGame" />
+          </Fragment>
+        )}
+        <Menu.Item as={NavLink} name="Rules" to="/rules" />
+
         {user && (
           <Menu.Item position="right">
             <Image

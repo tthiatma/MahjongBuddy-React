@@ -1,11 +1,10 @@
 import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import ProfilePhotos from './ProfilePhotos';
-import ProfileDescription from './ProfileDescription';
 
 const panes = [
   { menuItem: 'Photos', render: () => <ProfilePhotos /> },
-  { menuItem: 'About', render: () => <ProfileDescription /> },
+  // { menuItem: 'About', render: () => <ProfileDescription /> },
 ];
 
 interface IProps {

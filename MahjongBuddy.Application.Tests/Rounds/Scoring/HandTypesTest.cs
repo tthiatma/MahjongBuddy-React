@@ -136,7 +136,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
-            Assert.Contains(HandType.MixedAllTerminal, result);
+            Assert.Contains(HandType.MixedTerminals, result);
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace MahjongBuddy.Application.Tests.Rounds.Scoring
 
             var result = new HandTypeBuilder().GetHandType(round, _f.MainPlayerUserName);
 
-            Assert.DoesNotContain(HandType.MixedAllTerminal, result);
+            Assert.DoesNotContain(HandType.MixedTerminals, result);
         }
 
         [Fact]

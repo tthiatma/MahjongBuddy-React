@@ -4,8 +4,6 @@ import {
   Item,
   Header,
   Grid,
-  Statistic,
-  Divider,
   Reveal
 } from 'semantic-ui-react';
 import { IProfile } from '../../app/models/profile';
@@ -20,7 +18,6 @@ interface IProps {
 const ProfileHeader: React.FC<IProps> = ({
   profile,
   isCurrentUser,
-  loading,
 }) => {
   return (
     <Segment>
@@ -40,11 +37,11 @@ const ProfileHeader: React.FC<IProps> = ({
           </Item.Group>
         </Grid.Column>
         <Grid.Column width={4}>
-          <Statistic.Group widths={2}>
-            {/* <Statistic label='Followers' value={profile.followersCount} />
-            <Statistic label='Following' value={profile.followingCount} /> */}
+          {/* <Statistic.Group widths={2}>
+            <Statistic label='Followers' value={profile.followersCount} />
+            <Statistic label='Following' value={profile.followingCount} />
           </Statistic.Group>
-          <Divider />
+          <Divider /> */}
           {!isCurrentUser && (
             <Reveal animated='move'>
               <Reveal.Content visible style={{ width: '100%' }}>
