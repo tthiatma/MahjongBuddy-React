@@ -89,8 +89,8 @@ export default class GameStore {
       } catch (error) {
         runInAction("getting game error", () => {
           this.loadingGameInitial = false;
+          history.push(`/`);
         });
-        console.log(error);
       }
     }
   };
