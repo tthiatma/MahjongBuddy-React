@@ -30,7 +30,7 @@ const RulesBasic = () => {
               shuffle the players into random seats or ask them to pick a seat.
             </p>
             <p>
-              -Everytime a round is over, the result pf the round will be shown
+              -Everytime a round is over, the result of the round will be shown
               and only the host can move the game to the next round.
             </p>
           </List.Item>
@@ -58,7 +58,7 @@ const RulesBasic = () => {
               </strong>
               . if a player with high priority action pressed the "Skip" button,
               then it goes to lower priority action and the action will be shown
-              to other player.
+              to other players.
             </p>
           </List.Item>
           <List.Item>
@@ -79,7 +79,7 @@ const RulesBasic = () => {
             <p>
               Let's say there are players named Mei and Peter. Mei showing 3
               melds with one suit. Peter discarded that same suit and Mei
-              chow/pong/kong the tile. this means Peter has "Bao". If Mei able
+              chow/pong/kong the tile. This means Peter has "Bao". If Mei able
               to self pick the winning tile(only applies to self pick) and it's
               a AllOneSuit hand, then Peter will have to pay all the losses to
               Mei (winning pts * 3).
@@ -89,8 +89,8 @@ const RulesBasic = () => {
             </p>
             <p>
               Let's say there are players named Mei and Peter. Mei showing 1
-              meld of a dragon suit. Peter discarded other dragon suit and Mei
-              pong the dragon tile. this means Peter has "Bao". If Mei able to
+              meld of a dragon suit. Peter discarded another dragon suit and Mei
+              pong the dragon tile. This means Peter has "Bao". If Mei able to
               self pick the winning tile(only applies to self pick) and it's a
               SmallDragon or BigDragon Hand, then Peter will have to pay all the
               losses to Mei (winning pts * 3).
