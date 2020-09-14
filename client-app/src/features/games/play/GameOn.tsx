@@ -55,7 +55,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     leftPlayerTiles,
     topPlayerTiles,
     rightPlayerTiles,
-    roundTiles,    
+    roundTiles,
     remainingTiles,
     roundResults,
     roundEndingCounter,
@@ -90,6 +90,17 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [createHubConnection, stopHubConnection, leaveGroup, match.params]);
 
   useEffect(() => {
+    runInAction(() => {
+      rootStore.commonStore.showNavBar = false;
+    });
+    return () => {
+      runInAction(() => {
+        rootStore.commonStore.showNavBar = true;
+      });
+    };
+  }, [rootStore.commonStore.showNavBar]);
+
+  useEffect(() => {
     loadGame(match.params!.id);
   }, [loadGame, match.params, match.params.id]);
 
@@ -106,7 +117,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   )
     return <LoadingComponent content="Loading round..." />;
 
-    const getActiveTileAnimation = (): string => {
+  const getActiveTileAnimation = (): string => {
     let animationStyle: string = "";
 
     switch (boardActiveTile?.thrownBy) {
@@ -141,7 +152,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
       try {
         runInAction(() => {
           mainPlayer!.mustThrow = false;
-          mainPlayer!.roundPlayerActions = []
+          mainPlayer!.roundPlayerActions = [];
         });
         throwTile();
       } catch {
@@ -155,17 +166,21 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     }
   };
 
-  const reorderTiles = (activeTiles: IRoundTile[], startIndex: number, endIndex: number ) => {
+  const reorderTiles = (
+    activeTiles: IRoundTile[],
+    startIndex: number,
+    endIndex: number
+  ) => {
     const result = Array.from(activeTiles);
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
-    for(let i = 0; i< result.length; i++){
+    for (let i = 0; i < result.length; i++) {
       runInAction(() => {
         result[i].activeTileCounter = i;
-      })
+      });
     }
     return result;
-  }
+  };
 
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -176,22 +191,32 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
     if (destination.droppableId === "board") doThrowTile(draggableId);
 
-    if (destination.droppableId === "tile"){
+    if (destination.droppableId === "tile") {
+      if (source.index === destination.index) return;
 
-      if(source.index === destination.index)
-        return;
-      
-      const beforeOrderingTiles = Array.from(toJS(mainPlayerAliveTiles!, {recurseEverything : true}));
-      const beforeOrderingManualSortValue = toJS(rootStore.roundStore.isManualSort);
-  
-      const reorderedTiles = reorderTiles(mainPlayerAliveTiles!, source.index, destination.index);
-      
+      const beforeOrderingTiles = Array.from(
+        toJS(mainPlayerAliveTiles!, { recurseEverything: true })
+      );
+      const beforeOrderingManualSortValue = toJS(
+        rootStore.roundStore.isManualSort
+      );
+
+      const reorderedTiles = reorderTiles(
+        mainPlayerAliveTiles!,
+        source.index,
+        destination.index
+      );
+
       runInAction("manual Sort", () => {
         rootStore.roundStore.isManualSort = true;
-      })      
+      });
 
-      await orderTiles(reorderedTiles, beforeOrderingTiles, beforeOrderingManualSortValue);
-    } 
+      await orderTiles(
+        reorderedTiles,
+        beforeOrderingTiles,
+        beforeOrderingManualSortValue
+      );
+    }
   };
 
   return (
@@ -256,16 +281,28 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                           </Segment>
                           <Segment circular style={square}>
                             {round.wind === WindDirection.East && (
-                              <img src="/assets/tiles/50px/wind/wind-east.png" alt='wind-east' />
+                              <img
+                                src="/assets/tiles/50px/wind/wind-east.png"
+                                alt="wind-east"
+                              />
                             )}
                             {round.wind === WindDirection.South && (
-                              <img src="/assets/tiles/50px/wind/wind-south.png" alt='wind-south'/>
+                              <img
+                                src="/assets/tiles/50px/wind/wind-south.png"
+                                alt="wind-south"
+                              />
                             )}
                             {round.wind === WindDirection.West && (
-                              <img src="/assets/tiles/50px/wind/wind-west.png" alt='wind-west'/>
+                              <img
+                                src="/assets/tiles/50px/wind/wind-west.png"
+                                alt="wind-west"
+                              />
                             )}
                             {round.wind === WindDirection.North && (
-                              <img src="/assets/tiles/50px/wind/wind-north.png" alt='wind-north'/>
+                              <img
+                                src="/assets/tiles/50px/wind/wind-north.png"
+                                alt="wind-north"
+                              />
                             )}
                           </Segment>
                           {round.isEnding && (

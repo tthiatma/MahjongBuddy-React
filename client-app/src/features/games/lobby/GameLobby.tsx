@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, Fragment } from "react";
-import { Grid, Container } from "semantic-ui-react";
+import { Grid } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router";
 import { LoadingComponent } from "../../../app/layout/LoadingComponent";
@@ -7,7 +7,6 @@ import { RootStoreContext } from "../../../app/stores/rootStore";
 import GameLobbyChat from "./GameLobbyChat";
 import GameLobbyHeader from "./GameLobbyHeader";
 import GameLobbySidebar from "./GameLobbySidebar";
-import NavBar from "../../nav/NavBar";
 import GameLobbyInfo from "./GameLobbyInfo";
 
 interface DetailParams {
@@ -16,7 +15,6 @@ interface DetailParams {
 
 const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   match,
-  history,
 }) => {
   const rootStore = useContext(RootStoreContext);
   const {
@@ -51,19 +49,16 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
 
   return (
     <Fragment>
-      <NavBar />
-      <Container style={{ paddingTop: "5em" }}>
-        <Grid>
-          <Grid.Column width={8}>
-            <GameLobbyHeader game={game} latestRound={latestRound} />
-            <GameLobbyInfo game={game} />
-            <GameLobbyChat />
-          </Grid.Column>
-          <Grid.Column width={8}>
-            <GameLobbySidebar players={game.players} />
-          </Grid.Column>
-        </Grid>
-      </Container>
+      <Grid>
+        <Grid.Column width={8}>
+          <GameLobbyHeader game={game} latestRound={latestRound} />
+          <GameLobbyInfo game={game} />
+          <GameLobbyChat />
+        </Grid.Column>
+        <Grid.Column width={8}>
+          <GameLobbySidebar players={game.players} />
+        </Grid.Column>
+      </Grid>{" "}
     </Fragment>
   );
 };

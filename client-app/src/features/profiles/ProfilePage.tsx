@@ -1,6 +1,5 @@
 import React, { Fragment, useContext, useEffect } from "react";
-import NavBar from "../nav/NavBar";
-import { Container, Grid } from "semantic-ui-react";
+import { Grid } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
@@ -22,30 +21,27 @@ const ProfilePage: React.FC<IProps> = ({ match }) => {
     loadProfile,
     isCurrentUser,
     loading,
-    setActiveTab
+    setActiveTab,
   } = rootStore.profileStore;
 
   useEffect(() => {
     loadProfile(match.params.username);
   }, [loadProfile, match]);
 
-  if (loadingProfile) return <LoadingComponent content='Loading profile...' />;
+  if (loadingProfile) return <LoadingComponent content="Loading profile..." />;
 
   return (
     <Fragment>
-      <NavBar />
-      <Container style={{ paddingTop: "5em" }}>
-        <Grid>
-          <Grid.Column width={16}>
-            <ProfileHeader
-              profile={profile!}
-              isCurrentUser={isCurrentUser}
-              loading={loading}
-            />
-            <ProfileContent setActiveTab={setActiveTab} />
-          </Grid.Column>
-        </Grid>
-      </Container>
+      <Grid>
+        <Grid.Column width={16}>
+          <ProfileHeader
+            profile={profile!}
+            isCurrentUser={isCurrentUser}
+            loading={loading}
+          />
+          <ProfileContent setActiveTab={setActiveTab} />
+        </Grid.Column>
+      </Grid>
     </Fragment>
   );
 };

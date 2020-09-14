@@ -1,11 +1,10 @@
 import React, { Fragment } from "react";
-import { Button, Icon, Segment, Header, Container } from "semantic-ui-react";
+import { Button, Icon, Segment, Header } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import queryString from "query-string";
 import { RouteComponentProps } from "react-router-dom";
 import agent from "../../app/api/agent";
 import { toast } from "react-toastify";
-import NavBar from "../nav/NavBar";
 
 const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
   const email = queryString.parse(location.search);
@@ -19,9 +18,7 @@ const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
 
   return (
     <Fragment>
-      <NavBar />
-      <Container style={{ paddingTop: "5em" }}>
-        <Segment placeholder>
+              <Segment placeholder>
           <Header icon>
             <Icon name="check" />
             Successfully registered!
@@ -50,7 +47,6 @@ const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
             </div>
           </Segment.Inline>
         </Segment>
-      </Container>
     </Fragment>
   );
 };

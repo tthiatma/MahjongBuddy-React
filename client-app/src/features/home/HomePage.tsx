@@ -6,6 +6,7 @@ import LoginForm from "../user/LoginForm";
 import { RegisterForm } from "../user/RegisterForm";
 import JoinGameForm from "../user/JoinGameForm";
 import NavBar from "../nav/NavBar";
+import Footer from "../footer/Footer";
 
 const HomePage = () => {
   const token = window.localStorage.getItem("jwt");
@@ -70,6 +71,7 @@ const HomePage = () => {
           )}
         </Container>
       </Segment>
+      <Footer />
     </Fragment>
   );
 };

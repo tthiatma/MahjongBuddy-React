@@ -34,6 +34,8 @@ export default class CommonStore {
     @observable token: string | null = window.localStorage.getItem('jwt');
     @observable refreshToken: string | null = window.localStorage.getItem('refreshToken');
     @observable appLoaded = false;
+    @observable showNavBar = true;
+    @observable showFooter = true;
 
     @action setToken = (token: string | null) => {
         this.token = token;

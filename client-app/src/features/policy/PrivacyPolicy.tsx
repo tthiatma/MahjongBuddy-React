@@ -1,13 +1,9 @@
 import React, { Fragment } from "react";
-import { Container, Segment } from "semantic-ui-react";
-import NavBar from "../nav/NavBar";
+import { Segment } from "semantic-ui-react";
 
 const PrivacyPolicy = () => {
   return (
     <Fragment>
-      <NavBar />
-
-      <Container style={{ paddingTop: "5em" }}>
         <Segment>
           <h1>Privacy Policy</h1>
 
@@ -442,9 +438,7 @@ const PrivacyPolicy = () => {
           <ul>
             <li>By email: info@mahjongbuddy.com</li>
           </ul>
-        </Segment>
-      </Container>
-    </Fragment>
+        </Segment>    </Fragment>
   );
 };
 

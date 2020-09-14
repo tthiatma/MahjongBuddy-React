@@ -13,6 +13,18 @@ body {
 
 /*home page styles*/
 
+.mastfooter{
+  display: flex;
+  align-items: center;
+  background-image: linear-gradient(
+          90deg,
+          rgb(24, 42, 115) 0%,
+          rgb(33, 106, 174) 69%,
+          rgb(32, 76, 172) 89%
+                    ) !important;
+  height: 20vh;
+}
+
 .masthead {
   display: flex;
   align-items: center;
@@ -22,7 +34,7 @@ body {
           rgb(33, 106, 174) 69%,
           rgb(32, 76, 172) 89%
                     ) !important;
-  height: 100vh;
+  height: 80vh;
 }
 
 .masthead .ui.menu .ui.button,

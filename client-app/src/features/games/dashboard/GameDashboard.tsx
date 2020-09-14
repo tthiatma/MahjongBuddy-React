@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, Fragment } from "react";
-import { Grid, Container } from "semantic-ui-react";
+import { Grid } from "semantic-ui-react";
 import GameList from "./GameList";
 import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import GameListItemPlaceholder from "./GameListItemPlaceholder";
-import NavBar from "../../nav/NavBar";
 
 const GameDashboard: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
@@ -16,16 +15,12 @@ const GameDashboard: React.FC = () => {
 
   return (
     <Fragment>
-      <NavBar />
-      <Container style={{ paddingTop: "5em" }}>
-        <Grid>
-          <Grid.Column width={10}>
-            {loadingInitial ? <GameListItemPlaceholder /> : <GameList />}
-          </Grid.Column>
-          <Grid.Column width={6}>
-          </Grid.Column>
-        </Grid>
-      </Container>
+      <Grid>
+        <Grid.Column width={10}>
+          {loadingInitial ? <GameListItemPlaceholder /> : <GameList />}
+        </Grid.Column>
+        <Grid.Column width={6}></Grid.Column>
+      </Grid>
     </Fragment>
   );
 };
