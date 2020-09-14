@@ -92,13 +92,15 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   useEffect(() => {
     runInAction(() => {
       rootStore.commonStore.showNavBar = false;
+      rootStore.commonStore.showFooter = false;
     });
     return () => {
       runInAction(() => {
         rootStore.commonStore.showNavBar = true;
+        rootStore.commonStore.showFooter = true;
       });
     };
-  }, [rootStore.commonStore.showNavBar]);
+  }, [rootStore.commonStore.showNavBar, rootStore.commonStore.showFooter]);
 
   useEffect(() => {
     loadGame(match.params!.id);

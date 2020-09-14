@@ -24,6 +24,7 @@ import VerifyEmail from "../../features/user/VerifyEmail";
 import RulesPage from "../../features/rules/RulesPage";
 import NavBar from "../../features/nav/NavBar";
 import { Container } from "semantic-ui-react";
+import Footer from "../../features/footer/Footer";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -51,7 +52,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         render={() => (
           <Fragment>
             <NavBar />
-            <Container  style={{ paddingTop: showNavBar ? "5em" : "0" }}>
+            <Container  style={{minHeight: '90vh', paddingTop: showNavBar ? "5em" : "0" }}>
               <Switch>
                 <Route exact path="/privacypolicy" component={PrivacyPolicy} />
                 <Route exact path="/rules" component={RulesPage} />
@@ -78,6 +79,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                 <Route component={NotFound} />
               </Switch>
             </Container>
+            <Footer />
           </Fragment>
         )}
       />

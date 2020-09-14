@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
   return (
     <Fragment>
       {showFooter && (
-        <Segment style={{ padding: "0em 0em" }} className="mastfooter" vertical>
+        <Segment className="mastfooter" vertical>
           <Container textAlign="center">
             <Divider inverted section />
             <List horizontal inverted divided link size="small">
