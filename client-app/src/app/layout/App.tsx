@@ -53,7 +53,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
         render={() => (
           <Fragment>
             <NavBar />
-            <Container  style={{minHeight: '90vh', paddingTop: showNavBar ? "5em" : "0" }}>
+            <Container className='mainContent'  style={{paddingTop: showNavBar ? "5em" : "0" }}>
               <Switch>
                 <Route exact path="/privacypolicy" component={PrivacyPolicy} />
                 <Route exact path="/termsandconditions" component={TermsAndConditions} />

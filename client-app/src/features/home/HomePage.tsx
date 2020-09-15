@@ -16,7 +16,7 @@ const HomePage = () => {
 
   return (
     <Fragment>
-      <Segment inverted textAlign="center" vertical className="masthead">
+      <Segment inverted textAlign="center" vertical className="masthead mainContent">
         <NavBar />
         <Container text>
           <Header as="h1" inverted>

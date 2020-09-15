@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
       {showFooter && (
         <Segment className="mastfooter" vertical>
           <Container textAlign="center">
-            <Divider inverted section />
+            <Divider fitted />
             <List horizontal inverted divided link size="small">
               <List.Item as="a" href="/termsandconditions">
                 Terms and Conditions

@@ -12,6 +12,9 @@ body {
 }
 
 /*home page styles*/
+.mainContent{
+  min-height: calc(100vh - 5em);
+}
 
 .masthead {
   display: flex;
@@ -22,11 +25,11 @@ body {
           rgb(33, 106, 174) 69%,
           rgb(32, 76, 172) 89%
                     ) !important;
-  height: 90vh;
+  
 }
 
 .mastfooter{
-  height: 10vh;
+  min-height: 5em;
   display: flex;
   align-items: center;
   background-image: linear-gradient(
