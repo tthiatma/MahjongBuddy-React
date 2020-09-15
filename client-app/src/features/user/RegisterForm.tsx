@@ -1,29 +1,29 @@
-import React, { useContext } from 'react'
-import {Form as FinalForm, Field} from 'react-final-form'
-import { Form, Button, Header } from 'semantic-ui-react'
-import TextInput from '../../app/common/form/TextInput'
-import { RootStoreContext } from '../../app/stores/rootStore'
-import { IUserFormValues } from '../../app/models/user'
-import { FORM_ERROR } from 'final-form'
-import { combineValidators, isRequired } from 'revalidate'
-import { ErrorMessage } from '../../app/common/form/ErrorMessage'
+import React, { useContext } from "react";
+import { Form as FinalForm, Field } from "react-final-form";
+import { Form, Button, Header, Segment } from "semantic-ui-react";
+import TextInput from "../../app/common/form/TextInput";
+import { RootStoreContext } from "../../app/stores/rootStore";
+import { IUserFormValues } from "../../app/models/user";
+import { FORM_ERROR } from "final-form";
+import { combineValidators, isRequired } from "revalidate";
+import { ErrorMessage } from "../../app/common/form/ErrorMessage";
 
 const validate = combineValidators({
-  email: isRequired('Email'),
-  displayName: isRequired('DisplayName'),
-  userName: isRequired('UserName'),
-  password: isRequired('Password')
-})
+  email: isRequired("Email"),
+  displayName: isRequired("DisplayName"),
+  userName: isRequired("UserName"),
+  password: isRequired("Password"),
+});
 
 export const RegisterForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const {register} = rootStore.userStore;
+  const { register } = rootStore.userStore;
 
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
-        register(values).catch(error => ({
-          [FORM_ERROR]: error
+        register(values).catch((error) => ({
+          [FORM_ERROR]: error,
         }))
       }
       validate={validate}
@@ -33,7 +33,7 @@ export const RegisterForm = () => {
         submitError,
         invalid,
         pristine,
-        dirtySinceLastSubmit
+        dirtySinceLastSubmit,
       }) => (
         <Form onSubmit={handleSubmit} error>
           <Header
@@ -43,7 +43,11 @@ export const RegisterForm = () => {
             textAlign="center"
           />
           <Field name="userName" component={TextInput} placeholder="UserName" />
-          <Field name="displayName" component={TextInput} placeholder="DisplayName" />
+          <Field
+            name="displayName"
+            component={TextInput}
+            placeholder="DisplayName"
+          />
           <Field name="email" component={TextInput} placeholder="Email" />
           <Field
             name="password"
@@ -52,10 +56,16 @@ export const RegisterForm = () => {
             type="password"
           />
           {submitError && !dirtySinceLastSubmit && (
-            <ErrorMessage
-              error={submitError}
-            />
+            <ErrorMessage error={submitError} />
           )}
+          <Segment>
+          By signing up, you agree to our{" "}
+              <a href="/termsandconditions">terms and conditions</a> and{" "}
+              <a href="/privacypolicy" target="_blank">
+                privacy policy
+              </a>
+              .
+          </Segment>
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}
             loading={submitting}
@@ -67,4 +77,4 @@ export const RegisterForm = () => {
       )}
     />
   );
-}
+};

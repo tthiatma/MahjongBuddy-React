@@ -19,13 +19,7 @@ const Footer: React.FC = () => {
           <Container textAlign="center">
             <Divider inverted section />
             <List horizontal inverted divided link size="small">
-              <List.Item as="a" href="#">
-                Site Map
-              </List.Item>
-              <List.Item as="a" href="#">
-                Contact Us
-              </List.Item>
-              <List.Item as="a" href="#">
+              <List.Item as="a" href="/termsandconditions">
                 Terms and Conditions
               </List.Item>
               <List.Item as="a" href="/privacypolicy">

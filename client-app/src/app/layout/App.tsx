@@ -17,7 +17,7 @@ import { LoadingComponent } from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
 import PrivateRoute from "./PrivateRoute";
 import HomePage from "../../features/home/HomePage";
-import PrivacyPolicy from "../../features/policy/PrivacyPolicy";
+import PrivacyPolicy from "../../features/legals/PrivacyPolicy";
 import ProfilePage from "../../features/profiles/ProfilePage";
 import RegisterSuccess from "../../features/user/RegisterSuccess";
 import VerifyEmail from "../../features/user/VerifyEmail";
@@ -25,6 +25,7 @@ import RulesPage from "../../features/rules/RulesPage";
 import NavBar from "../../features/nav/NavBar";
 import { Container } from "semantic-ui-react";
 import Footer from "../../features/footer/Footer";
+import TermsAndConditions from "../../features/legals/TermsAndConditions";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -55,6 +56,7 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <Container  style={{minHeight: '90vh', paddingTop: showNavBar ? "5em" : "0" }}>
               <Switch>
                 <Route exact path="/privacypolicy" component={PrivacyPolicy} />
+                <Route exact path="/termsandconditions" component={TermsAndConditions} />
                 <Route exact path="/rules" component={RulesPage} />
                 <PrivateRoute exact path="/games" component={GameDashboard} />
                 <PrivateRoute
