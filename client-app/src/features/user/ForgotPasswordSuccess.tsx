@@ -6,12 +6,12 @@ import { RouteComponentProps } from "react-router-dom";
 import agent from "../../app/api/agent";
 import { toast } from "react-toastify";
 
-const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
+const ForgotPasswordSuccess: React.FC<RouteComponentProps> = ({ location }) => {
   const email = queryString.parse(location.search);
   const handleConfirmEmailResend = () => {
-    agent.User.resendVerifyEmailConfirm(email.toString())
+    agent.User.resendForgotPassword(email.toString())
       .then(() => {
-        toast.success("Verification email sent - please check your email");
+        toast.success("Reset password email sent - please check your email");
       })
       .catch((error) => console.log(error));
   };
@@ -21,12 +21,12 @@ const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
       <Segment placeholder>
         <Header icon>
           <Icon name="check" />
-          Successfully registered!
+          Password reset link sent!(if the account exists)
         </Header>
 
         <Segment.Inline>
           <div className="center">
-            <p>
+            <p> 
               Please check your email (including junk folder) for the
               verification email
             </p>
@@ -50,4 +50,4 @@ const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
   );
 };
 
-export default observer(RegisterSuccess);
+export default observer(ForgotPasswordSuccess);

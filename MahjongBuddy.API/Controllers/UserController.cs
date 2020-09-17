@@ -70,13 +70,42 @@ namespace MahjongBuddy.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("resendEmailVerification")]
-        public async Task<ActionResult> ResendEmailVerification([FromQuery]ResendEmailVerification.Query query)
+        public async Task<ActionResult> ResendEmailVerification([FromQuery] ResendEmailVerification.Query query)
         {
             query.Origin = Request.Headers["origin"];
 
             await Mediator.Send(query);
 
             return Ok("Email verification link sent - please check email");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("forgotPassword")]
+        public async Task<ActionResult> ForgotPassword(ForgotPassword.Command command)
+        {
+            command.Origin = Request.Headers["origin"];
+            await Mediator.Send(command);
+            return Ok("Password reset link has been sent if the account exists - please check your email");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("resetPassword")]
+        public async Task<ActionResult> ConfirmResetPassword(ResetPassword.Command command)
+        {
+            var result = await Mediator.Send(command);
+            if (!result.Succeeded) return BadRequest("Problem resetting password");
+            return Ok("Password is reset- please login with your new passowrd");
+        }
+
+        [AllowAnonymous]
+        [HttpPost("resendForgotPassword")]
+        public async Task<ActionResult> ResendResetPassword([FromQuery] ResendForgotPassword.Query query)
+        {
+            query.Origin = Request.Headers["origin"];
+
+            await Mediator.Send(query);
+
+            return Ok("Password Reset link sent - please check email");
         }
 
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)

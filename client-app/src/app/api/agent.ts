@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { ITile } from "../models/tile";
 import { history } from "../..";
 import { IGame } from "../models/game";
-import { IUser, IUserFormValues } from "../models/user";
+import { IResetPasswordFormValues, IUser, IUserFormValues } from "../models/user";
 import { toast } from "react-toastify";
 import { IProfile, IPhoto } from "../models/profile";
 
@@ -133,6 +133,12 @@ const User = {
     requests.post(`/user/verifyEmail`, { token, email }),
   resendVerifyEmailConfirm: (email: string): Promise<void> =>
     requests.get(`/user/resendEmailVerification?email=${email}`),
+  forgotPassword:(email: string): Promise<void> =>
+    requests.post(`/user/forgotPassword`, email),
+  resetPassword:(reset: IResetPasswordFormValues): Promise<void> =>
+    requests.post(`/user/resetPassword`, reset),
+  resendForgotPassword: (email: string) : Promise<void> =>
+    requests.get(`/user/resendResetPassword?email=${email}`),
 };
 
 const Profiles = {

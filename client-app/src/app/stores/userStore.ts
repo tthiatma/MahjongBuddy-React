@@ -1,5 +1,5 @@
 import { observable, computed, action, runInAction } from "mobx";
-import { IUser, IUserFormValues } from "../models/user";
+import { IResetPasswordFormValues, IUser, IUserFormValues } from "../models/user";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from "../..";
@@ -16,6 +16,24 @@ export default class UserStore {
 
   @computed get isLoggedIn() {
     return !!this.user;
+  }
+
+  @action forgotPassword = async(email: string) => {
+    try {
+      await agent.User.forgotPassword(email);
+      this.rootStore.modalStore.closeModal();
+      history.push(`/user/forgotPasswordSuccess?email=${email}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @action resetPassword = async(values: IResetPasswordFormValues) => {
+    try {
+      await agent.User.resetPassword(values);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @action register = async (values: IUserFormValues) => {
@@ -72,7 +90,6 @@ export default class UserStore {
         this.rootStore.modalStore.closeModal();
         this.loading = false;
       });
-      // history.push("/games");
     } catch (error) {
       runInAction(() => {
         this.loading = false;
