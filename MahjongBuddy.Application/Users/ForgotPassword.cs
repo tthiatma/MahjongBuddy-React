@@ -45,7 +45,8 @@ namespace MahjongBuddy.Application.Users
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
                 //don't even try to do anything if user doesn't exist
-                if (!await _context.Users.Where(u => u.Email == request.Email).AnyAsync())
+                var userExist = await _context.Users.Where(u => u.Email == request.Email).AnyAsync();
+                if (!userExist)
                     return Unit.Value;
 
                 var user = await _userManager.FindByEmailAsync(request.Email);

@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MahjongBuddy.Application.Validators;
 using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +25,7 @@ namespace MahjongBuddy.Application.Users
             {
                 RuleFor(x => x.Email).NotEmpty();
                 RuleFor(x => x.Token).NotEmpty();
+                RuleFor(x => x.NewPassword).Password();
             }
         }
 

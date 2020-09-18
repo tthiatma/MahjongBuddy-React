@@ -7,9 +7,9 @@ import agent from "../../app/api/agent";
 import { toast } from "react-toastify";
 
 const RegisterSuccess: React.FC<RouteComponentProps> = ({ location }) => {
-  const email = queryString.parse(location.search);
+  const {email} = queryString.parse(location.search);
   const handleConfirmEmailResend = () => {
-    agent.User.resendVerifyEmailConfirm(email.toString())
+    agent.User.resendVerifyEmailConfirm(email as string)
       .then(() => {
         toast.success("Verification email sent - please check your email");
       })

@@ -7,9 +7,9 @@ import agent from "../../app/api/agent";
 import { toast } from "react-toastify";
 
 const ForgotPasswordSuccess: React.FC<RouteComponentProps> = ({ location }) => {
-  const email = queryString.parse(location.search);
+  const {email} = queryString.parse(location.search);
   const handleConfirmEmailResend = () => {
-    agent.User.resendForgotPassword(email.toString())
+    agent.User.resendForgotPassword(email as string)
       .then(() => {
         toast.success("Reset password email sent - please check your email");
       })

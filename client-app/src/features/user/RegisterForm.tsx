@@ -23,7 +23,7 @@ export const RegisterForm = () => {
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
         register(values).catch((error) => ({
-          [FORM_ERROR]: error,
+          [FORM_ERROR]: error
         }))
       }
       validate={validate}

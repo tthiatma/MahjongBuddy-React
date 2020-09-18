@@ -18,11 +18,16 @@ export default class UserStore {
     return !!this.user;
   }
 
-  @action forgotPassword = async(email: string) => {
+  @action gotoForgotPassword = () => {
+    history.push("/user/forgotPassword");
+    this.rootStore.modalStore.closeModal();
+  }
+
+  @action forgotPassword = async(values: IResetPasswordFormValues) => {
     try {
-      await agent.User.forgotPassword(email);
+      await agent.User.forgotPassword(values);
       this.rootStore.modalStore.closeModal();
-      history.push(`/user/forgotPasswordSuccess?email=${email}`);
+      history.push(`/user/forgotPasswordSuccess?email=${values.email}`);
     } catch (error) {
       throw error;
     }
@@ -31,6 +36,7 @@ export default class UserStore {
   @action resetPassword = async(values: IResetPasswordFormValues) => {
     try {
       await agent.User.resetPassword(values);
+      history.push(`/user/resetPasswordSuccess`);
     } catch (error) {
       throw error;
     }
@@ -54,6 +60,7 @@ export default class UserStore {
       });
       this.rootStore.commonStore.setToken(user.token);
       this.rootStore.commonStore.setRefreshToken(user.refreshToken);
+      history.push(`/`);
       this.rootStore.modalStore.closeModal();
     } catch (error) {
       throw error;

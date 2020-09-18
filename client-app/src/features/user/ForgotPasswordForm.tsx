@@ -6,6 +6,7 @@ import { RootStoreContext } from "../../app/stores/rootStore";
 import { FORM_ERROR } from "final-form";
 import { combineValidators, isRequired } from "revalidate";
 import { ErrorMessage } from "../../app/common/form/ErrorMessage";
+import { IResetPasswordFormValues } from "../../app/models/user";
 
 const validate = combineValidators({
   email: isRequired("Email"),
@@ -17,11 +18,11 @@ export const ForgotPasswordForm = () => {
 
   return (
     <FinalForm
-      onSubmit={(values: any) =>
-        forgotPassword(values.email).catch((error) => ({
+      onSubmit={(values: IResetPasswordFormValues) => {
+        forgotPassword(values).catch((error) => ({
           [FORM_ERROR]: error,
-        }))
-      }
+        }));
+      }}
       validate={validate}
       render={({
         handleSubmit,

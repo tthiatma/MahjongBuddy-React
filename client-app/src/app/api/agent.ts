@@ -133,8 +133,9 @@ const User = {
     requests.post(`/user/verifyEmail`, { token, email }),
   resendVerifyEmailConfirm: (email: string): Promise<void> =>
     requests.get(`/user/resendEmailVerification?email=${email}`),
-  forgotPassword:(email: string): Promise<void> =>
-    requests.post(`/user/forgotPassword`, email),
+  forgotPassword:(reset: IResetPasswordFormValues): Promise<void> => {
+    return requests.post(`/user/forgotPassword`, reset)
+  },
   resetPassword:(reset: IResetPasswordFormValues): Promise<void> =>
     requests.post(`/user/resetPassword`, reset),
   resendForgotPassword: (email: string) : Promise<void> =>

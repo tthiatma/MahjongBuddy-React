@@ -1,29 +1,29 @@
-import React, { useContext } from 'react'
-import {Form as FinalForm, Field} from 'react-final-form'
-import { Form, Button, Header, Divider } from 'semantic-ui-react'
-import TextInput from '../../app/common/form/TextInput'
-import { RootStoreContext } from '../../app/stores/rootStore'
-import { IUserFormValues } from '../../app/models/user'
-import { FORM_ERROR } from 'final-form'
-import { combineValidators, isRequired } from 'revalidate'
-import { ErrorMessage } from '../../app/common/form/ErrorMessage'
-import SocialLogin from './SocialLogin'
-import { observer } from 'mobx-react-lite'
+import React, { useContext } from "react";
+import { Form as FinalForm, Field } from "react-final-form";
+import { Form, Button, Header, Divider, Menu } from "semantic-ui-react";
+import TextInput from "../../app/common/form/TextInput";
+import { RootStoreContext } from "../../app/stores/rootStore";
+import { IUserFormValues } from "../../app/models/user";
+import { FORM_ERROR } from "final-form";
+import { combineValidators, isRequired } from "revalidate";
+import { ErrorMessage } from "../../app/common/form/ErrorMessage";
+import SocialLogin from "./SocialLogin";
+import { observer } from "mobx-react-lite";
 
 const validate = combineValidators({
-  email: isRequired('email'),
-  password: isRequired('password')
-})
+  email: isRequired("email"),
+  password: isRequired("password"),
+});
 
 const LoginForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const {login, fbLogin, loading} = rootStore.userStore;
+  const { login, fbLogin, loading, gotoForgotPassword } = rootStore.userStore;
 
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
-        login(values).catch(error => ({
-          [FORM_ERROR]: error
+        login(values).catch((error) => ({
+          [FORM_ERROR]: error,
         }))
       }
       validate={validate}
@@ -33,9 +33,9 @@ const LoginForm = () => {
         submitError,
         invalid,
         pristine,
-        dirtySinceLastSubmit
+        dirtySinceLastSubmit,
       }) => (
-        <Form onSubmit={handleSubmit} error autoComplete='off'>
+        <Form onSubmit={handleSubmit} error autoComplete="off">
           <Header
             as="h2"
             content="Login to MahjongBuddy"
@@ -55,6 +55,10 @@ const LoginForm = () => {
               text="Invalid username or password"
             />
           )}
+          <div style={{ textAlign: "right", paddingBottom: "10px", cursor: "pointer" }}>
+            <Menu.Item onClick={gotoForgotPassword}>forgot password</Menu.Item>
+          </div>
+
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}
             loading={submitting}

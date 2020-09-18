@@ -90,7 +90,7 @@ namespace MahjongBuddy.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("resetPassword")]
-        public async Task<ActionResult> ConfirmResetPassword(ResetPassword.Command command)
+        public async Task<ActionResult> ResetPassword(ResetPassword.Command command)
         {
             var result = await Mediator.Send(command);
             if (!result.Succeeded) return BadRequest("Problem resetting password");
@@ -99,7 +99,7 @@ namespace MahjongBuddy.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("resendForgotPassword")]
-        public async Task<ActionResult> ResendResetPassword([FromQuery] ResendForgotPassword.Query query)
+        public async Task<ActionResult> ResendForgotPassword([FromQuery] ResendForgotPassword.Query query)
         {
             query.Origin = Request.Headers["origin"];
 
