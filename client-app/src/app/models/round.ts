@@ -10,12 +10,10 @@ export interface IRoundSimple {
   tileConter: number;
   wind: WindDirection;
   dateCreated: Date;
-  isHalted: boolean;
   isEnding: boolean;
   isOver: boolean;
   isPaused: boolean;
   isTied: boolean;
-  isWinnerSelfPicked: boolean;
   gameId: number;
 }
 export interface IRound extends IRoundSimple {

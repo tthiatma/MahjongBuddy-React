@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MahjongBuddy.Application.Dtos
 {
-    public class RoundPlayerDto
+    public class RoundOtherPlayerDto
     {
         public string DisplayName { get; set; }
 
@@ -11,13 +11,7 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool IsInitialDealer { get; set; }
 
-        public bool IsManualSort { get; set; }
-
         public bool IsMyTurn { get; set; }
-
-        public ICollection<RoundPlayerActionDto> RoundPlayerActions { get; set; }
-
-        public ICollection<RoundTileDto> PlayerTiles { get; set; }
 
         public bool MustThrow { get; set; }
 
@@ -25,5 +19,11 @@ namespace MahjongBuddy.Application.Dtos
 
         public int Points { get; set; }
 
+        public bool HasAction { get; set; }
+
+        //below props using custom resolver, check mappingprofile
+        public int ActiveTilesCount { get; set; }
+
+        public ICollection<RoundTileDto> GraveyardTiles { get; set; }
     }
 }

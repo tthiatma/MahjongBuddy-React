@@ -50,8 +50,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                round.IsHalted = true;
-
                 //TODO only allow chow when it's user's turn
 
                 if (request.ChowTiles == null || request.ChowTiles.Count() != 2)
@@ -124,9 +122,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     var success = await _context.SaveChangesAsync() > 0;
                     var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-
-                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                     if (success) return roundToReturn;
                 }

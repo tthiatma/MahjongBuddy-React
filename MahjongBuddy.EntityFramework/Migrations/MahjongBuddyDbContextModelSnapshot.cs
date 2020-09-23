@@ -193,9 +193,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("IsEnding")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsHalted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsOver")
                         .HasColumnType("bit");
 

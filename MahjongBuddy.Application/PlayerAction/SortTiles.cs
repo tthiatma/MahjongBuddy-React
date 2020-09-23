@@ -66,12 +66,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     var success = await _context.SaveChangesAsync() > 0;
                     var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-
-                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
                     
-                    if(updatedPlayers.Count() > 0)
-                        roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
-
                     if (success) return roundToReturn;
                 }
                 catch (DbUpdateConcurrencyException)

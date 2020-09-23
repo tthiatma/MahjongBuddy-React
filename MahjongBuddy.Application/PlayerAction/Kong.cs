@@ -61,8 +61,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                round.IsHalted = true;
-
                 var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
@@ -170,9 +168,6 @@ namespace MahjongBuddy.Application.PlayerAction
                     var success = await _context.SaveChangesAsync() > 0;
 
                     var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-
-                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
 
                     if (success)
                         return roundToReturn;

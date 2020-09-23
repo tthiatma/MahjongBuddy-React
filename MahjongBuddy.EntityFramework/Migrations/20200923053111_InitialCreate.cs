@@ -254,7 +254,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     TileCounter = table.Column<int>(nullable: false),
                     Wind = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false),
-                    IsHalted = table.Column<bool>(nullable: false),
                     IsOver = table.Column<bool>(nullable: false),
                     IsEnding = table.Column<bool>(nullable: false),
                     IsPaused = table.Column<bool>(nullable: false),

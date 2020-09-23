@@ -165,9 +165,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
-
                 if (success)
                     return roundToReturn;
 

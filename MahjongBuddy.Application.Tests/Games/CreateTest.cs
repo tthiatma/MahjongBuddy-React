@@ -36,7 +36,9 @@ namespace MahjongBuddy.Application.Tests.Games
 
             var gameCommand = new Create.Command
             {
-                Title = "Game1"
+                Title = "Game1",
+                MinPoint = "3",
+                MaxPoint = "10"
             };
 
             var sut = new Create.Handler(context, userAccessor.Object, _mapper);
