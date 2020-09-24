@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
 {
-    public class MainPlayerResolver : IValueResolver<Round, RoundDto, RoundOtherPlayerDto>
+    public class MainPlayerResolver : IValueResolver<Round, RoundDto, RoundPlayerDto>
     {
         private readonly IMapper _mapper;
         private readonly IUserAccessor _userAccessor;
@@ -17,11 +17,11 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
             _userAccessor = userAccessor;
         }
 
-        public RoundOtherPlayerDto Resolve(Round source, RoundDto destination, RoundOtherPlayerDto destMember, ResolutionContext context)
+        public RoundPlayerDto Resolve(Round source, RoundDto destination, RoundPlayerDto destMember, ResolutionContext context)
         {
             var roundId = source.Id;
             var mainPlayer = source.RoundPlayers.First(rp => rp.AppUser.UserName == _userAccessor.GetCurrentUserName());
-            return _mapper.Map<RoundPlayer, RoundOtherPlayerDto>(mainPlayer);
+            return _mapper.Map<RoundPlayer, RoundPlayerDto>(mainPlayer);
         }
     }
 }
