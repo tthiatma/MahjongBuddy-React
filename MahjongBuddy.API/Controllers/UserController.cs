@@ -69,7 +69,7 @@ namespace MahjongBuddy.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("resendEmailVerification")]
+        [HttpGet("resendEmailVerification")]
         public async Task<ActionResult> ResendEmailVerification([FromQuery] ResendEmailVerification.Query query)
         {
             query.Origin = Request.Headers["origin"];
@@ -98,7 +98,7 @@ namespace MahjongBuddy.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("resendForgotPassword")]
+        [HttpGet("resendForgotPasswordVerification")]
         public async Task<ActionResult> ResendForgotPassword([FromQuery] ResendForgotPassword.Query query)
         {
             query.Origin = Request.Headers["origin"];

@@ -9,6 +9,7 @@ import { combineValidators, isRequired } from "revalidate";
 import { ErrorMessage } from "../../app/common/form/ErrorMessage";
 import SocialLogin from "./SocialLogin";
 import { observer } from "mobx-react-lite";
+import { ForgotPasswordForm } from "./ForgotPasswordForm";
 
 const validate = combineValidators({
   email: isRequired("email"),
@@ -17,8 +18,9 @@ const validate = combineValidators({
 
 const LoginForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const { login, fbLogin, loading, gotoForgotPassword } = rootStore.userStore;
-
+  const { login, fbLogin, loading } = rootStore.userStore;
+  const { openModal } = rootStore.modalStore;
+  
   return (
     <FinalForm
       onSubmit={(values: IUserFormValues) =>
@@ -56,7 +58,7 @@ const LoginForm = () => {
             />
           )}
           <div style={{ textAlign: "right", paddingBottom: "10px", cursor: "pointer" }}>
-            <Menu.Item onClick={gotoForgotPassword}>forgot password</Menu.Item>
+            <Menu.Item onClick={() => openModal(<ForgotPasswordForm />)}>forgot password?</Menu.Item>
           </div>
 
           <Button

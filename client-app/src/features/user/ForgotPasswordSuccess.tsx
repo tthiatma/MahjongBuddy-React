@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const ForgotPasswordSuccess: React.FC<RouteComponentProps> = ({ location }) => {
   const {email} = queryString.parse(location.search);
-  const handleConfirmEmailResend = () => {
+  const handleForgotPasswordResend = () => {
     agent.User.resendForgotPassword(email as string)
       .then(() => {
         toast.success("Reset password email sent - please check your email");
@@ -36,7 +36,7 @@ const ForgotPasswordSuccess: React.FC<RouteComponentProps> = ({ location }) => {
                   Didn't receive the email? Please click below button to resend
                 </p>
                 <Button
-                  onClick={handleConfirmEmailResend}
+                  onClick={handleForgotPasswordResend}
                   primary
                   content="Resend email"
                   size="huge"

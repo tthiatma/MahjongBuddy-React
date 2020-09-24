@@ -139,7 +139,7 @@ const User = {
   resetPassword:(reset: IResetPasswordFormValues): Promise<void> =>
     requests.post(`/user/resetPassword`, reset),
   resendForgotPassword: (email: string) : Promise<void> =>
-    requests.get(`/user/resendResetPassword?email=${email}`),
+    requests.get(`/user/resendForgotPasswordVerification?email=${email}`),
 };
 
 const Profiles = {

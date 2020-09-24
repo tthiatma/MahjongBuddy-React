@@ -4,12 +4,16 @@ import { Form, Button, Header } from "semantic-ui-react";
 import TextInput from "../../app/common/form/TextInput";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import { FORM_ERROR } from "final-form";
-import { combineValidators, isRequired } from "revalidate";
+import { combineValidators, isRequired, composeValidators } from "revalidate";
 import { ErrorMessage } from "../../app/common/form/ErrorMessage";
 import { IResetPasswordFormValues } from "../../app/models/user";
+import { isValidEmail } from "../../app/common/validators/validators";
 
 const validate = combineValidators({
-  email: isRequired("Email"),
+  email: composeValidators(
+    isRequired,
+    isValidEmail
+  )("Email")
 });
 
 export const ForgotPasswordForm = () => {
