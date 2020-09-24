@@ -5,8 +5,6 @@ namespace MahjongBuddy.Core
 {
     public class RoundPlayer
     {
-        public int Id { get; set; }
-
         public string AppUserId { get; set; }
 
         public virtual AppUser AppUser { get; set; }

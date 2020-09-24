@@ -79,27 +79,27 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                 HostId = "a",
                 MinPoint = 3,
                 MaxPoint = 10,
-                UserGames = new List<UserGame>
+                GamePlayers = new List<GamePlayer>
                     {
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = true,
                             AppUserId = "a",
                             InitialSeatWind = WindDirection.East
                         },
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = false,
                             AppUserId = "b",
                             InitialSeatWind = WindDirection.South
                         },
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = false,
                             AppUserId = "c",
                             InitialSeatWind = WindDirection.West
                         },
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = false,
                             AppUserId = "d",

@@ -35,31 +35,31 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     HostId = "a",
                     MinPoint = 3,
                     MaxPoint = 10,
-                    UserGames = new List<UserGame>
+                    GamePlayers = new List<GamePlayer>
                     {
                         //Tonny
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = true,
                             AppUserId = "a",
                             InitialSeatWind = WindDirection.East
                         },
                         //Mei
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = false,
                             AppUserId = "b",
                             InitialSeatWind = WindDirection.South
                         },
                         //Peter
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = false,
                             AppUserId = "c",
                             InitialSeatWind = WindDirection.West
                         },
                         //Jason
-                        new UserGame
+                        new GamePlayer
                         {
                             IsHost = false,
                             AppUserId = "d",

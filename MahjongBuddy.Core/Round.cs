@@ -22,6 +22,6 @@ namespace MahjongBuddy.Core
         [ConcurrencyCheck]
         public virtual ICollection<RoundTile> RoundTiles { get; set; }
         public virtual ICollection<RoundPlayer> RoundPlayers { get; set; }
-        public virtual ICollection<UserGame> UserGames { get; set; }
+        public virtual ICollection<GamePlayer> UserGames { get; set; }
     }
 }

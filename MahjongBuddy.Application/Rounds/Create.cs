@@ -56,16 +56,16 @@ namespace MahjongBuddy.Application.Rounds
                     RoundResults = new List<RoundResult>()
                 };
 
-                var players = game.UserGames.Select(x => x.AppUser);
+                var players = game.GamePlayers.Select(x => x.AppUser);
 
                 List<RoundPlayer> roundPlayers = new List<RoundPlayer>();
                 if (lastRound == null)
                 {
                     game.Status = GameStatus.Playing;
-                    AppUser firstDealer = game.UserGames.First(u => u.InitialSeatWind == WindDirection.East).AppUser;
+                    AppUser firstDealer = game.GamePlayers.First(u => u.InitialSeatWind == WindDirection.East).AppUser;
                     newRound.Wind = WindDirection.East;
                     newRound.RoundCounter = 1;
-                    foreach (var ug in game.UserGames)
+                    foreach (var ug in game.GamePlayers)
                     {
                         var rp = new RoundPlayer { AppUser = ug.AppUser, Round = newRound, Wind = ug.InitialSeatWind.Value, Points = ug.Points };
                         if (ug.AppUserId == firstDealer.Id)

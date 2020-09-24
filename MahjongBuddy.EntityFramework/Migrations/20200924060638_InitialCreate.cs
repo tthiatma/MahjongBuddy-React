@@ -272,12 +272,45 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GamePlayers",
+                columns: table => new
+                {
+                    AppUserId = table.Column<string>(nullable: false),
+                    GameId = table.Column<int>(nullable: false),
+                    IsHost = table.Column<bool>(nullable: false),
+                    Points = table.Column<int>(nullable: false),
+                    InitialSeatWind = table.Column<int>(nullable: true),
+                    RoundId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GamePlayers", x => new { x.GameId, x.AppUserId });
+                    table.ForeignKey(
+                        name: "FK_GamePlayers_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GamePlayers_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GamePlayers_Rounds_RoundId",
+                        column: x => x.RoundId,
+                        principalTable: "Rounds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RoundPlayers",
                 columns: table => new
                 {
                     AppUserId = table.Column<string>(nullable: false),
                     RoundId = table.Column<int>(nullable: false),
-                    Id = table.Column<int>(nullable: false),
                     IsInitialDealer = table.Column<bool>(nullable: false),
                     IsDealer = table.Column<bool>(nullable: false),
                     IsManualSort = table.Column<bool>(nullable: false),
@@ -362,41 +395,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         name: "FK_RoundTiles_Tiles_TileId",
                         column: x => x.TileId,
                         principalTable: "Tiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserGames",
-                columns: table => new
-                {
-                    AppUserId = table.Column<string>(nullable: false),
-                    GameId = table.Column<int>(nullable: false),
-                    Id = table.Column<int>(nullable: false),
-                    IsHost = table.Column<bool>(nullable: false),
-                    Points = table.Column<int>(nullable: false),
-                    InitialSeatWind = table.Column<int>(nullable: true),
-                    RoundId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserGames", x => new { x.GameId, x.AppUserId });
-                    table.ForeignKey(
-                        name: "FK_UserGames_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserGames_Games_GameId",
-                        column: x => x.GameId,
-                        principalTable: "Games",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserGames_Rounds_RoundId",
-                        column: x => x.RoundId,
-                        principalTable: "Rounds",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -517,6 +515,16 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_GamePlayers_AppUserId",
+                table: "GamePlayers",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GamePlayers_RoundId",
+                table: "GamePlayers",
+                column: "RoundId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Games_HostId",
                 table: "Games",
                 column: "HostId");
@@ -570,16 +578,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "IX_RoundTiles_TileId",
                 table: "RoundTiles",
                 column: "TileId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserGames_AppUserId",
-                table: "UserGames",
-                column: "AppUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserGames_RoundId",
-                table: "UserGames",
-                column: "RoundId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -603,6 +601,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "ChatMsgs");
 
             migrationBuilder.DropTable(
+                name: "GamePlayers");
+
+            migrationBuilder.DropTable(
                 name: "Photos");
 
             migrationBuilder.DropTable(
@@ -616,9 +617,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "RoundTiles");
-
-            migrationBuilder.DropTable(
-                name: "UserGames");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

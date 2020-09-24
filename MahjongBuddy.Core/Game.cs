@@ -15,7 +15,7 @@ namespace MahjongBuddy.Core
         public string HostId { get; set; }
         public virtual AppUser Host { get; set; }
         public virtual ICollection<Round> Rounds { get; set; }
-        public virtual ICollection<UserGame> UserGames { get; set; }
+        public virtual ICollection<GamePlayer> GamePlayers { get; set; }
         public virtual ICollection<ChatMsg> ChatMsgs { get; set; }
     }
 }

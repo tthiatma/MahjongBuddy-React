@@ -49,8 +49,8 @@ namespace MahjongBuddy.Application.Games
                     Status = GameStatus.Created,
                     MinPoint = minPoint,
                     MaxPoint = maxPoint == 0 ? 10 : maxPoint,
-                    UserGames = new List<UserGame>{
-                        new UserGame {
+                    GamePlayers = new List<GamePlayer>{
+                        new GamePlayer {
                             IsHost = true,
                             AppUser = user
                         }

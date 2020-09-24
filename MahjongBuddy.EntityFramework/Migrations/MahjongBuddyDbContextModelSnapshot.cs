@@ -156,6 +156,35 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("MahjongBuddy.Core.GamePlayer", b =>
+                {
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("InitialSeatWind")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsHost")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Points")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RoundId")
+                        .HasColumnType("int");
+
+                    b.HasKey("GameId", "AppUserId");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("RoundId");
+
+                    b.ToTable("GamePlayers");
+                });
+
             modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
                 {
                     b.Property<string>("Id")
@@ -229,9 +258,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.Property<bool>("HasAction")
                         .HasColumnType("bit");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsDealer")
                         .HasColumnType("bit");
@@ -455,38 +481,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.ToTable("Tiles");
                 });
 
-            modelBuilder.Entity("MahjongBuddy.Core.UserGame", b =>
-                {
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("InitialSeatWind")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsHost")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RoundId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GameId", "AppUserId");
-
-                    b.HasIndex("AppUserId");
-
-                    b.HasIndex("RoundId");
-
-                    b.ToTable("UserGames");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -636,6 +630,25 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasForeignKey("HostId");
                 });
 
+            modelBuilder.Entity("MahjongBuddy.Core.GamePlayer", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.AppUser", "AppUser")
+                        .WithMany("UserGames")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MahjongBuddy.Core.Game", "Game")
+                        .WithMany("GamePlayers")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MahjongBuddy.Core.Round", null)
+                        .WithMany("UserGames")
+                        .HasForeignKey("RoundId");
+                });
+
             modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
                 {
                     b.HasOne("MahjongBuddy.Core.AppUser", null)
@@ -712,25 +725,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.HasOne("MahjongBuddy.Core.Tile", "Tile")
                         .WithMany()
                         .HasForeignKey("TileId");
-                });
-
-            modelBuilder.Entity("MahjongBuddy.Core.UserGame", b =>
-                {
-                    b.HasOne("MahjongBuddy.Core.AppUser", "AppUser")
-                        .WithMany("UserGames")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MahjongBuddy.Core.Game", "Game")
-                        .WithMany("UserGames")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MahjongBuddy.Core.Round", null)
-                        .WithMany("UserGames")
-                        .HasForeignKey("RoundId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

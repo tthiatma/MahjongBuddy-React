@@ -31,7 +31,7 @@ namespace MahjongBuddy.Infrastructure.Security
 
             var game = _context.Games.FindAsync(gameId).Result;
 
-            var host = game.UserGames.FirstOrDefault(x => x.IsHost);
+            var host = game.GamePlayers.FirstOrDefault(x => x.IsHost);
 
             if (host?.AppUser?.UserName == currentUserName)
                 context.Succeed(requirement);

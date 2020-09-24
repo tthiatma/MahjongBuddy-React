@@ -38,12 +38,12 @@ namespace MahjongBuddy.Application.Games
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
                 if (playerInGame == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already left the game" });
 
-                _context.UserGames.Remove(playerInGame);
+                _context.GamePlayers.Remove(playerInGame);
 
                 var success = await _context.SaveChangesAsync() > 0;
 

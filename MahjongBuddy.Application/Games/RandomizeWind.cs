@@ -44,14 +44,14 @@ namespace MahjongBuddy.Application.Games
                 if (game.Status == GameStatus.Playing || game.Status == GameStatus.Over)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Can't randomize wind to a game that's already started/over" });
 
-                var userInGames = game.UserGames.ToArray();
+                var userInGames = game.GamePlayers.ToArray();
 
                 if (userInGames.Count() != 4)
                     throw new RestException(HttpStatusCode.BadRequest, new { players = "not enough player in the game" });
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
                 if (playerInGame == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { player = "user not in the game" });
@@ -70,7 +70,7 @@ namespace MahjongBuddy.Application.Games
                 try
                 {
                     await _context.SaveChangesAsync();
-                    return _mapper.Map<IEnumerable<UserGame>, IEnumerable<PlayerDto>>(userInGames);
+                    return _mapper.Map<IEnumerable<GamePlayer>, IEnumerable<PlayerDto>>(userInGames);
                 }
                 catch (Exception)
                 {

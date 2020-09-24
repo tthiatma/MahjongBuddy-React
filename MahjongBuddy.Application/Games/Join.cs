@@ -36,25 +36,25 @@ namespace MahjongBuddy.Application.Games
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
-                var usersInGame = game.UserGames.Count;
+                var usersInGame = game.GamePlayers.Count;
                 if (usersInGame == 4)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
                 if (playerInGame != null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already in the game" });
 
-                playerInGame = new UserGame
+                playerInGame = new GamePlayer
                 {
                     Game = game,
                     AppUser = user,
                     IsHost = false,
                 };
 
-                _context.UserGames.Add(playerInGame);
+                _context.GamePlayers.Add(playerInGame);
 
                 var success = await _context.SaveChangesAsync() > 0;
 
