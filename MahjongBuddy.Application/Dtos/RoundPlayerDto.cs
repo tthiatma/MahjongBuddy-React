@@ -13,18 +13,18 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool IsInitialDealer { get; set; }
 
-        public bool IsManualSort { get; set; }
-
         public bool IsMyTurn { get; set; }
-
-        public ICollection<RoundPlayerActionDto> RoundPlayerActions { get; set; }
-
-        public ICollection<RoundTileDto> PlayerTiles { get; set; }
 
         public bool MustThrow { get; set; }
 
         public WindDirection Wind { get; set; }
 
         public int Points { get; set; }
+
+        public bool IsManualSort { get; set; }
+
+        public ICollection<RoundPlayerActionDto> RoundPlayerActions { get; set; }
+
+        public ICollection<RoundTileDto> PlayerTiles { get; set; }
     }
 }
