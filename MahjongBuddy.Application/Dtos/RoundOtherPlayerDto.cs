@@ -4,12 +4,8 @@ using System.Collections.Generic;
 
 namespace MahjongBuddy.Application.Dtos
 {
-    public class RoundOtherPlayerDto
+    public class RoundOtherPlayerDto : PlayerDto
     {
-        public string UserName { get; set; }
-
-        public string DisplayName { get; set; }
-
         public bool IsDealer { get; set; }
 
         public bool IsInitialDealer { get; set; }

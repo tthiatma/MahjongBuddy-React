@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MahjongBuddy.Core.Enums;
+using System.Collections.Generic;
 
 namespace MahjongBuddy.Core
 {
@@ -6,8 +7,9 @@ namespace MahjongBuddy.Core
     {
         public int Id { get; set; }
         //IsWinner if false, then the user here feed
-        public bool IsWinner { get; set; }
+        public PlayerResult PlayerResult { get; set; }
         public virtual Round Round { get; set; }
+        public int RoundId { get; set; }
         public virtual AppUser AppUser { get; set; }
         public string  AppUserId { get; set; }
         public virtual ICollection<RoundResultHand> RoundResultHands { get; set; }

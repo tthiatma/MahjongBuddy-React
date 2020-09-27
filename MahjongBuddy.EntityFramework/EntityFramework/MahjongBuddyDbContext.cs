@@ -104,6 +104,12 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
         private void ConvertEnum(ModelBuilder builder)
         {
+            builder.Entity<RoundResult>()
+                .Property(e => e.PlayerResult)
+                .HasConversion(
+                v => v.ToString(),
+                v => (PlayerResult)Enum.Parse(typeof(PlayerResult), v));
+
             builder.Entity<Game>()
                 .Property(e => e.Status)
                 .HasConversion(

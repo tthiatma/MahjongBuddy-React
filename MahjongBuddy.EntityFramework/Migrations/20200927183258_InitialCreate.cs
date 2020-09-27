@@ -344,8 +344,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IsWinner = table.Column<bool>(nullable: false),
-                    RoundId = table.Column<int>(nullable: true),
+                    PlayerResult = table.Column<string>(nullable: false),
+                    RoundId = table.Column<int>(nullable: false),
                     AppUserId = table.Column<string>(nullable: true),
                     PointsResult = table.Column<int>(nullable: false)
                 },
@@ -363,7 +363,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         column: x => x.RoundId,
                         principalTable: "Rounds",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

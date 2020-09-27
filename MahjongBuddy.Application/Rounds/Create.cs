@@ -96,7 +96,7 @@ namespace MahjongBuddy.Application.Rounds
                     {
                         //if last game is not tied, then there gotta be a winner here
                         //could be more than one winners here
-                        var lastRoundWinners = lastRound.RoundResults.Where(x => x.IsWinner == true);
+                        var lastRoundWinners = lastRound.RoundResults.Where(x => x.PlayerResult == PlayerResult.Win);
                         var dealerWonLastRound = lastRoundWinners.Any(x => x.AppUserId == lastRoundDealer.AppUser.Id);
 
                         if (dealerWonLastRound)

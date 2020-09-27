@@ -39,6 +39,9 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
+                //TODO:
+                //need to add roundresult for user that ties with its tiles
+
                 var updatedPlayers = new List<RoundPlayer>();
 
                 var game = await _context.Games.FindAsync(request.GameId);
@@ -70,7 +73,7 @@ namespace MahjongBuddy.Application.PlayerAction
                     RoundResult winnerResult = new RoundResult
                     {
                         AppUser = winner.AppUser,
-                        IsWinner = true,
+                        PlayerResult = PlayerResult.Win,
                     };
 
                     if (round.RoundResults == null)
@@ -152,7 +155,7 @@ namespace MahjongBuddy.Application.PlayerAction
                             loser.Points -= winningPoint;
                             updatedPlayers.Add(loser);
 
-                            round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint * 3 });
+                            round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.AppUser, PointsResult = losingPoint * 3 });
                         }
                         else
                         {
@@ -169,7 +172,7 @@ namespace MahjongBuddy.Application.PlayerAction
                             foreach (var l in losers)
                             {
                                 l.Points -= cappedPoint;
-                                round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser, PointsResult = losingPoint });
+                                round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = l.AppUser, PointsResult = losingPoint });
                             }
                         }
                     }
@@ -182,7 +185,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
                         var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
                         loser.Points -= cappedPoint;
-                        round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });
+                        round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.AppUser, PointsResult = losingPoint });
 
                         updatedPlayers.Add(loser);
                     }

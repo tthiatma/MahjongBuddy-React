@@ -331,13 +331,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsWinner")
-                        .HasColumnType("bit");
+                    b.Property<string>("PlayerResult")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PointsResult")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RoundId")
+                    b.Property<int>("RoundId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -697,7 +698,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.HasOne("MahjongBuddy.Core.Round", "Round")
                         .WithMany("RoundResults")
-                        .HasForeignKey("RoundId");
+                        .HasForeignKey("RoundId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundResultExtraPoint", b =>

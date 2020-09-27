@@ -11,6 +11,7 @@ namespace MahjongBuddy.Application.Rounds
         public MappingProfile()
         {
             CreateMap<Round, RoundDto>()
+                .ForMember(dest => dest.BoardTiles, opt => opt.MapFrom<BoardTilesResolver>())
                 .ForMember(dest => dest.MainPlayer, opt => opt.MapFrom<MainPlayerResolver>())
                 .ForMember(dest => dest.OtherPlayers, opt => opt.MapFrom<OtherPlayersResolver>());
 
@@ -32,7 +33,8 @@ namespace MahjongBuddy.Application.Rounds
 
             CreateMap<RoundResult, RoundResultDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.AppUser.UserName))
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName));
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName))
+                .ForMember(dest => dest.PlayerTiles, opt => opt.MapFrom<ResultPlayerTilesResolver>());
         }
     }
 }
