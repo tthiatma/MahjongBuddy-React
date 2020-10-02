@@ -2,22 +2,20 @@ import { observable, action, runInAction } from "mobx";
 import { RootStore } from "./rootStore";
 import { history } from "../..";
 import { toast } from "react-toastify";
-import { setRoundProps } from "../common/util/util";
 import {
   HubConnection,
   HubConnectionBuilder,
   LogLevel,
 } from "@microsoft/signalr";
 import { WindDirection } from "../models/windEnum";
-import { IRound, IRoundPlayer } from "../models/round";
+import { IRound } from "../models/round";
 import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
-import { TileStatus } from "../models/tileStatus";
 import jwt from "jsonwebtoken";
 import agent from "../api/agent";
-import { IPlayer } from "../models/game";
 import UserStore from "./userStore";
+import { IPlayer, IRoundOtherPlayer } from "../models/player";
 
 export default class HubStore {
   rootStore: RootStore;
@@ -44,26 +42,14 @@ export default class HubStore {
 
   updateRoundTile(objIndex: number, tile: IRoundTile) {
     runInAction("updating tile", () => {
-      this.roundStore.roundTiles![objIndex] = tile;
+      this.roundStore.boardTiles![objIndex] = tile;
     });
   }
 
-  updateRoundPlayer(updatedRoundPlayers: IRoundPlayer[]) {
-    updatedRoundPlayers.forEach((player) => {
-      runInAction("updating players", () => {
-        if (player.userName === this.roundStore.leftPlayer?.userName)
-          this.roundStore.leftPlayer = player;
-
-        if (player.userName === this.roundStore.rightPlayer?.userName)
-          this.roundStore.rightPlayer = player;
-
-        if (player.userName === this.roundStore.topPlayer?.userName)
-          this.roundStore.topPlayer = player;
-
-        if (player.userName === this.roundStore.mainPlayer?.userName) {
-          this.roundStore.mainPlayer = player;
-          this.roundStore.isManualSort = player.isManualSort;
-        }
+  updateOtherPlayers(roundOtherPlayers: IRoundOtherPlayer[]) {
+    roundOtherPlayers.forEach(() => {
+      runInAction("updating other players", () => {
+        this.roundStore.round!.otherPlayers = roundOtherPlayers;
       });
     });
   }
@@ -122,101 +108,67 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateRoundNoLag", (round: IRound) => {
-        if (round.isOver && round.roundResults) {
-          runInAction("updating round results", () => {
-            this.roundStore.roundOver = true;
-            this.roundStore.roundResults = round.roundResults;
-          });
-        }
-
-        //update tiles
-        if (round.updatedRoundTiles) {
-          round.updatedRoundTiles.forEach((tile) => {
-            let objIndex = this.roundStore.roundTiles!.findIndex(
-              (obj) => obj.id === tile.id
-            );
-            this.updateRoundTile(objIndex, tile);
-          });
-        }
-
-        //update players
-        if (round.updatedRoundPlayers) {
-          this.updateRoundPlayer(round!.updatedRoundPlayers!);
-        }
-
         runInAction("updating round", () => {
-          this.roundStore.roundSimple = round;
+          this.roundStore.round = round;
         });
       });
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
-        runInAction("updating round", () => {
-          this.roundStore.roundSimple = round;
-        });
-
-        if (round.isOver && round.roundResults) {
-          runInAction("updating round results", () => {
-            this.roundStore.roundResults = round.roundResults;
-          });
-        }
-
         let noAction = false;
-        if (round.updatedRoundPlayers) {
+        if (round.otherPlayers) {
           noAction =
-            round.updatedRoundPlayers.filter((p) => p.hasAction).length === 0;
+            round.otherPlayers.filter((p) => p.hasAction).length === 0;
         }
 
-        let hasTileSetGroup = false;
-        if (round.updatedRoundTiles) {
-          hasTileSetGroup =
-            round.updatedRoundTiles.filter((t) => t.tileSetGroup !== 0).length >
-            0;
-        }
+        // let hasTileSetGroup = false;
+        // if (round.updatedRoundTiles) {
+        //   hasTileSetGroup =
+        //     round.updatedRoundTiles.filter((t) => t.tileSetGroup !== 0).length >
+        //     0;
+        // }
 
         //update players
-        if (round.updatedRoundPlayers) {
-          if (noAction && !hasTileSetGroup) {
-            this.sleep(this.cooldownTime).then(() => {
-              this.updateRoundPlayer(round!.updatedRoundPlayers!);
-            });
-          } else {
-            this.updateRoundPlayer(round!.updatedRoundPlayers!);
-          }
+        if (noAction) {
+          this.sleep(this.cooldownTime).then(() => {
+            this.updateOtherPlayers(round!.otherPlayers!);
+          });
+        } else {
+          this.updateOtherPlayers(round!.otherPlayers!);
         }
 
         //update tiles
-        if (round.updatedRoundTiles) {
-          round.updatedRoundTiles.forEach((roundTile) => {
-            let objIndex = this.roundStore.roundTiles!.findIndex(
-              (obj) => obj.id === roundTile.id
-            );
+        // if (round.updatedRoundTiles) {
+        //   round.updatedRoundTiles.forEach((roundTile) => {
+        //     let objIndex = this.roundStore.roundTiles!.findIndex(
+        //       (obj) => obj.id === roundTile.id
+        //     );
 
-            if (noAction) {
-              //find just picked tile and give assign it after cooldown time
-              if (roundTile.status === TileStatus.UserJustPicked || roundTile.tile.tileType === TileType.Flower) {
-                this.sleep(this.cooldownTime).then(() => {
-                  this.updateRoundTile(objIndex, roundTile);
-                });
-              } else {
-                this.updateRoundTile(objIndex, roundTile);
-              }
-            } else {
-              this.updateRoundTile(objIndex, roundTile);
-            }
+        //     if (noAction) {
+        //       //find just picked tile and give assign it after cooldown time
+        //       if (roundTile.status === TileStatus.UserJustPicked || roundTile.tile.tileType === TileType.Flower) {
+        //         this.sleep(this.cooldownTime).then(() => {
+        //           this.updateRoundTile(objIndex, roundTile);
+        //         });
+        //       } else {
+        //         this.updateRoundTile(objIndex, roundTile);
+        //       }
+        //     } else {
+        //       this.updateRoundTile(objIndex, roundTile);
+        //     }
 
-            runInAction("updating tile", () => {});
-          });
-        }
+        //     runInAction("updating tile", () => {});
+        //   });
+        // }
       });
 
       this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {
-        if (this.roundStore.roundTiles) {
+        if (this.roundStore.boardTiles) {
           tiles.forEach((tile) => {
-            let objIndex = this.roundStore.roundTiles!.findIndex(
+            let objIndex = this.roundStore.boardTiles!.findIndex(
               (obj) => obj.id === tile.id
             );
             runInAction("updating tile", () => {
-              this.roundStore.roundTiles![objIndex] = tile;
+              this.roundStore.boardTiles![objIndex] = tile;
             });
           });
         }
@@ -225,13 +177,11 @@ export default class HubStore {
       this.hubConnection.on("RoundStarted", (round: IRound) => {
         runInAction(() => {
           this.roundStore.showResult = false;
-          this.roundStore.roundSimple = round;
-          this.roundStore.roundTiles = round.roundTiles;
-          setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
+          this.roundStore.round = round;
         });
         history.push(
           `/games/${this.rootStore.gameStore.game!.id}/rounds/${
-            this.roundStore.roundSimple!.id
+            this.roundStore.round!.id
           }`
         );
       });
@@ -559,11 +509,11 @@ export default class HubStore {
         await this.hubConnection!.invoke("SortTiles", values).catch(() => {
           toast.error(`failed ordering tile`);
           for (let i = 0; i < originalTiles!.length; i++) {
-            let objIndex = this.rootStore.roundStore.roundTiles!.findIndex(
+            let objIndex = this.rootStore.roundStore.boardTiles!.findIndex(
               (obj) => obj.id === originalTiles![i].id
             );
             runInAction("updating reordered tile", () => {
-              this.rootStore.roundStore.roundTiles![
+              this.rootStore.roundStore.boardTiles![
                 objIndex
               ].activeTileCounter = originalTiles![i].activeTileCounter;
             });
@@ -598,7 +548,7 @@ export default class HubStore {
         runInAction("throw tile initially", () => {
           const tileToThrow = this.roundStore.selectedTile;
           if (tileToThrow) {
-            var tileInStore = this.roundStore.roundTiles?.find(
+            var tileInStore = this.roundStore.boardTiles?.find(
               (t) => t.id === tileToThrow?.id
             );
             if (tileInStore) tileInStore.owner = "board";
@@ -752,6 +702,7 @@ export default class HubStore {
     runInAction(() => {
       this.hubActionLoading = true;
     });
+    const tempAction = [...this.roundStore.mainPlayer!.roundPlayerActions];
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         await this.hubConnection!.invoke(
@@ -759,13 +710,13 @@ export default class HubStore {
           this.getGameAndRoundProps()
         ).catch(() => {
           runInAction(() => {
-            this.roundStore.mainPlayer!.hasAction = true;
+            this.roundStore.mainPlayer!.roundPlayerActions = tempAction;
             this.hubActionLoading = false;
           });
           toast.error(`can't skip`);
         });
         runInAction(() => {
-          this.roundStore.mainPlayer!.hasAction = false;
+          this.roundStore.mainPlayer!.roundPlayerActions = [];
           this.hubActionLoading = false;
         });
       } else {
@@ -773,7 +724,7 @@ export default class HubStore {
       }
     } catch (error) {
       runInAction(() => {
-        this.roundStore.mainPlayer!.hasAction = true;
+        this.roundStore.mainPlayer!.roundPlayerActions = tempAction;
         this.hubActionLoading = false;
       });
       toast.error("problem skipping action");
@@ -783,7 +734,7 @@ export default class HubStore {
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id;
-    values.roundId = this.roundStore.roundSimple?.id;
+    values.roundId = this.roundStore.round?.id;
     return values;
   };
 }

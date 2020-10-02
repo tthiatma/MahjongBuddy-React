@@ -1,11 +1,11 @@
 import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundPlayer } from "../../../app/models/round";
 import { WindDirection } from "../../../app/models/windEnum";
 import { Icon } from "semantic-ui-react";
+import { IRoundOtherPlayer, IRoundPlayer } from "../../../app/models/player";
 
 interface IProps {
-  player: IRoundPlayer;
+  player: IRoundPlayer | IRoundOtherPlayer;
 }
 
 const PlayerStatus: React.FC<IProps> = ({ player }) => {

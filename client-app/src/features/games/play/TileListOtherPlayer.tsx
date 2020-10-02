@@ -1,17 +1,27 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundTile } from "../../../app/models/tile";
-import { TileStatus } from "../../../app/models/tileStatus";
-import { IRoundPlayer } from "../../../app/models/round";
 import { Grid } from "semantic-ui-react";
 import PlayerStatus from "./PlayerStatus";
+import { IRoundOtherPlayer } from "../../../app/models/player";
 
 interface IProps {
-  roundTiles: IRoundTile[];
-  player: IRoundPlayer;
+  player: IRoundOtherPlayer;
 }
 
-const TileListOtherPlayer: React.FC<IProps> = ({ roundTiles, player }) => {
+const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
+  const displayClosedTile = () => {
+    let closedTiles = []
+    for(let i = 0; i < player.activeTilesCount; i++){
+      closedTiles.push(<div>
+        <img
+          alt={"face-down-tile"}
+          src={"/assets/tiles/50px/face-down.png"}
+          style={{ overflow: "hidden" }}
+        />
+      </div>)
+      return closedTiles;    
+    }
+  }
   return (
     <Grid verticalAlign="middle">
       <Grid.Row style={{borderRadius: "25px"}}
@@ -26,7 +36,8 @@ const TileListOtherPlayer: React.FC<IProps> = ({ roundTiles, player }) => {
         </span>
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
-        {roundTiles &&
+        {displayClosedTile()}
+        {/* {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
@@ -37,12 +48,11 @@ const TileListOtherPlayer: React.FC<IProps> = ({ roundTiles, player }) => {
                   style={{ overflow: "hidden" }}
                 />
               </div>
-            ))}
+            ))} */}
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
-        {roundTiles &&
-          roundTiles
-            .filter((t) => t.status === TileStatus.UserGraveyard)
+        {player.graveyardTiles &&
+          player.graveyardTiles
             .map((rt) => (
               <div key={rt.id}>
                 <img

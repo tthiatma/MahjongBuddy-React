@@ -23,7 +23,7 @@ const PlayerAction: React.FC = () => {
   const {
     openModal,
     showResult,
-    roundSimple: round,
+    round,
     mainPlayer,
     mainPlayerTiles,
     boardActiveTile,
@@ -53,6 +53,7 @@ const PlayerAction: React.FC = () => {
   const buttonAnimation = "jiggle";
   const buttonAnimationDuration = 500;
 
+  const hasAction = mainPlayer!.roundPlayerActions.length > 0;
   const clearKongOptions = () => {
     setKongOptions([]);
   };
@@ -185,7 +186,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {mainPlayer?.hasAction && hasChowAction && chowOptions.length === 0 && (
+      {hasAction && hasChowAction && chowOptions.length === 0 && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -211,7 +212,7 @@ const PlayerAction: React.FC = () => {
         <Button onClick={clearKongOptions} content="Cancel KONG" />
       )}
 
-      {mainPlayer?.hasAction && hasPongAction && (
+      {hasAction && hasPongAction && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -229,7 +230,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {((mainPlayer!.hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
+      {((hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -247,7 +248,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {mainPlayer?.hasAction && !mainPlayer!.mustThrow && (
+      {hasAction && !mainPlayer!.mustThrow && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}

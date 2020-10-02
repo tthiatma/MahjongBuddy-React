@@ -1,16 +1,14 @@
 import { observable, action, runInAction, computed, reaction, IReactionDisposer } from "mobx";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
-import { setRoundProps, sortTiles, sortByActiveCounter } from "../common/util/util";
+import {sortTiles, sortByActiveCounter } from "../common/util/util";
 import {
   IRound,
-  IRoundPlayer,
-  IRoundSimple,
-  IRoundResult,
 } from "../models/round";
 import { IRoundTile } from "../models/tile";
 import { TileStatus } from "../models/tileStatus";
 import { ActionType } from "../models/actionTypeEnum";
+import { SeatOrientation } from "../models/seatOrientationEnum";
 
 const pickDefaultCounter:number = 3;
 
@@ -21,9 +19,9 @@ export default class RoundStore {
     this.rootStore = rootStore;
 
     reaction(
-      () => this.roundSimple?.isOver,
+      () => this.round?.isOver,
       () => {
-        if(this.roundSimple?.isOver){
+        if(this.round?.isOver){
           this.showResult = true;
         }
       }
@@ -33,9 +31,9 @@ export default class RoundStore {
     //when 1 tile left and the person's turn give up
     //when no tile left
     reaction(
-      () => this.roundSimple?.isEnding && this.roundEndingCounter,
+      () => this.round?.isEnding && this.roundEndingCounter,
       () => {
-        if(this.roundSimple?.isEnding){
+        if(this.round?.isEnding){
           this.roundEndingCounter > 0 &&
           setTimeout(() => runInAction(() => this.roundEndingCounter--), 1000);
           if (this.roundEndingCounter === 0) {
@@ -71,6 +69,7 @@ export default class RoundStore {
     );
   }
 
+  @observable round: IRound | null = null;
   @observable pickCounter: number = pickDefaultCounter;
   @observable canPick: boolean = false;
   @observable isMyTurn: boolean = false;
@@ -79,15 +78,24 @@ export default class RoundStore {
   @observable roundOver: boolean = false;
   @observable roundEndingCounter: number = 5;
   @observable.shallow selectedTile: IRoundTile | null = null;
-  @observable roundSimple: IRoundSimple | null = null;
-  @observable roundTiles: IRoundTile[] | null = null;
+  @observable boardTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
-  @observable.shallow roundPlayers: IRoundPlayer[] | null = null;
-  @observable mainPlayer: IRoundPlayer | null = null;
-  @observable leftPlayer: IRoundPlayer | null = null;
-  @observable rightPlayer: IRoundPlayer | null = null;
-  @observable topPlayer: IRoundPlayer | null = null;
-  @observable roundResults: IRoundResult[] | null = null;
+
+  @computed get mainPlayer(){
+    return this.round?.mainPlayer;
+  }
+
+  @computed get leftPlayer(){
+    return this.round!.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Left)[0];
+  }
+
+  @computed get rightPlayer(){
+    return this.round!.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Right)[0];
+  }
+
+  @computed get topPlayer(){
+    return this.round!.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Top)[0];
+  }
 
   @computed get hasSelfKongAction(){
     return this.mainPlayer!.roundPlayerActions    
@@ -132,34 +140,34 @@ export default class RoundStore {
   }
 
   @computed get remainingTiles() {
-    return this.roundTiles
-      ? this.roundTiles.filter((rt) => rt.owner === null).length
+    return this.boardTiles
+      ? this.boardTiles.filter((rt) => rt.owner === null).length
       : null;
   }
 
   @computed get boardActiveTile() {
-    return this.roundTiles
-      ? this.roundTiles.find((rt) => rt.status === TileStatus.BoardActive)
+    return this.boardTiles
+      ? this.boardTiles.find((rt) => rt.status === TileStatus.BoardActive)
       : null;
   }
 
   @computed get boardGraveyardTiles() {
-    return this.roundTiles
-      ? this.roundTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
+    return this.boardTiles
+      ? this.boardTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
       : null;
   }
 
   @computed get mainPlayerTiles() {
-    return this.roundTiles && this.roundSimple && this.leftPlayer
-      ? this.roundTiles.filter(
+    return this.boardTiles && this.round && this.leftPlayer
+      ? this.boardTiles.filter(
           (rt) => rt.owner === this.rootStore.userStore.user!.userName
         )
       : null;
   }
 
   @computed get mainPlayerAliveTiles() {
-    return this.roundTiles
-      ? this.roundTiles
+    return this.boardTiles
+      ? this.boardTiles
           .filter(
             (rt) =>
               rt.owner === this.rootStore.userStore.user!.userName &&
@@ -171,8 +179,8 @@ export default class RoundStore {
   }
 
   @computed get mainPlayerActiveTiles() {
-    return this.roundTiles
-      ? this.roundTiles
+    return this.boardTiles
+      ? this.boardTiles
           .filter(
             (rt) =>
               rt.owner === this.rootStore.userStore.user!.userName &&
@@ -183,8 +191,8 @@ export default class RoundStore {
   }
 
   @computed get mainPlayerGraveYardTiles() {
-    return this.roundTiles
-      ? this.roundTiles
+    return this.boardTiles
+      ? this.boardTiles
           .filter(
             (rt) =>
               rt.owner === this.rootStore.userStore.user?.userName &&
@@ -195,8 +203,8 @@ export default class RoundStore {
   }
 
   @computed get mainPlayerJustPickedTile() {
-    return this.roundTiles
-      ? this.roundTiles.filter(
+    return this.boardTiles
+      ? this.boardTiles.filter(
           (rt) =>
             rt.owner === this.rootStore.userStore.user?.userName &&
             rt.status === TileStatus.UserJustPicked
@@ -205,24 +213,24 @@ export default class RoundStore {
   }
 
   @computed get leftPlayerTiles() {
-    return this.roundTiles && this.roundSimple && this.leftPlayer
-      ? this.roundTiles
+    return this.boardTiles && this.round && this.leftPlayer
+      ? this.boardTiles
           .filter((rt) => rt.owner === this.leftPlayer?.userName)
           .sort(sortTiles)
       : null;
   }
 
   @computed get topPlayerTiles() {
-    return this.roundTiles && this.roundSimple && this.topPlayer
-      ? this.roundTiles
+    return this.boardTiles && this.round && this.topPlayer
+      ? this.boardTiles
           .filter((rt) => rt.owner === this.topPlayer?.userName)
           .sort(sortTiles)
       : null;
   }
 
   @computed get rightPlayerTiles() {
-    return this.roundTiles && this.roundSimple && this.rightPlayer
-      ? this.roundTiles
+    return this.boardTiles && this.round && this.rightPlayer
+      ? this.boardTiles
           .filter((rt) => rt.owner === this.rightPlayer?.userName)
           .sort(sortTiles)
       : null;
@@ -247,9 +255,8 @@ export default class RoundStore {
     try {
       round = await agent.Rounds.detail(id, gameId);
       runInAction("getting round", () => {
-        setRoundProps(round, this.rootStore.userStore.user!, this);
-        this.roundSimple = round;
-        this.roundTiles = round.roundTiles;
+        this.round = round;
+        this.boardTiles = round.boardTiles;
         this.loadingRoundInitial = false;
       });
       return round;

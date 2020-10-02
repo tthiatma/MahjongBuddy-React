@@ -1,9 +1,6 @@
 import { IGame } from "../../models/game";
 import { IUser } from "../../models/user";
 import { WindDirection } from "../../models/windEnum";
-import { IRound } from "../../models/round";
-import { runInAction } from "mobx";
-import RoundStore from "../../stores/roundStore";
 import { IRoundTile } from "../../models/tile";
 
 export const GetOtherUserWindPosition = (currentUserWind:WindDirection , direction: string) => {
@@ -70,30 +67,6 @@ export const combineDateAndTime = (date: Date, time: Date) => {
     const timeString = time.toISOString().split('T')[1];
 
     return new Date(dateString + ' ' + timeString);
-}
-
-export const setRoundProps = (round: IRound, user: IUser, roundStore: RoundStore) => {
-  runInAction("Updating Round Players", () =>{
-    roundStore.roundResults = round.roundResults;
-    roundStore.roundPlayers = round.roundPlayers;
-
-    let mainPlayer = round.roundPlayers.find(
-      p => p.userName === user.userName
-    );
-      if(mainPlayer){
-      roundStore.mainPlayer = mainPlayer;
-      roundStore.isManualSort = mainPlayer.isManualSort;
-
-      let leftUserWind = GetOtherUserWindPosition(mainPlayer.wind, "left");
-      roundStore.leftPlayer = round.roundPlayers.find(p => p.wind === leftUserWind)!;
-  
-      let topUserWind = GetOtherUserWindPosition(mainPlayer.wind, "top");
-      roundStore.topPlayer = round.roundPlayers.find(p => p.wind === topUserWind)!;
-  
-      let rightUserWind = GetOtherUserWindPosition(mainPlayer.wind, "right");
-      roundStore.rightPlayer = round.roundPlayers.find(p => p.wind === rightUserWind)!;
-    }  
-  })  
 }
 
 export const setGameProps = (game: IGame, user: IUser) => {

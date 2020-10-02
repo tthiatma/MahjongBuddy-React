@@ -2,7 +2,6 @@ import React, { Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile, TileType, TileValue } from "../../../app/models/tile";
 import { Droppable } from "react-beautiful-dnd";
-import { IRoundPlayer } from "../../../app/models/round";
 import { Grid, Button, Transition, Image } from "semantic-ui-react";
 import PlayerAction from "./PlayerAction";
 import PlayerStatus from "./PlayerStatus";
@@ -10,9 +9,10 @@ import DraggableTile from "./DraggableTile";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { runInAction, toJS } from "mobx";
 import { sortTiles } from "../../../app/common/util/util";
+import { IRoundPlayer } from "../../../app/models/player";
 
 interface IProps {
-  mainPlayer: IRoundPlayer | null;
+  mainPlayer: IRoundPlayer | undefined;
   containerStyleName: string;
   tileStyleName: string;
   mainPlayerAliveTiles: IRoundTile[] | null;
@@ -79,12 +79,12 @@ const MainPlayerSection: React.FC<IProps> = ({
     const sortedTile = mainPlayerAliveTiles!;
     sortedTile.sort(sortTiles);
     for (let i = 0; i < sortedTile.length; i++) {
-      let objIndex = rootStore.roundStore.roundTiles!.findIndex(
+      let objIndex = rootStore.roundStore.boardTiles!.findIndex(
         (obj) => obj.id === sortedTile[i].id
       );
 
       runInAction("updating reordered tile", () => {
-        rootStore.roundStore.roundTiles![objIndex].activeTileCounter = i;
+        rootStore.roundStore.boardTiles![objIndex].activeTileCounter = i;
       });
     }
     runInAction("autosort", () => {

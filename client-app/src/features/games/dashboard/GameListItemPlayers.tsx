@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Image, Popup } from 'semantic-ui-react';
-import { IPlayer } from '../../../app/models/game';
+import { IPlayer } from '../../../app/models/player';
 
 interface IProps {
     players: IPlayer[]

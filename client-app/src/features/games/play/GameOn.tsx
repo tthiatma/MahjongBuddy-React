@@ -37,13 +37,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loadingGameInitial,
     loadGame,
     game,
-    getMainUser,
   } = rootStore.gameStore;
   const {
     loadingRoundInitial,
-    roundSimple: round,
+    round,
     loadRound,
-    roundPlayers,
     mainPlayer,
     leftPlayer,
     rightPlayer,
@@ -52,12 +50,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     mainPlayerGraveYardTiles,
     boardActiveTile,
     boardGraveyardTiles,
-    leftPlayerTiles,
-    topPlayerTiles,
-    rightPlayerTiles,
-    roundTiles,
+    boardTiles: roundTiles,
     remainingTiles,
-    roundResults,
     roundEndingCounter,
   } = rootStore.roundStore;
   const {
@@ -242,7 +236,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={10}>
                   <TileListOtherPlayer
                     player={topPlayer!}
-                    roundTiles={topPlayerTiles!}
                   />
                 </Grid.Column>
                 <Grid.Column width={3} />
@@ -253,7 +246,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={3}>
                   <TileListOtherPlayerVertical
                     player={leftPlayer!}
-                    roundTiles={leftPlayerTiles!}
                     isReversed={false}
                   />
                 </Grid.Column>
@@ -358,7 +350,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={3}>
                   <TileListOtherPlayerVertical
                     player={rightPlayer!}
-                    roundTiles={rightPlayerTiles!}
                     isReversed={true}
                   />
                 </Grid.Column>
@@ -378,12 +369,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     />
                   </Grid.Row>
                   <Grid.Row centered>
-                    <ResultModal
-                      roundResults={roundResults}
-                      roundPlayers={roundPlayers}
-                      roundTiles={roundTiles}
-                      isHost={getMainUser!.isHost}
-                    />
+                    <ResultModal />
                   </Grid.Row>
                 </Grid.Column>
               </Grid.Row>

@@ -1,5 +1,7 @@
 import { WindDirection } from "./windEnum";
 import { GameStatus } from "./gameStatusEnum";
+import { IChatMsg } from "./chatMsg";
+import { IPlayer } from "./player";
 
 export interface IGame{
     id: string;
@@ -14,15 +16,6 @@ export interface IGame{
     isCurrentPlayerConnected: boolean;
     players: IPlayer[];
     chatMsgs: IChatMsg[];
-}
-
-export interface IChatMsg {
-    id: string;
-    createdAt: Date;
-    body: string;
-    userName: string;
-    displayName: string;
-    image: string;
 }
 
 export interface IGameFormValues extends Partial<IGame> {
@@ -42,12 +35,4 @@ export class GameFormValues implements IGameFormValues {
         }  
         Object.assign(this, init);
     }
-}
-
-export interface IPlayer{
-    userName: string;
-    displayName: string;
-    image: string;
-    isHost: boolean;
-    initialSeatWind: WindDirection | undefined;
 }

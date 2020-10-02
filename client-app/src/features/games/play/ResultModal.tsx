@@ -1,52 +1,35 @@
 import React, { useContext, Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
-import { IRoundResult, IRoundPlayer } from "../../../app/models/round";
+import { IRoundResult } from "../../../app/models/round";
 import { Modal, Header, Button, Icon } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { ExtraPoint } from "../../../app/models/extraPointEnum";
+import { PlayerResult } from "../../../app/models/playerResultEnum";
 
-interface IProps {
-  roundResults: IRoundResult[] | null;
-  roundTiles: IRoundTile[] | null;
-  isHost: boolean;
-  roundPlayers: IRoundPlayer[] | null;
-}
 
-const ResultModal: React.FC<IProps> = ({
-  roundResults,
-  roundTiles,
-  isHost,
-  roundPlayers,
-}) => {
+const ResultModal: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const { startRound } = rootStore.hubStore;
-  const { showResult, closeModal } = rootStore.roundStore;
+  const { getMainUser } = rootStore.gameStore;
+  const { round, showResult, closeModal } = rootStore.roundStore;
 
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
-  let tiePlayers: IRoundPlayer[] | undefined = undefined;
+  let tiePlayers: IRoundResult[] | null = null;
   let winnerTiles: IRoundTile[] | null = null;
-  let boardTile: IRoundTile | null = null;
+
+  const roundResults = round!.roundResults;
+  const isHost = getMainUser!.isHost;
+  const activeBoardTile = round?.boardTiles.find(t => t.status === TileStatus.BoardActive);
 
   if (roundResults) {
-    winner = roundResults?.find((r) => r.isWinner === true)!;
-    losers = roundResults!.filter((r) => r.isWinner === false);
-    if (!winner) tiePlayers = roundPlayers!;
-
-    if (losers && losers.length === 1) {
-      tiePlayers = roundPlayers?.filter(
-        (p) =>
-          p.userName !== winner?.userName && p.userName !== losers![0].userName
-      );
-    }
-    winnerTiles = roundTiles!
-      .filter((t) => t.owner === winner?.userName)!
-      .sort(sortTiles);
-
-    boardTile = roundTiles!.find((t) => t.status === TileStatus.BoardActive)!;
+    winner = roundResults?.find((r) => r.playerResult === PlayerResult.Win)!;
+    losers = roundResults!.filter((r) => r.playerResult === PlayerResult.Lost);
+    tiePlayers = roundResults!.filter((r) => r.playerResult === PlayerResult.Tie);
+    winnerTiles = winner.playerTiles.sort(sortTiles);
   }
 
   return (
@@ -85,10 +68,10 @@ const ResultModal: React.FC<IProps> = ({
                   }
                 />
               ))}
-            {!winner!.roundResultExtraPoints.some((ep) => ep.extraPoint === ExtraPoint.SelfPick) && boardTile && (
+            {!winner!.roundResultExtraPoints.some((ep) => ep.extraPoint === ExtraPoint.SelfPick) && activeBoardTile && (
               <div
                 style={{
-                  backgroundImage: `url(${boardTile.tile.imageSmall}`,
+                  backgroundImage: `url(${activeBoardTile!.tile.imageSmall}`,
                 }}
                 className="flexTilesSmall justPickedTile"
               />
@@ -102,8 +85,7 @@ const ResultModal: React.FC<IProps> = ({
                     <li>
                       Loser : {l.displayName}: {l.pointsResult}
                     </li>
-                    {roundTiles!
-                      .filter((t) => t.owner === l.userName)!
+                    {l.playerTiles!
                       .sort(sortTiles)
                       .map((rt) => (
                         <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
@@ -117,8 +99,7 @@ const ResultModal: React.FC<IProps> = ({
                 {tiePlayers.map((p, i) => (
                   <Fragment key={p.userName}>
                     <li>{p.displayName}</li>
-                    {roundTiles!
-                      .filter((t) => t.owner === p.userName)!
+                    {p.playerTiles
                       .sort(sortTiles)
                       .map((rt) => (
                         <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
@@ -140,8 +121,7 @@ const ResultModal: React.FC<IProps> = ({
                 {tiePlayers.map((p, i) => (
                   <Fragment key={p.userName}>
                     <li>{p.displayName}</li>
-                    {roundTiles!
-                      .filter((t) => t.owner === p.userName)!
+                    {p.playerTiles
                       .sort(sortTiles)
                       .map((rt) => (
                         <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />

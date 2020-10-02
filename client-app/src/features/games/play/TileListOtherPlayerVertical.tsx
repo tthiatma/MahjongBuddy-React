@@ -1,29 +1,49 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundTile } from "../../../app/models/tile";
-import { TileStatus } from "../../../app/models/tileStatus";
-import { IRoundPlayer } from "../../../app/models/round";
 import { Grid } from "semantic-ui-react";
 import PlayerStatus from "./PlayerStatus";
+import { IRoundOtherPlayer } from "../../../app/models/player";
 
 interface IProps {
-  roundTiles: IRoundTile[];
-  player: IRoundPlayer;
+  player: IRoundOtherPlayer;
   isReversed: boolean;
 }
 
 const TileListOtherPlayerVertical: React.FC<IProps> = ({
-  roundTiles,
   player,
-  isReversed
+  isReversed,
 }) => {
+  const displayClosedTile = () => {
+    let closedTiles = [];
+    for (let i = 0; i < player.activeTilesCount; i++) {
+      closedTiles.push(
+        <div
+          style={{ height: "34px" }}
+          {...(isReversed && { className: "rotate180" })}
+        >
+          <img alt="face-down-tile" src={"/assets/tiles/v50px/face-down.png"} />
+        </div>
+      );
+      return closedTiles;
+    }
+  };
+
   return (
     <Grid {...(isReversed && { reversed: "computer" })}>
-      <Grid.Column style={{ padding: "2px" }} width={3} className="flexTilesVerticalContainer">
-        <div className="playerStatusContainerVertical" {...(player.isMyTurn && { className: "playerTurn playerStatusHeaderVertical" })}>
+      <Grid.Column
+        style={{ padding: "2px" }}
+        width={3}
+        className="flexTilesVerticalContainer"
+      >
+        <div
+          className="playerStatusContainerVertical"
+          {...(player.isMyTurn && {
+            className: "playerTurn playerStatusHeaderVertical",
+          })}
+        >
           <div
-          style={{minHeight: '450px'}}
-            className="playerStatusHeaderVertical"            
+            style={{ minHeight: "450px" }}
+            className="playerStatusHeaderVertical"
           >
             <span
               className="rotate90"
@@ -35,23 +55,30 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         </div>
       </Grid.Column>
       <Grid.Column width={5} className="flexTilesVerticalContainer">
-        {roundTiles &&
+      {displayClosedTile()}
+        {/* {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
             .map((rt) => (
-              <div style={{ height: "34px" }} key={rt.id} {...(isReversed && { className: "rotate180" })}>
+              <div
+                style={{ height: "34px" }}
+                key={rt.id}
+                {...(isReversed && { className: "rotate180" })}
+              >
                 <img
-                  alt='face-down-tile'
-                  src={'/assets/tiles/v50px/face-down.png'}
+                  alt="face-down-tile"
+                  src={"/assets/tiles/v50px/face-down.png"}
                 />
               </div>
-            ))}
+            ))} */}
       </Grid.Column>
 
-      <Grid.Column style={{ padding: "2px" }} width={5} className="flexTilesVerticalContainer">
-        {roundTiles &&
-          roundTiles
-            .filter((t) => t.status === TileStatus.UserGraveyard)
+      <Grid.Column
+        style={{ padding: "2px" }}
+        width={5}
+        className="flexTilesVerticalContainer"
+      >
+        {player.graveyardTiles
             .map((rt) => (
               <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
                 <img
