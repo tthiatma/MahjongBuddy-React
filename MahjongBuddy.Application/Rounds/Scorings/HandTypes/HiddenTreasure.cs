@@ -6,7 +6,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
 {
     class HiddenTreasure : FindHandType
     {
-        //hidden treasure is when all concealed and all pong tiles
+        //hidden treasure is when all concealed and all pong tiles and self picked
         public override List<HandType> HandleRequest(IEnumerable<RoundTile> tiles, List<HandType> handTypes)
         {
             //short circuit if there is any group set
@@ -20,7 +20,9 @@ namespace MahjongBuddy.Application.Rounds.Scorings.HandTypes
             }
 
             //if it gets all the way to here, that means it pass "LegitSet" hand type and we already know if it has triplet hand type
-            if(handTypes.Contains(HandType.Triplets))
+            var isSelfPicked = tiles.Any(t => t.Status == TileStatus.UserJustPicked);
+
+            if(handTypes.Contains(HandType.Triplets) && isSelfPicked)
             {
                 handTypes.Add(HandType.HiddenTreasure);
             }
