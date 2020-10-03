@@ -40,12 +40,6 @@ export default class HubStore {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  updateRoundTile(objIndex: number, tile: IRoundTile) {
-    runInAction("updating tile", () => {
-      this.roundStore.boardTiles![objIndex] = tile;
-    });
-  }
-
   updateOtherPlayers(roundOtherPlayers: IRoundOtherPlayer[]) {
     roundOtherPlayers.forEach(() => {
       runInAction("updating other players", () => {
@@ -159,19 +153,6 @@ export default class HubStore {
         //     runInAction("updating tile", () => {});
         //   });
         // }
-      });
-
-      this.hubConnection.on("UpdateTile", (tiles: IRoundTile[]) => {
-        if (this.roundStore.boardTiles) {
-          tiles.forEach((tile) => {
-            let objIndex = this.roundStore.boardTiles!.findIndex(
-              (obj) => obj.id === tile.id
-            );
-            runInAction("updating tile", () => {
-              this.roundStore.boardTiles![objIndex] = tile;
-            });
-          });
-        }
       });
 
       this.hubConnection.on("RoundStarted", (round: IRound) => {
@@ -509,11 +490,11 @@ export default class HubStore {
         await this.hubConnection!.invoke("SortTiles", values).catch(() => {
           toast.error(`failed ordering tile`);
           for (let i = 0; i < originalTiles!.length; i++) {
-            let objIndex = this.rootStore.roundStore.boardTiles!.findIndex(
+            let objIndex = this.rootStore.roundStore.mainPlayerAliveTiles!.findIndex(
               (obj) => obj.id === originalTiles![i].id
             );
             runInAction("updating reordered tile", () => {
-              this.rootStore.roundStore.boardTiles![
+              this.rootStore.roundStore.mainPlayerAliveTiles![
                 objIndex
               ].activeTileCounter = originalTiles![i].activeTileCounter;
             });
@@ -548,7 +529,7 @@ export default class HubStore {
         runInAction("throw tile initially", () => {
           const tileToThrow = this.roundStore.selectedTile;
           if (tileToThrow) {
-            var tileInStore = this.roundStore.boardTiles?.find(
+            var tileInStore = this.roundStore.mainPlayerAliveTiles?.find(
               (t) => t.id === tileToThrow?.id
             );
             if (tileInStore) tileInStore.owner = "board";

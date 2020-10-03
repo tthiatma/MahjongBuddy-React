@@ -10,21 +10,24 @@ interface IProps {
 
 const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
   const displayClosedTile = () => {
-    let closedTiles = []
-    for(let i = 0; i < player.activeTilesCount; i++){
-      closedTiles.push(<div>
-        <img
-          alt={"face-down-tile"}
-          src={"/assets/tiles/50px/face-down.png"}
-          style={{ overflow: "hidden" }}
-        />
-      </div>)
-      return closedTiles;    
+    let closedTiles = [];
+    for (let i = 0; i < player.activeTilesCount; i++) {
+      closedTiles.push(
+        <div key={`${player.userName}${i}`}>
+          <img
+            alt={"face-down-tile"}
+            src={"/assets/tiles/50px/face-down.png"}
+            style={{ overflow: "hidden" }}
+          />
+        </div>
+      );
     }
-  }
+    return closedTiles;
+  };
   return (
     <Grid verticalAlign="middle">
-      <Grid.Row style={{borderRadius: "25px"}}
+      <Grid.Row
+        style={{ borderRadius: "25px" }}
         centered
         className="playerStatusContainer"
         {...(player.isMyTurn && {
@@ -52,15 +55,11 @@ const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
         {player.graveyardTiles &&
-          player.graveyardTiles
-            .map((rt) => (
-              <div key={rt.id}>
-                <img
-                  alt={rt.tile.title}
-                  src={rt.tile.imageSmall}
-                />
-              </div>
-            ))}
+          player.graveyardTiles.map((rt) => (
+            <div key={rt.id}>
+              <img alt={rt.tile.title} src={rt.tile.imageSmall} />
+            </div>
+          ))}
       </Grid.Row>
     </Grid>
   );

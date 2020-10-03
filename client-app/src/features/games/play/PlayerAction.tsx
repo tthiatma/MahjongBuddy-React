@@ -25,7 +25,6 @@ const PlayerAction: React.FC = () => {
     showResult,
     round,
     mainPlayer,
-    mainPlayerTiles,
     boardActiveTile,
     hasChowAction,
     hasPongAction,
@@ -134,7 +133,7 @@ const PlayerAction: React.FC = () => {
   const doKong = () => {
     let validTileForKongs: IRoundTile[] = GetPossibleKong(
       mainPlayer!.isMyTurn,
-      mainPlayerTiles!,
+      mainPlayer?.playerTiles!,
       boardActiveTile!
     );
     clearChowOptions();

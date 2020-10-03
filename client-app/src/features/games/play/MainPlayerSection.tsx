@@ -79,12 +79,12 @@ const MainPlayerSection: React.FC<IProps> = ({
     const sortedTile = mainPlayerAliveTiles!;
     sortedTile.sort(sortTiles);
     for (let i = 0; i < sortedTile.length; i++) {
-      let objIndex = rootStore.roundStore.boardTiles!.findIndex(
+      let objIndex = rootStore.roundStore.mainPlayer!.playerTiles!.findIndex(
         (obj) => obj.id === sortedTile[i].id
       );
 
       runInAction("updating reordered tile", () => {
-        rootStore.roundStore.boardTiles![objIndex].activeTileCounter = i;
+        rootStore.roundStore.mainPlayer!.playerTiles![objIndex].activeTileCounter = i;
       });
     }
     runInAction("autosort", () => {

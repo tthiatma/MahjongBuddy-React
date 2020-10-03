@@ -86,15 +86,15 @@ export default class RoundStore {
   }
 
   @computed get leftPlayer(){
-    return this.round!.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Left)[0];
+    return this.round?.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Left)[0];
   }
 
   @computed get rightPlayer(){
-    return this.round!.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Right)[0];
+    return this.round?.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Right)[0];
   }
 
   @computed get topPlayer(){
-    return this.round!.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Top)[0];
+    return this.round?.otherPlayers.filter(p => p.seatOrientation === SeatOrientation.Top)[0];
   }
 
   @computed get hasSelfKongAction(){
@@ -157,20 +157,11 @@ export default class RoundStore {
       : null;
   }
 
-  @computed get mainPlayerTiles() {
-    return this.boardTiles && this.round && this.leftPlayer
-      ? this.boardTiles.filter(
-          (rt) => rt.owner === this.rootStore.userStore.user!.userName
-        )
-      : null;
-  }
-
   @computed get mainPlayerAliveTiles() {
-    return this.boardTiles
-      ? this.boardTiles
+    return this.mainPlayer
+      ? this.mainPlayer.playerTiles
           .filter(
-            (rt) =>
-              rt.owner === this.rootStore.userStore.user!.userName &&
+            (rt) =>              
               (rt.status === TileStatus.UserActive ||
                 rt.status === TileStatus.UserJustPicked)
           )
@@ -179,11 +170,10 @@ export default class RoundStore {
   }
 
   @computed get mainPlayerActiveTiles() {
-    return this.boardTiles
-      ? this.boardTiles
+    return this.mainPlayer
+      ? this.mainPlayer.playerTiles
           .filter(
             (rt) =>
-              rt.owner === this.rootStore.userStore.user!.userName &&
               rt.status === TileStatus.UserActive
           )
           .sort(sortByActiveCounter)
@@ -191,11 +181,10 @@ export default class RoundStore {
   }
 
   @computed get mainPlayerGraveYardTiles() {
-    return this.boardTiles
-      ? this.boardTiles
+    return this.mainPlayer
+      ? this.mainPlayer.playerTiles
           .filter(
             (rt) =>
-              rt.owner === this.rootStore.userStore.user?.userName &&
               rt.status === TileStatus.UserGraveyard
           )
           .sort(sortTiles)
@@ -203,10 +192,9 @@ export default class RoundStore {
   }
 
   @computed get mainPlayerJustPickedTile() {
-    return this.boardTiles
-      ? this.boardTiles.filter(
+    return this.mainPlayer
+      ? this.mainPlayer.playerTiles.filter(
           (rt) =>
-            rt.owner === this.rootStore.userStore.user?.userName &&
             rt.status === TileStatus.UserJustPicked
         )
       : null;

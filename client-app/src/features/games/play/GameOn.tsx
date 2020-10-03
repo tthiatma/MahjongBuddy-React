@@ -50,7 +50,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     mainPlayerGraveYardTiles,
     boardActiveTile,
     boardGraveyardTiles,
-    boardTiles: roundTiles,
     remainingTiles,
     roundEndingCounter,
   } = rootStore.roundStore;
@@ -141,7 +140,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver) {
       const tempPlayerAction = Array.from(mainPlayer!.roundPlayerActions);
       runInAction("throwingtile", () => {
-        rootStore.roundStore.selectedTile = roundTiles!.find(
+        rootStore.roundStore.selectedTile = mainPlayerAliveTiles?.find(
           (t) => t.id === tileId
         )!;
       });

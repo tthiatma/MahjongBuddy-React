@@ -29,7 +29,7 @@ const ResultModal: React.FC = () => {
     winner = roundResults?.find((r) => r.playerResult === PlayerResult.Win)!;
     losers = roundResults!.filter((r) => r.playerResult === PlayerResult.Lost);
     tiePlayers = roundResults!.filter((r) => r.playerResult === PlayerResult.Tie);
-    winnerTiles = winner.playerTiles.sort(sortTiles);
+    winnerTiles = winner?.playerTiles.sort(sortTiles);
   }
 
   return (

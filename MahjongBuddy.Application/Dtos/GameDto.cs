@@ -22,7 +22,7 @@ namespace MahjongBuddy.Application.Dtos
         public string HostUserName { get; set; }
 
         [JsonPropertyName("players")]
-        public ICollection<PlayerDto> UserGames { get; set; }
+        public ICollection<PlayerDto> GamePlayers { get; set; }
 
         public ICollection<ChatMsgDto> ChatMsgs { get; set; }
     }

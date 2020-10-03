@@ -18,14 +18,15 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
     for (let i = 0; i < player.activeTilesCount; i++) {
       closedTiles.push(
         <div
+          key={`${player.userName}${i}`}
           style={{ height: "34px" }}
           {...(isReversed && { className: "rotate180" })}
         >
           <img alt="face-down-tile" src={"/assets/tiles/v50px/face-down.png"} />
         </div>
       );
-      return closedTiles;
     }
+    return closedTiles;
   };
 
   return (
@@ -55,7 +56,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         </div>
       </Grid.Column>
       <Grid.Column width={5} className="flexTilesVerticalContainer">
-      {displayClosedTile()}
+        {displayClosedTile()}
         {/* {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
@@ -78,15 +79,14 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         width={5}
         className="flexTilesVerticalContainer"
       >
-        {player.graveyardTiles
-            .map((rt) => (
-              <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
-                <img
-                  alt={rt.tile.title}
-                  src={rt.tile.imageSmall.replace("50px", "v50px")}
-                />
-              </div>
-            ))}
+        {player.graveyardTiles.map((rt) => (
+          <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
+            <img
+              alt={rt.tile.title}
+              src={rt.tile.imageSmall.replace("50px", "v50px")}
+            />
+          </div>
+        ))}
       </Grid.Column>
     </Grid>
   );
