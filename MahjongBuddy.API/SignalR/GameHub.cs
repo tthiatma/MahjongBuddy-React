@@ -10,6 +10,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using MahjongBuddy.Application.Hub;
 
 namespace MahjongBuddy.API.SignalR
 {
@@ -17,10 +18,17 @@ namespace MahjongBuddy.API.SignalR
     public class GameHub : Hub
     {
         private readonly IMediator _mediator;
-
         public GameHub(IMediator mediator)
         {
             _mediator = mediator;
+        }
+        public override async Task OnConnectedAsync()
+        {
+            var connectionId = Context.ConnectionId;
+            var userAgent = Context.GetHttpContext().Request.Headers["User-Agent"];
+
+            await _mediator.Send(new OnConnected.Query { ConnectionId = connectionId, UserAgent = userAgent });
+            await base.OnConnectedAsync();
         }
 
         public async Task StartRound(Application.Rounds.Create.Command command)

@@ -68,7 +68,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         public DbSet<RoundResultHand> RoundHands { get; set; }
         public DbSet<RoundResultExtraPoint> RoundExtraPoints { get; set; }
         public DbSet<Photo> Photos { get; set; }
-
+        public DbSet<Connection> Connections { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -104,12 +104,6 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
         private void ConvertEnum(ModelBuilder builder)
         {
-            builder.Entity<RoundResult>()
-                .Property(e => e.PlayerResult)
-                .HasConversion(
-                v => v.ToString(),
-                v => (PlayerResult)Enum.Parse(typeof(PlayerResult), v));
-
             builder.Entity<Game>()
                 .Property(e => e.Status)
                 .HasConversion(

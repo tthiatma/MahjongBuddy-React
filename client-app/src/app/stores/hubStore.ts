@@ -108,6 +108,7 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
+        debugger;
         let noAction = false;
         if (round.otherPlayers) {
           noAction =
@@ -124,10 +125,14 @@ export default class HubStore {
         //update players
         if (noAction) {
           this.sleep(this.cooldownTime).then(() => {
-            this.updateOtherPlayers(round!.otherPlayers!);
+            runInAction(() => {
+              this.roundStore.round = round;
+            })              
           });
         } else {
-          this.updateOtherPlayers(round!.otherPlayers!);
+          runInAction(() => {
+            this.roundStore.round = round;
+          })              
         }
 
         //update tiles
