@@ -43,6 +43,8 @@ namespace MahjongBuddy.Application.Games
                 if (playerInGame == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already left the game" });
 
+                _context.Connections.RemoveRange(playerInGame.Connections);
+
                 _context.GamePlayers.Remove(playerInGame);
 
                 var success = await _context.SaveChangesAsync() > 0;
