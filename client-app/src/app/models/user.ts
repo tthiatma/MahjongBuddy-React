@@ -8,6 +8,12 @@ export interface IUser{
     isHost: boolean;
 }
 
+export interface IResetPasswordFormValues{
+    email: string;
+    token: string;
+    newPassword: string;
+}
+
 export interface IUserFormValues{
     email: string;
     password: string;

@@ -26,6 +26,10 @@ import NavBar from "../../features/nav/NavBar";
 import { Container } from "semantic-ui-react";
 import Footer from "../../features/footer/Footer";
 import TermsAndConditions from "../../features/legals/TermsAndConditions";
+import { ForgotPasswordForm } from "../../features/user/ForgotPasswordForm";
+import ForgotPasswordSuccess from "../../features/user/ForgotPasswordSuccess";
+import ResetPasswordForm from "../../features/user/ResetPasswordForm";
+import ResetPasswordSuccess from "../../features/user/ResetPasswordSuccess";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -77,7 +81,12 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
                   path="/user/registerSuccess"
                   component={RegisterSuccess}
                 />
-                <Route path="/user/verifyEmail" component={VerifyEmail} />
+                <Route path="/user/verifyEmail" component={VerifyEmail} />              
+                <Route path="/user/forgotPassword" component={ForgotPasswordForm} />
+                <Route path="/user/forgotPasswordSuccess" component={ForgotPasswordSuccess} />
+                <Route path="/user/resetPassword" component={ResetPasswordForm} />
+                <Route path="/user/resetPasswordSuccess" component={ResetPasswordSuccess} />
+
                 <Route component={NotFound} />
               </Switch>
             </Container>
