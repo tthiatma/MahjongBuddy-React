@@ -59,6 +59,10 @@ namespace MahjongBuddy.API.SignalR
         public async Task JoinGame(Join.Command command)
         {
             command.UserName = GetUserName();
+            command.ConnectionId = Context.ConnectionId;
+            command.UserAgent = Context.GetHttpContext().Request.Headers["User-Agent"];
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, command.GameId.ToString());
 
             var player = await _mediator.Send(command);
 
@@ -115,6 +119,8 @@ namespace MahjongBuddy.API.SignalR
         public async Task AddToGroup(string groupId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
+
+
         }
 
         public async Task RemoveFromGroup(string groupId)

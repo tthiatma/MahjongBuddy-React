@@ -18,6 +18,8 @@ namespace MahjongBuddy.Application.Games
         {
             public int GameId { get; set; }
             public string UserName { get; set; }
+            public string ConnectionId { get; set; }
+            public string UserAgent { get; set; }
         }
         public class Handler : IRequestHandler<Command, PlayerDto>
         {
@@ -36,25 +38,39 @@ namespace MahjongBuddy.Application.Games
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
-                var usersInGame = game.GamePlayers.Count;
-                if (usersInGame == 4)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
-
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
                 var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
 
                 if (playerInGame != null)
-                    throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already in the game" });
-
-                playerInGame = new GamePlayer
                 {
-                    Game = game,
-                    AppUser = user,
-                    IsHost = false,
-                };
+                    //set connection to connected if its already exist
+                    var existingConnection = await _context.Connections.FirstOrDefaultAsync(c => c.Id == request.ConnectionId);
+                    if (existingConnection != null)
+                    {
+                        existingConnection.Connected = true;
+                        existingConnection.UserAgent = request.UserAgent;
+                    }
+                    else
+                    {
+                        playerInGame.Connections.Add(new Connection { Id = request.ConnectionId, Connected = true, UserAgent = request.UserAgent });
+                    }
+                }
+                else
+                {
+                    var usersInGame = game.GamePlayers.Count;
+                    if (usersInGame == 4)
+                        throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
 
-                _context.GamePlayers.Add(playerInGame);
+                    playerInGame = new GamePlayer
+                    {
+                        Game = game,
+                        AppUser = user,
+                        IsHost = false,
+                    };
+                    playerInGame.Connections.Add(new Connection { Id = request.ConnectionId, Connected = true, UserAgent = request.UserAgent });
+                    _context.GamePlayers.Add(playerInGame);
+                }
 
                 var success = await _context.SaveChangesAsync() > 0;
 
