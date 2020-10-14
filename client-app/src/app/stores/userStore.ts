@@ -1,5 +1,5 @@
 import { observable, computed, action, runInAction } from "mobx";
-import { IUser, IUserFormValues } from "../models/user";
+import { IResetPasswordFormValues, IUser, IUserFormValues } from "../models/user";
 import agent from "../api/agent";
 import { RootStore } from "./rootStore";
 import { history } from "../..";
@@ -16,6 +16,30 @@ export default class UserStore {
 
   @computed get isLoggedIn() {
     return !!this.user;
+  }
+
+  @action gotoForgotPassword = () => {
+    history.push("/user/forgotPassword");
+    this.rootStore.modalStore.closeModal();
+  }
+
+  @action forgotPassword = async(values: IResetPasswordFormValues) => {
+    try {
+      await agent.User.forgotPassword(values);
+      this.rootStore.modalStore.closeModal();
+      history.push(`/user/forgotPasswordSuccess?email=${values.email}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @action resetPassword = async(values: IResetPasswordFormValues) => {
+    try {
+      await agent.User.resetPassword(values);
+      history.push(`/user/resetPasswordSuccess`);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @action register = async (values: IUserFormValues) => {
@@ -36,6 +60,7 @@ export default class UserStore {
       });
       this.rootStore.commonStore.setToken(user.token);
       this.rootStore.commonStore.setRefreshToken(user.refreshToken);
+      history.push(`/`);
       this.rootStore.modalStore.closeModal();
     } catch (error) {
       throw error;
@@ -72,7 +97,6 @@ export default class UserStore {
         this.rootStore.modalStore.closeModal();
         this.loading = false;
       });
-      // history.push("/games");
     } catch (error) {
       runInAction(() => {
         this.loading = false;
