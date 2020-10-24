@@ -42,7 +42,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const {
     loadingRoundInitial,
     roundSimple: round,
-    loadRound,
     roundPlayers,
     mainPlayer,
     leftPlayer,
@@ -58,15 +57,17 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     roundTiles,
     remainingTiles,
     roundResults,
-    roundEndingCounter,
+    roundEndingCounter,    
   } = rootStore.roundStore;
   const {
+    loadRoundDetail,
     throwTile,
     orderTiles,
     hubLoading,
     createHubConnection,
     stopHubConnection,
     leaveGroup,
+    hubConnection
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -87,7 +88,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     return () => {
       leaveGroup(match.params.id);
     };
-  }, [createHubConnection, stopHubConnection, leaveGroup, match.params]);
+  }, [createHubConnection, loadRoundDetail, stopHubConnection, leaveGroup, match.params]);
+
+  useEffect(() => {
+    loadRoundDetail(match.params.roundId, match.params!.id);
+  }, [loadRoundDetail, hubConnection?.state]);
 
   useEffect(() => {
     runInAction(() => {
@@ -104,11 +109,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   useEffect(() => {
     loadGame(match.params!.id);
-  }, [loadGame, match.params, match.params.id]);
-
-  useEffect(() => {
-    loadRound(match.params.roundId, match.params!.id);
-  }, [loadRound, match.params, match.params.roundId]);
+  }, [loadGame]);
 
   if (
     loadingGameInitial ||
