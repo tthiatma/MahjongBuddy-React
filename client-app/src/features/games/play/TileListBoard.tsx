@@ -21,7 +21,7 @@ const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile, activeTil
           alignContent: "flex-start",
         }}
       >
-        {graveyardTiles
+        {graveyardTiles && graveyardTiles
           .sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter)
           .map((rt) => (
             <div style={{ paddingRight: "2px" }} key={rt.id}>
