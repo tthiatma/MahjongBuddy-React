@@ -51,11 +51,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     boardActiveTile,
     boardGraveyardTiles,
     remainingTiles,
-    roundResults,
     roundEndingCounter,    
   } = rootStore.roundStore;
   const {
-    loadRoundDetail,
     throwTile,
     orderTiles,
     hubLoading,
@@ -83,11 +81,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     return () => {
       leaveGroup(match.params.id);
     };
-  }, [createHubConnection, loadRoundDetail, stopHubConnection, leaveGroup, match.params]);
-
-  useEffect(() => {
-    loadRoundDetail(match.params.roundId, match.params!.id);
-  }, [loadRoundDetail, hubConnection?.state]);
+  }, [createHubConnection, stopHubConnection, leaveGroup, match.params]);
 
   useEffect(() => {
     runInAction(() => {
@@ -104,7 +98,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   useEffect(() => {
     loadGame(match.params!.id);
-  }, [loadGame]);
+  }, [loadGame, match.params, match.params.id]);
+
+  useEffect(() => {
+    loadRound(match.params.roundId, match.params!.id);
+  }, [loadRound, match.params, match.params.roundId]);
 
   if (
     loadingGameInitial ||
