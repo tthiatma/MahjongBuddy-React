@@ -16,9 +16,9 @@ namespace MahjongBuddy.Core
 
         public string Bio { get; set; }
 
-        public virtual ICollection<GamePlayer> UserGames { get; set; }
+        public virtual ICollection<GamePlayer> GamePlayers { get; set; }
 
-        public virtual ICollection<RoundPlayer> UserRounds { get; set; }
+        public virtual ICollection<RoundPlayer> RoundPlayers { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
 
