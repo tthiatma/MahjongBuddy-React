@@ -95,13 +95,13 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   />
                   <Field
                     name="minPoint"
-                    placeholder="Minimum point to win: eg. 3"
+                    placeholder="Minimum points to win: eg. 3"
                     value={game.minPoint}
                     component={TextInput}
                   />
                   <Field
                     name="maxPoint"
-                    placeholder="Maximum point player can win: eg. 10"
+                    placeholder="Maximum points player can win: eg. 10"
                     value={game.maxPoint}
                     component={TextInput}
                   />

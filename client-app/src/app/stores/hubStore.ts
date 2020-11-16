@@ -101,6 +101,15 @@ export default class HubStore {
         });
       });
 
+      this.hubConnection.on("LoadRound", (round: IRound) => {
+        runInAction("getting round", () => {
+          setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
+          this.roundStore.roundSimple = round;
+          this.roundStore.roundTiles = round.roundTiles;
+          this.roundStore.loadingRoundInitial = false;
+        });
+      });
+
       this.hubConnection.on("UpdateRoundNoLag", (round: IRound) => {
         runInAction("updating round", () => {
           this.roundStore.round = round;
@@ -222,6 +231,15 @@ export default class HubStore {
       });
     }
   }
+
+  @action loadRoundDetail = async (id: string, gameId: string) => {
+    if (this.hubConnection!.state === "Connected"){
+      let values: any = {};
+      values.id = id;
+      values.gameId = gameId;
+      this.hubConnection!.invoke("DetailRound", values);  
+    }
+  };
 
   @action leaveGroup = (gameId: string) => {
     if (this.hubConnection!.state === "Connected")

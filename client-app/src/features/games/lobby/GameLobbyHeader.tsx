@@ -49,7 +49,7 @@ const GameLobbyHeader: React.FC<{
                   content={game.title}
                   style={{ color: "white" }}
                 />
-                <p>{format(new Date(game.date), "eeee do MMMM")}</p>
+                <p>{format(new Date(game.date), "MMMM do, yyyy")}</p>
                 {host && (
                   <p>
                     Hosted by {" "}

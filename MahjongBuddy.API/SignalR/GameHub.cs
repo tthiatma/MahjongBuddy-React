@@ -44,6 +44,20 @@ namespace MahjongBuddy.API.SignalR
             }
         }
 
+        public async Task DetailRound(Application.Rounds.Detail.Query query)
+        {
+            try
+            {
+                var roundDetail = await _mediator.Send(query);
+                
+                await Clients.Caller.SendAsync("LoadRound", roundDetail);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
         public async Task EndingRound(Ending.Command command)
         {
             var round = await _mediator.Send(command);

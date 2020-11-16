@@ -15,8 +15,8 @@ namespace MahjongBuddy.Application.Rounds
     {
         public class Query : IRequest<RoundDto>
         {
-            public int Id { get; set; }
-            public int GameId { get; set; }
+            public string Id { get; set; }
+            public string GameId { get; set; }
         }
         public class Handler : IRequestHandler<Query, RoundDto>
         {
@@ -31,11 +31,11 @@ namespace MahjongBuddy.Application.Rounds
 
             public async Task<RoundDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
+                var game = await _context.Games.FindAsync(int.Parse(request.GameId));
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
-                var round = game.Rounds.FirstOrDefault(r => r.Id == request.Id);
+                var round = game.Rounds.FirstOrDefault(r => r.Id == int.Parse(request.Id));
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { round = "Could Not find round" });
 

@@ -25,7 +25,7 @@ namespace MahjongBuddy.Application.Users
         {
             public QueryValidator()
             {
-                RuleFor(x => x.Email).NotEmpty();
+                RuleFor(x => x.Email).EmailAddress().NotEmpty();
                 RuleFor(x => x.Password).NotEmpty();
             }
         }
