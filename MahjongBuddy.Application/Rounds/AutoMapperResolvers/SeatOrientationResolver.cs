@@ -4,6 +4,7 @@ using MahjongBuddy.Application.Enums;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
+using System;
 using System.Linq;
 
 namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
@@ -21,7 +22,15 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
 
         public SeatOrientation Resolve(RoundPlayer source, RoundOtherPlayerDto destination, SeatOrientation destMember, ResolutionContext context)
         {
-            var userWind = _context.RoundPlayers.First(rp => rp.AppUser.UserName == _userAccessor.GetCurrentUserName()).Wind;
+            WindDirection userWind = WindDirection.East;
+            if (context.Options.Items.Count() > 0)
+            {
+                if (context.Options.Items.ContainsKey("MainRoundPlayer"))
+                {
+                    var rp = context.Items["MainRoundPlayer"] as RoundPlayer;
+                    userWind = rp.Wind;
+                }
+            }
 
             switch (userWind)
             {

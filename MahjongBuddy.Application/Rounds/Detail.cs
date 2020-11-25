@@ -17,6 +17,7 @@ namespace MahjongBuddy.Application.Rounds
         {
             public string Id { get; set; }
             public string GameId { get; set; }
+            public string UserName { get; set; }
         }
         public class Handler : IRequestHandler<Query, RoundDto>
         {
@@ -39,7 +40,9 @@ namespace MahjongBuddy.Application.Rounds
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { round = "Could Not find round" });
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                var mainRoundPlayer = round.RoundPlayers.FirstOrDefault(rp => rp.GamePlayer.AppUser.UserName == request.UserName);
+
+                var roundToReturn = _mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = mainRoundPlayer);
 
                 return roundToReturn;
             }

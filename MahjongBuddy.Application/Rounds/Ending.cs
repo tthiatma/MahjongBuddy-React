@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
-using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -15,13 +15,13 @@ namespace MahjongBuddy.Application.Rounds
 {
     public class Ending
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
             public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -32,7 +32,7 @@ namespace MahjongBuddy.Application.Rounds
                 _mapper = mapper;
             }
 
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.FindAsync(request.GameId);
                 if (game == null)
@@ -53,8 +53,13 @@ namespace MahjongBuddy.Application.Rounds
 
                     if (success)
                     {
-                        var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-                        return roundToReturn;
+                        List<RoundDto> results = new List<RoundDto>();
+
+                        foreach (var p in round.RoundPlayers)
+                        {
+                            results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                        }
+                        return results;
                     }
                 }
                 else

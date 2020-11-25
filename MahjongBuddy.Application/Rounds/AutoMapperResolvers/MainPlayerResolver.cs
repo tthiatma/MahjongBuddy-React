@@ -20,7 +20,20 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
         public RoundPlayerDto Resolve(Round source, RoundDto destination, RoundPlayerDto destMember, ResolutionContext context)
         {
             var roundId = source.Id;
-            var mainPlayer = source.RoundPlayers.First(rp => rp.AppUser.UserName == _userAccessor.GetCurrentUserName());
+            var mainPlayerUserName = string.Empty;
+            if (context.Options.Items.Count() > 0)
+            {
+                if(context.Options.Items.ContainsKey("MainRoundPlayer"))
+                {
+                    var rp = context.Items["MainRoundPlayer"] as RoundPlayer;
+                    mainPlayerUserName = rp.GamePlayer.AppUser.UserName;
+                }
+            }
+            else
+            {
+                mainPlayerUserName = _userAccessor.GetCurrentUserName();
+            }
+            var mainPlayer = source.RoundPlayers.First(rp => rp.GamePlayer.AppUser.UserName == mainPlayerUserName);
             return _mapper.Map<RoundPlayer, RoundPlayerDto>(mainPlayer);
         }
     }

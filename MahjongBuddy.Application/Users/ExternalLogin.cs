@@ -20,12 +20,12 @@ namespace MahjongBuddy.Application.Users
 
         public class Handler : IRequestHandler<Query, User>
         {
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IJwtGenerator _jwtGenerator;
             private readonly IUserAccessor _userAccessor;
             private readonly IFacebookAccessor _facebookAccessor;
 
-            public Handler(UserManager<AppUser> userManager, IFacebookAccessor facebookAccessor, IJwtGenerator jwtGenerator, IUserAccessor userAccessor)
+            public Handler(UserManager<Player> userManager, IFacebookAccessor facebookAccessor, IJwtGenerator jwtGenerator, IUserAccessor userAccessor)
             {
                 _userManager = userManager;
                 _jwtGenerator = jwtGenerator;
@@ -44,7 +44,7 @@ namespace MahjongBuddy.Application.Users
 
                 if(user == null)
                 {
-                    user = new AppUser
+                    user = new Player
                     {
                         DisplayName = userInfo.Name,
                         Id = userInfo.Id,

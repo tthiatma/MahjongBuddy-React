@@ -7,7 +7,6 @@ using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +18,13 @@ namespace MahjongBuddy.Application.PlayerAction
 {
     public class Win
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
             public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -37,7 +36,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 _mapper = mapper;
                 _pointCalculator = pointCalculator;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var updatedPlayers = new List<RoundPlayer>();
 
@@ -49,7 +48,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var winner = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                var winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.AppUser.UserName == request.UserName);
 
                 if (winner == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Player = "Could not find player" });
@@ -69,7 +68,7 @@ namespace MahjongBuddy.Application.PlayerAction
                     //record who win and who lost 
                     RoundResult winnerResult = new RoundResult
                     {
-                        AppUser = winner.AppUser,
+                        AppUser = winner.GamePlayer.AppUser,
                         PlayerResult = PlayerResult.Win,
                     };
 
@@ -110,7 +109,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         bool isLoserBao = false;
                         string baoPlayerUserName = string.Empty;
                         //check for allonesuit
-                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.AppUser.UserName);
+                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.GamePlayer.AppUser.UserName);
                         if (handWorth.HandTypes.Contains(HandType.AllOneSuit) 
                             || handWorth.HandTypes.Contains(HandType.SmallFourWind)
                             || handWorth.HandTypes.Contains(HandType.BigFourWind))
@@ -148,16 +147,16 @@ namespace MahjongBuddy.Application.PlayerAction
                             winner.Points += winningPoint;
                             winnerResult.PointsResult = winningPoint;
 
-                            var loser = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == baoPlayerUserName);
+                            var loser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.AppUser.UserName == baoPlayerUserName);
                             loser.Points -= winningPoint;
                             updatedPlayers.Add(loser);
 
-                            round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.AppUser, PointsResult = losingPoint * 3 });
+                            round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.GamePlayer.AppUser, PointsResult = losingPoint * 3 });
                         }
                         else
                         {
                             //if its self pick, and no bao, then all 3 other players needs to record the loss
-                            var losers = round.RoundPlayers.Where(u => u.AppUser.UserName != request.UserName);
+                            var losers = round.RoundPlayers.Where(u => u.GamePlayer.AppUser.UserName != request.UserName);
 
                             //points will be times 3
                             var winningPoint = cappedPoint * 3;
@@ -169,7 +168,7 @@ namespace MahjongBuddy.Application.PlayerAction
                             foreach (var l in losers)
                             {
                                 l.Points -= cappedPoint;
-                                round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = l.AppUser, PointsResult = losingPoint });
+                                round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = l.GamePlayer.AppUser, PointsResult = losingPoint });
                             }
                         }
                     }
@@ -180,9 +179,9 @@ namespace MahjongBuddy.Application.PlayerAction
                         winnerResult.PointsResult = cappedPoint;
 
                         var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
-                        var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
+                        var loser = round.RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == boardTile.ThrownBy);
                         loser.Points -= cappedPoint;
-                        round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.AppUser, PointsResult = losingPoint });
+                        round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.GamePlayer.AppUser, PointsResult = losingPoint });
 
                         updatedPlayers.Add(loser);
                     }
@@ -195,8 +194,13 @@ namespace MahjongBuddy.Application.PlayerAction
 
                     if (success)
                     {
-                        var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-                        return roundToReturn;
+                        List<RoundDto> results = new List<RoundDto>();
+
+                        foreach (var p in round.RoundPlayers)
+                        {
+                            results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                        }
+                        return results;
                     }
                 }
                 else

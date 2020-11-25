@@ -6,7 +6,7 @@ using System;
 
 namespace MahjongBuddy.EntityFramework.EntityFramework
 {
-    public class MahjongBuddyDbContext : IdentityDbContext<AppUser>
+    public class MahjongBuddyDbContext : IdentityDbContext<Player>
     {
         //dotnet ef migrations add "InitialCreate" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
 
@@ -75,7 +75,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
             ConvertEnum(builder);
 
-            builder.Entity<GamePlayer>(x => x.HasKey(gp => new { gp.GameId, gp.AppUserId }));
+            builder.Entity<GamePlayer>(x => x.HasKey(gp => new { gp.Id }));
             builder.Entity<GamePlayer>()
                 .HasOne(u => u.AppUser)
                 .WithMany(g => g.GamePlayers)
@@ -90,16 +90,20 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
             .IsConcurrencyToken(true)
             .ValueGeneratedOnAddOrUpdate();
 
-            builder.Entity<RoundPlayer>(x => x.HasKey(ur => new { ur.RoundId, ur.AppUserId }));
+            builder.Entity<RoundPlayer>(x => x.HasKey(rp => new { rp.RoundId, rp.GamePlayerId }));
             builder.Entity<RoundPlayer>()
-                .HasOne(u => u.AppUser)
+                .HasOne(u => u.GamePlayer)
                 .WithMany(r => r.RoundPlayers)
-                .HasForeignKey(u => u.AppUserId);
+                .HasForeignKey(u => u.GamePlayerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             builder.Entity<RoundPlayer>()
                 .HasOne(r => r.Round)
                 .WithMany(u => u.RoundPlayers)
-                .HasForeignKey(r => r.RoundId);
+                .HasForeignKey(r => r.RoundId)
+                .OnDelete(DeleteBehavior.NoAction);
+
         }
 
         private void ConvertEnum(ModelBuilder builder)

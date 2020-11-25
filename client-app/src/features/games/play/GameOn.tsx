@@ -33,11 +33,7 @@ interface DetailParams {
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
-  const {
-    loadingGameInitial,
-    loadGame,
-    game,
-  } = rootStore.gameStore;
+  const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
   const {
     loadingRoundInitial,
     round,
@@ -51,7 +47,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     boardActiveTile,
     boardGraveyardTiles,
     remainingTiles,
-    roundEndingCounter,    
+    roundEndingCounter,
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -60,7 +56,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     createHubConnection,
     stopHubConnection,
     leaveGroup,
-    hubConnection
+    hubConnection,
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -101,8 +97,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [loadGame, match.params, match.params.id]);
 
   useEffect(() => {
-    loadRound(match.params.roundId, match.params!.id);
-  }, [loadRound, match.params, match.params.roundId]);
+    loadRound(match.params.roundId, match.params!.id, rootStore.userStore.user?.userName!);
+  }, [loadRound, match.params, match.params.roundId, rootStore.userStore.user]);
 
   if (
     loadingGameInitial ||
@@ -234,9 +230,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   />
                 </Grid.Column>
                 <Grid.Column width={10}>
-                  <TileListOtherPlayer
-                    player={topPlayer!}
-                  />
+                  {topPlayer && <TileListOtherPlayer player={topPlayer!} />}
                 </Grid.Column>
                 <Grid.Column width={3} />
               </Grid.Row>
@@ -244,10 +238,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
               <Grid.Row>
                 {/* Left Player */}
                 <Grid.Column width={3}>
-                  <TileListOtherPlayerVertical
-                    player={leftPlayer!}
-                    isReversed={false}
-                  />
+                  {leftPlayer && (
+                    <TileListOtherPlayerVertical
+                      player={leftPlayer}
+                      isReversed={false}
+                    />
+                  )}
                 </Grid.Column>
 
                 {/* Board */}
@@ -348,10 +344,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
                 {/* Right Player */}
                 <Grid.Column width={3}>
-                  <TileListOtherPlayerVertical
-                    player={rightPlayer!}
-                    isReversed={true}
-                  />
+                  {rightPlayer && (
+                    <TileListOtherPlayerVertical
+                      player={rightPlayer}
+                      isReversed={true}
+                    />
+                  )}
                 </Grid.Column>
               </Grid.Row>
 

@@ -21,7 +21,7 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
         public ICollection<RoundTileDto> Resolve(RoundPlayer source, RoundPlayerDto destination, ICollection<RoundTileDto> destMember, ResolutionContext context)
         {
             var roundId = source.RoundId;
-            var RoundPlayerTiles = _context.RoundTiles.Where(rt => rt.RoundId == roundId && rt.Owner == source.AppUser.UserName);
+            var RoundPlayerTiles = _context.RoundTiles.Where(rt => rt.RoundId == roundId && rt.Owner == source.GamePlayer.AppUser.UserName);
             return _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(RoundPlayerTiles.ToList());
         }
     }

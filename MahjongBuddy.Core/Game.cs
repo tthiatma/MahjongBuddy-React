@@ -13,7 +13,7 @@ namespace MahjongBuddy.Core
         public DateTime Date { get; set; }
         public GameStatus Status { get; set; }
         public string HostId { get; set; }
-        public virtual AppUser Host { get; set; }
+        public virtual Player Host { get; set; }
         public virtual ICollection<Round> Rounds { get; set; }
         public virtual ICollection<GamePlayer> GamePlayers { get; set; }
         public virtual ICollection<ChatMsg> ChatMsgs { get; set; }

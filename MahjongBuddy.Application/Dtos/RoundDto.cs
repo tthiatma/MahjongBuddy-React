@@ -16,6 +16,7 @@ namespace MahjongBuddy.Application.Dtos
         public bool IsPaused { get; set; }
         public bool IsTied { get; set; }
         public int GameId { get; set; }
+        public int RemainingTiles { get; set; }
         public ICollection<RoundResultDto> RoundResults { get; set; }
         public ICollection<RoundTileDto> BoardTiles { get; set; }
         //below props need to be calculated

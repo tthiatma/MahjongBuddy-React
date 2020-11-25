@@ -19,14 +19,14 @@ namespace MahjongBuddy.Application.PlayerAction
 {
     public class Throw
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
             public int GameId { get; set; }
             public int RoundId { get; set; }
             public Guid TileId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -39,7 +39,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 _pointCalculator = pointCalculator;
             }
 
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var updatedTiles = new List<RoundTile>();
                 var updatedPlayers = new List<RoundPlayer>();
@@ -54,7 +54,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.AppUser.UserName == request.UserName);
 
                 if(currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
@@ -163,14 +163,18 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                List<RoundDto> results = new List<RoundDto>();
+
+                foreach (var p in round.RoundPlayers)
+                {
+                    results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                }
 
                 if (success)
-                    return roundToReturn;
+                    return results;
 
                 throw new Exception("Problem throwing tile");
             }
-
             
             private bool AssignPlayerActions(Round round, Game game, RoundPlayer throwerPlayer)
             {
@@ -179,7 +183,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 var roundTiles = round.RoundTiles;
                 
                 //there will be action except for the player that throw the tile 
-                var players = round.RoundPlayers.Where(rp => rp.AppUser.UserName != throwerPlayer.AppUser.UserName);
+                var players = round.RoundPlayers.Where(rp => rp.GamePlayer.AppUser.UserName != throwerPlayer.GamePlayer.AppUser.UserName);
 
                 var boardActiveTile = roundTiles.FirstOrDefault(rt => rt.Status == TileStatus.BoardActive);
                 if(boardActiveTile == null)
@@ -190,7 +194,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 //there could be more than one possible action given user's turn  and the tile's thrown
                 foreach (var player in players)
                 {
-                    var userTiles = roundTiles.Where(rt => rt.Owner == player.AppUser.UserName);
+                    var userTiles = roundTiles.Where(rt => rt.Owner == player.GamePlayer.AppUser.UserName);
                     List<RoundPlayerAction> rpas = new List<RoundPlayerAction>();
 
                     if (RoundHelper.DetermineIfUserCanWin(round, player, _pointCalculator))
@@ -202,9 +206,9 @@ namespace MahjongBuddy.Application.PlayerAction
                     if (DetermineIfUserCanPong(userTiles, boardActiveTile))
                         rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Pong });
 
-                    if(player.AppUser.UserName == nextPlayer.AppUser.UserName)
+                    if(player.GamePlayer.AppUser.UserName == nextPlayer.GamePlayer.AppUser.UserName)
                     {
-                        var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.AppUser.UserName);
+                        var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.GamePlayer.AppUser.UserName);
                         if(DetermineIfUserCanChow(nextPlayerTiles, boardActiveTile))
                             rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Chow });
                     }
@@ -221,7 +225,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 return foundActionForUser;
             }
-
             private bool DetermineIfUserCanKongFromBoard(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
             {
                 //player tiles can't be in graveyard when kong from board
@@ -234,7 +237,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 return playerSameTilesAsBoard.Count() == 3;
             }
-
             private bool DetermineIfUserCanPong(IEnumerable<RoundTile> playerTiles, RoundTile boardTile)
             {
                 //player tiles can't be in graveyard when pong from board

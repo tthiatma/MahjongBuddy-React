@@ -26,7 +26,7 @@ namespace MahjongBuddy.Application.Tests.Games
 
             var context = GetDbContext();
 
-            context.Users.AddAsync(new AppUser
+            context.Users.AddAsync(new Player
             {
                 Id = "a",
                 Email = "mainplayer@gmail.com.com",

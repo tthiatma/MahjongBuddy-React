@@ -30,8 +30,8 @@ namespace MahjongBuddy.Application.Tests.Fixtures
 
             CreateBaseData();
             PointCalculator = new HomeGameCalculator(new ExtraPointBuilder(), new HandTypeBuilder());
-            MainPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == MainPlayerUserName);
-            OtherPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == OtherPlayerName);
+            MainPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == MainPlayerUserName);
+            OtherPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == OtherPlayerName);
         }
 
         public override void Dispose()
@@ -40,27 +40,27 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         }
         private void CreateUser()
         {
-            TestDataContext.Users.AddRange(new List<AppUser>
+            TestDataContext.Users.AddRange(new List<Player>
             {
-                new AppUser
+                new Player
                 {
                     Id = "a",
                     Email = "mainplayer@gmail.com",
                     UserName = MainPlayerUserName
                 },
-                new AppUser
+                new Player
                 {
                     Id = "b",
                     Email = "south@gmail.com",
                     UserName = OtherPlayerName
                 },
-                new AppUser
+                new Player
                 {
                     Id = "c",
                     Email = "west@gmail.com",
                     UserName = "west"
                 },
-                new AppUser
+                new Player
                 {
                     Id = "d",
                     Email = "north@gmail.com",
@@ -122,22 +122,22 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                 {
                     new RoundPlayer
                     {
-                        AppUserId = "a",
+                        GamePlayerId = 1,
                         Wind = WindDirection.South
                     },
                     new RoundPlayer
                     {
-                        AppUserId = "b",
+                        GamePlayerId = 2,
                         Wind = WindDirection.East
                     },
                     new RoundPlayer
                     {
-                        AppUserId = "c",
+                        GamePlayerId = 3,
                         Wind = WindDirection.West
                     },
                     new RoundPlayer
                     {
-                        AppUserId = "d",
+                        GamePlayerId = 4,
                         Wind = WindDirection.North
                     }
                 }

@@ -42,10 +42,10 @@ namespace MahjongBuddy.Application.Users
         public class Handler : IRequestHandler<Command>
         {
             private readonly MahjongBuddyDbContext _context;
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IEmailSender _emailSender;
 
-            public Handler(MahjongBuddyDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender)
+            public Handler(MahjongBuddyDbContext context, UserManager<Player> userManager, IEmailSender emailSender)
             {
                 _context = context;
                 _userManager = userManager;
@@ -60,11 +60,12 @@ namespace MahjongBuddy.Application.Users
                 if (await _context.Users.Where(u => u.UserName == request.UserName).AnyAsync())
                     throw new RestException(HttpStatusCode.BadRequest, new { UserName = "UserName already exist" });
 
-                var user = new AppUser
+                var user = new Player
                 {
                     DisplayName = request.DisplayName,
                     Email = request.Email,
                     UserName = request.UserName,
+                    DateCreated = DateTime.Now
                 };
 
                 var result = await _userManager.CreateAsync(user, request.Password);

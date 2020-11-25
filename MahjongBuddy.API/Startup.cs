@@ -79,14 +79,14 @@ namespace MahjongBuddy.API
             services.AddMediatR(typeof(Create.Handler).Assembly);
             services.AddAutoMapper(typeof(Create.Handler));
             services.AddSignalR();
-            var builder = services.AddIdentityCore<AppUser>(options =>
+            var builder = services.AddIdentityCore<Player>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
             });
 
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<MahjongBuddyDbContext>();
-            identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+            identityBuilder.AddSignInManager<SignInManager<Player>>();
             identityBuilder.AddDefaultTokenProviders();
 
             services.AddAuthorization(opt =>

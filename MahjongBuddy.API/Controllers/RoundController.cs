@@ -10,7 +10,7 @@ namespace MahjongBuddy.API.Controllers
         [HttpPost("details")]
         public async Task<ActionResult<RoundDto>> Details(RoundReq req)
         {
-            return await Mediator.Send(new Detail.Query { Id = req.Id, GameId = req.GameId });
+            return await Mediator.Send(new Detail.Query { Id = req.Id, GameId = req.GameId, UserName = req.UserName });
         }
     }
 
@@ -18,5 +18,6 @@ namespace MahjongBuddy.API.Controllers
     {
         public string Id { get; set; }
         public string GameId { get; set; }
+        public string UserName { get; set; }
     }
 }

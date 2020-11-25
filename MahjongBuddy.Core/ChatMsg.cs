@@ -8,7 +8,7 @@ namespace MahjongBuddy.Core
 
         public string Body { get; set; }
 
-        public virtual AppUser Author { get; set; }
+        public virtual Player Author { get; set; }
 
         public virtual Game Game { get; set; }
 

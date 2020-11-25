@@ -26,8 +26,8 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
             _f.CreateRound();
             _f.TestDataContext.SaveChanges();
             _f.RoundId = _f.TestDataContext.Rounds.First().Id;
-            _f.MainPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == _f.MainPlayerUserName);
-            _f.OtherPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.AppUser.UserName == _f.OtherPlayerName);
+            _f.MainPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == _f.MainPlayerUserName);
+            _f.OtherPlayerRound = _f.TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == _f.OtherPlayerName);
         }
 
         /// <summary>

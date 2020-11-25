@@ -10,13 +10,11 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
 {
     public class OtherPlayersResolver : IValueResolver<Round, RoundDto, ICollection<RoundOtherPlayerDto>>
     {
-        private readonly MahjongBuddyDbContext _context;
         private readonly IMapper _mapper;
         private readonly IUserAccessor _userAccessor;
 
         public OtherPlayersResolver(MahjongBuddyDbContext context, IMapper mapper, IUserAccessor userAccessor)
         {
-            _context = context;
             _mapper = mapper;
             _userAccessor = userAccessor;
         }
@@ -24,8 +22,21 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
         public ICollection<RoundOtherPlayerDto> Resolve(Round source, RoundDto destination, ICollection<RoundOtherPlayerDto> destMember, ResolutionContext context)
         {
             var roundId = source.Id;
-            var otherPlayers = source.RoundPlayers.Where(rp => rp.AppUser.UserName != _userAccessor.GetCurrentUserName());
-            return _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundOtherPlayerDto>>(otherPlayers.ToList());
+            var mainPlayerUserName = string.Empty;
+            if (context.Options.Items.Count() > 0 && context.Options.Items.ContainsKey("MainRoundPlayer"))
+            {
+                var rp = context.Items["MainRoundPlayer"] as RoundPlayer;
+                mainPlayerUserName = rp.GamePlayer.AppUser.UserName;
+                var otherPlayers = source.RoundPlayers.Where(rp => rp.GamePlayer.AppUser.UserName != mainPlayerUserName);
+                return _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundOtherPlayerDto>>(otherPlayers.ToList(), opt => opt.Items["MainRoundPlayer"] = rp);
+
+            }
+            else
+            {
+                mainPlayerUserName = _userAccessor.GetCurrentUserName();
+                var otherPlayers = source.RoundPlayers.Where(rp => rp.GamePlayer.AppUser.UserName != mainPlayerUserName);
+                return _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundOtherPlayerDto>>(otherPlayers.ToList());
+            }
         }
     }
 }

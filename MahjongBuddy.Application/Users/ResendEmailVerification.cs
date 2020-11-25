@@ -22,10 +22,10 @@ namespace MahjongBuddy.Application.Users
 
         public class Handler : IRequestHandler<Query>
         {
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IEmailSender _emailSender;
 
-            public Handler(UserManager<AppUser> userManager, IEmailSender emailSender)
+            public Handler(UserManager<Player> userManager, IEmailSender emailSender)
             {
                 _userManager = userManager;
                 _emailSender = emailSender;

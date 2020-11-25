@@ -140,20 +140,18 @@ export default class RoundStore {
   }
 
   @computed get remainingTiles() {
-    return this.boardTiles
-      ? this.boardTiles.filter((rt) => rt.owner === null).length
-      : null;
+    return this.round?.remainingTiles;
   }
 
   @computed get boardActiveTile() {
-    return this.boardTiles
-      ? this.boardTiles.find((rt) => rt.status === TileStatus.BoardActive)
+    return this.round?.boardTiles
+      ? this.round?.boardTiles.find((rt) => rt.status === TileStatus.BoardActive)
       : null;
   }
 
   @computed get boardGraveyardTiles() {
-    return this.boardTiles
-      ? this.boardTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
+    return this.round?.boardTiles
+      ? this.round?.boardTiles.filter((rt) => rt.status === TileStatus.BoardGraveyard)
       : null;
   }
 
@@ -237,11 +235,11 @@ export default class RoundStore {
     });
   };
 
-  @action loadRound = async (id: string, gameId: string) => {
+  @action loadRound = async (id: string, gameId: string, userName: string) => {
     let round: IRound;
     this.loadingRoundInitial = true;
     try {
-      round = await agent.Rounds.detail(id, gameId);
+      round = await agent.Rounds.detail(id, gameId, userName);
       runInAction("getting round", () => {
         this.round = round;
         this.boardTiles = round.boardTiles;

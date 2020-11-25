@@ -76,8 +76,9 @@ export default class HubStore {
             if (curPlayer) {
               curPlayer.initialSeatWind = p.initialSeatWind;
 
-              if(curPlayer.userName === this.userStore.user?.userName)
-                this.rootStore.gameStore.game!.initialSeatWind = p.initialSeatWind
+              if (curPlayer.userName === this.userStore.user?.userName)
+                this.rootStore.gameStore.game!.initialSeatWind =
+                  p.initialSeatWind;
             }
           });
         });
@@ -117,11 +118,9 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
-        debugger;
         let noAction = false;
         if (round.otherPlayers) {
-          noAction =
-            round.otherPlayers.filter((p) => p.hasAction).length === 0;
+          noAction = round.otherPlayers.filter((p) => p.hasAction).length === 0;
         }
 
         // let hasTileSetGroup = false;
@@ -132,17 +131,17 @@ export default class HubStore {
         // }
 
         //update players
-        if (noAction) {
-          this.sleep(this.cooldownTime).then(() => {
-            runInAction(() => {
-              this.roundStore.round = round;
-            })              
-          });
-        } else {
-          runInAction(() => {
-            this.roundStore.round = round;
-          })              
-        }
+        // if (noAction) {
+        //   this.sleep(this.cooldownTime).then(() => {
+        //     runInAction(() => {
+        //       this.roundStore.round = round;
+        //     })
+        //   });
+        // } else {
+        runInAction(() => {
+          this.roundStore.round = round;
+        });
+        // }
 
         //update tiles
         // if (round.updatedRoundTiles) {
@@ -237,7 +236,7 @@ export default class HubStore {
   //     let values: any = {};
   //     values.id = id;
   //     values.gameId = gameId;
-  //     this.hubConnection!.invoke("DetailRound", values);  
+  //     this.hubConnection!.invoke("DetailRound", values);
   //   }
   // };
 
@@ -254,11 +253,11 @@ export default class HubStore {
   @action createHubConnection = (gameId: string) => {
     if (!this.hubConnection) {
       this.hubConnection = new HubConnectionBuilder()
-        .withUrl(process.env.REACT_APP_API_GAME_HUB_URL!, {
+        .withUrl(`${process.env.REACT_APP_API_GAME_HUB_URL!}/?gid=${gameId}`, {
           accessTokenFactory: () => this.checkTokenAndRefreshIfExpired(),
         })
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.None)
+        .configureLogging(LogLevel.Debug)
         .build();
       this.addHubConnectionHandler();
     }
@@ -288,8 +287,33 @@ export default class HubStore {
     }
   };
 
+  @action renewConnection = (gameId: string) => {
+    if (this.hubConnection && this.hubConnection!.state === "Connected") {
+      runInAction(() => {
+        this.hubLoading = true;
+      });
+      this.hubConnection!.invoke("RemoveFromGroup", gameId)
+        .then(() => {
+          this.hubConnection!.stop().then(() => {
+            runInAction(() => {
+              this.hubLoading = false;
+            });
+          });
+        })
+        .then(() => {
+          this.createHubConnection(gameId);
+        })
+        .catch((error) => {
+          runInAction(() => {
+            this.hubLoading = false;
+          });
+          console.log(error);
+        });
+    }
+  };
+
   @action stopHubConnection = (gameId: string) => {
-    if (this.hubConnection!.state === "Connected") {
+    if (this.hubConnection && this.hubConnection!.state === "Connected") {
       runInAction(() => {
         this.hubLoading = true;
       });

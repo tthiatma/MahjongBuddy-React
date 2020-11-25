@@ -155,7 +155,10 @@ const MainPlayerSection: React.FC<IProps> = ({
           <div
             style={{ borderRadius: "25px" }}
             className="playerStatusContainer"
-            {...(mainPlayer!.isMyTurn && {
+            {...(mainPlayer!.isMyTurn && mainPlayer!.mustThrow && {
+              className: "mustThrow playerStatusContainer",
+            })}
+            {...(mainPlayer!.isMyTurn && !mainPlayer!.mustThrow && {
               className: "playerTurn playerStatusContainer",
             })}
           >

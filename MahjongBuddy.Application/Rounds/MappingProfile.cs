@@ -2,6 +2,7 @@
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Rounds.AutoMapperResolvers;
 using MahjongBuddy.Core;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Linq;
 
 namespace MahjongBuddy.Application.Rounds
@@ -13,6 +14,7 @@ namespace MahjongBuddy.Application.Rounds
             CreateMap<Round, RoundDto>()
                 .ForMember(dest => dest.BoardTiles, opt => opt.MapFrom<BoardTilesResolver>())
                 .ForMember(dest => dest.MainPlayer, opt => opt.MapFrom<MainPlayerResolver>())
+                .ForMember(dest => dest.RemainingTiles, opt =>opt.MapFrom(s => s.RoundTiles.Count(t => string.IsNullOrEmpty(t.Owner))))
                 .ForMember(dest => dest.OtherPlayers, opt => opt.MapFrom<OtherPlayersResolver>());
 
             CreateMap<RoundTile, RoundTileDto>();
@@ -21,11 +23,12 @@ namespace MahjongBuddy.Application.Rounds
             CreateMap<RoundPlayerAction, RoundPlayerActionDto>();
 
             CreateMap<RoundPlayer, RoundPlayerDto>()
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.AppUser.DisplayName))
+                .ForMember(dest => dest.ConnectionId, opt => opt.MapFrom(s => s.GamePlayer.Connections.FirstOrDefault().Id))
                 .ForMember(dest => dest.PlayerTiles, opt => opt.MapFrom<PlayerTilesResolver>());
 
             CreateMap<RoundPlayer, RoundOtherPlayerDto>()
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.AppUser.DisplayName))
                 .ForMember(dest => dest.HasAction, opt => opt.MapFrom(s => s.RoundPlayerActions.Count() > 0))
                 .ForMember(dest => dest.ActiveTilesCount, opt => opt.MapFrom<ActiveTilesCountResolver>())
                 .ForMember(dest => dest.GraveyardTiles, opt => opt.MapFrom<GraveyardTilesResolver>())

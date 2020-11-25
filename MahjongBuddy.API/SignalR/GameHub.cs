@@ -24,19 +24,32 @@ namespace MahjongBuddy.API.SignalR
         }
         public override async Task OnConnectedAsync()
         {
+            var userName = GetUserName();
+            var requestContext = Context.GetHttpContext().Request;
+            var gameId = requestContext.Query["gid"].ToString();
             var connectionId = Context.ConnectionId;
-            var userAgent = Context.GetHttpContext().Request.Headers["User-Agent"];
+            var userAgent = requestContext.Headers["User-Agent"];
 
-            await _mediator.Send(new OnConnected.Query { ConnectionId = connectionId, UserAgent = userAgent });
+            await _mediator.Send(new OnConnected.Query { ConnectionId = connectionId, UserAgent = userAgent, UserName = userName, GameId = gameId });
             await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            var connectionId = Context.ConnectionId;
+            await _mediator.Send(new OnDisConnected.Query { ConnectionId = connectionId});
+            await base.OnDisconnectedAsync(exception);
         }
 
         public async Task StartRound(Application.Rounds.Create.Command command)
         {
             try
             {
-                var newRound = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("RoundStarted", newRound);
+                var updates = await _mediator.Send(command);
+                foreach (var u in updates)
+                {
+                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("RoundStarted", u);
+                }
             }
             catch (Exception ex)
             {
@@ -60,14 +73,20 @@ namespace MahjongBuddy.API.SignalR
 
         public async Task EndingRound(Ending.Command command)
         {
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            var updates = await _mediator.Send(command);
+            foreach (var u in updates)
+            {
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRound", u);
+            }
         }
 
         public async Task TiedRound(Tied.Command command)
         {
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            var updates = await _mediator.Send(command);
+            foreach (var u in updates)
+            {
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRound", u);
+            }
         }
 
         public async Task JoinGame(Join.Command command)
@@ -132,9 +151,8 @@ namespace MahjongBuddy.API.SignalR
 
         public async Task AddToGroup(string groupId)
         {
+            //
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
-
-
         }
 
         public async Task RemoveFromGroup(string groupId)
@@ -145,30 +163,39 @@ namespace MahjongBuddy.API.SignalR
         public async Task ThrowAllTiles(ThrowAll.Command command)
         {
             command.UserName = GetUserName();
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+            var updates = await _mediator.Send(command);
+            foreach (var u in updates)
+            {
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+            }
         }
 
         public async Task ThrowTile(Throw.Command command)
         {
             command.UserName = GetUserName();
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRound", round);
+            var updates = await _mediator.Send(command);
+            foreach (var u in updates)
+            {
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRound", u);
+            }
         }
 
         public async Task SortTiles(SortTiles.Command command)
         {
             command.UserName = GetUserName();
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+            var update = await _mediator.Send(command);
+            await Clients.Client(update.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", update);
         }
 
         public async Task PickTile(Pick.Command command)
         {
             string userName = GetUserName();
             command.UserName = userName;
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+            var updates = await _mediator.Send(command);
+            foreach (var u in updates)
+            {
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+            }
         }
 
         public async Task PongTile(Pong.Command command)
@@ -177,8 +204,11 @@ namespace MahjongBuddy.API.SignalR
             command.UserName = userName;
             try
             {
-                var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+                var updates = await _mediator.Send(command);
+                foreach (var u in updates)
+                {
+                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+                }
             }
             catch (RestException ex)
             {
@@ -192,8 +222,11 @@ namespace MahjongBuddy.API.SignalR
             command.UserName = userName;
             try
             {
-                var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+                var updates = await _mediator.Send(command);
+                foreach (var u in updates)
+                {
+                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+                }
             }
             catch (RestException ex)
             {
@@ -208,8 +241,11 @@ namespace MahjongBuddy.API.SignalR
 
             try
             {
-                var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+                var updates = await _mediator.Send(command);
+                foreach (var u in updates)
+                {
+                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+                }
             }
             catch (RestException ex)
             {
@@ -220,8 +256,11 @@ namespace MahjongBuddy.API.SignalR
         public async Task SkipAction(SkipAction.Command command)
         {
             command.UserName = GetUserName();
-            var round = await _mediator.Send(command);
-            await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+            var updates = await _mediator.Send(command);
+            foreach (var u in updates)
+            {
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+            }
         }
 
         public async Task WinRound(Win.Command command)
@@ -230,8 +269,11 @@ namespace MahjongBuddy.API.SignalR
             command.UserName = userName;
             try
             {
-                var round = await _mediator.Send(command);
-                await Clients.Group(command.GameId.ToString()).SendAsync("UpdateRoundNoLag", round);
+                var updates = await _mediator.Send(command);
+                foreach (var u in updates)
+                {
+                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
+                }
             }
             catch (RestException ex)
             {

@@ -8,6 +8,9 @@ namespace MahjongBuddy.Core
     {
         public int Id { get; set; }
         public int RoundCounter { get; set; }
+        /// <summary>
+        /// TileCounter is to order tile in board graveyard
+        /// </summary>
         public int TileCounter { get; set; }
         public WindDirection Wind { get; set; }
         public DateTime DateCreated { get; set; }
@@ -18,10 +21,8 @@ namespace MahjongBuddy.Core
         public int GameId { get; set; }
         public virtual Game Game { get; set; }
         public virtual ICollection<RoundResult> RoundResults { get; set; }
-
+        public virtual ICollection<RoundPlayer> RoundPlayers { get; set; }
         [ConcurrencyCheck]
         public virtual ICollection<RoundTile> RoundTiles { get; set; }
-        public virtual ICollection<RoundPlayer> RoundPlayers { get; set; }
-        public virtual ICollection<GamePlayer> UserGames { get; set; }
     }
 }

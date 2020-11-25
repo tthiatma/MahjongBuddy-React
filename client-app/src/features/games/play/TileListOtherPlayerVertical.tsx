@@ -38,7 +38,10 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
       >
         <div
           className="playerStatusContainerVertical"
-          {...(player.isMyTurn && {
+          {...(player && player.isMyTurn && player.mustThrow && {
+            className: "mustThrow playerStatusHeaderVertical",
+          })}
+          {...(player && player.isMyTurn && !player.mustThrow && {
             className: "playerTurn playerStatusHeaderVertical",
           })}
         >
@@ -56,7 +59,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         </div>
       </Grid.Column>
       <Grid.Column width={5} className="flexTilesVerticalContainer">
-        {displayClosedTile()}
+        {player && displayClosedTile()}
         {/* {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
@@ -79,7 +82,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         width={5}
         className="flexTilesVerticalContainer"
       >
-        {player.graveyardTiles.map((rt) => (
+        {player && player.graveyardTiles.map((rt) => (
           <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
             <img
               alt={rt.tile.title}

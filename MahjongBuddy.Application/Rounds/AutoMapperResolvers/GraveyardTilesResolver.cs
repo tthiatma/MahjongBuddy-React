@@ -22,7 +22,7 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
         {
             var roundId = source.RoundId;
             var graveyardTiles = _context.RoundTiles.Where(rt => rt.RoundId == roundId
-            && rt.Owner == source.AppUser.UserName && rt.Status == TileStatus.UserGraveyard);
+            && rt.Owner == source.GamePlayer.AppUser.UserName && rt.Status == TileStatus.UserGraveyard);
             return _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(graveyardTiles.ToList());
         }
     }

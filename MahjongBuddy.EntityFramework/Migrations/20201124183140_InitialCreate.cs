@@ -43,7 +43,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     DisplayName = table.Column<string>(nullable: true),
                     Bio = table.Column<string>(nullable: true),
                     RefreshToken = table.Column<string>(nullable: true),
-                    RefreshTokenExpiry = table.Column<DateTime>(nullable: false)
+                    RefreshTokenExpiry = table.Column<DateTime>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -204,14 +205,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<string>(nullable: false),
                     Url = table.Column<string>(nullable: true),
                     IsMain = table.Column<bool>(nullable: false),
-                    AppUserId = table.Column<string>(nullable: true)
+                    PlayerId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Photos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Photos_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Photos_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -245,6 +246,35 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GamePlayers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AppUserId = table.Column<string>(nullable: true),
+                    GameId = table.Column<int>(nullable: false),
+                    IsHost = table.Column<bool>(nullable: false),
+                    Points = table.Column<int>(nullable: false),
+                    InitialSeatWind = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GamePlayers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GamePlayers_AspNetUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GamePlayers_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Rounds",
                 columns: table => new
                 {
@@ -272,44 +302,30 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GamePlayers",
+                name: "Connections",
                 columns: table => new
                 {
-                    AppUserId = table.Column<string>(nullable: false),
-                    GameId = table.Column<int>(nullable: false),
-                    IsHost = table.Column<bool>(nullable: false),
-                    Points = table.Column<int>(nullable: false),
-                    InitialSeatWind = table.Column<int>(nullable: true),
-                    RoundId = table.Column<int>(nullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    GamePlayerId = table.Column<int>(nullable: false),
+                    UserAgent = table.Column<string>(nullable: true),
+                    Connected = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GamePlayers", x => new { x.GameId, x.AppUserId });
+                    table.PrimaryKey("PK_Connections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GamePlayers_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
+                        name: "FK_Connections_GamePlayers_GamePlayerId",
+                        column: x => x.GamePlayerId,
+                        principalTable: "GamePlayers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GamePlayers_Games_GameId",
-                        column: x => x.GameId,
-                        principalTable: "Games",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GamePlayers_Rounds_RoundId",
-                        column: x => x.RoundId,
-                        principalTable: "Rounds",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "RoundPlayers",
                 columns: table => new
                 {
-                    AppUserId = table.Column<string>(nullable: false),
+                    GamePlayerId = table.Column<int>(nullable: false),
                     RoundId = table.Column<int>(nullable: false),
                     IsInitialDealer = table.Column<bool>(nullable: false),
                     IsDealer = table.Column<bool>(nullable: false),
@@ -323,19 +339,17 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoundPlayers", x => new { x.RoundId, x.AppUserId });
+                    table.PrimaryKey("PK_RoundPlayers", x => new { x.RoundId, x.GamePlayerId });
                     table.ForeignKey(
-                        name: "FK_RoundPlayers_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_RoundPlayers_GamePlayers_GamePlayerId",
+                        column: x => x.GamePlayerId,
+                        principalTable: "GamePlayers",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_RoundPlayers_Rounds_RoundId",
                         column: x => x.RoundId,
                         principalTable: "Rounds",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -400,27 +414,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Connections",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    UserAgent = table.Column<string>(nullable: true),
-                    Connected = table.Column<bool>(nullable: false),
-                    GamePlayerAppUserId = table.Column<string>(nullable: true),
-                    GamePlayerGameId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Connections", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Connections_GamePlayers_GamePlayerGameId_GamePlayerAppUserId",
-                        columns: x => new { x.GamePlayerGameId, x.GamePlayerAppUserId },
-                        principalTable: "GamePlayers",
-                        principalColumns: new[] { "GameId", "AppUserId" },
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RoundPlayerAction",
                 columns: table => new
                 {
@@ -429,16 +422,16 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     PlayerAction = table.Column<string>(nullable: false),
                     RoundPlayerId = table.Column<int>(nullable: false),
                     RoundPlayerRoundId = table.Column<int>(nullable: false),
-                    RoundPlayerAppUserId = table.Column<string>(nullable: false)
+                    RoundPlayerGamePlayerId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RoundPlayerAction", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoundPlayerAction_RoundPlayers_RoundPlayerRoundId_RoundPlayerAppUserId",
-                        columns: x => new { x.RoundPlayerRoundId, x.RoundPlayerAppUserId },
+                        name: "FK_RoundPlayerAction_RoundPlayers_RoundPlayerRoundId_RoundPlayerGamePlayerId",
+                        columns: x => new { x.RoundPlayerRoundId, x.RoundPlayerGamePlayerId },
                         principalTable: "RoundPlayers",
-                        principalColumns: new[] { "RoundId", "AppUserId" },
+                        principalColumns: new[] { "RoundId", "GamePlayerId" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -536,9 +529,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Connections_GamePlayerGameId_GamePlayerAppUserId",
+                name: "IX_Connections_GamePlayerId",
                 table: "Connections",
-                columns: new[] { "GamePlayerGameId", "GamePlayerAppUserId" });
+                column: "GamePlayerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GamePlayers_AppUserId",
@@ -546,9 +539,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GamePlayers_RoundId",
+                name: "IX_GamePlayers_GameId",
                 table: "GamePlayers",
-                column: "RoundId");
+                column: "GameId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_HostId",
@@ -556,9 +549,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "HostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Photos_AppUserId",
+                name: "IX_Photos_PlayerId",
                 table: "Photos",
-                column: "AppUserId");
+                column: "PlayerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoundExtraPoints_RoundResultId",
@@ -571,14 +564,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "RoundResultId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoundPlayerAction_RoundPlayerRoundId_RoundPlayerAppUserId",
+                name: "IX_RoundPlayerAction_RoundPlayerRoundId_RoundPlayerGamePlayerId",
                 table: "RoundPlayerAction",
-                columns: new[] { "RoundPlayerRoundId", "RoundPlayerAppUserId" });
+                columns: new[] { "RoundPlayerRoundId", "RoundPlayerGamePlayerId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoundPlayers_AppUserId",
+                name: "IX_RoundPlayers_GamePlayerId",
                 table: "RoundPlayers",
-                column: "AppUserId");
+                column: "GamePlayerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoundResults_AppUserId",
@@ -648,9 +641,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "GamePlayers");
-
-            migrationBuilder.DropTable(
                 name: "RoundResults");
 
             migrationBuilder.DropTable(
@@ -658,6 +648,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tiles");
+
+            migrationBuilder.DropTable(
+                name: "GamePlayers");
 
             migrationBuilder.DropTable(
                 name: "Rounds");

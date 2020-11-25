@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from "axios";
-import { ITile } from "../models/tile";
 import { history } from "../..";
 import { IGame } from "../models/game";
 import { IResetPasswordFormValues, IUser, IUserFormValues } from "../models/user";
@@ -89,14 +88,6 @@ const requests = {
   },
 };
 
-const Tiles = {
-  list: (): Promise<ITile[]> => requests.get("/tiles"),
-  detail: (id: string) => requests.get(`/tiles/${id}`),
-  create: (tile: ITile) => requests.post("tiles", tile),
-  update: (tile: ITile) => requests.put(`/tiles/${tile.id}`, tile),
-  delete: (id: string) => requests.del(`/tiles/${id}`),
-};
-
 const Games = {
   list: (): Promise<IGame[]> => requests.get("/games"),
   detail: (id: string) => requests.get(`/games/${id}`),
@@ -107,8 +98,8 @@ const Games = {
 };
 
 const Rounds = {
-  detail: (id: string, gameId: string) =>
-    requests.post(`/rounds/Details`, { id: id, gameId: gameId }),
+  detail: (id: string, gameId: string, userName: string) =>
+    requests.post(`/rounds/Details`, { id: id, gameId: gameId, userName: userName }),
 };
 
 const User = {
@@ -154,7 +145,6 @@ const Profiles = {
 };
 
 export default {
-  Tiles,
   Games,
   User,
   Rounds,

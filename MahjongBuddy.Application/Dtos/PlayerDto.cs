@@ -13,5 +13,7 @@ namespace MahjongBuddy.Application.Dtos
         public string Image { get; set; }
 
         public bool IsHost { get; set; }
+
+        public string ConnectionId { get; set; }
     }
 }

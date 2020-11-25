@@ -10,7 +10,7 @@ namespace MahjongBuddy.Core
         public PlayerResult PlayerResult { get; set; }
         public virtual Round Round { get; set; }
         public int RoundId { get; set; }
-        public virtual AppUser AppUser { get; set; }
+        public virtual Player AppUser { get; set; }
         public string  AppUserId { get; set; }
         public virtual ICollection<RoundResultHand> RoundResultHands { get; set; }
         public virtual ICollection<RoundResultExtraPoint> RoundResultExtraPoints { get; set; }

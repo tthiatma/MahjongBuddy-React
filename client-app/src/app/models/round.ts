@@ -10,6 +10,7 @@ export interface IRound {
   id: number;
   roundCounter: number;
   tileConter: number;
+  remainingTiles: number;
   wind: WindDirection;
   dateCreated: Date;
   isEnding: boolean;

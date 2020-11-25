@@ -30,7 +30,10 @@ const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
         style={{ borderRadius: "25px" }}
         centered
         className="playerStatusContainer"
-        {...(player.isMyTurn && {
+        {...(player && player.isMyTurn && player.mustThrow && {
+          className: "mustThrow playerStatusContainer",
+        })}
+        {...(player && player.isMyTurn && !player.mustThrow && {
           className: "playerTurn playerStatusContainer",
         })}
       >
@@ -39,7 +42,7 @@ const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
         </span>
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
-        {displayClosedTile()}
+        {player && displayClosedTile()}
         {/* {roundTiles &&
           roundTiles
             .filter((t) => t.status === TileStatus.UserActive)
@@ -54,7 +57,7 @@ const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
             ))} */}
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
-        {player.graveyardTiles &&
+        {player && player.graveyardTiles &&
           player.graveyardTiles.map((rt) => (
             <div key={rt.id}>
               <img alt={rt.tile.title} src={rt.tile.imageSmall} />

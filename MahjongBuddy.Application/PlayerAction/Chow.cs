@@ -19,14 +19,14 @@ namespace MahjongBuddy.Application.PlayerAction
 {
     public class Chow
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
             public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
             public IEnumerable<Guid> ChowTiles { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -36,7 +36,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 //Note to consider when chow tile:
                 //-when chow tile user need to throw a tile.
@@ -90,7 +90,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 updatedTiles.AddRange(sortedChowTiles);
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.AppUser.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
                 updatedPlayers.Add(currentPlayer);
@@ -98,7 +98,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 currentPlayer.IsMyTurn = true;
                 currentPlayer.MustThrow = true;
 
-                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.AppUser.UserName != request.UserName);
+                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.GamePlayer.AppUser.UserName != request.UserName);
                 foreach (var otherPlayerTurn in otherPlayers)
                 {
                     otherPlayerTurn.IsMyTurn = false;
@@ -121,9 +121,15 @@ namespace MahjongBuddy.Application.PlayerAction
                 try
                 {
                     var success = await _context.SaveChangesAsync() > 0;
-                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
 
-                    if (success) return roundToReturn;
+                    List<RoundDto> results = new List<RoundDto>();
+
+                    foreach (var p in round.RoundPlayers)
+                    {
+                        results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                    }
+
+                    if (success) return results;
                 }
                 catch (DbUpdateConcurrencyException)
                 {

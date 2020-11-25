@@ -24,7 +24,7 @@ namespace MahjongBuddy.API
                     var context = services.GetRequiredService<MahjongBuddyDbContext>();
                     context.Database.Migrate();
 
-                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    var userManager = services.GetRequiredService<UserManager<Player>>();
                     Seed.SeedData(context, userManager).Wait();
                 }
                 catch (Exception ex)
