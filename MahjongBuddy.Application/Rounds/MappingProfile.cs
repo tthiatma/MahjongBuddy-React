@@ -29,7 +29,6 @@ namespace MahjongBuddy.Application.Rounds
 
             CreateMap<RoundPlayer, RoundOtherPlayerDto>()
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.AppUser.DisplayName))
-                .ForMember(dest => dest.HasAction, opt => opt.MapFrom(s => s.RoundPlayerActions.Count() > 0))
                 .ForMember(dest => dest.ActiveTilesCount, opt => opt.MapFrom<ActiveTilesCountResolver>())
                 .ForMember(dest => dest.GraveyardTiles, opt => opt.MapFrom<GraveyardTilesResolver>())
                 .ForMember(dest => dest.SeatOrientation, opt => opt.MapFrom<SeatOrientationResolver>());

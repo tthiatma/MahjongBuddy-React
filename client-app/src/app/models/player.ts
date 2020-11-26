@@ -30,7 +30,6 @@ export interface IRoundOtherPlayer extends IPlayer {
   mustThrow: boolean;
   wind: WindDirection;
   points: number;
-  hasAction: boolean;
   activeTilesCount: number;
   seatOrientation: SeatOrientation;
   graveyardTiles: IRoundTile[];

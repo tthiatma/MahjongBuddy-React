@@ -56,7 +56,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     createHubConnection,
     stopHubConnection,
     leaveGroup,
-    hubConnection,
   } = rootStore.hubStore;
 
   //currently only support one winner

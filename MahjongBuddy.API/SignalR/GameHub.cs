@@ -174,9 +174,13 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var updates = await _mediator.Send(command);
+            //check if there's action
+
+            var hasAction = updates.FirstOrDefault(r => r.MainPlayer.RoundPlayerActions.Count() > 0);
+            var roundUpdateMethod = hasAction == null ? "UpdateRound" : "UpdateRoundNoLag";
             foreach (var u in updates)
             {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRound", u);
+                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync(roundUpdateMethod, u);
             }
         }
 

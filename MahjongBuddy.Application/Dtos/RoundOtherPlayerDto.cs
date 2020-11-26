@@ -18,8 +18,6 @@ namespace MahjongBuddy.Application.Dtos
 
         public int Points { get; set; }
 
-        public bool HasAction { get; set; }
-
         //below props using custom resolver, check mappingprofile
 
         public int ActiveTilesCount { get; set; }

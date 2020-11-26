@@ -118,54 +118,24 @@ export default class HubStore {
       });
 
       this.hubConnection.on("UpdateRound", (round: IRound) => {
-        let noAction = false;
-        if (round.otherPlayers) {
-          noAction = round.otherPlayers.filter((p) => p.hasAction).length === 0;
-        }
-
-        // let hasTileSetGroup = false;
-        // if (round.updatedRoundTiles) {
-        //   hasTileSetGroup =
-        //     round.updatedRoundTiles.filter((t) => t.tileSetGroup !== 0).length >
-        //     0;
-        // }
-
-        //update players
-        // if (noAction) {
-        //   this.sleep(this.cooldownTime).then(() => {
-        //     runInAction(() => {
-        //       this.roundStore.round = round;
-        //     })
-        //   });
-        // } else {
-        runInAction(() => {
-          this.roundStore.round = round;
+        //update board tiles
+        runInAction("updating necessary round prop", () => {
+          if(this.roundStore.round){
+            this.roundStore.round.boardTiles = round.boardTiles;
+            this.roundStore.round.mainPlayer.mustThrow = round.mainPlayer.mustThrow;
+            this.roundStore.round.mainPlayer.isManualSort = round.mainPlayer.isManualSort;
+            this.roundStore.round.otherPlayers.forEach(op => {
+              var matchingOp = round.otherPlayers.find(rop => rop.userName === op.userName);
+              op.mustThrow = matchingOp!.mustThrow;
+            })
+          }
         });
-        // }
 
-        //update tiles
-        // if (round.updatedRoundTiles) {
-        //   round.updatedRoundTiles.forEach((roundTile) => {
-        //     let objIndex = this.roundStore.roundTiles!.findIndex(
-        //       (obj) => obj.id === roundTile.id
-        //     );
-
-        //     if (noAction) {
-        //       //find just picked tile and give assign it after cooldown time
-        //       if (roundTile.status === TileStatus.UserJustPicked || roundTile.tile.tileType === TileType.Flower) {
-        //         this.sleep(this.cooldownTime).then(() => {
-        //           this.updateRoundTile(objIndex, roundTile);
-        //         });
-        //       } else {
-        //         this.updateRoundTile(objIndex, roundTile);
-        //       }
-        //     } else {
-        //       this.updateRoundTile(objIndex, roundTile);
-        //     }
-
-        //     runInAction("updating tile", () => {});
-        //   });
-        // }
+        this.sleep(this.cooldownTime).then(() => {
+          runInAction(() => {
+            this.roundStore.round = round;
+          })
+        });
       });
 
       this.hubConnection.on("RoundStarted", (round: IRound) => {
