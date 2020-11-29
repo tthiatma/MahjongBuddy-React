@@ -134,24 +134,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   const doThrowTile = (tileId: string) => {
     if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver) {
-      const tempPlayerAction = Array.from(mainPlayer!.roundPlayerActions);
       runInAction("throwingtile", () => {
         rootStore.roundStore.selectedTile = mainPlayerAliveTiles?.find(
           (t) => t.id === tileId
         )!;
       });
-      try {
-        runInAction(() => {
-          mainPlayer!.mustThrow = false;
-          mainPlayer!.roundPlayerActions = [];
-        });
         throwTile();
-      } catch {
-        runInAction(() => {
-          mainPlayer!.mustThrow = true;
-          mainPlayer!.roundPlayerActions = tempPlayerAction;
-        });
-      }
     } else {
       toast.warn("Can't throw");
     }

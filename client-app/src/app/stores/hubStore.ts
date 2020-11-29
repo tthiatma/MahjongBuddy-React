@@ -121,9 +121,14 @@ export default class HubStore {
         //update board tiles
         runInAction("updating necessary round prop", () => {
           if(this.roundStore.round){
+            if(this.roundStore.round.mainPlayer.mustThrow){
+              this.roundStore.round.mainPlayer = round.mainPlayer; 
+            }else{
+              this.roundStore.round.mainPlayer.mustThrow = round.mainPlayer.mustThrow;
+              this.roundStore.round.mainPlayer.isManualSort = round.mainPlayer.isManualSort;  
+            }
+
             this.roundStore.round.boardTiles = round.boardTiles;
-            this.roundStore.round.mainPlayer.mustThrow = round.mainPlayer.mustThrow;
-            this.roundStore.round.mainPlayer.isManualSort = round.mainPlayer.isManualSort;
             this.roundStore.round.otherPlayers.forEach(op => {
               var matchingOp = round.otherPlayers.find(rop => rop.userName === op.userName);
               op.mustThrow = matchingOp!.mustThrow;
