@@ -7,6 +7,7 @@ using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -152,6 +153,13 @@ namespace MahjongBuddy.Application.PlayerAction
                             updatedPlayers.Add(loser);
 
                             round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint * 3 });
+
+                            //record users that are tied
+                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != baoPlayerUserName && p.GamePlayer.Player.UserName != winner.GamePlayer.Player.UserName);
+                            tiedPlayers.ForEach(tp =>
+                            {
+                                round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
+                            });
                         }
                         else
                         {
@@ -164,12 +172,11 @@ namespace MahjongBuddy.Application.PlayerAction
                             winnerResult.Points = winningPoint;
 
                             updatedPlayers.AddRange(losers);
-
-                            foreach (var l in losers)
+                            losers.ForEach(l =>
                             {
                                 l.Points -= cappedPoint;
                                 round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = l.GamePlayer.Player, Points = losingPoint });
-                            }
+                            });
                         }
                     }
                     else
@@ -182,6 +189,14 @@ namespace MahjongBuddy.Application.PlayerAction
                         var loser = round.RoundPlayers.First(u => u.GamePlayer.Player.UserName == boardTile.ThrownBy);
                         loser.Points -= cappedPoint;
                         round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint });
+
+                        //record users that are tied
+                        var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != loser.GamePlayer.Player.UserName && p.GamePlayer.Player.UserName != winner.GamePlayer.Player.UserName);
+                        tiedPlayers.ForEach(tp =>
+                        {
+                            round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
+                        });
+
 
                         updatedPlayers.Add(loser);
                     }
