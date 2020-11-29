@@ -1,6 +1,6 @@
 ﻿namespace MahjongBuddy.Core.Enums
 {
-    public enum PlayerResult
+    public enum PlayResult
     {
         Win,
         Tie,

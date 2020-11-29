@@ -7,7 +7,7 @@ import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { ExtraPoint } from "../../../app/models/extraPointEnum";
-import { PlayerResult } from "../../../app/models/playerResultEnum";
+import { PlayResult } from "../../../app/models/playResultEnum";
 
 
 const ResultModal: React.FC = () => {
@@ -26,9 +26,9 @@ const ResultModal: React.FC = () => {
   const activeBoardTile = round?.boardTiles.find(t => t.status === TileStatus.BoardActive);
 
   if (roundResults) {
-    winner = roundResults?.find((r) => r.playerResult === PlayerResult.Win)!;
-    losers = roundResults!.filter((r) => r.playerResult === PlayerResult.Lost);
-    tiePlayers = roundResults!.filter((r) => r.playerResult === PlayerResult.Tie);
+    winner = roundResults?.find((r) => r.playResult === PlayResult.Win)!;
+    losers = roundResults!.filter((r) => r.playResult === PlayResult.Lost);
+    tiePlayers = roundResults!.filter((r) => r.playResult === PlayResult.Tie);
     winnerTiles = winner?.playerTiles.sort(sortTiles);
   }
 
@@ -39,7 +39,7 @@ const ResultModal: React.FC = () => {
       {roundResults !== null && roundResults.length > 0 ? (
         <Modal.Content>
           <h3>
-            Winner : {winner?.displayName}: {winner?.pointsResult} pts
+            Winner : {winner?.displayName}: {winner?.points} pts
             <ul>
               {winner?.roundResultHands.map((h, i) => (
                 <li key={i}>
@@ -83,7 +83,7 @@ const ResultModal: React.FC = () => {
                 {losers.map((l, i) => (
                   <Fragment key={l.userName}>
                     <li>
-                      Loser : {l.displayName}: {l.pointsResult}
+                      Loser : {l.displayName}: {l.points}
                     </li>
                     {l.playerTiles!
                       .sort(sortTiles)

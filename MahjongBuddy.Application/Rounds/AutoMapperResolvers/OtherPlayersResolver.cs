@@ -26,15 +26,15 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
             if (context.Options.Items.Count() > 0 && context.Options.Items.ContainsKey("MainRoundPlayer"))
             {
                 var rp = context.Items["MainRoundPlayer"] as RoundPlayer;
-                mainPlayerUserName = rp.GamePlayer.AppUser.UserName;
-                var otherPlayers = source.RoundPlayers.Where(rp => rp.GamePlayer.AppUser.UserName != mainPlayerUserName);
+                mainPlayerUserName = rp.GamePlayer.Player.UserName;
+                var otherPlayers = source.RoundPlayers.Where(rp => rp.GamePlayer.Player.UserName != mainPlayerUserName);
                 return _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundOtherPlayerDto>>(otherPlayers.ToList(), opt => opt.Items["MainRoundPlayer"] = rp);
 
             }
             else
             {
                 mainPlayerUserName = _userAccessor.GetCurrentUserName();
-                var otherPlayers = source.RoundPlayers.Where(rp => rp.GamePlayer.AppUser.UserName != mainPlayerUserName);
+                var otherPlayers = source.RoundPlayers.Where(rp => rp.GamePlayer.Player.UserName != mainPlayerUserName);
                 return _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundOtherPlayerDto>>(otherPlayers.ToList());
             }
         }

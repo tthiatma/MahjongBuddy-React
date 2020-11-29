@@ -54,7 +54,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
 
                 if(currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
@@ -183,7 +183,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 var roundTiles = round.RoundTiles;
                 
                 //there will be action except for the player that throw the tile 
-                var players = round.RoundPlayers.Where(rp => rp.GamePlayer.AppUser.UserName != throwerPlayer.GamePlayer.AppUser.UserName);
+                var players = round.RoundPlayers.Where(rp => rp.GamePlayer.Player.UserName != throwerPlayer.GamePlayer.Player.UserName);
 
                 var boardActiveTile = roundTiles.FirstOrDefault(rt => rt.Status == TileStatus.BoardActive);
                 if(boardActiveTile == null)
@@ -194,7 +194,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 //there could be more than one possible action given user's turn  and the tile's thrown
                 foreach (var player in players)
                 {
-                    var userTiles = roundTiles.Where(rt => rt.Owner == player.GamePlayer.AppUser.UserName);
+                    var userTiles = roundTiles.Where(rt => rt.Owner == player.GamePlayer.Player.UserName);
                     List<RoundPlayerAction> rpas = new List<RoundPlayerAction>();
 
                     if (RoundHelper.DetermineIfUserCanWin(round, player, _pointCalculator))
@@ -206,9 +206,9 @@ namespace MahjongBuddy.Application.PlayerAction
                     if (DetermineIfUserCanPong(userTiles, boardActiveTile))
                         rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Pong });
 
-                    if(player.GamePlayer.AppUser.UserName == nextPlayer.GamePlayer.AppUser.UserName)
+                    if(player.GamePlayer.Player.UserName == nextPlayer.GamePlayer.Player.UserName)
                     {
-                        var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.GamePlayer.AppUser.UserName);
+                        var nextPlayerTiles = round.RoundTiles.Where(rt => rt.Owner == nextPlayer.GamePlayer.Player.UserName);
                         if(DetermineIfUserCanChow(nextPlayerTiles, boardActiveTile))
                             rpas.Add(new RoundPlayerAction { PlayerAction = ActionType.Chow });
                     }

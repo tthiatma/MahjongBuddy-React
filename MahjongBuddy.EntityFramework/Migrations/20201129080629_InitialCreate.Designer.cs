@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20201124183140_InitialCreate")]
+    [Migration("20201129080629_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,9 +109,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
@@ -121,14 +118,17 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("IsHost")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PlayerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Points")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
-
                     b.HasIndex("GameId");
+
+                    b.HasIndex("PlayerId");
 
                     b.ToTable("GamePlayers");
                 });
@@ -355,13 +355,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AppUserId")
+                    b.Property<string>("PlayResult")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlayerId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("PlayerResult")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PointsResult")
+                    b.Property<int>("Points")
                         .HasColumnType("int");
 
                     b.Property<int>("RoundId")
@@ -369,7 +370,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AppUserId");
+                    b.HasIndex("PlayerId");
 
                     b.HasIndex("RoundId");
 
@@ -668,15 +669,15 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("MahjongBuddy.Core.GamePlayer", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.Player", "AppUser")
-                        .WithMany("GamePlayers")
-                        .HasForeignKey("AppUserId");
-
                     b.HasOne("MahjongBuddy.Core.Game", "Game")
                         .WithMany("GamePlayers")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("MahjongBuddy.Core.Player", "Player")
+                        .WithMany("GamePlayers")
+                        .HasForeignKey("PlayerId");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.Photo", b =>
@@ -721,9 +722,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundResult", b =>
                 {
-                    b.HasOne("MahjongBuddy.Core.Player", "AppUser")
+                    b.HasOne("MahjongBuddy.Core.Player", "Player")
                         .WithMany()
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("PlayerId");
 
                     b.HasOne("MahjongBuddy.Core.Round", "Round")
                         .WithMany("RoundResults")

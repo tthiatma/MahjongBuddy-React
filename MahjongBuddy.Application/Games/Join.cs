@@ -40,7 +40,7 @@ namespace MahjongBuddy.Application.Games
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
 
                 if (playerInGame != null)
                 {
@@ -65,7 +65,7 @@ namespace MahjongBuddy.Application.Games
                     playerInGame = new GamePlayer
                     {
                         Game = game,
-                        AppUser = user,
+                        Player = user,
                         IsHost = false,
                     };
                     playerInGame.Connections.Add(new Connection { Id = request.ConnectionId, Connected = true, UserAgent = request.UserAgent });

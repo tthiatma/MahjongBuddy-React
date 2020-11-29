@@ -52,7 +52,7 @@ namespace MahjongBuddy.Application.Games
                     GamePlayers = new List<GamePlayer>{
                         new GamePlayer {
                             IsHost = true,
-                            AppUser = user
+                            Player = user
                         }
                     }
                 };

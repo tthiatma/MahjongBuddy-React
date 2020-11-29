@@ -13,7 +13,7 @@ namespace MahjongBuddy.Application.Rounds.Scorings.ExtraPoints
         {
 
             var tiles = round.RoundTiles.Where(t => t.Owner == winnerUserName);
-            var winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.AppUser.UserName == winnerUserName);
+            var winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == winnerUserName);
 
             //check if there is justpicked tile from winner to determine if its selfpick
             var isSelfPick = tiles.Any(t => t.Status == TileStatus.UserJustPicked);

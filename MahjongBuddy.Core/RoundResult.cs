@@ -6,15 +6,14 @@ namespace MahjongBuddy.Core
     public class RoundResult
     {
         public int Id { get; set; }
-        //IsWinner if false, then the user here feed
-        public PlayerResult PlayerResult { get; set; }
+        public PlayResult PlayResult { get; set; }
         public virtual Round Round { get; set; }
         public int RoundId { get; set; }
-        public virtual Player AppUser { get; set; }
-        public string  AppUserId { get; set; }
+        public virtual Player Player { get; set; }
+        public string  PlayerId { get; set; }
         public virtual ICollection<RoundResultHand> RoundResultHands { get; set; }
         public virtual ICollection<RoundResultExtraPoint> RoundResultExtraPoints { get; set; }
-        public int PointsResult { get; set; }
+        public int Points { get; set; }
 
         public RoundResult()
         {

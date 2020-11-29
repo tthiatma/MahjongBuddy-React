@@ -251,7 +251,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AppUserId = table.Column<string>(nullable: true),
+                    PlayerId = table.Column<string>(nullable: true),
                     GameId = table.Column<int>(nullable: false),
                     IsHost = table.Column<bool>(nullable: false),
                     Points = table.Column<int>(nullable: false),
@@ -261,17 +261,17 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     table.PrimaryKey("PK_GamePlayers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GamePlayers_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_GamePlayers_Games_GameId",
                         column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GamePlayers_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -358,17 +358,17 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PlayerResult = table.Column<int>(nullable: false),
+                    PlayResult = table.Column<string>(nullable: false),
                     RoundId = table.Column<int>(nullable: false),
-                    AppUserId = table.Column<string>(nullable: true),
-                    PointsResult = table.Column<int>(nullable: false)
+                    PlayerId = table.Column<string>(nullable: true),
+                    Points = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RoundResults", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoundResults_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_RoundResults_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -534,14 +534,14 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "GamePlayerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GamePlayers_AppUserId",
-                table: "GamePlayers",
-                column: "AppUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GamePlayers_GameId",
                 table: "GamePlayers",
                 column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GamePlayers_PlayerId",
+                table: "GamePlayers",
+                column: "PlayerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_HostId",
@@ -574,9 +574,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "GamePlayerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoundResults_AppUserId",
+                name: "IX_RoundResults_PlayerId",
                 table: "RoundResults",
-                column: "AppUserId");
+                column: "PlayerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoundResults_RoundId",

@@ -3,7 +3,7 @@ import { IRoundTile } from "./tile";
 import { HandType } from "./handTypeEnum";
 import { ExtraPoint } from "./extraPointEnum";
 import { IRoundOtherPlayer, IRoundPlayer } from "./player";
-import { PlayerResult } from "./playerResultEnum";
+import { PlayResult } from "./playResultEnum";
 
 export interface IRound {
 
@@ -26,13 +26,13 @@ export interface IRound {
 
 export interface IRoundResult {
   id: number;
-  playerResult: PlayerResult;
+  playResult: PlayResult;
   userName: string;
   displayName: string;
   roundResultHands: IRoundResultHand[];
   roundResultExtraPoints: IRoundResultExtraPoint[];
   playerTiles: IRoundTile[];
-  pointsResult: number;
+  points: number;
 }
 
 export interface IRoundResultHand {

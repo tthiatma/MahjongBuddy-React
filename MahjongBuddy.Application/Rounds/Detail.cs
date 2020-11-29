@@ -40,7 +40,7 @@ namespace MahjongBuddy.Application.Rounds
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { round = "Could Not find round" });
 
-                var mainRoundPlayer = round.RoundPlayers.FirstOrDefault(rp => rp.GamePlayer.AppUser.UserName == request.UserName);
+                var mainRoundPlayer = round.RoundPlayers.FirstOrDefault(rp => rp.GamePlayer.Player.UserName == request.UserName);
 
                 var roundToReturn = _mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = mainRoundPlayer);
 

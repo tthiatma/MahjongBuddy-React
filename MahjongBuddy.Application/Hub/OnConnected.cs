@@ -41,7 +41,7 @@ namespace MahjongBuddy.Application.Hub
                 else
                 {
                     //existing player reconnecting
-                    var currentGamePlayer = await _context.GamePlayers.SingleOrDefaultAsync(gp => gp.AppUser.UserName == request.UserName && gp.GameId == int.Parse(request.GameId));
+                    var currentGamePlayer = await _context.GamePlayers.SingleOrDefaultAsync(gp => gp.Player.UserName == request.UserName && gp.GameId == int.Parse(request.GameId));
                     if(currentGamePlayer != null)
                     {
                         foreach (var uc in currentGamePlayer.Connections)

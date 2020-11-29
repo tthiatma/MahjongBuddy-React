@@ -54,8 +54,8 @@ namespace MahjongBuddy.Application.Helpers
 
             //in case there is other player that has my turn set to true
             var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true
-                && u.GamePlayer.AppUser.UserName != nextPlayer.GamePlayer.AppUser.UserName
-                && u.GamePlayer.AppUser.UserName != playerThatHasTurn.GamePlayer.AppUser.UserName);
+                && u.GamePlayer.Player.UserName != nextPlayer.GamePlayer.Player.UserName
+                && u.GamePlayer.Player.UserName != playerThatHasTurn.GamePlayer.Player.UserName);
 
             foreach (var otherPlayerTurn in otherPlayers)
             {
@@ -74,7 +74,7 @@ namespace MahjongBuddy.Application.Helpers
             }            
             else
             {
-                var newTiles = RoundTileHelper.PickTile(round, nextPlayer.GamePlayer.AppUser.UserName, ref updatedTiles);
+                var newTiles = RoundTileHelper.PickTile(round, nextPlayer.GamePlayer.Player.UserName, ref updatedTiles);
                 if (newTiles == null)
                     round.IsEnding = true;
                 CheckSelfAction(round, nextPlayer, pointCalculator);
@@ -87,7 +87,7 @@ namespace MahjongBuddy.Application.Helpers
 
         public static bool DetermineIfUserCanWin(Round round, RoundPlayer player, IPointsCalculator pointCalculator)
         {
-            HandWorth handWorth = pointCalculator.Calculate(round, player.GamePlayer.AppUser.UserName);
+            HandWorth handWorth = pointCalculator.Calculate(round, player.GamePlayer.Player.UserName);
             if (handWorth == null) return false;
             return handWorth.Points >= round.Game.MinPoint;
         }
@@ -98,7 +98,7 @@ namespace MahjongBuddy.Application.Helpers
             if (unopenTiles.Count() == 0)
                 return;
 
-            var playerTiles = round.RoundTiles.Where(rt => rt.Owner == player.GamePlayer.AppUser.UserName && rt.TileSetGroup != TileSetGroup.Kong && rt.TileSetGroup != TileSetGroup.Chow);
+            var playerTiles = round.RoundTiles.Where(rt => rt.Owner == player.GamePlayer.Player.UserName && rt.TileSetGroup != TileSetGroup.Kong && rt.TileSetGroup != TileSetGroup.Chow);
             int possibleKongCount = playerTiles
                 .GroupBy(t => new { t.Tile.TileType, t.Tile.TileValue })
                 .Where(grp => grp.Count() == 4)

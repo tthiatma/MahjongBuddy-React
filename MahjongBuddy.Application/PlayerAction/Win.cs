@@ -48,7 +48,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.AppUser.UserName == request.UserName);
+                var winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
 
                 if (winner == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Player = "Could not find player" });
@@ -68,8 +68,8 @@ namespace MahjongBuddy.Application.PlayerAction
                     //record who win and who lost 
                     RoundResult winnerResult = new RoundResult
                     {
-                        AppUser = winner.GamePlayer.AppUser,
-                        PlayerResult = PlayerResult.Win,
+                        Player = winner.GamePlayer.Player,
+                        PlayResult = PlayResult.Win,
                     };
 
                     if (round.RoundResults == null)
@@ -109,7 +109,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         bool isLoserBao = false;
                         string baoPlayerUserName = string.Empty;
                         //check for allonesuit
-                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.GamePlayer.AppUser.UserName);
+                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.GamePlayer.Player.UserName);
                         if (handWorth.HandTypes.Contains(HandType.AllOneSuit) 
                             || handWorth.HandTypes.Contains(HandType.SmallFourWind)
                             || handWorth.HandTypes.Contains(HandType.BigFourWind))
@@ -145,30 +145,30 @@ namespace MahjongBuddy.Application.PlayerAction
                             //the loser that bao will pay the winning point times three
                             var winningPoint = cappedPoint * 3;
                             winner.Points += winningPoint;
-                            winnerResult.PointsResult = winningPoint;
+                            winnerResult.Points = winningPoint;
 
-                            var loser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.AppUser.UserName == baoPlayerUserName);
+                            var loser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == baoPlayerUserName);
                             loser.Points -= winningPoint;
                             updatedPlayers.Add(loser);
 
-                            round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.GamePlayer.AppUser, PointsResult = losingPoint * 3 });
+                            round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint * 3 });
                         }
                         else
                         {
                             //if its self pick, and no bao, then all 3 other players needs to record the loss
-                            var losers = round.RoundPlayers.Where(u => u.GamePlayer.AppUser.UserName != request.UserName);
+                            var losers = round.RoundPlayers.Where(u => u.GamePlayer.Player.UserName != request.UserName);
 
                             //points will be times 3
                             var winningPoint = cappedPoint * 3;
                             winner.Points += winningPoint;
-                            winnerResult.PointsResult = winningPoint;
+                            winnerResult.Points = winningPoint;
 
                             updatedPlayers.AddRange(losers);
 
                             foreach (var l in losers)
                             {
                                 l.Points -= cappedPoint;
-                                round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = l.GamePlayer.AppUser, PointsResult = losingPoint });
+                                round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = l.GamePlayer.Player, Points = losingPoint });
                             }
                         }
                     }
@@ -176,12 +176,12 @@ namespace MahjongBuddy.Application.PlayerAction
                     {
                         //otherwise there is only one loser that throw the tile to board
                         winner.Points += cappedPoint;
-                        winnerResult.PointsResult = cappedPoint;
+                        winnerResult.Points = cappedPoint;
 
                         var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
-                        var loser = round.RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == boardTile.ThrownBy);
+                        var loser = round.RoundPlayers.First(u => u.GamePlayer.Player.UserName == boardTile.ThrownBy);
                         loser.Points -= cappedPoint;
-                        round.RoundResults.Add(new RoundResult { PlayerResult = PlayerResult.Lost, AppUser = loser.GamePlayer.AppUser, PointsResult = losingPoint });
+                        round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint });
 
                         updatedPlayers.Add(loser);
                     }

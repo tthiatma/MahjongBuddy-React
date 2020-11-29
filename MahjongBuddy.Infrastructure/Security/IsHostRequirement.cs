@@ -33,7 +33,7 @@ namespace MahjongBuddy.Infrastructure.Security
 
             var host = game.GamePlayers.FirstOrDefault(x => x.IsHost);
 
-            if (host?.AppUser?.UserName == currentUserName)
+            if (host?.Player?.UserName == currentUserName)
                 context.Succeed(requirement);
 
             return Task.CompletedTask;

@@ -60,13 +60,13 @@ namespace MahjongBuddy.Application.Rounds
                 if (lastRound == null)
                 {
                     game.Status = GameStatus.Playing;
-                    Player firstDealer = game.GamePlayers.First(u => u.InitialSeatWind == WindDirection.East).AppUser;
+                    Player firstDealer = game.GamePlayers.First(u => u.InitialSeatWind == WindDirection.East).Player;
                     newRound.Wind = WindDirection.East;
                     newRound.RoundCounter = 1;
                     foreach (var ug in game.GamePlayers)
                     {
                         var rp = new RoundPlayer { GamePlayerId = ug.Id, Round = newRound, Wind = ug.InitialSeatWind.Value, Points = ug.Points };
-                        if (ug.AppUserId == firstDealer.Id)
+                        if (ug.PlayerId == firstDealer.Id)
                         {
                             rp.IsInitialDealer = true;
                             rp.IsDealer = true;
@@ -94,8 +94,8 @@ namespace MahjongBuddy.Application.Rounds
                     {
                         //if last game is not tied, then there gotta be a winner here
                         //could be more than one winners here
-                        var lastRoundWinners = lastRound.RoundResults.Where(x => x.PlayerResult == PlayerResult.Win);
-                        var dealerWonLastRound = lastRoundWinners.Any(x => x.AppUserId == lastRoundDealer.GamePlayer.AppUser.Id);
+                        var lastRoundWinners = lastRound.RoundResults.Where(x => x.PlayResult == PlayResult.Win);
+                        var dealerWonLastRound = lastRoundWinners.Any(x => x.PlayerId == lastRoundDealer.GamePlayer.Player.Id);
 
                         if (dealerWonLastRound)
                         {
@@ -123,23 +123,23 @@ namespace MahjongBuddy.Application.Rounds
                 var dealerId = theDealer.GamePlayerId;
 
                 //for debugging
-                //RoundTileHelper.SetupForBao(newRound.RoundTiles);
+                //RoundTileHelper.SetupForSelfPick(newRound.RoundTiles);
 
                 //tiles assignment and sorting
                 foreach (var gamePlayer in game.GamePlayers)
                 {
                     if (gamePlayer.Id == dealerId)
                     {
-                        RoundTileHelper.AssignTilesToUser(14, gamePlayer.AppUser.UserName, newRound.RoundTiles);
+                        RoundTileHelper.AssignTilesToUser(14, gamePlayer.Player.UserName, newRound.RoundTiles);
                         //set one tile status to be justpicked
-                        newRound.RoundTiles.First(rt => rt.Owner == gamePlayer.AppUser.UserName && rt.Tile.TileType != TileType.Flower).Status = TileStatus.UserJustPicked;
-                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == gamePlayer.AppUser.UserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked)).ToList();
+                        newRound.RoundTiles.First(rt => rt.Owner == gamePlayer.Player.UserName && rt.Tile.TileType != TileType.Flower).Status = TileStatus.UserJustPicked;
+                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == gamePlayer.Player.UserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked)).ToList();
                         RoundTileHelper.AssignAliveTileCounter(playerTiles);
                     }
                     else
                     {
-                        RoundTileHelper.AssignTilesToUser(13, gamePlayer.AppUser.UserName, newRound.RoundTiles);
-                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == gamePlayer.AppUser.UserName && rt.Status == TileStatus.UserActive).ToList();
+                        RoundTileHelper.AssignTilesToUser(13, gamePlayer.Player.UserName, newRound.RoundTiles);
+                        var playerTiles = newRound.RoundTiles.Where(rt => rt.Owner == gamePlayer.Player.UserName && rt.Status == TileStatus.UserActive).ToList();
                         RoundTileHelper.AssignAliveTileCounter(playerTiles);
                     }
                 }

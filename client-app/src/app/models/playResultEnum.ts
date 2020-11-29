@@ -1,4 +1,4 @@
-export enum PlayerResult
+export enum PlayResult
 {
     Win,
     Tie,

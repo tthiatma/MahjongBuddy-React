@@ -45,7 +45,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var playerThatSkippedAction = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.AppUser.UserName == request.UserName);
+                var playerThatSkippedAction = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
 
                 if (playerThatSkippedAction == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
@@ -57,7 +57,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //prioritize user that has pong or kong action 
                 var pongOrKongActionPlayer = round.RoundPlayers.Where(
-                rp => rp.GamePlayer.AppUser.UserName != playerThatSkippedAction.GamePlayer.AppUser.UserName
+                rp => rp.GamePlayer.Player.UserName != playerThatSkippedAction.GamePlayer.Player.UserName
                     && rp.RoundPlayerActions.Any(
                     rpa => rpa.PlayerAction == ActionType.Pong ||
                     rpa.PlayerAction == ActionType.Kong
@@ -73,7 +73,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     //now check other player that has action
                     var chowPlayerActions = round.RoundPlayers.FirstOrDefault(u =>
-                    u.GamePlayer.AppUser.UserName != playerThatSkippedAction.GamePlayer.AppUser.UserName
+                    u.GamePlayer.Player.UserName != playerThatSkippedAction.GamePlayer.Player.UserName
                     && u.IsMyTurn != true
                     && u.RoundPlayerActions.Count() > 0);
 

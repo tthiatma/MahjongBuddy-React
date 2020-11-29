@@ -77,9 +77,9 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
             builder.Entity<GamePlayer>(x => x.HasKey(gp => new { gp.Id }));
             builder.Entity<GamePlayer>()
-                .HasOne(u => u.AppUser)
+                .HasOne(u => u.Player)
                 .WithMany(g => g.GamePlayers)
-                .HasForeignKey(u => u.AppUserId);
+                .HasForeignKey(u => u.PlayerId);
 
             builder.Entity<GamePlayer>()
                 .HasOne(g => g.Game)
@@ -149,6 +149,12 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 .HasConversion(
                 v => v.ToString(),
                 v => (TileValue)Enum.Parse(typeof(TileValue), v));
+
+            builder.Entity<RoundResult>()
+                .Property(e => e.PlayResult)
+                .HasConversion(
+                v => v.ToString(),
+                v => (PlayResult)Enum.Parse(typeof(PlayResult), v));
 
             builder.Entity<RoundResultHand>()
                 .Property(e => e.HandType)

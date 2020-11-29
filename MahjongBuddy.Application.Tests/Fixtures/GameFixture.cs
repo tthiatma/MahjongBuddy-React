@@ -30,8 +30,8 @@ namespace MahjongBuddy.Application.Tests.Fixtures
 
             CreateBaseData();
             PointCalculator = new HomeGameCalculator(new ExtraPointBuilder(), new HandTypeBuilder());
-            MainPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == MainPlayerUserName);
-            OtherPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.AppUser.UserName == OtherPlayerName);
+            MainPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.Player.UserName == MainPlayerUserName);
+            OtherPlayerRound = TestDataContext.Rounds.First().RoundPlayers.First(u => u.GamePlayer.Player.UserName == OtherPlayerName);
         }
 
         public override void Dispose()
@@ -84,25 +84,25 @@ namespace MahjongBuddy.Application.Tests.Fixtures
                         new GamePlayer
                         {
                             IsHost = true,
-                            AppUserId = "a",
+                            PlayerId = "a",
                             InitialSeatWind = WindDirection.East
                         },
                         new GamePlayer
                         {
                             IsHost = false,
-                            AppUserId = "b",
+                            PlayerId = "b",
                             InitialSeatWind = WindDirection.South
                         },
                         new GamePlayer
                         {
                             IsHost = false,
-                            AppUserId = "c",
+                            PlayerId = "c",
                             InitialSeatWind = WindDirection.West
                         },
                         new GamePlayer
                         {
                             IsHost = false,
-                            AppUserId = "d",
+                            PlayerId = "d",
                             InitialSeatWind = WindDirection.North
                         }
                     }

@@ -60,7 +60,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
 
@@ -153,7 +153,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round.IsEnding)
                     round.IsEnding = false;
 
-                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.GamePlayer.AppUser.UserName != request.UserName);
+                var otherPlayers = round.RoundPlayers.Where(u => u.IsMyTurn == true && u.GamePlayer.Player.UserName != request.UserName);
                 foreach (var otherPlayerTurn in otherPlayers)
                 {
                     otherPlayerTurn.IsMyTurn = false;

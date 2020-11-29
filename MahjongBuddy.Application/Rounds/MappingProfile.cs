@@ -23,19 +23,19 @@ namespace MahjongBuddy.Application.Rounds
             CreateMap<RoundPlayerAction, RoundPlayerActionDto>();
 
             CreateMap<RoundPlayer, RoundPlayerDto>()
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.AppUser.DisplayName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.Player.DisplayName))
                 .ForMember(dest => dest.ConnectionId, opt => opt.MapFrom(s => s.GamePlayer.Connections.FirstOrDefault().Id))
                 .ForMember(dest => dest.PlayerTiles, opt => opt.MapFrom<PlayerTilesResolver>());
 
             CreateMap<RoundPlayer, RoundOtherPlayerDto>()
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.AppUser.DisplayName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.Player.DisplayName))
                 .ForMember(dest => dest.ActiveTilesCount, opt => opt.MapFrom<ActiveTilesCountResolver>())
                 .ForMember(dest => dest.GraveyardTiles, opt => opt.MapFrom<GraveyardTilesResolver>())
                 .ForMember(dest => dest.SeatOrientation, opt => opt.MapFrom<SeatOrientationResolver>());
 
             CreateMap<RoundResult, RoundResultDto>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.AppUser.UserName))
-                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.AppUser.DisplayName))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.Player.UserName))
+                .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.Player.DisplayName))
                 .ForMember(dest => dest.PlayerTiles, opt => opt.MapFrom<ResultPlayerTilesResolver>());
         }
     }

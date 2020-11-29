@@ -41,28 +41,28 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                         new GamePlayer
                         {
                             IsHost = true,
-                            AppUserId = "a",
+                            PlayerId = "a",
                             InitialSeatWind = WindDirection.East
                         },
                         //Mei
                         new GamePlayer
                         {
                             IsHost = false,
-                            AppUserId = "b",
+                            PlayerId = "b",
                             InitialSeatWind = WindDirection.South
                         },
                         //Peter
                         new GamePlayer
                         {
                             IsHost = false,
-                            AppUserId = "c",
+                            PlayerId = "c",
                             InitialSeatWind = WindDirection.West
                         },
                         //Jason
                         new GamePlayer
                         {
                             IsHost = false,
-                            AppUserId = "d",
+                            PlayerId = "d",
                             InitialSeatWind = WindDirection.North
                         }
                     }
