@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using MahjongBuddy.Application.Hub;
+using MahjongBuddy.Application.Dtos;
+using System.Collections.Generic;
 
 namespace MahjongBuddy.API.SignalR
 {
@@ -46,10 +48,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var updates = await _mediator.Send(command);
-                foreach (var u in updates)
-                {
-                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("RoundStarted", u);
-                }
+                await SendClientRoundUpdates(updates, "RoundStarted");
             }
             catch (Exception ex)
             {
@@ -74,19 +73,13 @@ namespace MahjongBuddy.API.SignalR
         public async Task EndingRound(Ending.Command command)
         {
             var updates = await _mediator.Send(command);
-            foreach (var u in updates)
-            {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRound", u);
-            }
+            await SendClientRoundUpdates(updates, "UpdateRound");
         }
 
         public async Task TiedRound(Tied.Command command)
         {
             var updates = await _mediator.Send(command);
-            foreach (var u in updates)
-            {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRound", u);
-            }
+            await SendClientRoundUpdates(updates, "UpdateRound");
         }
 
         public async Task JoinGame(Join.Command command)
@@ -150,8 +143,7 @@ namespace MahjongBuddy.API.SignalR
         }
 
         public async Task AddToGroup(string groupId)
-        {
-            //
+        {            
             await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
         }
 
@@ -164,10 +156,7 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var updates = await _mediator.Send(command);
-            foreach (var u in updates)
-            {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-            }
+            await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
         }
 
         public async Task ThrowTile(Throw.Command command)
@@ -178,17 +167,17 @@ namespace MahjongBuddy.API.SignalR
 
             var hasAction = updates.FirstOrDefault(r => r.MainPlayer.RoundPlayerActions.Count() > 0);
             var roundUpdateMethod = hasAction == null ? "UpdateRound" : "UpdateRoundNoLag";
-            foreach (var u in updates)
-            {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync(roundUpdateMethod, u);
-            }
+            await SendClientRoundUpdates(updates, roundUpdateMethod);
         }
 
         public async Task SortTiles(SortTiles.Command command)
         {
             command.UserName = GetUserName();
             var update = await _mediator.Send(command);
-            await Clients.Client(update.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", update);
+            foreach (var c in update.MainPlayer.Connections)
+            {
+                await Clients.Client(c.Id).SendAsync("UpdateRoundNoLag", update);
+            }
         }
 
         public async Task PickTile(Pick.Command command)
@@ -196,10 +185,8 @@ namespace MahjongBuddy.API.SignalR
             string userName = GetUserName();
             command.UserName = userName;
             var updates = await _mediator.Send(command);
-            foreach (var u in updates)
-            {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-            }
+            await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
+
         }
 
         public async Task PongTile(Pong.Command command)
@@ -209,10 +196,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var updates = await _mediator.Send(command);
-                foreach (var u in updates)
-                {
-                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-                }
+                await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
             }
             catch (RestException ex)
             {
@@ -227,10 +211,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var updates = await _mediator.Send(command);
-                foreach (var u in updates)
-                {
-                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-                }
+                await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
             }
             catch (RestException ex)
             {
@@ -246,10 +227,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var updates = await _mediator.Send(command);
-                foreach (var u in updates)
-                {
-                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-                }
+                await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
             }
             catch (RestException ex)
             {
@@ -261,10 +239,7 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var updates = await _mediator.Send(command);
-            foreach (var u in updates)
-            {
-                await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-            }
+            await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
         }
 
         public async Task WinRound(Win.Command command)
@@ -274,10 +249,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var updates = await _mediator.Send(command);
-                foreach (var u in updates)
-                {
-                    await Clients.Client(u.MainPlayer.ConnectionId).SendAsync("UpdateRoundNoLag", u);
-                }
+                await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
             }
             catch (RestException ex)
             {
@@ -288,6 +260,20 @@ namespace MahjongBuddy.API.SignalR
         private string GetUserName()
         {
             return Context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        private async Task SendClientRoundUpdates(IEnumerable<RoundDto> updates, string command)
+        {
+            foreach (var u in updates)
+            {
+                if(u.MainPlayer.Connections != null)
+                {
+                    foreach (var c in u.MainPlayer.Connections)
+                    {
+                        await Clients.Client(c.Id).SendAsync(command, u);
+                    }
+                }
+            }
         }
     }
 }

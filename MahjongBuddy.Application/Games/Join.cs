@@ -40,9 +40,9 @@ namespace MahjongBuddy.Application.Games
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
+                var gamePlayer = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
 
-                if (playerInGame != null)
+                if (gamePlayer != null)
                 {
                     //set connection to connected if its already exist
                     var existingConnection = await _context.Connections.FirstOrDefaultAsync(c => c.Id == request.ConnectionId);
@@ -50,10 +50,7 @@ namespace MahjongBuddy.Application.Games
                     {
                         existingConnection.Connected = true;
                         existingConnection.UserAgent = request.UserAgent;
-                    }
-                    else
-                    {
-                        playerInGame.Connections.Add(new Connection { Id = request.ConnectionId, Connected = true, UserAgent = request.UserAgent });
+                        existingConnection.GamePlayerId = gamePlayer.Id;
                     }
                 }
                 else
@@ -62,19 +59,22 @@ namespace MahjongBuddy.Application.Games
                     if (usersInGame == 4)
                         throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
 
-                    playerInGame = new GamePlayer
+                    gamePlayer = new GamePlayer
                     {
                         Game = game,
                         Player = user,
                         IsHost = false,
                     };
-                    playerInGame.Connections.Add(new Connection { Id = request.ConnectionId, Connected = true, UserAgent = request.UserAgent });
-                    _context.GamePlayers.Add(playerInGame);
+                    gamePlayer.Connections.Add(new Connection { 
+                        Id = request.ConnectionId, 
+                        Connected = true, 
+                        UserAgent = request.UserAgent });
+                    _context.GamePlayers.Add(gamePlayer);
                 }
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return _mapper.Map<PlayerDto>(playerInGame);
+                if (success) return _mapper.Map<PlayerDto>(gamePlayer);
 
                 throw new Exception("Problem joining to game");
             }

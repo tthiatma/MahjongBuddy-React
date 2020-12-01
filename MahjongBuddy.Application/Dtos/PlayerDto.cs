@@ -1,4 +1,5 @@
 ﻿using MahjongBuddy.Core;
+using System.Collections.Generic;
 
 namespace MahjongBuddy.Application.Dtos
 {
@@ -14,6 +15,6 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool IsHost { get; set; }
 
-        public string ConnectionId { get; set; }
+        public IEnumerable<ConnectionDto> Connections { get; set; }
     }
 }

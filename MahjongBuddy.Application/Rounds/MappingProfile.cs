@@ -24,7 +24,7 @@ namespace MahjongBuddy.Application.Rounds
 
             CreateMap<RoundPlayer, RoundPlayerDto>()
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.Player.DisplayName))
-                .ForMember(dest => dest.ConnectionId, opt => opt.MapFrom(s => s.GamePlayer.Connections.FirstOrDefault().Id))
+                .ForMember(dest => dest.Connections, opt => opt.MapFrom(s => s.GamePlayer.Connections))
                 .ForMember(dest => dest.PlayerTiles, opt => opt.MapFrom<PlayerTilesResolver>());
 
             CreateMap<RoundPlayer, RoundOtherPlayerDto>()
