@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +19,7 @@ namespace MahjongBuddy.Application.Games
         {
             public int GameId { get; set; }
             public string UserName { get; set; }
+            public string ConnectionId { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, PlayerDto>
@@ -38,20 +41,33 @@ namespace MahjongBuddy.Application.Games
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
+                var gamePlayer = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
 
-                if (playerInGame == null)
+                if (gamePlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player already left the game" });
 
-                _context.Connections.RemoveRange(playerInGame.Connections);
 
-                _context.GamePlayers.Remove(playerInGame);
+                if(game.Status == GameStatus.Created)
+                {
+                    _context.Connections.RemoveRange(gamePlayer.Connections);
+                    _context.GamePlayers.Remove(gamePlayer);
+                }
 
-                var success = await _context.SaveChangesAsync() > 0;
+                var currentConnection = gamePlayer.Connections.FirstOrDefault(c => c.Id == request.ConnectionId);
+                if (currentConnection != null && game.Status == GameStatus.Playing)
+                {
+                    currentConnection.Connected = false;
+                }
 
-                if (success) return _mapper.Map<PlayerDto>(playerInGame);
-
-                throw new Exception("Problem leaving from game");
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<PlayerDto>(gamePlayer);
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Problem leaving from game");
+                }
             }
         }
     }

@@ -247,7 +247,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {hasAction && !mainPlayer!.mustThrow && (
+      {hasAction && !hasGiveUpAction && !mainPlayer!.mustThrow && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}

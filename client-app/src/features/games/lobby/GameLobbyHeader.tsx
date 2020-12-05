@@ -52,7 +52,7 @@ const GameLobbyHeader: React.FC<{
                 <p>{format(new Date(game.date), "MMMM do, yyyy")}</p>
                 {host && (
                   <p>
-                    Hosted by {" "}
+                    Hosted by{" "}
                     <Link to={`/profile/${host.userName}`}>
                       <strong>{host.displayName}</strong>
                     </Link>
@@ -64,14 +64,23 @@ const GameLobbyHeader: React.FC<{
         </Segment>
       </Segment>
       <Segment clearing attached="bottom">
-        {game.players.length < 4 && <p>Waiting for 4 players to be in the game...</p>}
+        {game.players.length < 4 && (
+          <p>Waiting for 4 players to be in the game...</p>
+        )}
         {game.status === GameStatus.Created &&
           game.isHost &&
           game.players.length === 4 &&
           !userNoWind && (
-            <Button icon labelPosition='right' floated="right" color="blue" loading={hubLoading} onClick={startRound}>
+            <Button
+              icon
+              labelPosition="right"
+              floated="right"
+              color="blue"
+              loading={hubLoading}
+              onClick={startRound}
+            >
               Start Game
-              <Icon name='play' />
+              <Icon name="play" />
             </Button>
           )}
         {game.status === GameStatus.Created &&

@@ -22,7 +22,7 @@ const ResultModal: React.FC = () => {
   let winnerTiles: IRoundTile[] | null = null;
 
   const roundResults = round!.roundResults;
-  const isHost = getMainUser!.isHost;
+  const isHost = getMainUser?.isHost;
   const activeBoardTile = round?.boardTiles.find(t => t.status === TileStatus.BoardActive);
 
   if (roundResults) {

@@ -2,10 +2,14 @@
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Core;
+using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,41 +46,66 @@ namespace MahjongBuddy.Application.Games
 
                 var gamePlayer = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
 
+                var playerInGame = game.GamePlayers.Any(p => p.Player.UserName == request.UserName);
+                if (!playerInGame)
+                {
+                    if (game.Status == GameStatus.Playing || game.GamePlayers.Count == 4)
+                    {
+                        throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
+                    }
+                }
+
                 if (gamePlayer != null)
                 {
-                    //set connection to connected if its already exist
-                    var existingConnection = await _context.Connections.FirstOrDefaultAsync(c => c.Id == request.ConnectionId);
-                    if (existingConnection != null)
+                    foreach (var uc in gamePlayer.Connections)
                     {
-                        existingConnection.Connected = true;
-                        existingConnection.UserAgent = request.UserAgent;
-                        existingConnection.GamePlayerId = gamePlayer.Id;
+                        if (uc.Id != request.ConnectionId)
+                        {
+                            _context.Connections.Remove(uc);
+                        }
+                        else
+                        {
+                            uc.Connected = true;
+                        }
+                    }
+                    var existingConnection = _context.Connections.FirstOrDefault(c => c.Id == request.ConnectionId);
+                    if (existingConnection == null)
+                    {
+                        gamePlayer.Connections.Add(new Connection
+                        {
+                            Id = request.ConnectionId,
+                            GamePlayerId = gamePlayer.Id,
+                            Connected = true,
+                            UserAgent = request.UserAgent
+                        });
                     }
                 }
                 else
                 {
-                    var usersInGame = game.GamePlayers.Count;
-                    if (usersInGame == 4)
-                        throw new RestException(HttpStatusCode.BadRequest, new { Game = "Reached max players" });
-
                     gamePlayer = new GamePlayer
                     {
                         Game = game,
                         Player = user,
                         IsHost = false,
                     };
-                    gamePlayer.Connections.Add(new Connection { 
-                        Id = request.ConnectionId, 
-                        Connected = true, 
-                        UserAgent = request.UserAgent });
+                    gamePlayer.Connections.Add(new Connection
+                    {
+                        Id = request.ConnectionId,
+                        Connected = true,
+                        UserAgent = request.UserAgent
+                    });
                     _context.GamePlayers.Add(gamePlayer);
                 }
 
-                var success = await _context.SaveChangesAsync() > 0;
-
-                if (success) return _mapper.Map<PlayerDto>(gamePlayer);
-
-                throw new Exception("Problem joining to game");
+                try
+                {
+                    await _context.SaveChangesAsync();
+                    return _mapper.Map<PlayerDto>(gamePlayer);
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Problem joining to game");
+                }
             }
         }
     }

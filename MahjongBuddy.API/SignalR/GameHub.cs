@@ -31,16 +31,30 @@ namespace MahjongBuddy.API.SignalR
             var gameId = requestContext.Query["gid"].ToString();
             var connectionId = Context.ConnectionId;
             var userAgent = requestContext.Headers["User-Agent"];
-
-            await _mediator.Send(new OnConnected.Query { ConnectionId = connectionId, UserAgent = userAgent, UserName = userName, GameId = gameId });
+            var player = await _mediator.Send(new Join.Command { ConnectionId = connectionId, UserAgent = userAgent, UserName = userName, GameId = int.Parse(gameId) });
             await base.OnConnectedAsync();
+            await Groups.AddToGroupAsync(connectionId, gameId);
+            await Clients.Group(gameId).SendAsync("PlayerConnected", player);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var connectionId = Context.ConnectionId;
-            await _mediator.Send(new OnDisConnected.Query { ConnectionId = connectionId});
+            var onDisconnectedResult = await _mediator.Send(new OnDisConnected.Command { ConnectionId = connectionId});
             await base.OnDisconnectedAsync(exception);
+
+            if(onDisconnectedResult != null)
+            {
+                if(onDisconnectedResult.Game.Status == Core.Enums.GameStatus.Created)
+                {
+                    //player left the game
+                    await Clients.Group(onDisconnectedResult.Game.Id.ToString()).SendAsync("PlayerDisconnected", onDisconnectedResult.Player);
+                }
+                if (onDisconnectedResult.Game.Status == Core.Enums.GameStatus.Playing)
+                {
+                    await Clients.Group(onDisconnectedResult.Game.Id.ToString()).SendAsync("PlayerDisconnected", onDisconnectedResult.Player);
+                }
+            }
         }
 
         public async Task StartRound(Application.Rounds.Create.Command command)
@@ -73,26 +87,25 @@ namespace MahjongBuddy.API.SignalR
         public async Task EndingRound(Ending.Command command)
         {
             var updates = await _mediator.Send(command);
-            await SendClientRoundUpdates(updates, "UpdateRound");
+            await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
         }
 
         public async Task TiedRound(Tied.Command command)
         {
             var updates = await _mediator.Send(command);
-            await SendClientRoundUpdates(updates, "UpdateRound");
+            await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
         }
 
-        public async Task JoinGame(Join.Command command)
+        public async Task JoinGame(string gameId)
         {
-            command.UserName = GetUserName();
-            command.ConnectionId = Context.ConnectionId;
-            command.UserAgent = Context.GetHttpContext().Request.Headers["User-Agent"];
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, command.GameId.ToString());
-
-            var player = await _mediator.Send(command);
-
-            await Clients.Group(command.GameId.ToString()).SendAsync("PlayerConnected", player);
+            var player = await _mediator.Send(new Join.Command {
+                GameId = int.Parse(gameId)
+                , UserName = GetUserName()
+                , ConnectionId = Context.ConnectionId, 
+                UserAgent = Context.GetHttpContext().Request.Headers["User-Agent"] 
+            });
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+            await Clients.Group(gameId).SendAsync("PlayerConnected", player);
         }
 
         public async Task LeaveGame(Leave.Command command)
@@ -140,11 +153,6 @@ namespace MahjongBuddy.API.SignalR
             var chatMsg = await _mediator.Send(command);
 
             await Clients.Group(command.GameId.ToString()).SendAsync("ReceiveChatMsg", chatMsg);
-        }
-
-        public async Task AddToGroup(string groupId)
-        {            
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
         }
 
         public async Task RemoveFromGroup(string groupId)

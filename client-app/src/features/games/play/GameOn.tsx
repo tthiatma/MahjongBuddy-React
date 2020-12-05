@@ -53,9 +53,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     throwTile,
     orderTiles,
     hubLoading,
-    createHubConnection,
-    stopHubConnection,
-    leaveGroup,
+      createHubConnection,
+      leaveGroup,
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -72,11 +71,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   });
 
   useEffect(() => {
-    createHubConnection(match.params!.id);
+    createHubConnection(match.params.id);
     return () => {
-      leaveGroup(match.params.id);
+        leaveGroup(match.params.id);
     };
-  }, [createHubConnection, stopHubConnection, leaveGroup, match.params]);
+  }, [createHubConnection, leaveGroup, match.params.id]);
 
   useEffect(() => {
     runInAction(() => {

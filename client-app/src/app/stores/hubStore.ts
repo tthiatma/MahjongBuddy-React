@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import {
   HubConnection,
   HubConnectionBuilder,
+  HubConnectionState,
   LogLevel,
 } from "@microsoft/signalr";
 import { WindDirection } from "../models/windEnum";
@@ -16,6 +17,7 @@ import jwt from "jsonwebtoken";
 import agent from "../api/agent";
 import UserStore from "./userStore";
 import { IPlayer, IRoundOtherPlayer } from "../models/player";
+import { GameStatus } from "../models/gameStatusEnum";
 
 export default class HubStore {
   rootStore: RootStore;
@@ -175,16 +177,23 @@ export default class HubStore {
               this.gameStore.game.id,
               this.gameStore.game
             );
-            if (this.rootStore.userStore.user?.userName !== player.userName)
+            if (this.rootStore.userStore.user?.userName !== player.userName && this.gameStore.game.status === GameStatus.Created)
               toast.info(`${player.displayName} has left the Game`);
           }
         })
       );
 
-      this.hubConnection.on("PlayerConnected", (player) =>
+      this.hubConnection.on("PlayerConnected", (player: IPlayer) => {
         runInAction(() => {
           if (this.gameStore.game) {
-            this.gameStore.game.players.push(player);
+            const exist = this.gameStore.game.players.find(p => p.userName === player.userName)
+            if(!exist){
+              this.gameStore.game.players.push(player);
+
+              if (this.rootStore.userStore.user?.userName !== player.userName)
+              toast.info(`${player.displayName} has joined the Game`);
+            }
+
             if (this.rootStore.userStore.user?.userName === player.userName) {
               this.gameStore.game.initialSeatWind = player.initialSeatWind;
               this.gameStore.game.isCurrentPlayerConnected = true;
@@ -194,11 +203,9 @@ export default class HubStore {
               this.gameStore.game.id,
               this.gameStore.game
             );
-            if (this.rootStore.userStore.user?.userName !== player.userName)
-              toast.info(`${player.displayName} has joined the Game`);
           }
         })
-      );
+      });
 
       this.hubConnection.on("Send", (message) => {
         toast.info(message);
@@ -220,13 +227,8 @@ export default class HubStore {
       this.hubConnection!.invoke("RemoveFromGroup", gameId);
   };
 
-  @action joinGroup = (gameId: string) => {
-    if (this.hubConnection!.state === "Connected")
-      this.hubConnection!.invoke("AddToGroup", gameId);
-  };
-
-  @action createHubConnection = (gameId: string) => {
-    if (!this.hubConnection) {
+  @action createHubConnection = async (gameId: string) => {
+    if (this.hubConnection == null) {
       this.hubConnection = new HubConnectionBuilder()
         .withUrl(`${process.env.REACT_APP_API_GAME_HUB_URL!}/?gid=${gameId}`, {
           accessTokenFactory: () => this.checkTokenAndRefreshIfExpired(),
@@ -236,7 +238,7 @@ export default class HubStore {
         .build();
       this.addHubConnectionHandler();
     }
-    if (this.hubConnection!.state === "Disconnected") {
+    if (this.hubConnection.state === HubConnectionState.Disconnected || this.hubConnection.state === HubConnectionState.Disconnecting) {
       runInAction(() => {
         this.hubLoading = true;
       });
@@ -244,7 +246,7 @@ export default class HubStore {
         .start()
         .then(() => {
           if (this.hubConnection!.state === "Connected")
-            this.hubConnection?.invoke("AddToGroup", gameId);
+            this.hubConnection?.invoke("JoinGame", gameId);
         })
         .then(() => {
           runInAction(() => {
@@ -258,56 +260,11 @@ export default class HubStore {
           console.log("Error establishing connection", error);
         });
     } else if (this.hubConnection!.state === "Connected") {
-      this.hubConnection?.invoke("AddToGroup", gameId);
+      this.hubConnection?.invoke("JoinGame", gameId);
     }
   };
 
-  @action renewConnection = (gameId: string) => {
-    if (this.hubConnection && this.hubConnection!.state === "Connected") {
-      runInAction(() => {
-        this.hubLoading = true;
-      });
-      this.hubConnection!.invoke("RemoveFromGroup", gameId)
-        .then(() => {
-          this.hubConnection!.stop().then(() => {
-            runInAction(() => {
-              this.hubLoading = false;
-            });
-          });
-        })
-        .then(() => {
-          this.createHubConnection(gameId);
-        })
-        .catch((error) => {
-          runInAction(() => {
-            this.hubLoading = false;
-          });
-          console.log(error);
-        });
-    }
-  };
-
-  @action stopHubConnection = (gameId: string) => {
-    if (this.hubConnection && this.hubConnection!.state === "Connected") {
-      runInAction(() => {
-        this.hubLoading = true;
-      });
-      this.hubConnection!.invoke("RemoveFromGroup", gameId)
-        .then(() => {
-          this.hubConnection!.stop().then(() => {
-            runInAction(() => {
-              this.hubLoading = false;
-            });
-          });
-        })
-        .catch((error) => {
-          runInAction(() => {
-            this.hubLoading = false;
-          });
-          console.log(error);
-        });
-    }
-  };
+  
 
   @action addChatMsg = async (values: any) => {
     values.gameId = this.gameStore.game!.id;
@@ -321,13 +278,13 @@ export default class HubStore {
   };
 
   @action joinGame = async () => {
-    let values: any = {};
-    values.gameId = this.gameStore.game!.id;
+    const gameId = this.gameStore.game!.id;
+    debugger;
     runInAction(() => {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("JoinGame", values);
+      this.hubConnection!.invoke("JoinGame", gameId.toString());
       runInAction(() => {
         this.hubLoading = false;
       });

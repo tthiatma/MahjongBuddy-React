@@ -63,10 +63,10 @@ namespace MahjongBuddy.Application.Rounds
                     Player firstDealer = game.GamePlayers.First(u => u.InitialSeatWind == WindDirection.East).Player;
                     newRound.Wind = WindDirection.East;
                     newRound.RoundCounter = 1;
-                    foreach (var ug in game.GamePlayers)
+                    foreach (var gp in game.GamePlayers)
                     {
-                        var rp = new RoundPlayer { GamePlayerId = ug.Id, Round = newRound, Wind = ug.InitialSeatWind.Value, Points = ug.Points };
-                        if (ug.PlayerId == firstDealer.Id)
+                        var rp = new RoundPlayer { GamePlayerId = gp.Id, GamePlayer = gp, Round = newRound, Wind = gp.InitialSeatWind.Value, Points = gp.Points };
+                        if (gp.PlayerId == firstDealer.Id)
                         {
                             rp.IsInitialDealer = true;
                             rp.IsDealer = true;
@@ -123,7 +123,7 @@ namespace MahjongBuddy.Application.Rounds
                 var dealerId = theDealer.GamePlayerId;
 
                 //for debugging
-                //RoundTileHelper.SetupForSelfPick(newRound.RoundTiles);
+                //RoundTileHelper.SetupForLastTileWin(newRound.RoundTiles);
 
                 //tiles assignment and sorting
                 foreach (var gamePlayer in game.GamePlayers)
@@ -170,6 +170,7 @@ namespace MahjongBuddy.Application.Rounds
                     var ur = new RoundPlayer
                     {
                         GamePlayerId = lur.GamePlayerId,
+                        GamePlayer = lur.GamePlayer,
                         IsInitialDealer = lur.IsInitialDealer,
                         IsDealer = lur.Wind == windOfDealer,
                         IsMyTurn = lur.Wind == windOfDealer,

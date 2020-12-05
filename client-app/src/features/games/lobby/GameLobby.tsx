@@ -25,14 +25,14 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     loadingLatestRoundInitial,
     loadingGameInitial,
   } = rootStore.gameStore;
-  const { createHubConnection, hubLoading, leaveGroup } = rootStore.hubStore;
+    const { createHubConnection, hubLoading, leaveGroup } = rootStore.hubStore;
 
   useEffect(() => {
-    createHubConnection(match.params!.id);
+    createHubConnection(match.params.id);
     return () => {
-      leaveGroup(match.params.id);
+        leaveGroup(match.params.id);
     };
-  }, [createHubConnection, leaveGroup, match.params]);
+  }, [createHubConnection, leaveGroup, match.params.id]);
 
   useEffect(() => {
     getLatestRound(match.params!.id);

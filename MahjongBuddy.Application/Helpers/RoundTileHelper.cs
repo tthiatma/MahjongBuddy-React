@@ -113,17 +113,17 @@ namespace MahjongBuddy.Application.Helpers
                 tile.Status = TileStatus.BoardGraveyard;
             }
 
-            roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Four && x.Owner == DefaultValue.board).Take(1).ForEach(rt =>
-            {
-                rt.Owner = null;
-                rt.Status = TileStatus.Unrevealed;
-            });
-
-            //roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Five && x.Owner == DefaultValue.board).Take(1).ForEach(rt =>
+            //roundTiles.Where(x => x.Tile.TileType == TileType.Circle && x.Tile.TileValue == TileValue.Four && x.Owner == DefaultValue.board).Take(1).ForEach(rt =>
             //{
             //    rt.Owner = null;
             //    rt.Status = TileStatus.Unrevealed;
             //});
+
+            roundTiles.Where(x => x.Tile.TileType == TileType.Money && x.Tile.TileValue == TileValue.Five && x.Owner == DefaultValue.board).Take(1).ForEach(rt =>
+            {
+                rt.Owner = null;
+                rt.Status = TileStatus.Unrevealed;
+            });
         }
 
         public static void SetupForSelfPick(IEnumerable<RoundTile> roundTiles)
