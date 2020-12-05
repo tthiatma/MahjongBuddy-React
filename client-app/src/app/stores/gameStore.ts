@@ -34,6 +34,10 @@ export default class GameStore {
     : null;
   } 
 
+  @computed get userNoWind(){
+    return this.game ? this.game.players.some((p) => p.initialSeatWind === null || p.initialSeatWind === undefined) : false;
+  }
+
   @action loadGames = async () => {
     this.loadingGameInitial = true;
     try {

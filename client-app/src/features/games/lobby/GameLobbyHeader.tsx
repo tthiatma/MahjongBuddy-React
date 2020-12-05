@@ -26,6 +26,7 @@ const GameLobbyHeader: React.FC<{
   latestRound: IRound | null;
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
+  const {userNoWind} = rootStore.gameStore;
   const {
     hubLoading,
     startRound,
@@ -34,7 +35,6 @@ const GameLobbyHeader: React.FC<{
     randomizeWind,
   } = rootStore.hubStore;
   const host = game.players.filter((p) => p.isHost)[0];
-  const userNoWind = game.players.some((p) => p.initialSeatWind === undefined);
 
   return (
     <Segment.Group>

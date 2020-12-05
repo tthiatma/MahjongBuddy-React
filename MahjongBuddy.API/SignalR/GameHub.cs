@@ -40,21 +40,8 @@ namespace MahjongBuddy.API.SignalR
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var connectionId = Context.ConnectionId;
-            var onDisconnectedResult = await _mediator.Send(new OnDisConnected.Command { ConnectionId = connectionId});
+            await _mediator.Send(new OnDisConnected.Query { ConnectionId = connectionId });
             await base.OnDisconnectedAsync(exception);
-
-            if(onDisconnectedResult != null)
-            {
-                if(onDisconnectedResult.Game.Status == Core.Enums.GameStatus.Created)
-                {
-                    //player left the game
-                    await Clients.Group(onDisconnectedResult.Game.Id.ToString()).SendAsync("PlayerDisconnected", onDisconnectedResult.Player);
-                }
-                if (onDisconnectedResult.Game.Status == Core.Enums.GameStatus.Playing)
-                {
-                    await Clients.Group(onDisconnectedResult.Game.Id.ToString()).SendAsync("PlayerDisconnected", onDisconnectedResult.Player);
-                }
-            }
         }
 
         public async Task StartRound(Application.Rounds.Create.Command command)
