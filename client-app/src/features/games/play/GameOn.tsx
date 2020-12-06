@@ -23,6 +23,7 @@ import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
 import { Link } from "react-router-dom";
 import { IRoundTile } from "../../../app/models/tile";
+import RulesModal from "./RulesModal";
 
 interface DetailParams {
   roundId: string;
@@ -48,6 +49,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     boardGraveyardTiles,
     remainingTiles,
     roundEndingCounter,
+    openRulesModal,
   } = rootStore.roundStore;
   const {
     throwTile,
@@ -218,7 +220,17 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                 <Grid.Column width={10}>
                   {topPlayer && <TileListOtherPlayer player={topPlayer!} />}
                 </Grid.Column>
-                <Grid.Column width={3} />
+                <Grid.Column textAlign="right" width={3}>
+                <Button
+                    basic
+                    size="small"
+                    circular
+                    icon="book right"
+                    onClick={openRulesModal}
+                  />
+                  <RulesModal />
+                  </Grid.Column>
+                
               </Grid.Row>
 
               <Grid.Row>

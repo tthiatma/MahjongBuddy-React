@@ -75,6 +75,7 @@ export default class RoundStore {
   @observable isMyTurn: boolean = false;
   @observable isManualSort: boolean = false;
   @observable showResult: boolean = false;
+  @observable showRules: boolean = false;
   @observable roundOver: boolean = false;
   @observable roundEndingCounter: number = 5;
   @observable.shallow selectedTile: IRoundTile | null = null;
@@ -222,14 +223,25 @@ export default class RoundStore {
       : null;
   }
 
-  @action openModal = () => {
+  @action openRulesModal = () => {
+    runInAction(() => {
+      this.showRules = true;
+    });
+  }
+
+  @action openResultModal = () => {
     runInAction(() => {
       this.showResult = true;
     });
   };
 
+  @action closeRulesModal = () => {
+    runInAction(() => {
+      this.showRules = false;
+    });
+  };
 
-  @action closeModal = () => {
+  @action closeResultModal = () => {
     runInAction(() => {
       this.showResult = false;
     });

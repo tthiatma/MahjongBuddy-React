@@ -21,7 +21,7 @@ import {
 const PlayerAction: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const {
-    openModal,
+    openResultModal,
     showResult,
     round,
     mainPlayer,
@@ -286,7 +286,7 @@ const PlayerAction: React.FC = () => {
       )}
 
       {!showResult && round!.isOver && (
-        <Button onClick={openModal}>Result</Button>
+        <Button onClick={openResultModal}>Result</Button>
       )}
     </Container>
   );

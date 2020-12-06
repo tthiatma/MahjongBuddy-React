@@ -14,7 +14,7 @@ const ResultModal: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const { startRound } = rootStore.hubStore;
   const { getMainUser } = rootStore.gameStore;
-  const { round, showResult, closeModal } = rootStore.roundStore;
+  const { round, showResult, closeResultModal } = rootStore.roundStore;
 
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
@@ -33,7 +33,7 @@ const ResultModal: React.FC = () => {
   }
 
   return (
-    <Modal open={showResult} onClose={closeModal} size="small">
+    <Modal open={showResult} onClose={closeResultModal} size="small">
       <Header icon="bullhorn" content="Result" />
 
       {roundResults !== null && roundResults.length > 0 ? (
@@ -136,7 +136,7 @@ const ResultModal: React.FC = () => {
         </Modal.Content>
       )}
       <Modal.Actions>
-        <Button color="green" onClick={closeModal} inverted>
+        <Button color="green" onClick={closeResultModal} inverted>
           <Icon name="checkmark" /> Got it
         </Button>
         {isHost && (
