@@ -29,8 +29,8 @@ const RulesModal: React.FC = () => {
   ];
 
   return (
-    <Modal closeIcon open={showRules} onClose={closeRulesModal} size="small">
-      <Modal.Content scrolling>
+    <Modal closeIcon open={showRules} onClose={closeRulesModal} size="small" centered={false}>
+      <Modal.Content>
         <Tab panes={panes} />
       </Modal.Content>
     </Modal>
