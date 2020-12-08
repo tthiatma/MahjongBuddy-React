@@ -30,6 +30,9 @@ import { ForgotPasswordForm } from "../../features/user/ForgotPasswordForm";
 import ForgotPasswordSuccess from "../../features/user/ForgotPasswordSuccess";
 import ResetPasswordForm from "../../features/user/ResetPasswordForm";
 import ResetPasswordSuccess from "../../features/user/ResetPasswordSuccess";
+import DataDeletion from "../../features/legals/DataDeletion";
+import About from "../../features/info/About";
+import ChangeLog from "../../features/info/ChangeLog";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -59,6 +62,9 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <NavBar />
             <Container className='mainContent'  style={{paddingTop: showNavBar ? "5em" : "0" }}>
               <Switch>
+                <Route exact path="/changelog" component={ChangeLog} />
+                <Route exact path="/about" component={About} />
+                <Route exact path="/datadeletion" component={DataDeletion} />
                 <Route exact path="/privacypolicy" component={PrivacyPolicy} />
                 <Route exact path="/termsandconditions" component={TermsAndConditions} />
                 <Route exact path="/rules" component={RulesPage} />

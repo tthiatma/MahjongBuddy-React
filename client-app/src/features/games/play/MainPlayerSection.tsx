@@ -2,7 +2,14 @@ import React, { Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile, TileType, TileValue } from "../../../app/models/tile";
 import { Droppable } from "react-beautiful-dnd";
-import { Grid, Button, Transition, Image } from "semantic-ui-react";
+import {
+  Grid,
+  Button,
+  Transition,
+  Image,
+  Segment,
+  Container,
+} from "semantic-ui-react";
 import PlayerAction from "./PlayerAction";
 import PlayerStatus from "./PlayerStatus";
 import DraggableTile from "./DraggableTile";
@@ -65,6 +72,7 @@ const MainPlayerSection: React.FC<IProps> = ({
   doThrowTile,
 }) => {
   const rootStore = useContext(RootStoreContext);
+  const { user } = rootStore.userStore;
   const { isManualSort } = rootStore.roundStore;
   const { orderTiles } = rootStore.hubStore;
 
@@ -84,7 +92,9 @@ const MainPlayerSection: React.FC<IProps> = ({
       );
 
       runInAction("updating reordered tile", () => {
-        rootStore.roundStore.mainPlayer!.playerTiles![objIndex].activeTileCounter = i;
+        rootStore.roundStore.mainPlayer!.playerTiles![
+          objIndex
+        ].activeTileCounter = i;
       });
     }
     runInAction("autosort", () => {
@@ -152,38 +162,53 @@ const MainPlayerSection: React.FC<IProps> = ({
           </Droppable>
         </Grid.Row>
         <Grid.Row>
-          <div
-            style={{ borderRadius: "25px" }}
-            className="playerStatusContainer"
-            {...(mainPlayer!.isMyTurn && mainPlayer!.mustThrow && {
-              className: "mustThrow playerStatusContainer",
-            })}
-            {...(mainPlayer!.isMyTurn && !mainPlayer!.mustThrow && {
-              className: "playerTurn playerStatusContainer",
-            })}
-          >
-            {mainPlayer && (
-              <span
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  lineHeight: "40px",
-                }}
+          <Grid>
+            <Grid.Column width={3}>
+              <Image 
+              floated="right"
+              style={{ width: "50%"}}
+              circular src={user!.image || "/assets/user.png"} />
+            </Grid.Column>
+            <Grid.Column width={10}>
+              <div
+                style={{ borderRadius: "25px" }}
+                className="playerStatusContainer"
+                {...(mainPlayer!.isMyTurn &&
+                  mainPlayer!.mustThrow && {
+                    className: "mustThrow playerStatusContainer",
+                  })}
+                {...(mainPlayer!.isMyTurn &&
+                  !mainPlayer!.mustThrow && {
+                    className: "playerTurn playerStatusContainer",
+                  })}
               >
-                {isManualSort && (
-                  <Button
-                    className="actionButton"
-                    circular
-                    color="green"
-                    onClick={autoSort}
-                    content="SORT"
-                  />
-                )}
+                {mainPlayer && (
+                  <Fragment>
+                    <span
+                      style={{
+                        width: "100%",
+                        textAlign: "center",
+                        lineHeight: "40px",
+                      }}
+                    >
+                      {isManualSort && (
+                        <Button
+                          className="actionButton"
+                          circular
+                          color="green"
+                          onClick={autoSort}
+                          content="SORT"
+                        />
+                      )}
 
-                <PlayerStatus player={mainPlayer} />
-              </span>
-            )}
-          </div>
+                      <PlayerStatus player={mainPlayer} />
+                    </span>
+                  </Fragment>
+                )}
+              </div>
+            </Grid.Column>
+            <Grid.Column width={3}></Grid.Column>
+          </Grid>
         </Grid.Row>
       </Grid.Column>
       <Grid.Column width={3}>

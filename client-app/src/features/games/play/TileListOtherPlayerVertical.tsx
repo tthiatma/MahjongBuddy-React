@@ -61,21 +61,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
       </Grid.Column>
       <Grid.Column width={5} className="flexTilesVerticalContainer">
         {player && displayClosedTile()}
-        {/* {roundTiles &&
-          roundTiles
-            .filter((t) => t.status === TileStatus.UserActive)
-            .map((rt) => (
-              <div
-                style={{ height: "34px" }}
-                key={rt.id}
-                {...(isReversed && { className: "rotate180" })}
-              >
-                <img
-                  alt="face-down-tile"
-                  src={"/assets/tiles/v50px/face-down.png"}
-                />
-              </div>
-            ))} */}
+       
       </Grid.Column>
 
       <Grid.Column
@@ -83,7 +69,7 @@ const TileListOtherPlayerVertical: React.FC<IProps> = ({
         width={5}
         className="flexTilesVerticalContainer"
       >
-        {player && player.graveyardTiles.sort(sortTiles).map((rt) => (
+        {player && player.graveyardTiles.slice().sort(sortTiles).map((rt) => (
           <div key={rt.id} {...(isReversed && { className: "rotate180" })}>
             <img
               alt={rt.tile.title}

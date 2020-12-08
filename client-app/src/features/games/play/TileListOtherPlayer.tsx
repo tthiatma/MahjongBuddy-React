@@ -44,22 +44,11 @@ const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
         {player && displayClosedTile()}
-        {/* {roundTiles &&
-          roundTiles
-            .filter((t) => t.status === TileStatus.UserActive)
-            .map((rt) => (
-              <div key={rt.id}>
-                <img
-                  alt={"face-down-tile"}
-                  src={"/assets/tiles/50px/face-down.png"}
-                  style={{ overflow: "hidden" }}
-                />
-              </div>
-            ))} */}
+
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
         {player && player.graveyardTiles &&
-          player.graveyardTiles.sort(sortTiles).map((rt) => (
+          player.graveyardTiles.slice().sort(sortTiles).map((rt) => (
             <div key={rt.id}>
               <img alt={rt.tile.title} src={rt.tile.imageSmall} />
             </div>

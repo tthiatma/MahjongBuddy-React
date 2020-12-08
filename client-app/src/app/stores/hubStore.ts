@@ -216,7 +216,7 @@ export default class HubStore {
           accessTokenFactory: () => this.rootStore.commonStore.token!,
         })
         .withAutomaticReconnect()
-        .configureLogging(LogLevel.Debug)
+        .configureLogging(LogLevel.None)
         .build();
       this.addHubConnectionHandler();
     }
