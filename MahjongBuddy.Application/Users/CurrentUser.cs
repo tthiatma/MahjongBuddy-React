@@ -2,7 +2,6 @@
 using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,15 +28,10 @@ namespace MahjongBuddy.Application.Users
             {
                 var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
 
-                return new User
-                {
-                    Id = user.Id,
-                    DisplayName = user.DisplayName,
-                    UserName = user.UserName,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                    Token = _jwtGenerator.CreateToken(user),
-                    RefreshToken = user.RefreshToken
-                };
+                var refreshToken = _jwtGenerator.GenerateRefreshToken();
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+                return new User(user, _jwtGenerator, refreshToken.Token);
             }
         }
     }

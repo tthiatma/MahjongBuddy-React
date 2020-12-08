@@ -13,8 +13,6 @@ import { IRound } from "../models/round";
 import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
-import jwt from "jsonwebtoken";
-import agent from "../api/agent";
 import UserStore from "./userStore";
 import { IPlayer, IRoundOtherPlayer } from "../models/player";
 import { GameStatus } from "../models/gameStatusEnum";
@@ -49,23 +47,6 @@ export default class HubStore {
       });
     });
   }
-
-  checkTokenAndRefreshIfExpired = async () => {
-    const token = localStorage.getItem("jwt");
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (token && refreshToken) {
-      const decodedToken: any = jwt.decode(token);
-      if (decodedToken && Date.now() >= decodedToken.exp * 1000 - 5000) {
-        try {
-          return await agent.User.refreshToken(token, refreshToken);
-        } catch (error) {
-          toast.error("Problem connecting to the game");
-        }
-      } else {
-        return token;
-      }
-    }
-  };
 
   addHubConnectionHandler() {
     if (this.hubConnection) {
@@ -134,6 +115,7 @@ export default class HubStore {
             this.roundStore.round.otherPlayers.forEach(op => {
               var matchingOp = round.otherPlayers.find(rop => rop.userName === op.userName);
               op.mustThrow = matchingOp!.mustThrow;
+              op.activeTilesCount = matchingOp!.activeTilesCount;
             })
           }
         });
@@ -231,7 +213,7 @@ export default class HubStore {
     if (this.hubConnection == null) {
       this.hubConnection = new HubConnectionBuilder()
         .withUrl(`${process.env.REACT_APP_API_GAME_HUB_URL!}/?gid=${gameId}`, {
-          accessTokenFactory: () => this.checkTokenAndRefreshIfExpired(),
+          accessTokenFactory: () => this.rootStore.commonStore.token!,
         })
         .withAutomaticReconnect()
         .configureLogging(LogLevel.Debug)
@@ -417,9 +399,10 @@ export default class HubStore {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("StartRound", values);
-      runInAction(() => {
-        this.hubLoading = false;
+      this.hubConnection!.invoke("StartRound", values).then(() => {
+        runInAction(() => {
+          this.hubLoading = false;
+        });  
       });
     } catch (error) {
       runInAction(() => {

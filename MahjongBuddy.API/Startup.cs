@@ -70,7 +70,7 @@ namespace MahjongBuddy.API
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .WithExposedHeaders("WWW-Authenticate")
-                    .WithOrigins("http://localhost:3000", "http://192.168.86.167:3000", "http://192.168.86.26")
+                    .WithOrigins("https://localhost:3000", "http://localhost:3000", "http://192.168.86.167:3000", "http://192.168.86.26")
                     .AllowCredentials();
                 });
             });
@@ -109,7 +109,7 @@ namespace MahjongBuddy.API
                         ValidateAudience = false,
                         ValidateIssuer = false,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(3)
+                        ClockSkew = TimeSpan.Zero
                     };
                     opt.Events = new JwtBearerEvents
                     {

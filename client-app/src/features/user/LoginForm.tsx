@@ -53,7 +53,7 @@ const LoginForm = () => {
             color="teal"
             textAlign="center"
           />
-          <Field name="email" component={TextInput} placeholder="Email" />
+          <Field name="email" component={TextInput} placeholder="Email"/>
           <Field
             name="password"
             component={TextInput}

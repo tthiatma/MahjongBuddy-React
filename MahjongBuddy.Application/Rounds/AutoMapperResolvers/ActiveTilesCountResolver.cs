@@ -17,7 +17,7 @@ namespace MahjongBuddy.Application.Rounds.AutoMapperResolvers
         {
             var roundId = source.RoundId;
             return _context.RoundTiles.Count(rt => rt.RoundId == roundId
-            && rt.Owner == source.GamePlayer.Player.UserName && rt.Status == TileStatus.UserActive);
+            && rt.Owner == source.GamePlayer.Player.UserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked));
         }
     }
 }

@@ -93,12 +93,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [rootStore.commonStore.showNavBar, rootStore.commonStore.showFooter]);
 
   useEffect(() => {
-    loadGame(match.params!.id);
-  }, [loadGame, match.params, match.params.id]);
+    loadGame(match.params.id);
+  }, [loadGame, match.params.id]);
 
   useEffect(() => {
-    loadRound(match.params.roundId, match.params!.id, rootStore.userStore.user?.userName!);
-  }, [loadRound, match.params, match.params.roundId, rootStore.userStore.user]);
+    loadRound(match.params.roundId, match.params.id);
+  }, [loadRound, match.params.roundId, match.params.id]);
 
   if (
     loadingGameInitial ||
@@ -111,7 +111,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   const getActiveTileAnimation = (): string => {
     let animationStyle: string = "";
-
     switch (boardActiveTile?.thrownBy) {
       case leftPlayer?.userName: {
         animationStyle = "fly right";
@@ -134,7 +133,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   };
 
   const doThrowTile = (tileId: string) => {
-    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver) {
+    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver && !round.isEnding) {
       runInAction("throwingtile", () => {
         rootStore.roundStore.selectedTile = mainPlayerAliveTiles?.find(
           (t) => t.id === tileId
@@ -225,7 +224,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     basic
                     size="small"
                     circular
-                    icon="book right"
+                    icon="book"
                     onClick={openRulesModal}
                   />
                   <RulesModal />

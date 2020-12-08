@@ -16,14 +16,12 @@ namespace MahjongBuddy.Core
 
         public string Bio { get; set; }
 
+        public DateTime DateCreated { get; set; }
+
         public virtual ICollection<GamePlayer> GamePlayers { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
 
-        public string RefreshToken { get; set; }
-
-        public DateTime RefreshTokenExpiry { get; set; }
-
-        public DateTime DateCreated { get; set; }
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

@@ -42,8 +42,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     AccessFailedCount = table.Column<int>(nullable: false),
                     DisplayName = table.Column<string>(nullable: true),
                     Bio = table.Column<string>(nullable: true),
-                    RefreshToken = table.Column<string>(nullable: true),
-                    RefreshTokenExpiry = table.Column<DateTime>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -212,6 +210,28 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     table.PrimaryKey("PK_Photos", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Photos_AspNetUsers_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshToken",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlayerId = table.Column<string>(nullable: true),
+                    Token = table.Column<string>(nullable: true),
+                    Expires = table.Column<DateTime>(nullable: false),
+                    Revoked = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshToken", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshToken_AspNetUsers_PlayerId",
                         column: x => x.PlayerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -554,6 +574,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "PlayerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RefreshToken_PlayerId",
+                table: "RefreshToken",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RoundExtraPoints_RoundResultId",
                 table: "RoundExtraPoints",
                 column: "RoundResultId");
@@ -624,6 +649,9 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
             migrationBuilder.DropTable(
                 name: "Photos");
+
+            migrationBuilder.DropTable(
+                name: "RefreshToken");
 
             migrationBuilder.DropTable(
                 name: "RoundExtraPoints");

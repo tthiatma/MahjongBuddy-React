@@ -1,5 +1,6 @@
 ﻿using MahjongBuddy.Core;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace MahjongBuddy.Application.Dtos
 {
@@ -15,6 +16,7 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool IsHost { get; set; }
 
+        [JsonIgnore]
         public IEnumerable<ConnectionDto> Connections { get; set; }
     }
 }

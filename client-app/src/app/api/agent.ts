@@ -1,7 +1,11 @@
 import axios, { AxiosResponse } from "axios";
 import { history } from "../..";
 import { IGame } from "../models/game";
-import { IResetPasswordFormValues, IUser, IUserFormValues } from "../models/user";
+import {
+  IResetPasswordFormValues,
+  IUser,
+  IUserFormValues,
+} from "../models/user";
 import { toast } from "react-toastify";
 import { IProfile, IPhoto } from "../models/profile";
 
@@ -19,41 +23,20 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.response.use(undefined, (error) => {
-  const originalRequest = error.config;
-
   if (error.message === "Network Error" && !error.response) {
     toast.error("Network error - make sure API is running!");
   }
-  const { status, data, config } = error.response;
+  const { status, data, config, headers } = error.response;
   if (status === 404) {
     history.push("/notfound");
   }
 
-  if (status === 401 && originalRequest.url.endsWith("refresh")) {
+  if (status === 401 && headers['www-authenticate'] === 'Bearer error="invalid_token", error_description="The token is expired"') {
     window.localStorage.removeItem("jwt");
-    window.localStorage.removeItem("refreshToken");
     history.push("/");
     toast.info("Your session has expired, please login again");
-    return Promise.reject(error);
   }
 
-  if (status === 401 && !originalRequest._retry) {
-    originalRequest._retry = true;
-
-    return axios
-      .post("user/refresh", {
-        token: window.localStorage.getItem("jwt"),
-        refreshToken: window.localStorage.getItem("refreshToken"),
-      })
-      .then((res) => {
-        window.localStorage.setItem("jwt", res.data.token);
-        window.localStorage.setItem("refreshToken", res.data.refreshToken);
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${res.data.token}`;
-        return axios(originalRequest);
-      });
-  }
   if (
     status === 400 &&
     config.method === "get" &&
@@ -99,7 +82,11 @@ const Games = {
 
 const Rounds = {
   detail: (id: string, gameId: string, userName: string) =>
-    requests.post(`/rounds/Details`, { id: id, gameId: gameId, userName: userName }),
+    requests.post(`/rounds/Details`, {
+      id: id,
+      gameId: gameId,
+      userName: userName,
+    }),
 };
 
 const User = {
@@ -110,26 +97,17 @@ const User = {
     requests.post(`/user/register/`, user),
   fblogin: (accessToken: string) =>
     requests.post(`/user/facebook`, { accessToken }),
-  refreshToken: (token: string, refreshToken: string) => {
-    return axios.post(`/user/refresh`, { token, refreshToken }).then((res) => {
-      window.localStorage.setItem("jwt", res.data.token);
-      window.localStorage.setItem("refreshToken", res.data.refreshToken);
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${res.data.token}`;
-      return res.data.token;
-    });
-  },
+  refreshToken: (): Promise<IUser> => requests.post(`/user/refreshToken`, {}),
   verifyEmail: (token: string, email: string): Promise<void> =>
     requests.post(`/user/verifyEmail`, { token, email }),
   resendVerifyEmailConfirm: (email: string): Promise<void> =>
     requests.get(`/user/resendEmailVerification?email=${email}`),
-  forgotPassword:(reset: IResetPasswordFormValues): Promise<void> => {
-    return requests.post(`/user/forgotPassword`, reset)
+  forgotPassword: (reset: IResetPasswordFormValues): Promise<void> => {
+    return requests.post(`/user/forgotPassword`, reset);
   },
-  resetPassword:(reset: IResetPasswordFormValues): Promise<void> =>
+  resetPassword: (reset: IResetPasswordFormValues): Promise<void> =>
     requests.post(`/user/resetPassword`, reset),
-  resendForgotPassword: (email: string) : Promise<void> =>
+  resendForgotPassword: (email: string): Promise<void> =>
     requests.get(`/user/resendForgotPasswordVerification?email=${email}`),
 };
 

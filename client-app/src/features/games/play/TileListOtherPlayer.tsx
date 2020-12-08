@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Grid } from "semantic-ui-react";
 import PlayerStatus from "./PlayerStatus";
 import { IRoundOtherPlayer } from "../../../app/models/player";
+import { sortTiles } from "../../../app/common/util/util";
 
 interface IProps {
   player: IRoundOtherPlayer;
@@ -58,7 +59,7 @@ const TileListOtherPlayer: React.FC<IProps> = ({ player }) => {
       </Grid.Row>
       <Grid.Row centered style={{ padding: "1px" }}>
         {player && player.graveyardTiles &&
-          player.graveyardTiles.map((rt) => (
+          player.graveyardTiles.sort(sortTiles).map((rt) => (
             <div key={rt.id}>
               <img alt={rt.tile.title} src={rt.tile.imageSmall} />
             </div>

@@ -86,7 +86,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
               initialValues={game}
               onSubmit={handleFinalFormSubmit}
               render={({ handleSubmit, invalid, pristine }) => (
-                <Form onSubmit={handleSubmit} loading={loading}>
+                <Form onSubmit={handleSubmit} loading={loading} autoComplete="off">
                   <Field
                     name="title"
                     placeholder="Game Title"

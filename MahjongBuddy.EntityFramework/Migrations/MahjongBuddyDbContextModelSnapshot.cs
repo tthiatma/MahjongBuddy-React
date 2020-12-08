@@ -203,12 +203,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RefreshTokenExpiry")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -230,6 +224,32 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PlayerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("RefreshToken");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.Round", b =>
@@ -682,6 +702,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 {
                     b.HasOne("MahjongBuddy.Core.Player", null)
                         .WithMany("Photos")
+                        .HasForeignKey("PlayerId");
+                });
+
+            modelBuilder.Entity("MahjongBuddy.Core.RefreshToken", b =>
+                {
+                    b.HasOne("MahjongBuddy.Core.Player", "Player")
+                        .WithMany("RefreshTokens")
                         .HasForeignKey("PlayerId");
                 });
 

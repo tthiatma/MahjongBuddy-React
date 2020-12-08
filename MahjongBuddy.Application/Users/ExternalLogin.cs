@@ -13,7 +13,7 @@ namespace MahjongBuddy.Application.Users
 {
     public class ExternalLogin
     {
-        public class Query : IRequest<User> 
+        public class Query : IRequest<User>
         {
             public string AccessToken { get; set; }
         }
@@ -38,46 +38,44 @@ namespace MahjongBuddy.Application.Users
                 var userInfo = await _facebookAccessor.FacebookLogin(request.AccessToken);
 
                 if (userInfo == null)
-                    throw new RestException(HttpStatusCode.BadRequest, new {User = "Problem validating token" });
+                    throw new RestException(HttpStatusCode.BadRequest, new { User = "Problem validating token" });
 
                 var user = await _userManager.FindByEmailAsync(userInfo.Email);
 
-                if(user == null)
+                var refreshToken = _jwtGenerator.GenerateRefreshToken();
+
+                if (user != null)
                 {
-                    user = new Player
-                    {
-                        DisplayName = userInfo.Name,
-                        Id = userInfo.Id,
-                        Email = userInfo.Email,
-                        UserName = "fb_" + userInfo.Id,
-                        RefreshToken = _jwtGenerator.GenerateRefreshToken(),
-                        RefreshTokenExpiry = DateTime.Now.AddDays(30),
-                        EmailConfirmed = true
-                    };
-
-                    var photo = new Photo
-                    {
-                        Id = "fb_" + userInfo.Id,
-                        Url = userInfo.Picture.Data.Url,
-                        IsMain = true
-                    };
-
-                    user.Photos.Add(photo);
-
-                    var result = await _userManager.CreateAsync(user);
-
-                    if(!result.Succeeded)
-                        throw new RestException(HttpStatusCode.BadRequest, new { User = "Problem creating user" });
+                    user.RefreshTokens.Add(refreshToken);
+                    await _userManager.UpdateAsync(user);
+                    return new User(user, _jwtGenerator, refreshToken.Token);
                 }
 
-                return new User
+                user = new Player
                 {
-                    DisplayName = user.DisplayName,
-                    Token = _jwtGenerator.CreateToken(user),
-                    UserName = user.UserName,
-                    RefreshToken = user.RefreshToken,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                    DisplayName = userInfo.Name,
+                    Id = userInfo.Id,
+                    Email = userInfo.Email,
+                    UserName = "fb_" + userInfo.Id,
+                    EmailConfirmed = true
                 };
+
+                var photo = new Photo
+                {
+                    Id = "fb_" + userInfo.Id,
+                    Url = userInfo.Picture.Data.Url,
+                    IsMain = true
+                };
+
+                user.Photos.Add(photo);
+                user.RefreshTokens.Add(refreshToken);
+
+                var result = await _userManager.CreateAsync(user);
+
+                if (!result.Succeeded)
+                    throw new RestException(HttpStatusCode.BadRequest, new { User = "Problem creating user" });
+
+                return new User(user, _jwtGenerator, refreshToken.Token);
             }
         }
     }

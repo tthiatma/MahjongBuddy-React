@@ -14,7 +14,7 @@ const ResultModal: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
   const { startRound } = rootStore.hubStore;
   const { getMainUser } = rootStore.gameStore;
-  const { round, showResult, closeResultModal } = rootStore.roundStore;
+  const { round, showResult, closeResultModal, boardActiveTile } = rootStore.roundStore;
 
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
@@ -23,7 +23,7 @@ const ResultModal: React.FC = () => {
 
   const roundResults = round!.roundResults;
   const isHost = getMainUser?.isHost;
-  const activeBoardTile = round?.boardTiles.find(t => t.status === TileStatus.BoardActive);
+  const activeBoardTile = boardActiveTile;
 
   if (roundResults) {
     winner = roundResults?.find((r) => r.playResult === PlayResult.Win)!;

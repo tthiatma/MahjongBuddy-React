@@ -30,7 +30,7 @@ const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile, activeTil
           ))}
 
         {activeTile && (
-          <Transition transitionOnMount={true} animation={activeTileAnimation} duration={1000}>
+          <Transition key={activeTile.id} transitionOnMount={true} animation={activeTileAnimation} duration={1000}>
             <Image src={activeTile.tile.image} alt="tile" />
           </Transition>
         )}

@@ -35,12 +35,12 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
   }, [createHubConnection, leaveGroup, match.params.id]);
 
   useEffect(() => {
-    getLatestRound(match.params!.id);
-  }, [getLatestRound, match.params, match.params.id]);
+    getLatestRound(match.params.id);
+  }, [getLatestRound, match.params.id]);
 
   useEffect(() => {
-    loadGame(match.params!.id);
-  }, [loadGame, match.params, match.params.id]);
+    loadGame(match.params.id);
+  }, [loadGame, match.params.id]);
 
   if (loadingGameInitial || loadingLatestRoundInitial || !game || hubLoading)
     return <LoadingComponent content="Loading game..." />;

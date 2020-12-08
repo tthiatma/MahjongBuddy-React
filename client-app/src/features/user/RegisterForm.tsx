@@ -35,20 +35,20 @@ export const RegisterForm = () => {
         pristine,
         dirtySinceLastSubmit,
       }) => (
-        <Form onSubmit={handleSubmit} error>
+        <Form onSubmit={handleSubmit} error autoComplete="off">
           <Header
             as="h2"
             content="Sign up to MahjongBuddy"
             color="teal"
             textAlign="center"
           />
-          <Field name="userName" component={TextInput} placeholder="UserName" />
+          <Field name="userName" component={TextInput} placeholder="UserName" autoComplete="off"/>
           <Field
             name="displayName"
             component={TextInput}
             placeholder="DisplayName"
           />
-          <Field name="email" component={TextInput} placeholder="Email" />
+          <Field name="email" component={TextInput} placeholder="Email" autoComplete="off"/>
           <Field
             name="password"
             component={TextInput}

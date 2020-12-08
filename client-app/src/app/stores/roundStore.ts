@@ -79,7 +79,6 @@ export default class RoundStore {
   @observable roundOver: boolean = false;
   @observable roundEndingCounter: number = 5;
   @observable.shallow selectedTile: IRoundTile | null = null;
-  @observable boardTiles: IRoundTile[] | null = null;
   @observable loadingRoundInitial = false;
 
   @computed get mainPlayer(){
@@ -199,30 +198,6 @@ export default class RoundStore {
       : null;
   }
 
-  @computed get leftPlayerTiles() {
-    return this.boardTiles && this.round && this.leftPlayer
-      ? this.boardTiles
-          .filter((rt) => rt.owner === this.leftPlayer?.userName)
-          .sort(sortTiles)
-      : null;
-  }
-
-  @computed get topPlayerTiles() {
-    return this.boardTiles && this.round && this.topPlayer
-      ? this.boardTiles
-          .filter((rt) => rt.owner === this.topPlayer?.userName)
-          .sort(sortTiles)
-      : null;
-  }
-
-  @computed get rightPlayerTiles() {
-    return this.boardTiles && this.round && this.rightPlayer
-      ? this.boardTiles
-          .filter((rt) => rt.owner === this.rightPlayer?.userName)
-          .sort(sortTiles)
-      : null;
-  }
-
   @action openRulesModal = () => {
     runInAction(() => {
       this.showRules = true;
@@ -247,14 +222,14 @@ export default class RoundStore {
     });
   };
 
-  @action loadRound = async (id: string, gameId: string, userName: string) => {
+  @action loadRound = async (id: string, gameId: string) => {
     let round: IRound;
     this.loadingRoundInitial = true;
+    const currentUserName = this.rootStore.userStore.user!.userName;
     try {
-      round = await agent.Rounds.detail(id, gameId, userName);
+      round = await agent.Rounds.detail(id, gameId, currentUserName);
       runInAction("getting round", () => {
         this.round = round;
-        this.boardTiles = round.boardTiles;
         this.loadingRoundInitial = false;
       });
       return round;
