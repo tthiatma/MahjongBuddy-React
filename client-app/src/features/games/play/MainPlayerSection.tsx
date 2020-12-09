@@ -7,8 +7,6 @@ import {
   Button,
   Transition,
   Image,
-  Segment,
-  Container,
 } from "semantic-ui-react";
 import PlayerAction from "./PlayerAction";
 import PlayerStatus from "./PlayerStatus";
@@ -188,7 +186,6 @@ const MainPlayerSection: React.FC<IProps> = ({
                       style={{
                         width: "100%",
                         textAlign: "center",
-                        lineHeight: "40px",
                       }}
                     >
                       {isManualSort && (

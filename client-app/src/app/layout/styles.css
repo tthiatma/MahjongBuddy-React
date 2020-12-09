@@ -158,11 +158,12 @@ body {
   background-color: #eee;
   height: 40px;
   margin-top: 10px;
+  padding-top:10px;
   text-align: center;
 }
 
 .playerStatusContainerVertical {
-  min-width: 30px;
+  max-width: 40px;
   border: 1px solid #ddd;
   background-color: #eee;
   display: flex;

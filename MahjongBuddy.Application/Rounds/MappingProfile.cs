@@ -31,6 +31,7 @@ namespace MahjongBuddy.Application.Rounds
             CreateMap<RoundPlayer, RoundOtherPlayerDto>()
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.GamePlayer.Player.DisplayName))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.GamePlayer.Player.UserName))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(s => s.GamePlayer.Player.Photos.FirstOrDefault(x => x.IsMain).Url))
                 .ForMember(dest => dest.ActiveTilesCount, opt => opt.MapFrom<ActiveTilesCountResolver>())
                 .ForMember(dest => dest.GraveyardTiles, opt => opt.MapFrom<GraveyardTilesResolver>())
                 .ForMember(dest => dest.SeatOrientation, opt => opt.MapFrom<SeatOrientationResolver>());
