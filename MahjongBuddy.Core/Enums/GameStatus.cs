@@ -4,6 +4,8 @@
     {
         Created,
         Playing,
-        Over
+        //when there is a round not over, but host forcing to end the game...host powaaaa
+        OverPrematurely,
+        Over,
     }
 }
