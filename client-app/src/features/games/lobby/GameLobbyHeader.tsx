@@ -26,11 +26,13 @@ const GameLobbyHeader: React.FC<{
   latestRound: IRound | null;
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
-  const {userNoWind} = rootStore.gameStore;
+  const { userNoWind, gameIsOver } = rootStore.gameStore;
   const {
     hubLoading,
     startRound,
     joinGame,
+    endGame,
+    cancelGame,
     leaveGame,
     randomizeWind,
   } = rootStore.hubStore;
@@ -90,7 +92,7 @@ const GameLobbyHeader: React.FC<{
               Shuffle Seat
             </Button>
           )}
-        {game.status === GameStatus.Playing && latestRound !== null && (
+        {latestRound && (
           <Button
             as={Link}
             loading={hubLoading}
@@ -132,6 +134,35 @@ const GameLobbyHeader: React.FC<{
             Edit Game
           </Button>
         )} */}
+      </Segment>
+      <Segment clearing attached="bottom">
+      <Icon size="large" color="teal" name="cogs" />
+
+        {gameIsOver && <span>Game Over</span>}
+
+        Cancel/end your game when you're done
+
+        {game.isHost && !gameIsOver && game.status === GameStatus.Created && (
+          <Button
+            floated="right"
+            loading={hubLoading}
+            onClick={() => cancelGame(game.id)}
+            color="violet"
+          >
+            Cancel Game
+          </Button>
+        )}
+
+        {game.isHost && !gameIsOver && game.status === GameStatus.Playing && (
+          <Button
+            floated="right"
+            loading={hubLoading}
+            onClick={() => endGame(game.id)}
+            color="red"
+          >
+            End Game
+          </Button>
+        )}
       </Segment>
     </Segment.Group>
   );

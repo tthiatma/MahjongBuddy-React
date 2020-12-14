@@ -1,13 +1,17 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
+using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,17 +30,33 @@ namespace MahjongBuddy.Application.Games
             private readonly MahjongBuddyDbContext _context;
             private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
+            private readonly UserManager<Player> _userManager;
 
-            public Handler(MahjongBuddyDbContext context, IUserAccessor userAccessor, IMapper mapper)
+            public Handler(MahjongBuddyDbContext context, IUserAccessor userAccessor, IMapper mapper, UserManager<Player> userManager)
             {
                 _context = context;
                 _userAccessor = userAccessor;
                 _mapper = mapper;
+                _userManager = userManager;
             }
 
             public async Task<GameDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
+
+                //check if user spamming create game, if there is more than 10 games created within one minutes return 401 and lock user out lol
+                var gamesWithinOneMin = _context.Games.Where(g => g.HostId == user.Id && g.Date > DateTime.Now.AddMinutes(-1));
+
+                if(gamesWithinOneMin != null && gamesWithinOneMin.Count() > 10)
+                {
+                    user.LockoutEnd = DateTime.Now.AddMonths(1);
+                    foreach (var rt in user.RefreshTokens)
+                    {
+                        rt.Revoked = DateTime.Now;
+                    }
+                    await _userManager.UpdateAsync(user);
+                    throw new RestException(HttpStatusCode.Unauthorized);
+                }
 
                 var minPoint = int.Parse(request.MinPoint);
                 var maxPoint = int.Parse(request.MaxPoint);

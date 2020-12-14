@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { IProfile, IPhoto } from "../models/profile";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
   (config) => {
@@ -77,6 +78,7 @@ const Games = {
   create: (game: IGame) => requests.post("games", game),
   update: (game: IGame) => requests.put(`/games/${game.id}`, game),
   delete: (id: string) => requests.del(`/games/${id}`),
+  end:(id: string) => requests.post(`/games/${id}/end`, {}),
   latestRound: (id: string) => requests.get(`/games/${id}/latestround`),
 };
 

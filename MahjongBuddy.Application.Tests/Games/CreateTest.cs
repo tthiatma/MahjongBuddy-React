@@ -2,6 +2,7 @@ using AutoMapper;
 using MahjongBuddy.Application.Games;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using System.Threading;
 using Xunit;
@@ -22,6 +23,7 @@ namespace MahjongBuddy.Application.Tests.Games
         public void Should_Create_Game()
         {
             var userAccessor = new Mock<IUserAccessor>();
+            var userManager = new Mock<UserManager<Player>>();
             userAccessor.Setup(u => u.GetCurrentUserName()).Returns("mainplayer");
 
             var context = GetDbContext();
@@ -41,7 +43,7 @@ namespace MahjongBuddy.Application.Tests.Games
                 MaxPoint = "10"
             };
 
-            var sut = new Create.Handler(context, userAccessor.Object, _mapper);
+            var sut = new Create.Handler(context, userAccessor.Object, _mapper, userManager.Object);
             var result = sut.Handle(gameCommand, CancellationToken.None).Result;
 
             Assert.Equal("Game1", result.Title);

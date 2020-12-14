@@ -62,7 +62,7 @@ namespace MahjongBuddy.API.SignalR
             try
             {
                 var roundDetail = await _mediator.Send(query);
-                
+
                 await Clients.Caller.SendAsync("LoadRound", roundDetail);
             }
             catch (Exception ex)
@@ -83,13 +83,34 @@ namespace MahjongBuddy.API.SignalR
             await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
         }
 
+        public async Task EndGame(string gameId)
+        {
+            var game = await _mediator.Send(new End.Command { GameId = int.Parse(gameId) });
+            await Clients.Group(gameId).SendAsync("GameEnded", game);
+        }
+
+        public async Task CancelGame(string gameId)
+        {
+            var userName = GetUserName();
+
+            await _mediator.Send(new Delete.Command
+            {
+                Id = int.Parse(gameId),
+                UserName = userName
+            });
+            await Clients.Group(gameId).SendAsync("GameCancelled", gameId);
+        }
+
         public async Task JoinGame(string gameId)
         {
-            var player = await _mediator.Send(new Join.Command {
+            var player = await _mediator.Send(new Join.Command
+            {
                 GameId = int.Parse(gameId)
-                , UserName = GetUserName()
-                , ConnectionId = Context.ConnectionId, 
-                UserAgent = Context.GetHttpContext().Request.Headers["User-Agent"] 
+                ,
+                UserName = GetUserName()
+                ,
+                ConnectionId = Context.ConnectionId,
+                UserAgent = Context.GetHttpContext().Request.Headers["User-Agent"]
             });
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
             await Clients.Group(gameId).SendAsync("PlayerConnected", player);
@@ -261,7 +282,7 @@ namespace MahjongBuddy.API.SignalR
         {
             foreach (var u in updates)
             {
-                if(u.MainPlayer.Connections != null)
+                if (u.MainPlayer.Connections != null)
                 {
                     foreach (var c in u.MainPlayer.Connections)
                     {

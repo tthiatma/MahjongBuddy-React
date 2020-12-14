@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using MahjongBuddy.API.SignalR;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Games;
-using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MahjongBuddy.API.Controllers
 {
     public class GamesController : BaseController
     {
+        private readonly IHubContext<GameHub> _hubContext;
+
+        public GamesController(IHubContext<GameHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<GameDto>>> List()
         {
@@ -48,7 +55,18 @@ namespace MahjongBuddy.API.Controllers
         [Authorize(Policy = "IsGameHost")]
         public async Task<ActionResult<Unit>> Delete(int id)
         {
-            return await Mediator.Send(new Delete.Command { Id = id });
+            var cancelGame = await Mediator.Send(new Delete.Command { Id = id });
+            await _hubContext.Clients.Group(id.ToString()).SendAsync("GameCancelled", id.ToString());
+            return cancelGame;
+        }
+
+        [HttpPost("{id}/end")]
+        [Authorize(Policy = "IsGameHost")]
+        public async Task<ActionResult<GameDto>> End(int id)
+        {
+            var game = await Mediator.Send(new End.Command { GameId = id });
+            await _hubContext.Clients.Group(game.Id.ToString()).SendAsync("GameEnded", game);
+            return game;
         }
     }
 }

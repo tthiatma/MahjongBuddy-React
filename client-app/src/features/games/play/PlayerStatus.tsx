@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { observer } from "mobx-react-lite";
 import { WindDirection } from "../../../app/models/windEnum";
-import { Icon } from "semantic-ui-react";
+import { Icon, Popup } from "semantic-ui-react";
 import { IRoundOtherPlayer, IRoundPlayer } from "../../../app/models/player";
 
 interface IProps {
@@ -13,8 +13,8 @@ const PlayerStatus: React.FC<IProps> = ({ player }) => {
     <Fragment>
       {player && (
         <Fragment>
-          {player.isInitialDealer && <Icon name="star" />}{" "}
-          {player.isDealer && <Icon name="cube" />} {player.displayName} | Wind[
+          {player.isInitialDealer && <Popup content="I'm the very first dealer of the game" trigger={<Icon name="star" />}/>}{" "}
+          {player.isDealer && <Popup content="I threw the dice this round" trigger={<Icon name="cube" />}/>} {player.displayName} | Wind[
           {WindDirection[player.wind]}] | Flower[{player.wind + 1}] |{" "}
           <span
             style={{

@@ -1,7 +1,10 @@
-﻿using MahjongBuddy.Application.Interfaces;
+﻿using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,10 +31,9 @@ namespace MahjongBuddy.Application.Users
             {
                 var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
 
-                var refreshToken = _jwtGenerator.GenerateRefreshToken();
-                user.RefreshTokens.Add(refreshToken);
-                await _userManager.UpdateAsync(user);
-                return new User(user, _jwtGenerator, refreshToken.Token);
+                var oldToken = user.RefreshTokens.SingleOrDefault(x => x.IsActive);
+                if (oldToken == null) throw new RestException(HttpStatusCode.Unauthorized);
+                return new User(user, _jwtGenerator, oldToken.Token);
             }
         }
     }

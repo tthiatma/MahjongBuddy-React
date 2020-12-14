@@ -34,7 +34,12 @@ interface DetailParams {
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   const rootStore = useContext(RootStoreContext);
-  const { loadingGameInitial, loadGame, game } = rootStore.gameStore;
+  const {
+    loadingGameInitial,
+    loadGame,
+    game,
+    gameIsOver,
+  } = rootStore.gameStore;
   const {
     loadingRoundInitial,
     round,
@@ -55,8 +60,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     throwTile,
     orderTiles,
     hubLoading,
-      createHubConnection,
-      leaveGroup,
+    createHubConnection,
+    leaveGroup,
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -75,7 +80,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   useEffect(() => {
     createHubConnection(match.params.id);
     return () => {
-        leaveGroup(match.params.id);
+      leaveGroup(match.params.id);
     };
   }, [createHubConnection, leaveGroup, match.params.id]);
 
@@ -133,13 +138,23 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   };
 
   const doThrowTile = (tileId: string) => {
-    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver && !round.isEnding) {
+    if(gameIsOver){
+      toast.warn("Can't throw because game has ended")
+      return;
+    }
+
+    if (
+      mainPlayer!.isMyTurn &&
+      mainPlayer!.mustThrow &&
+      !round.isOver &&
+      !round.isEnding
+    ) {
       runInAction("throwingtile", () => {
         rootStore.roundStore.selectedTile = mainPlayerAliveTiles?.find(
           (t) => t.id === tileId
         )!;
       });
-        throwTile();
+      throwTile();
     } else {
       toast.warn("Can't throw");
     }
@@ -220,7 +235,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   {topPlayer && <TileListOtherPlayer player={topPlayer!} />}
                 </Grid.Column>
                 <Grid.Column textAlign="right" width={3}>
-                <Button
+                  <Button
                     basic
                     size="small"
                     circular
@@ -228,8 +243,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     onClick={openRulesModal}
                   />
                   <RulesModal />
-                  </Grid.Column>
-                
+                </Grid.Column>
               </Grid.Row>
 
               <Grid.Row>
@@ -312,31 +326,37 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     activeTile={boardActiveTile!}
                     activeTileAnimation={getActiveTileAnimation()}
                   />
-                  {mainPlayer?.mustThrow && !round.isOver && (
-                    <Droppable droppableId="board">
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          style={getStyle(snapshot.isDraggingOver)}
-                          {...provided.droppableProps}
-                        >
-                          <div
-                            style={{
-                              paddingTop: "10px",
-                              height: "45px",
-                            }}
-                          >
-                            <Header
-                              as="h3"
-                              style={{ color: "#d4d4d5" }}
-                              content={`Throw tile by double clicking/drag and drop it here`}
-                            />
-                          </div>
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
+                  {gameIsOver && (
+                    <Segment textAlign="center">Host ended this game </Segment>
                   )}
+
+                  {mainPlayer?.mustThrow &&
+                    !gameIsOver &&
+                    !round.isOver && (
+                      <Droppable droppableId="board">
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            style={getStyle(snapshot.isDraggingOver)}
+                            {...provided.droppableProps}
+                          >
+                            <div
+                              style={{
+                                paddingTop: "10px",
+                                height: "45px",
+                              }}
+                            >
+                              <Header
+                                as="h3"
+                                style={{ color: "#d4d4d5" }}
+                                content={`Throw tile by double clicking/drag and drop it here`}
+                              />
+                            </div>
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    )}
                 </Grid.Column>
 
                 {/* Right Player */}

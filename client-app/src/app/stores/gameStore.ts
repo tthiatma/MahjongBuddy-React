@@ -7,6 +7,7 @@ import { history } from "../..";
 import { toast } from "react-toastify";
 import { setGameProps } from "../common/util/util";
 import { IRound } from "../models/round";
+import { GameStatus } from "../models/gameStatusEnum";
 
 export default class GameStore {
   rootStore: RootStore;
@@ -33,6 +34,15 @@ export default class GameStore {
       )
     : null;
   } 
+
+  @computed get gameIsOver(){
+    let gameOver: boolean = false;
+
+    if(this.game?.status === GameStatus.Over) gameOver = true;
+    if(this.game?.status === GameStatus.OverPrematurely) gameOver = true;
+
+    return gameOver;
+  }
 
   @computed get userNoWind(){
     return this.game ? this.game.players.some((p) => p.initialSeatWind === null || p.initialSeatWind === undefined) : false;

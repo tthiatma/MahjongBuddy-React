@@ -34,6 +34,8 @@ namespace MahjongBuddy.Application.Users
 
             public async Task<User> Handle(Command request, CancellationToken cancellationToken)
             {
+                if(string.IsNullOrEmpty(request.RefreshToken)) throw new RestException(HttpStatusCode.Unauthorized);
+
                 var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
 
                 var oldToken = user.RefreshTokens.SingleOrDefault(x => x.Token == request.RefreshToken);
