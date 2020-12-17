@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MahjongBuddy.API.SignalR;
 using MahjongBuddy.Application.Dtos;
@@ -20,9 +21,11 @@ namespace MahjongBuddy.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GameDto>>> List()
+        public async Task<ActionResult<List.GamesEnvelope>> List(int? limit,
+            int? offset, bool isInGame, bool isHost, DateTime? startDate)
         {
-            return await Mediator.Send(new List.Query());
+            return await Mediator.Send(new List.Query(limit,
+                offset, isInGame, isHost, startDate));
         }
 
         [HttpGet("{id}")]

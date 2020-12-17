@@ -149,7 +149,7 @@ const GameLobbyHeader: React.FC<{
             onClick={() => cancelGame(game.id)}
             color="violet"
           >
-            Cancel Game
+            Cancel game
           </Button>
         )}
 
@@ -160,7 +160,7 @@ const GameLobbyHeader: React.FC<{
             onClick={() => endGame(game.id)}
             color="red"
           >
-            End Game
+            End game
           </Button>
         )}
       </Segment>

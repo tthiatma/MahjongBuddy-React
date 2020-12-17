@@ -1,4 +1,11 @@
-import { observable, action, computed, runInAction, toJS } from "mobx";
+import {
+  observable,
+  action,
+  computed,
+  runInAction,
+  toJS,
+  reaction,
+} from "mobx";
 import { SyntheticEvent } from "react";
 import { IGame } from "../models/game";
 import agent from "../api/agent";
@@ -9,10 +16,21 @@ import { setGameProps } from "../common/util/util";
 import { IRound } from "../models/round";
 import { GameStatus } from "../models/gameStatusEnum";
 
+const LIMIT = 10;
+
 export default class GameStore {
   rootStore: RootStore;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
+
+    reaction(
+      () => this.predicate.keys(),
+      () => {
+        this.page = 0;
+        this.gameRegistry.clear();
+        this.loadGames();
+      }
+    );
   }
 
   @observable gameRegistry = new Map();
@@ -21,7 +39,31 @@ export default class GameStore {
   @observable loadingLatestRoundInitial = false;
   @observable submitting = false;
   @observable target = "";
+  @observable gameCount = 0;
+  @observable page = 0;
   @observable latestRound: IRound | null = null;
+  @observable predicate = new Map();
+
+  @action setPredicate = (predicate: string, value: string | Date) => {
+    this.predicate.clear();
+    if (predicate !== "all") {
+      this.predicate.set(predicate, value);
+    }
+  };
+
+  @computed get axiosParams() {
+    const params = new URLSearchParams();
+    params.append("limit", String(LIMIT));
+    params.append("offset", `${this.page ? this.page * LIMIT : 0}`);
+    this.predicate.forEach((value, key) => {
+      if (key === "startDate") {
+        params.append(key, value.toISOString());
+      } else {
+        params.append(key, value);
+      }
+    });
+    return params;
+  }
 
   @computed get gamesByDate() {
     return this.groupGamesByDate(Array.from(this.gameRegistry.values()));
@@ -29,34 +71,41 @@ export default class GameStore {
 
   @computed get getMainUser() {
     return this.game && this.game.players
-    ? this.game.players.find(
-        (p) => p.userName === this.rootStore.userStore.user!.userName
-      )
-    : null;
-  } 
+      ? this.game.players.find(
+          (p) => p.userName === this.rootStore.userStore.user!.userName
+        )
+      : null;
+  }
 
-  @computed get gameIsOver(){
+  @computed get gameIsOver() {
     let gameOver: boolean = false;
 
-    if(this.game?.status === GameStatus.Over) gameOver = true;
-    if(this.game?.status === GameStatus.OverPrematurely) gameOver = true;
+    if (this.game?.status === GameStatus.Over) gameOver = true;
+    if (this.game?.status === GameStatus.OverPrematurely) gameOver = true;
 
     return gameOver;
   }
 
-  @computed get userNoWind(){
-    return this.game ? this.game.players.some((p) => p.initialSeatWind === null || p.initialSeatWind === undefined) : false;
+  @computed get userNoWind() {
+    return this.game
+      ? this.game.players.some(
+          (p) => p.initialSeatWind === null || p.initialSeatWind === undefined
+        )
+      : false;
   }
 
   @action loadGames = async () => {
     this.loadingGameInitial = true;
     try {
-      const games = await agent.Games.list();
+      const gamesEnvelope = await agent.Games.list(this.axiosParams);
+      const { games, gameCount } = gamesEnvelope;
+
       runInAction("loading games", () => {
         games.forEach((game) => {
           setGameProps(game, this.rootStore.userStore.user!);
           this.gameRegistry.set(game.id, game);
         });
+        this.gameCount = gameCount;
         this.loadingGameInitial = false;
       });
     } catch (error) {
@@ -66,15 +115,15 @@ export default class GameStore {
       console.log(error);
     }
   };
-  
+
   @action getLatestRound = async (id: string) => {
     this.loadingLatestRoundInitial = true;
-    try{
+    try {
       const latestRound = await agent.Games.latestRound(id);
       runInAction("getting latest round", () => {
         this.latestRound = latestRound;
         this.loadingLatestRoundInitial = false;
-      })
+      });
       return latestRound;
     } catch (error) {
       runInAction("getting game error", () => {
@@ -82,7 +131,7 @@ export default class GameStore {
       });
       console.log(error);
     }
-  }
+  };
 
   @action loadGame = async (id: string) => {
     let game = this.getGame(id);
@@ -110,10 +159,10 @@ export default class GameStore {
   };
 
   @action joinGameById = async (gameId: string) => {
-      await agent.Games.detail(gameId);
-      history.push(`/games/${gameId}`);
-      this.rootStore.modalStore.closeModal();
-}
+    await agent.Games.detail(gameId);
+    history.push(`/games/${gameId}`);
+    this.rootStore.modalStore.closeModal();
+  };
 
   @action createGame = async (game: IGame) => {
     this.submitting = true;

@@ -3,6 +3,11 @@ import { GameStatus } from "./gameStatusEnum";
 import { IChatMsg } from "./chatMsg";
 import { IPlayer } from "./player";
 
+export interface IGamesEnvelope {
+    games: IGame[];
+    gameCount: number;
+  }
+
 export interface IGame{
     id: string;
     title: string;

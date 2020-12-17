@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { history } from "../..";
-import { IGame } from "../models/game";
+import { IGame, IGamesEnvelope } from "../models/game";
 import {
   IResetPasswordFormValues,
   IUser,
@@ -73,7 +73,8 @@ const requests = {
 };
 
 const Games = {
-  list: (): Promise<IGame[]> => requests.get("/games"),
+  list: (params: URLSearchParams): Promise<IGamesEnvelope> =>
+   axios.get("/games", {params: params}).then(responseBody),
   detail: (id: string) => requests.get(`/games/${id}`),
   create: (game: IGame) => requests.post("games", game),
   update: (game: IGame) => requests.put(`/games/${game.id}`, game),
