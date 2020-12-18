@@ -125,13 +125,9 @@ export default class HubStore {
           if (this.roundStore.round) {
             if (this.roundStore.round.mainPlayer.mustThrow) {
               this.roundStore.round.mainPlayer = round.mainPlayer;
-            } else {
-              this.roundStore.round.mainPlayer.mustThrow =
-                round.mainPlayer.mustThrow;
-              this.roundStore.round.mainPlayer.isManualSort =
-                round.mainPlayer.isManualSort;
             }
 
+            this.roundStore.round.mainPlayer.isManualSort = round.mainPlayer.isManualSort;
             this.roundStore.round.boardTiles = round.boardTiles;
             this.roundStore.round.otherPlayers.forEach((op) => {
               var matchingOp = round.otherPlayers.find(
@@ -289,7 +285,6 @@ export default class HubStore {
   };
 
   @action endGame = async (gameId: string) => {
-    debugger;
     runInAction(() => {
       this.hubLoading = true;
     });
@@ -569,8 +564,6 @@ export default class HubStore {
             if(tilesWithoutThrown){
               this.roundStore.round!.mainPlayer.playerTiles = tilesWithoutThrown;
             }
-            this.roundStore.round!.mainPlayer.mustThrow = false;
-
           }
         });
         this.hubConnection!.invoke("ThrowTile", values).then(() => {
