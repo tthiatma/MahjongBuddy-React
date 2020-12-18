@@ -7,6 +7,7 @@ import {
   Divider,
   Segment,
   Container,
+  Loader,
 } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
@@ -62,6 +63,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     hubLoading,
     createHubConnection,
     leaveGroup,
+    hubActionLoading
   } = rootStore.hubStore;
 
   //currently only support one winner
@@ -139,7 +141,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   const doThrowTile = (tileId: string) => {
     if(gameIsOver){
-      toast.warn("Can't throw because game has ended")
+      toast.warn("Can't throw because host ended this game")
       return;
     }
 
@@ -329,6 +331,13 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                   {gameIsOver && (
                     <Segment textAlign="center">Host ended this game </Segment>
                   )}
+
+                  {
+                    hubActionLoading && (
+                      <Loader active inline='centered' />
+                    )
+                  }
+
 
                   {mainPlayer?.mustThrow &&
                     !gameIsOver &&

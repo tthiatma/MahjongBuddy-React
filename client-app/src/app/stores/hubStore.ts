@@ -1,4 +1,4 @@
-import { observable, action, runInAction } from "mobx";
+import { observable, action, runInAction, toJS } from "mobx";
 import { RootStore } from "./rootStore";
 import { history } from "../..";
 import { toast } from "react-toastify";
@@ -17,6 +17,7 @@ import UserStore from "./userStore";
 import { IPlayer, IRoundOtherPlayer } from "../models/player";
 import { GameStatus } from "../models/gameStatusEnum";
 import { IGame } from "../models/game";
+import { TileStatus } from "../models/tileStatus";
 
 export default class HubStore {
   rootStore: RootStore;
@@ -549,26 +550,49 @@ export default class HubStore {
     runInAction(() => {
       this.hubActionLoading = true;
     });
+    const currentRound = toJS(this.roundStore.round);
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         runInAction("throw tile initially", () => {
           const tileToThrow = this.roundStore.selectedTile;
           if (tileToThrow) {
-            var tileInStore = this.roundStore.mainPlayerAliveTiles?.find(
-              (t) => t.id === tileToThrow?.id
-            );
-            if (tileInStore) tileInStore.owner = "board";
+            //throw tile locally to show responsiveness XD
+
+            //update board tile
+            tileToThrow.owner = "board";
+            tileToThrow.status = TileStatus.BoardActive;
+            tileToThrow.thrownBy = this.userStore.user!.userName;
+            this.roundStore.round!.boardTiles.push(tileToThrow);
+
+            //take off main player thrown tile
+            const tilesWithoutThrown = currentRound!.mainPlayer?.playerTiles.filter(function (t) {return t.id !== tileToThrow.id});            
+            if(tilesWithoutThrown){
+              this.roundStore.round!.mainPlayer.playerTiles = tilesWithoutThrown;
+            }
+            this.roundStore.round!.mainPlayer.mustThrow = false;
+
           }
         });
-        this.hubConnection!.invoke("ThrowTile", values);
-        runInAction(() => {
-          this.hubActionLoading = false;
+        this.hubConnection!.invoke("ThrowTile", values).then(() => {
+          runInAction(() => {
+            this.hubActionLoading = false;
+          });  
         });
       } else {
         toast.error("not connected to hub");
       }
     } catch (error) {
       runInAction(() => {
+        //revert the optimistic throw tile lol
+        const tileToThrow = this.roundStore.selectedTile;
+        if(tileToThrow){
+          this.roundStore.round!.mainPlayer.playerTiles.push(tileToThrow);
+          const boardWithoutThrown = this.roundStore.round!.boardTiles.filter((t) => t.id === tileToThrow.id)  
+          if(boardWithoutThrown){
+            this.roundStore.round!.boardTiles = boardWithoutThrown;
+          }
+
+        }
         this.hubActionLoading = false;
       });
       toast.error("problem throwing tile");
@@ -736,6 +760,16 @@ export default class HubStore {
       toast.error("problem skipping action");
     }
   };
+
+  updateMainPlayerTiles = (updatedTile: IRoundTile) => {
+    let tileIdx = this.roundStore.round?.mainPlayer.playerTiles.findIndex(
+      (t) => t.id === updatedTile.id
+    );
+    runInAction("updating tile", () => {
+      if(tileIdx)
+        this.roundStore.round!.mainPlayer.playerTiles[tileIdx] = updatedTile;
+    });
+}
 
   getGameAndRoundProps = () => {
     let values: any = {};
