@@ -9,6 +9,7 @@ import {
   Grid,
   Item,
   Label,
+  Table,
 } from "semantic-ui-react";
 import { Link, NavLink } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
@@ -18,12 +19,14 @@ import JoinGameForm from "../user/JoinGameForm";
 import NavBar from "../nav/NavBar";
 import Footer from "../footer/Footer";
 import { observer } from "mobx-react-lite";
+import { IGame, IGamesEnvelope } from "../../app/models/game";
+import { format } from "date-fns";
 
 const HomePage = () => {
   const token = window.localStorage.getItem("jwt");
   const rootStore = useContext(RootStoreContext);
   const { isLoggedIn, user } = rootStore.userStore;
-  const { predicate, setPredicate, gamesByDate } = rootStore.gameStore;
+  const { setPredicate, gamesByDate } = rootStore.gameStore;
   const { openModal } = rootStore.modalStore;
 
   useEffect(() => {
@@ -74,50 +77,50 @@ const HomePage = () => {
                 to="/createGame"
                 content="Create Game"
               />{" "}
-              <Segment>
-                <Grid>
-                  <Grid.Column width={9}>
-                    <Item.Group>
-                      {gamesByDate.map(([group, games]) => (
-                        <Fragment key={group}>
-                          <Label size="large" color="blue">
-                            {group}
-                          </Label>
-                          <Item.Group divided>
-                            {games.map((game) => (
-                              <Item key={game.id}>
-                                <Item.Content>
-                                  <Item.Header><Link to={`/games/${game.id}`}>{game.title}</Link></Item.Header>
-                                  <Item.Description>
-                                    {game.players.map((p) => (<Label key={p.userName}>{p.displayName}</Label>))}
-                                    </Item.Description>
-                                </Item.Content>
-                              </Item>
-                            ))}
-                          </Item.Group>
-                        </Fragment>
-                      ))}
-                    </Item.Group>
-                  </Grid.Column>
-                  <Grid.Column width={3}>
-                    <Menu vertical>
-                      <Menu.Item
-                        active={predicate.has("isInGame")}
-                        onClick={() => setPredicate("isInGame", "true")}
-                        color={"blue"}
-                        name={"all"}
-                        content={"Games - I'm In"}
-                      />
-                      <Menu.Item
-                        active={predicate.has("isHost")}
-                        onClick={() => setPredicate("isHost", "true")}
-                        color={"blue"}
-                        name={"username"}
-                        content={"Games - I'm Hosting"}
-                      />
-                    </Menu>
-                  </Grid.Column>
-                </Grid>
+              <Segment
+                attached="top"
+                inverted
+                color="teal"
+                style={{ border: "none" }}
+              >
+                <Header textAlign="center">Recent Games</Header>
+              </Segment>
+              <Segment attached>
+                <Table basic="very">
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.HeaderCell>#</Table.HeaderCell>
+                      <Table.HeaderCell>Date</Table.HeaderCell>
+                      <Table.HeaderCell>Title</Table.HeaderCell>
+                      <Table.HeaderCell>Players</Table.HeaderCell>
+                      <Table.HeaderCell />
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {gamesByDate.map((game) => (
+                      <Table.Row key={game.id}>
+                        <Table.Cell>#{game.id}</Table.Cell>
+                        <Table.Cell>{format(new Date(game.date), "MMM do, yyyy")}</Table.Cell>
+                        <Table.Cell>{game.title} </Table.Cell>
+                        <Table.Cell>
+                          {game.players.map((p) => (
+                            <Label key={p.userName}>{p.displayName}</Label>
+                          ))}
+                        </Table.Cell>
+                        <Table.Cell>
+                          <Button
+                            color="blue"
+                            size="mini"
+                            as={Link}
+                            to={`/games/${game.id}`}
+                          >
+                            Go
+                          </Button>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
               </Segment>
             </Fragment>
           ) : (

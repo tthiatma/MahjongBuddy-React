@@ -65,8 +65,12 @@ export default class GameStore {
     return params;
   }
 
-  @computed get gamesByDate() {
+  @computed get gamesGroupByDate() {
     return this.groupGamesByDate(Array.from(this.gameRegistry.values()));
+  }
+
+  @computed get gamesByDate() {
+    return this.gamesByDateDesc(Array.from(this.gameRegistry.values()));
   }
 
   @computed get getMainUser() {
@@ -235,6 +239,13 @@ export default class GameStore {
   getGame = (id: string) => {
     return this.gameRegistry.get(id);
   };
+
+  gamesByDateDesc(games: IGame[]){
+    const sortedGames: IGame[] = games.sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    );
+    return sortedGames;
+  }
 
   groupGamesByDate(games: IGame[]) {
     const sortedGames = games.sort(

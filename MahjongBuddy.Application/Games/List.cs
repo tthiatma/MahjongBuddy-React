@@ -29,7 +29,7 @@ namespace MahjongBuddy.Application.Games
                 Offset = offset;
                 IsHost = isHost;
                 IsInGame = isInGame;
-                StartDate = startDate ?? DateTime.Now.AddDays(-3);
+                StartDate = startDate ?? DateTime.Today.AddDays(-4);
             }
 
             public int? Limit { get; set; }
