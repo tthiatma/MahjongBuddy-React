@@ -192,6 +192,7 @@ const MainPlayerSection: React.FC<IProps> = ({
                         <Button
                           className="actionButton"
                           circular
+                          size="tiny"
                           color="green"
                           onClick={autoSort}
                           content="SORT"

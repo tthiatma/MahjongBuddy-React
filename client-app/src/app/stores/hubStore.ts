@@ -77,6 +77,7 @@ export default class HubStore {
           ){
             this.rootStore.gameStore.game = game;
             toast.info(`Game #${game.id} has ended`);
+            this.rootStore.roundStore.closeResultModal();
           }
         });
       });
@@ -284,15 +285,19 @@ export default class HubStore {
     }
   };
 
-  @action endGame = async (gameId: string) => {
+  @action endGame = async () => {
     runInAction(() => {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("EndGame", gameId.toString());
-      runInAction(() => {
-        this.hubLoading = false;
-      });
+      const currentGameId = this.rootStore.gameStore.game?.id;
+      if(currentGameId){
+        this.hubConnection!.invoke("EndGame", currentGameId.toString()).then(() => {
+          runInAction(() => {
+            this.hubLoading = false;
+          });  
+        });  
+      }
     } catch (error) {
       runInAction(() => {
         this.hubLoading = false;
@@ -422,7 +427,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -441,7 +446,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -485,7 +490,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -529,7 +534,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -572,7 +577,7 @@ export default class HubStore {
           });  
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -604,7 +609,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -628,7 +633,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -655,7 +660,7 @@ export default class HubStore {
           this.roundStore.pickCounter = 0;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -684,7 +689,7 @@ export default class HubStore {
           this.roundStore.pickCounter = 0;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -711,7 +716,7 @@ export default class HubStore {
           this.roundStore.pickCounter = 0;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -743,7 +748,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("not connected to hub");
+        toast.error("disconnected from the game, please try to refresh your browser");
       }
     } catch (error) {
       runInAction(() => {

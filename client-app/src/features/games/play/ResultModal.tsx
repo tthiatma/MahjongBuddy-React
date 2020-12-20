@@ -9,12 +9,16 @@ import { TileStatus } from "../../../app/models/tileStatus";
 import { ExtraPoint } from "../../../app/models/extraPointEnum";
 import { PlayResult } from "../../../app/models/playResultEnum";
 
-
 const ResultModal: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
-  const { startRound } = rootStore.hubStore;
-  const { getMainUser } = rootStore.gameStore;
-  const { round, showResult, closeResultModal, boardActiveTile } = rootStore.roundStore;
+  const { startRound, endGame } = rootStore.hubStore;
+  const { getMainUser, gameIsOver } = rootStore.gameStore;
+  const {
+    round,
+    showResult,
+    closeResultModal,
+    boardActiveTile,
+  } = rootStore.roundStore;
 
   let winner: IRoundResult | null = null;
   let losers: IRoundResult[] | null = null;
@@ -33,7 +37,7 @@ const ResultModal: React.FC = () => {
   }
 
   return (
-    <Modal open={showResult} onClose={closeResultModal} size="small">
+    <Modal closeIcon open={showResult} onClose={closeResultModal} size="small">
       <Header icon="bullhorn" content="Result" />
 
       {roundResults !== null && roundResults.length > 0 ? (
@@ -68,14 +72,17 @@ const ResultModal: React.FC = () => {
                   }
                 />
               ))}
-            {!winner!.roundResultExtraPoints.some((ep) => ep.extraPoint === ExtraPoint.SelfPick) && activeBoardTile && (
-              <div
-                style={{
-                  backgroundImage: `url(${activeBoardTile!.tile.imageSmall}`,
-                }}
-                className="flexTilesSmall justPickedTile"
-              />
-            )}
+            {!winner!.roundResultExtraPoints.some(
+              (ep) => ep.extraPoint === ExtraPoint.SelfPick
+            ) &&
+              activeBoardTile && (
+                <div
+                  style={{
+                    backgroundImage: `url(${activeBoardTile!.tile.imageSmall}`,
+                  }}
+                  className="flexTilesSmall justPickedTile"
+                />
+              )}
           </div>
           <h3>
             {losers && (
@@ -85,11 +92,9 @@ const ResultModal: React.FC = () => {
                     <li>
                       Loser : {l.displayName}: {l.points}
                     </li>
-                    {l.playerTiles!
-                      .sort(sortTiles)
-                      .map((rt) => (
-                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
-                      ))}
+                    {l.playerTiles!.sort(sortTiles).map((rt) => (
+                      <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                    ))}
                   </Fragment>
                 ))}
               </ul>
@@ -99,11 +104,9 @@ const ResultModal: React.FC = () => {
                 {tiePlayers.map((p, i) => (
                   <Fragment key={p.userName}>
                     <li>{p.displayName}</li>
-                    {p.playerTiles
-                      .sort(sortTiles)
-                      .map((rt) => (
-                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
-                      ))}
+                    {p.playerTiles.sort(sortTiles).map((rt) => (
+                      <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                    ))}
                     <br />
                     <br />
                   </Fragment>
@@ -121,11 +124,9 @@ const ResultModal: React.FC = () => {
                 {tiePlayers.map((p, i) => (
                   <Fragment key={p.userName}>
                     <li>{p.displayName}</li>
-                    {p.playerTiles
-                      .sort(sortTiles)
-                      .map((rt) => (
-                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
-                      ))}
+                    {p.playerTiles.sort(sortTiles).map((rt) => (
+                      <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                    ))}
                     <br />
                     <br />
                   </Fragment>
@@ -135,16 +136,16 @@ const ResultModal: React.FC = () => {
           </h3>
         </Modal.Content>
       )}
-      <Modal.Actions>
-        <Button color="green" onClick={closeResultModal} inverted>
-          <Icon name="checkmark" /> Got it
-        </Button>
-        {isHost && (
-          <Button color="blue" onClick={startRound} inverted>
-            <Icon name="play" /> Next Round
+      {!gameIsOver && isHost && (
+        <Modal.Actions>
+          <Button color="red" onClick={endGame} inverted>
+            <Icon name="handshake" /> End Game
           </Button>
-        )}
-      </Modal.Actions>
+          <Button color="blue" onClick={startRound} inverted>
+              <Icon name="play" /> Next Round
+            </Button>
+        </Modal.Actions>
+      )}
     </Modal>
   );
 };

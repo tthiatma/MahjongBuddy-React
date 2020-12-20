@@ -5,9 +5,6 @@ import {
   Header,
   Button,
   Image,
-  Menu,
-  Grid,
-  Item,
   Label,
   Table,
 } from "semantic-ui-react";
@@ -19,7 +16,6 @@ import JoinGameForm from "../user/JoinGameForm";
 import NavBar from "../nav/NavBar";
 import Footer from "../footer/Footer";
 import { observer } from "mobx-react-lite";
-import { IGame, IGamesEnvelope } from "../../app/models/game";
 import { format } from "date-fns";
 
 const HomePage = () => {
