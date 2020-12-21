@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace MahjongBuddy.Infrastructure.Email
 {
-    public class EmailSender : IEmailSender
+    public class SendGridEmailSender : IEmailSender
     {
         private readonly IOptions<SendGridSettings> _settings;
 
-        public EmailSender(IOptions<SendGridSettings> settings)
+        public SendGridEmailSender(IOptions<SendGridSettings> settings)
         {
             _settings = settings;
         }
