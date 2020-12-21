@@ -133,10 +133,10 @@ namespace MahjongBuddy.API
             services.AddScoped<IPointsCalculator, HomeGameCalculator>();
             services.AddScoped<HandTypeBuilder, HandTypeBuilder>();
             services.AddScoped<ExtraPointBuilder, ExtraPointBuilder>();
-            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IEmailSender, SmtpEmailSender>();
             services.Configure<FacebookAppSettings>(Configuration.GetSection("Authentication:Facebook"));
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
-            services.Configure<SendGridSettings>(Configuration.GetSection("SendGrid"));
+            services.Configure<SmtpSettings>(Configuration.GetSection("Smtp"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
