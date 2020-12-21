@@ -6,7 +6,7 @@ const RulesBasic = () => {
     <Container>
       <Segment>
         <Header size="medium">Supported Rule type</Header>
-        <p>Hongkong Mahjong rule</p>
+        <p>Hong Kong Mahjong rule</p>
       </Segment>
 
       <Segment>
