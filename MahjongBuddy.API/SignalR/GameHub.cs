@@ -181,7 +181,7 @@ namespace MahjongBuddy.API.SignalR
             var updates = await _mediator.Send(command);
             //check if there's action
 
-            var hasAction = updates.FirstOrDefault(r => r.MainPlayer.RoundPlayerActions.Count() > 0);
+            var hasAction = updates.FirstOrDefault(r => r.MainPlayer.RoundPlayerActiveActions.Count() > 0);
             var roundUpdateMethod = hasAction == null ? "UpdateRound" : "UpdateRoundNoLag";
             await SendClientRoundUpdates(updates, roundUpdateMethod);
         }

@@ -1,10 +1,14 @@
-﻿namespace MahjongBuddy.Core
+﻿using MahjongBuddy.Core.Enums;
+
+namespace MahjongBuddy.Core
 {
     public class RoundPlayerAction
     {
         public int Id { get; set; }
 
-        public ActionType PlayerAction { get; set; }
+        public ActionType ActionType { get; set; }
+
+        public ActionStatus ActionStatus { get; set; }
 
         public int RoundPlayerId { get; set; }
 

@@ -88,7 +88,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 currentPlayer.IsMyTurn = true;
                 currentPlayer.MustThrow = true;
 
-                var actionsToBeRemoved = currentPlayer.RoundPlayerActions.Where(a => a.PlayerAction != ActionType.SelfKong).ToList();
+                var actionsToBeRemoved = currentPlayer.RoundPlayerActions.Where(a => a.ActionType != ActionType.SelfKong).ToList();
                 foreach (var action in actionsToBeRemoved)
                 {
                     currentPlayer.RoundPlayerActions.Remove(action);

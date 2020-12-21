@@ -52,7 +52,7 @@ const PlayerAction: React.FC = () => {
   const buttonAnimation = "jiggle";
   const buttonAnimationDuration = 500;
 
-  const hasAction = mainPlayer!.roundPlayerActions.length > 0;
+  const hasAction = mainPlayer!.roundPlayerActiveActions.length > 0;
   const clearKongOptions = () => {
     setKongOptions([]);
   };

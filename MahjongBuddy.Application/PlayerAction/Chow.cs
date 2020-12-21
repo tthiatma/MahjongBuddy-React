@@ -110,7 +110,7 @@ namespace MahjongBuddy.Application.PlayerAction
                     round.IsEnding = false;
 
                 //if user chow, then there's no way that user can win/pong/chow
-                var actionsToBeRemoved = currentPlayer.RoundPlayerActions.Where(a => a.PlayerAction != ActionType.SelfKong).ToList();
+                var actionsToBeRemoved = currentPlayer.RoundPlayerActions.Where(a => a.ActionType != ActionType.SelfKong).ToList();
                 foreach (var action in actionsToBeRemoved)
                 {
                     currentPlayer.RoundPlayerActions.Remove(action);

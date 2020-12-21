@@ -149,7 +149,7 @@ const GameLobbyHeader: React.FC<{
             onClick={() => cancelGame(game.id)}
             color="violet"
           >
-            Cancel game
+            Cancel Game
           </Button>
         )}
 
@@ -157,7 +157,7 @@ const GameLobbyHeader: React.FC<{
           <Button
             floated="right"
             loading={hubLoading}
-            onClick={() => endGame(game.id)}
+            onClick={endGame}
             color="red"
           >
             End game

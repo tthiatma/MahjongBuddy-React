@@ -434,21 +434,22 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoundPlayerAction",
+                name: "RoundPlayerActions",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    PlayerAction = table.Column<string>(nullable: false),
+                    ActionType = table.Column<string>(nullable: false),
+                    ActionStatus = table.Column<string>(nullable: false),
                     RoundPlayerId = table.Column<int>(nullable: false),
                     RoundPlayerRoundId = table.Column<int>(nullable: false),
                     RoundPlayerGamePlayerId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoundPlayerAction", x => x.Id);
+                    table.PrimaryKey("PK_RoundPlayerActions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoundPlayerAction_RoundPlayers_RoundPlayerRoundId_RoundPlayerGamePlayerId",
+                        name: "FK_RoundPlayerActions_RoundPlayers_RoundPlayerRoundId_RoundPlayerGamePlayerId",
                         columns: x => new { x.RoundPlayerRoundId, x.RoundPlayerGamePlayerId },
                         principalTable: "RoundPlayers",
                         principalColumns: new[] { "RoundId", "GamePlayerId" },
@@ -589,8 +590,8 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 column: "RoundResultId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoundPlayerAction_RoundPlayerRoundId_RoundPlayerGamePlayerId",
-                table: "RoundPlayerAction",
+                name: "IX_RoundPlayerActions_RoundPlayerRoundId_RoundPlayerGamePlayerId",
+                table: "RoundPlayerActions",
                 columns: new[] { "RoundPlayerRoundId", "RoundPlayerGamePlayerId" });
 
             migrationBuilder.CreateIndex(
@@ -660,7 +661,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "RoundHands");
 
             migrationBuilder.DropTable(
-                name: "RoundPlayerAction");
+                name: "RoundPlayerActions");
 
             migrationBuilder.DropTable(
                 name: "RoundTiles");

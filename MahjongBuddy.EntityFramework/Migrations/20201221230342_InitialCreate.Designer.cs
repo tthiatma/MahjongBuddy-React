@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20201207071106_InitialCreate")]
+    [Migration("20201221230342_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.2")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -348,7 +348,11 @@ namespace MahjongBuddy.EntityFramework.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("PlayerAction")
+                    b.Property<string>("ActionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ActionType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -365,7 +369,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.HasIndex("RoundPlayerRoundId", "RoundPlayerGamePlayerId");
 
-                    b.ToTable("RoundPlayerAction");
+                    b.ToTable("RoundPlayerActions");
                 });
 
             modelBuilder.Entity("MahjongBuddy.Core.RoundResult", b =>

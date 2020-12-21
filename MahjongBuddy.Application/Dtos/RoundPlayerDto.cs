@@ -19,7 +19,7 @@ namespace MahjongBuddy.Application.Dtos
 
         public bool IsManualSort { get; set; }
 
-        public ICollection<RoundPlayerActionDto> RoundPlayerActions { get; set; }
+        public ICollection<RoundPlayerActionDto> RoundPlayerActiveActions { get; set; }
 
         public ICollection<RoundTileDto> PlayerTiles { get; set; }
     }

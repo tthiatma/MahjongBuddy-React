@@ -19,7 +19,7 @@ export interface IRoundPlayer extends IPlayer {
   wind: WindDirection;
   points: number;
   isManualSort: boolean;
-  roundPlayerActions: IRoundPlayerAction[];
+  roundPlayerActiveActions: IRoundPlayerAction[];
   playerTiles: IRoundTile[];
 }
 
@@ -37,5 +37,5 @@ export interface IRoundOtherPlayer extends IPlayer {
 
 export interface IRoundPlayerAction {
   id: number;
-  playerAction: ActionType;
+  actionType: ActionType;
 }

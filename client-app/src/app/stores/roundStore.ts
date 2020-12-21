@@ -98,44 +98,44 @@ export default class RoundStore {
   }
 
   @computed get hasSelfKongAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.SelfKong).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.SelfKong).length > 0
       : false
   }
 
   @computed get hasSelfWinAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.SelfWin).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.SelfWin).length > 0
       : false
   }
   
   @computed get hasChowAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.Chow).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.Chow).length > 0
       : false
   }
 
   @computed get hasPongAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.Pong).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.Pong).length > 0
       : false
   }
 
   @computed get hasKongAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.Kong).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.Kong).length > 0
       : false
   }
 
   @computed get hasWinAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.Win).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.Win).length > 0
       : false
   }
 
   @computed get hasGiveUpAction(){
-    return this.mainPlayer!.roundPlayerActions    
-      ? this.mainPlayer!.roundPlayerActions.filter((a) => a.playerAction === ActionType.GiveUp).length > 0
+    return this.mainPlayer!.roundPlayerActiveActions    
+      ? this.mainPlayer!.roundPlayerActiveActions.filter((a) => a.actionType === ActionType.GiveUp).length > 0
       : false
   }
 

@@ -6,6 +6,7 @@ using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,9 +38,6 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedPlayers = new List<RoundPlayer>();
-                var updatedTiles = new List<RoundTile>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -50,41 +48,56 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (playerThatSkippedAction == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
+                playerThatSkippedAction.RoundPlayerActions.Where(a => a.ActionStatus == ActionStatus.Active).ForEach(ac => ac.ActionStatus = ActionStatus.Skipped);
+
+                /////////////
                 playerThatSkippedAction.HasAction = false;
-                playerThatSkippedAction.RoundPlayerActions.Clear();
+                ////////////
 
-                updatedPlayers.Add(playerThatSkippedAction);
-
-                //prioritize user that has pong or kong action 
-                var pongOrKongActionPlayer = round.RoundPlayers.Where(
+                //check in case of multiple winner and this winner skip the option to win because too greedy!
+                var otherWinnerActiveAction = round.RoundPlayers.Where(
                 rp => rp.GamePlayer.Player.UserName != playerThatSkippedAction.GamePlayer.Player.UserName
                     && rp.RoundPlayerActions.Any(
-                    rpa => rpa.PlayerAction == ActionType.Pong ||
-                    rpa.PlayerAction == ActionType.Kong
+                    rpa => rpa.ActionType == ActionType.Win && rpa.ActionStatus == ActionStatus.Active
                     )
                 ).FirstOrDefault();
 
-                if(pongOrKongActionPlayer != null)
+                if (otherWinnerActiveAction != null)
                 {
-                    pongOrKongActionPlayer.HasAction = true;
-                    updatedPlayers.Add(pongOrKongActionPlayer);
+                    //then we gotta wait other winner skip the win
                 }
                 else
                 {
-                    //now check other player that has action
-                    var chowPlayerActions = round.RoundPlayers.FirstOrDefault(u =>
-                    u.GamePlayer.Player.UserName != playerThatSkippedAction.GamePlayer.Player.UserName
-                    && u.IsMyTurn != true
-                    && u.RoundPlayerActions.Count() > 0);
+                    //prioritize user that has pong or kong action 
+                    var pongOrKongActionPlayer = round.RoundPlayers.FirstOrDefault( rp => 
+                        rp.RoundPlayerActions.Any(
+                        rpa => (rpa.ActionType == ActionType.Pong && rpa.ActionStatus == ActionStatus.Inactive)
+                        ||  (rpa.ActionType == ActionType.Kong && rpa.ActionStatus == ActionStatus.Inactive)));
 
-                    if (chowPlayerActions != null)
+                    if (pongOrKongActionPlayer != null)
                     {
-                        chowPlayerActions.HasAction = true;
-                        updatedPlayers.Add(chowPlayerActions);
+                        pongOrKongActionPlayer.RoundPlayerActions
+                            .Where(rpa => rpa.ActionType == ActionType.Pong || rpa.ActionType == ActionType.Kong)
+                            .ForEach(a => a.ActionStatus = ActionStatus.Active);
+                        pongOrKongActionPlayer.HasAction = true;
                     }
                     else
                     {
-                        RoundHelper.SetNextPlayer(round, ref updatedPlayers, ref updatedTiles, _pointCalculator);
+                        //now check other player that has chow action
+                        var chowActionPlayer = round.RoundPlayers.FirstOrDefault(u =>
+                        u.RoundPlayerActions.Any(a => a.ActionType == ActionType.Chow && a.ActionStatus == ActionStatus.Inactive));
+
+                        if (chowActionPlayer != null)
+                        {
+                            chowActionPlayer.RoundPlayerActions
+                                .Where(rpa => rpa.ActionType == ActionType.Chow)
+                                .ForEach(a => a.ActionStatus = ActionStatus.Active);
+                            chowActionPlayer.HasAction = true;
+                        }
+                        else
+                        {
+                            RoundHelper.SetNextPlayer(round, _pointCalculator);
+                        }
                     }
                 }
 

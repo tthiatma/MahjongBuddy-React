@@ -60,7 +60,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //TODO only allow pick tile when it's player's turn
 
-                var newTiles = RoundTileHelper.PickTile(round, request.UserName, ref updatedTiles);
+                var newTiles = RoundTileHelper.PickTile(round, request.UserName);
 
                 if (newTiles == null)
                     round.IsEnding = true;
@@ -74,7 +74,7 @@ namespace MahjongBuddy.Application.PlayerAction
                     currentPlayer.HasAction = false;
                     if (RoundHelper.DetermineIfUserCanWin(round, currentPlayer, _pointCalculator))
                     {
-                        currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.Win });
+                        currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { ActionType = ActionType.Win });
                     }
                 }
                 updatedPlayers.Add(currentPlayer);

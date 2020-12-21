@@ -590,7 +590,7 @@ namespace MahjongBuddy.Application.Helpers
             return tiles;
         }
 
-        public static ICollection<RoundTile> PickTile(Round round, string pickerUserName, ref List<RoundTile> updatedTiles, bool pickLast = false)
+        public static ICollection<RoundTile> PickTile(Round round, string pickerUserName, bool pickLast = false)
         {
             //we loop 8 times because there are total of 8 flowers. get more tiles if its a flower
             var playerAliveTiles = round.RoundTiles.Where(rt => rt.Owner == pickerUserName && (rt.Status == TileStatus.UserActive || rt.Status == TileStatus.UserJustPicked));
@@ -612,14 +612,12 @@ namespace MahjongBuddy.Application.Helpers
                 {
                     newTile.Status = TileStatus.UserJustPicked;
                     newTile.ActiveTileCounter = activeTilecounter;
-                    updatedTiles.Add(newTile);
                     ret.Add(newTile);
                     break;
                 }
                 else
                 {
                     newTile.Status = TileStatus.UserGraveyard;
-                    updatedTiles.Add(newTile);
                     ret.Add(newTile);
                 }
             }

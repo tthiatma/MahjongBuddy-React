@@ -730,7 +730,7 @@ export default class HubStore {
     runInAction(() => {
       this.hubActionLoading = true;
     });
-    const tempAction = [...this.roundStore.mainPlayer!.roundPlayerActions];
+    const tempAction = [...this.roundStore.mainPlayer!.roundPlayerActiveActions];
     try {
       if (this.hubConnection && this.hubConnection.state === "Connected") {
         await this.hubConnection!.invoke(
@@ -738,13 +738,13 @@ export default class HubStore {
           this.getGameAndRoundProps()
         ).catch(() => {
           runInAction(() => {
-            this.roundStore.mainPlayer!.roundPlayerActions = tempAction;
+            this.roundStore.mainPlayer!.roundPlayerActiveActions = tempAction;
             this.hubActionLoading = false;
           });
           toast.error(`can't skip`);
         });
         runInAction(() => {
-          this.roundStore.mainPlayer!.roundPlayerActions = [];
+          this.roundStore.mainPlayer!.roundPlayerActiveActions = [];
           this.hubActionLoading = false;
         });
       } else {
@@ -752,7 +752,7 @@ export default class HubStore {
       }
     } catch (error) {
       runInAction(() => {
-        this.roundStore.mainPlayer!.roundPlayerActions = tempAction;
+        this.roundStore.mainPlayer!.roundPlayerActiveActions = tempAction;
         this.hubActionLoading = false;
       });
       toast.error("problem skipping action");
