@@ -81,7 +81,9 @@ namespace MahjongBuddy.Application.Users
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-                var verifyUrl = $"{request.Origin}/user/verifyEmail?token={token}&email={request.Email}";
+                var mjUrl = string.IsNullOrEmpty(request.Origin) ? "https://mahjongbuddy.com" : request.Origin;
+
+                var verifyUrl = $"{mjUrl}/user/verifyEmail?token={token}&email={request.Email}";
 
                 var message = $"<p>Please click the below link to verify your email address:</p><p><a href='{verifyUrl}'>{verifyUrl}</a></p>";
 
