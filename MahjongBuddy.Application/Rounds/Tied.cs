@@ -10,7 +10,8 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-
+using MoreLinq;
+using MahjongBuddy.Core.Enums;
 
 namespace MahjongBuddy.Application.Rounds
 {
@@ -43,13 +44,18 @@ namespace MahjongBuddy.Application.Rounds
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
                 var remainingTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
-                //can only call end game when only 1 tile left or no more tile
+                //can only call end round when only 1 tile left or no more tile
 
                 if (remainingTiles.Count() <= 1)
                 {
                     round.IsOver = true;
                     round.IsTied = true;
                     round.IsEnding = false;
+
+                    round.RoundPlayers.ForEach(rp =>
+                    {
+                        round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = rp.GamePlayer.Player, Points = 0 });
+                    });
 
                     var success = await _context.SaveChangesAsync() > 0;
 
