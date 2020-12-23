@@ -71,7 +71,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (remainingTiles == null)
                 {
                     currentPlayer.RoundPlayerActions.Clear();
-                    currentPlayer.HasAction = false;
                     if (RoundHelper.DetermineIfUserCanWin(round, currentPlayer, _pointCalculator))
                     {
                         currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { ActionType = ActionType.Win });

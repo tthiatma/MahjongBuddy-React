@@ -22,8 +22,6 @@ namespace MahjongBuddy.Core
 
         public bool IsMyTurn { get; set; }
 
-        public bool HasAction { get; set; }
-
         public bool MustThrow { get; set; }
 
         public WindDirection Wind { get; set; }

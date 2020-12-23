@@ -63,7 +63,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 round.RoundPlayers.ForEach(p =>
                 {
                     p.RoundPlayerActions.Clear();
-                    p.HasAction = false;
                 });
 
                 //previous active tile on board to be no longer active
@@ -103,7 +102,6 @@ namespace MahjongBuddy.Application.PlayerAction
                         bool multipleWinners = winActionPlayer.Count() > 1;
                         foreach (var winner in winActionPlayer)
                         {
-                            winner.HasAction = true;
                             if (multipleWinners)
                                 winner.RoundPlayerActions.Where(ac => ac.ActionType == ActionType.Win).ForEach(a => a.ActionStatus = ActionStatus.Active);
                             else
@@ -120,7 +118,6 @@ namespace MahjongBuddy.Application.PlayerAction
                             ).FirstOrDefault();
                         if (pongOrKongActionPlayer != null)
                         {
-                            pongOrKongActionPlayer.HasAction = true;
                             pongOrKongActionPlayer.RoundPlayerActions.ForEach(a => a.ActionStatus = ActionStatus.Active);
                         }
                         //check if next player has chow action 
@@ -129,7 +126,6 @@ namespace MahjongBuddy.Application.PlayerAction
                             var chowActionPlayer = round.RoundPlayers.Where(rp => rp.RoundPlayerActions.Any(rpa => rpa.ActionType == ActionType.Chow)).FirstOrDefault();
                             if (chowActionPlayer != null)
                             {
-                                chowActionPlayer.HasAction = true;
                                 chowActionPlayer.RoundPlayerActions.ForEach(a => a.ActionStatus = ActionStatus.Active);
                             }
                         }

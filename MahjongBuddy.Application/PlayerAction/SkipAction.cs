@@ -50,10 +50,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 playerThatSkippedAction.RoundPlayerActions.Where(a => a.ActionStatus == ActionStatus.Active).ForEach(ac => ac.ActionStatus = ActionStatus.Skipped);
 
-                /////////////
-                playerThatSkippedAction.HasAction = false;
-                ////////////
-
                 //check in case of multiple winner and this winner skip the option to win because too greedy!
                 var otherWinnerActiveAction = round.RoundPlayers.Where(
                 rp => rp.GamePlayer.Player.UserName != playerThatSkippedAction.GamePlayer.Player.UserName
@@ -79,7 +75,6 @@ namespace MahjongBuddy.Application.PlayerAction
                         pongOrKongActionPlayer.RoundPlayerActions
                             .Where(rpa => rpa.ActionType == ActionType.Pong || rpa.ActionType == ActionType.Kong)
                             .ForEach(a => a.ActionStatus = ActionStatus.Active);
-                        pongOrKongActionPlayer.HasAction = true;
                     }
                     else
                     {
@@ -92,7 +87,6 @@ namespace MahjongBuddy.Application.PlayerAction
                             chowActionPlayer.RoundPlayerActions
                                 .Where(rpa => rpa.ActionType == ActionType.Chow)
                                 .ForEach(a => a.ActionStatus = ActionStatus.Active);
-                            chowActionPlayer.HasAction = true;
                         }
                         else
                         {

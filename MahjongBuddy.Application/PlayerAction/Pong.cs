@@ -93,7 +93,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     currentPlayer.RoundPlayerActions.Remove(action);
                 }
-                currentPlayer.HasAction = false;
                 RoundHelper.CheckPossibleSelfKong(round, currentPlayer);
 
                 if (round.IsEnding)
