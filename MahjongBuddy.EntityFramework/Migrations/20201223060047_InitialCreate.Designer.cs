@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MahjongBuddy.EntityFramework.Migrations
 {
     [DbContext(typeof(MahjongBuddyDbContext))]
-    [Migration("20201221230342_InitialCreate")]
+    [Migration("20201223060047_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -303,9 +303,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
 
                     b.Property<int>("GamePlayerId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("HasAction")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDealer")
                         .HasColumnType("bit");

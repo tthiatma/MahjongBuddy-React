@@ -302,9 +302,6 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     b.Property<int>("GamePlayerId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("HasAction")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDealer")
                         .HasColumnType("bit");
 
