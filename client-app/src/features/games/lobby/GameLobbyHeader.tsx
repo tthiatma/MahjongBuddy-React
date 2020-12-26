@@ -40,6 +40,7 @@ const GameLobbyHeader: React.FC<{
 
   return (
     <Segment.Group>
+      
       <Segment basic attached="top" style={{ padding: "0" }}>
         <Image src={`/assets/mahjong-tiles.jpg`} fluid style={gameImageStyle} />
         <Segment style={gameImageTextStyle} basic>
@@ -135,35 +136,33 @@ const GameLobbyHeader: React.FC<{
           </Button>
         )} */}
       </Segment>
-      <Segment clearing attached="bottom">
-      <Icon size="large" color="teal" name="cogs" />
-
-        {gameIsOver && <span>Game Over</span>}
-
-        Cancel/end your game when you're done
-
-        {game.isHost && !gameIsOver && game.status === GameStatus.Created && (
-          <Button
-            floated="right"
-            loading={hubLoading}
-            onClick={() => cancelGame(game.id)}
-            color="violet"
-          >
-            Cancel Game
-          </Button>
-        )}
-
-        {game.isHost && !gameIsOver && game.status === GameStatus.Playing && (
-          <Button
-            floated="right"
-            loading={hubLoading}
-            onClick={endGame}
-            color="red"
-          >
-            End game
-          </Button>
-        )}
-      </Segment>
+      {game.isHost && (
+        <Segment clearing attached="bottom">
+          <Icon size="large" color="teal" name="cogs" />
+          {gameIsOver && <span>Game Over</span>}
+          Cancel/end your game when you're done
+          {!gameIsOver && game.status === GameStatus.Created && (
+            <Button
+              floated="right"
+              loading={hubLoading}
+              onClick={() => cancelGame(game.id)}
+              color="violet"
+            >
+              Cancel Game
+            </Button>
+          )}
+          {game.isHost && !gameIsOver && game.status === GameStatus.Playing && (
+            <Button
+              floated="right"
+              loading={hubLoading}
+              onClick={endGame}
+              color="red"
+            >
+              End game
+            </Button>
+          )}
+        </Segment>
+      )}
     </Segment.Group>
   );
 };

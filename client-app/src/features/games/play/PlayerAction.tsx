@@ -17,6 +17,7 @@ import {
   Transition,
   Container,
 } from "semantic-ui-react";
+import { PlayResult } from "../../../app/models/playResultEnum";
 
 const PlayerAction: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
@@ -48,7 +49,12 @@ const PlayerAction: React.FC = () => {
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
   const [chowOptions, setChowOptions] = useState<any[]>([]);
-
+  let isWinner = false;
+  if(round!.roundResults){
+    const currentPlayerWin = round!.roundResults?.find((r) => r.playResult === PlayResult.Win && r.userName === mainPlayer?.userName)!;
+    if(currentPlayerWin)
+      isWinner = true
+  }
   const buttonAnimation = "jiggle";
   const buttonAnimationDuration = 500;
 
@@ -167,7 +173,7 @@ const PlayerAction: React.FC = () => {
         <Card.Group centered itemsPerRow={3} items={chowOptions} />
       )}
 
-      {(hasWinAction || hasSelfWinAction) && (
+      {(hasWinAction || hasSelfWinAction) && !isWinner && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -177,7 +183,7 @@ const PlayerAction: React.FC = () => {
             className="actionButton"
             circular
             color="green"
-            disabled={round!.isOver}
+            disabled={round!.isOver && isWinner}
             loading={hubActionLoading}
             onClick={winRound}
             content="WIN"
