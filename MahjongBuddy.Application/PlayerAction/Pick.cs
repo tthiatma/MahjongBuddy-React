@@ -42,10 +42,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 //-tile is flower
                 //-no more tile to pick
                 //-only 1 more tile to pick because player have an option not to take the last tile.
-
-                var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -76,7 +72,6 @@ namespace MahjongBuddy.Application.PlayerAction
                         currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { ActionType = ActionType.Win });
                     }
                 }
-                updatedPlayers.Add(currentPlayer);
 
                 try
                 {

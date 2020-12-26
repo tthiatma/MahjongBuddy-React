@@ -53,8 +53,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 //weird situation is when it's user's turn, user can kong their active tiles and can kong board active tiles
 
                 var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -156,10 +154,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 foreach (var otherPlayerTurn in otherPlayers)
                 {
                     otherPlayerTurn.IsMyTurn = false;
-                    updatedPlayers.Add(otherPlayerTurn);
                 }
-
-                updatedPlayers.Add(currentPlayer);
 
                 try
                 {

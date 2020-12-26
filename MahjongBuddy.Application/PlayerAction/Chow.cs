@@ -41,10 +41,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 //Note to consider when chow tile:
                 //-when chow tile user need to throw a tile.
                 //assign tile ownership to current user
-
-                var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -88,12 +84,9 @@ namespace MahjongBuddy.Application.PlayerAction
                 else
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "tile is not in sequence to chow" });
 
-                updatedTiles.AddRange(sortedChowTiles);
-
                 var currentPlayer = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "there are no user with this username in the round" });
-                updatedPlayers.Add(currentPlayer);
 
                 currentPlayer.IsMyTurn = true;
                 currentPlayer.MustThrow = true;
@@ -103,7 +96,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     otherPlayerTurn.IsMyTurn = false;
                     otherPlayerTurn.MustThrow = false;
-                    updatedPlayers.Add(otherPlayerTurn);
                 }
 
                 if (round.IsEnding)

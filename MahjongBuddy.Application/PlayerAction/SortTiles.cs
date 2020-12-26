@@ -39,9 +39,6 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -52,14 +49,11 @@ namespace MahjongBuddy.Application.PlayerAction
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
                 currentPlayer.IsManualSort = request.IsManualSort;
-                updatedPlayers.Add(currentPlayer);
-
                 //update the activetilecounter
                 foreach (var t in request.RoundTiles)
                 {
                     var updatedTile = round.RoundTiles.First(rt => rt.Id == t.Id);
                     updatedTile.ActiveTileCounter = t.ActiveTileCounter;
-                    updatedTiles.Add(updatedTile);
                 }
 
                 try

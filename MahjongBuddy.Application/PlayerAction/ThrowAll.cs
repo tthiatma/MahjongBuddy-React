@@ -33,8 +33,6 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedTiles = new List<RoundTile>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -50,7 +48,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (existingActiveTileOnBoard != null)
                 {
                     existingActiveTileOnBoard.Status = TileStatus.BoardGraveyard;
-                    updatedTiles.Add(existingActiveTileOnBoard);
                 }
 
                 var userJustPickedTile = round.RoundTiles.Where(t => t.Owner == request.UserName && t.Status == TileStatus.UserJustPicked);
@@ -59,7 +56,6 @@ namespace MahjongBuddy.Application.PlayerAction
                     foreach (var t in userJustPickedTile)
                     {
                         t.Status = TileStatus.UserActive;
-                        updatedTiles.Add(t);
                     }
                 }
                 var unopenTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
@@ -74,7 +70,6 @@ namespace MahjongBuddy.Application.PlayerAction
                     tileToThrow.Status = TileStatus.BoardGraveyard;
                     tileToThrow.BoardGraveyardCounter = round.TileCounter;
                     round.TileCounter++;
-                    updatedTiles.Add(tileToThrow);
                 }
 
                 var success = await _context.SaveChangesAsync() > 0;

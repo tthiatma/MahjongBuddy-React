@@ -43,8 +43,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 //assign tile ownership to current user
 
                 var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
@@ -103,10 +101,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 {
                     otherPlayerTurn.IsMyTurn = false;
                     otherPlayerTurn.MustThrow = false;
-                    updatedPlayers.Add(otherPlayerTurn);
                 }
-
-                updatedPlayers.Add(currentPlayer);
 
                 try
                 {
