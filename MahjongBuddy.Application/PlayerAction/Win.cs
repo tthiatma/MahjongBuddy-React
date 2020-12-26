@@ -39,8 +39,6 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var game = await _context.Games.FindAsync(request.GameId);
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
@@ -49,7 +47,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
+                RoundPlayer winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
 
                 if (winner == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Player = "Could not find player" });
@@ -150,8 +148,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
                             var loser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == baoPlayerUserName);
                             loser.Points -= winningPoint;
-                            updatedPlayers.Add(loser);
-
                             round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint * 3 });
 
                             //record users that are tied
@@ -171,7 +167,6 @@ namespace MahjongBuddy.Application.PlayerAction
                             winner.Points += winningPoint;
                             winnerResult.Points = winningPoint;
 
-                            updatedPlayers.AddRange(losers);
                             losers.ForEach(l =>
                             {
                                 l.Points -= cappedPoint;
@@ -190,20 +185,26 @@ namespace MahjongBuddy.Application.PlayerAction
                         loser.Points -= cappedPoint;
                         round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint });
 
-                        //record users that are tied
-                        var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != loser.GamePlayer.Player.UserName && p.GamePlayer.Player.UserName != winner.GamePlayer.Player.UserName);
-                        tiedPlayers.ForEach(tp =>
+                        //check for multiple winners. If player has a valid win and already recorded as tie
+                        var tieResultCouldWin = round.RoundResults.FirstOrDefault(rr => rr.PlayResult == PlayResult.Tie && rr.Player.UserName == winner.GamePlayer.Player.UserName);
+
+                        if (tieResultCouldWin != null)
                         {
-                            round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
-                        });
+                            //remove record that the player tie
+                            round.RoundResults.Remove(tieResultCouldWin);
+                        }
+                        else
+                        {
+                            //record users that are tied
+                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != loser.GamePlayer.Player.UserName && p.GamePlayer.Player.UserName != winner.GamePlayer.Player.UserName);
+                            tiedPlayers.ForEach(tp =>
+                            {
+                                round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
+                            });
+                        }
 
-
-                        updatedPlayers.Add(loser);
                     }
-                    updatedPlayers.Add(winner);
                     round.RoundResults.Add(winnerResult);
-
-                    //TODO implement more than one winner
 
                     var success = await _context.SaveChangesAsync() > 0;
 
