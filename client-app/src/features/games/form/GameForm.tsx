@@ -14,6 +14,16 @@ import {
   createValidator,
 } from "revalidate";
 
+const isLessThan = (n: number) =>
+  createValidator(
+    (message) => (value) => {
+      if (value && Number(value) >= n) {
+        return message;
+      }
+    },
+    (field) => `${field} must be less than ${n}`
+  );
+
 const isGreaterThan = (n: number) =>
   createValidator(
     (message) => (value) => {
@@ -29,7 +39,8 @@ const validate = combineValidators({
   minPoint: composeValidators(
     isRequired,
     isNumeric,
-    isGreaterThan(-1)
+    isGreaterThan(-1),
+    isLessThan(15)
   )("minPoint"),
   maxPoint: composeValidators(
     isRequired,
@@ -95,7 +106,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   />
                   <Field
                     name="minPoint"
-                    placeholder="Minimum points to win: eg. 3"
+                    placeholder="Minimum points to win: eg. 0 for beginner 3 for advanced"
                     value={game.minPoint}
                     component={TextInput}
                   />
