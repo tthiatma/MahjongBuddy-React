@@ -18,7 +18,7 @@ namespace MahjongBuddy.Application.Games
     {
         public class Query : IRequest<RoundDto>
         {
-            public string Code { get; set; }
+            public string GameCode { get; set; }
         }
 
         public class Handler : IRequestHandler<Query, RoundDto>

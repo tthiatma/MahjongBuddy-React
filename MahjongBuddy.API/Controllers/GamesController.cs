@@ -43,7 +43,7 @@ namespace MahjongBuddy.API.Controllers
         [HttpGet("code/{code}/latestRound")]
         public async Task<ActionResult<RoundDto>> LatestRound(string code)
         {
-            return await Mediator.Send(new LatestRound.Query { Code = code });
+            return await Mediator.Send(new LatestRound.Query { GameCode = code });
         }
 
         [HttpPost]
