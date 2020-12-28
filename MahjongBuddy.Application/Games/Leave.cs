@@ -15,14 +15,14 @@ namespace MahjongBuddy.Application.Games
 {
     public class Leave
     {
-        public class Command : IRequest<PlayerDto>
+        public class Command : IRequest<GamePlayerDto>
         {
             public int GameId { get; set; }
             public string UserName { get; set; }
             public string ConnectionId { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, PlayerDto>
+        public class Handler : IRequestHandler<Command, GamePlayerDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -32,7 +32,7 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<PlayerDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<GamePlayerDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.FindAsync(request.GameId);
 
@@ -62,7 +62,7 @@ namespace MahjongBuddy.Application.Games
                 try
                 {
                     await _context.SaveChangesAsync();
-                    return _mapper.Map<PlayerDto>(gamePlayer);
+                    return _mapper.Map<GamePlayerDto>(gamePlayer);
                 }
                 catch (Exception)
                 {

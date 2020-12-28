@@ -6,7 +6,7 @@ import GameListItemPlayers from "./GameListItemPlayers";
 import { format } from "date-fns";
 
 const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
-  const host = game.players.filter((p) => p.isHost)[0];
+  const host = game.gamePlayers.filter((p) => p.isHost)[0];
   return (
     <Segment.Group>
       <Segment>
@@ -58,7 +58,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
         <Icon name="clock" /> {format(game.date, "h:mm a")}
       </Segment>
       <Segment secondary>
-        <GameListItemPlayers players={game.players} />
+        <GameListItemPlayers players={game.gamePlayers} />
       </Segment>
       <Segment clearing>
         <Button

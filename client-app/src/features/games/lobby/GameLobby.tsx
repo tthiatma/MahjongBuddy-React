@@ -54,7 +54,7 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
           <GameLobbyChat />
         </Grid.Column>
         <Grid.Column width={8}>
-          <GameLobbySidebar players={game.players} />
+          <GameLobbySidebar players={game.gamePlayers} />
         </Grid.Column>
       </Grid>
     </Fragment>

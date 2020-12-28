@@ -21,8 +21,7 @@ namespace MahjongBuddy.Application.Dtos
 
         public string HostUserName { get; set; }
 
-        [JsonPropertyName("players")]
-        public ICollection<PlayerDto> GamePlayers { get; set; }
+        public ICollection<GamePlayerDto> GamePlayers { get; set; }
 
         public ICollection<ChatMsgDto> ChatMsgs { get; set; }
     }

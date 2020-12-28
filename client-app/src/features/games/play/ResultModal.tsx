@@ -41,7 +41,7 @@ const ResultModal: React.FC = () => {
 
   if (roundResults) {
     winners = roundResults?.filter((r) => r.playResult === PlayResult.Win)!;
-    losers = roundResults?.filter((r) => r.playResult === PlayResult.Lost);
+    losers = roundResults?.filter((r) => r.playResult === PlayResult.Lost || r.playResult === PlayResult.LostWithPenalty);
     tiePlayers = roundResults!.filter((r) => r.playResult === PlayResult.Tie);
     groupedLosers = groupLosersByName(losers);
   }
@@ -57,7 +57,7 @@ const ResultModal: React.FC = () => {
           <Fragment>
             <h3>
               {winners.map((w) => (
-                <Fragment>
+                <Fragment key={`winner-${w.userName}`}>
                   Winner : {w.displayName}: {w.points} pts
                   <ul>
                     {w.roundResultHands.map((h, i) => (
@@ -72,7 +72,7 @@ const ResultModal: React.FC = () => {
                     ))}
                   </ul>
                   <div className="flexTilesContainer">
-                    {w.playerTiles.sort(sortTiles).map((rt) => (
+                    {w.playerTiles.slice().sort(sortTiles).map((rt) => (
                         <div
                           key={rt.id}
                           style={{
@@ -109,12 +109,12 @@ const ResultModal: React.FC = () => {
             {groupedLosers.map(([lname, lostList]) => (
               <Fragment key={lname}>
                 <ul>
-                  {lostList.map((l) => (
-                    <li>
+                  {lostList.map((l,i) => (
+                    <li key={`lost-${i}-${l.userName}`}>
                       Loser : {l.displayName}: {l.points}
                     </li>
                   ))}
-                  {lostList[0].playerTiles!.sort(sortTiles).map((rt) => (
+                  {lostList[0].playerTiles!.slice().sort(sortTiles).map((rt) => (
                     <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
                   ))}
                 </ul>
@@ -128,7 +128,7 @@ const ResultModal: React.FC = () => {
               {tiePlayers.map((p) => (
                 <Fragment key={p.userName}>
                   <li>{p.displayName}</li>
-                  {p.playerTiles.sort(sortTiles).map((rt) => (
+                  {p.playerTiles.slice().sort(sortTiles).map((rt) => (
                     <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
                   ))}
                   <br />

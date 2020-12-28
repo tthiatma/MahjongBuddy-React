@@ -12,7 +12,7 @@ namespace MahjongBuddy.Application.Games
             CreateMap<Connection, ConnectionDto>();
             CreateMap<Game, GameDto>()
                 .ForMember(dest => dest.HostUserName, opt => opt.MapFrom(s => s.Host.UserName));
-            CreateMap<GamePlayer, PlayerDto>()
+            CreateMap<GamePlayer, GamePlayerDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(s => s.Player.UserName))
                 .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(s => s.Player.DisplayName))
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(s => s.Player.Photos.FirstOrDefault(x => x.IsMain).Url))

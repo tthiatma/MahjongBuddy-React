@@ -47,34 +47,33 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                RoundPlayer winner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
+                RoundPlayer roundPlayerWinner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
 
-                if (winner == null)
+                if (roundPlayerWinner == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Player = "Could not find player" });
 
-                //if its a valid win:
+                //check for valid win:
                 HandWorth handWorth = _pointCalculator.Calculate(round, request.UserName);
-
                 if (handWorth == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Win = "Invalid combination hand" });
 
                 if (handWorth.Points >= game.MinPoint)
                 {
+                    bool isSelfPick = false;
+
                     //set the game as over
                     round.IsOver = true;
                     round.IsEnding = false;
-                    //create the result
-                    //record who win and who lost 
+
+                    //create the result and record who win and who lost 
                     RoundResult winnerResult = new RoundResult
                     {
-                        Player = winner.GamePlayer.Player,
+                        Player = roundPlayerWinner.GamePlayer.Player,
                         PlayResult = PlayResult.Win,
                     };
 
                     if (round.RoundResults == null)
                         round.RoundResults = new List<RoundResult>();
-
-                    bool isSelfPick = false;
 
                     //record hand type and extra points
                     foreach (var h in handWorth.HandTypes)
@@ -92,7 +91,6 @@ namespace MahjongBuddy.Application.PlayerAction
                         winnerResult.RoundResultExtraPoints.Add(new RoundResultExtraPoint { ExtraPoint = e, Point = point, Name = e.ToString() });
                     }
 
-
                     //now that we have the winner hand type and extra point recorded, let's calculate the points
 
                     //if the handworth exceed game max point, cap the point to game's max point 
@@ -108,7 +106,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         bool isLoserBao = false;
                         string baoPlayerUserName = string.Empty;
                         //check for allonesuit
-                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.GamePlayer.Player.UserName);
+                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == roundPlayerWinner.GamePlayer.Player.UserName);
                         if (handWorth.HandTypes.Contains(HandType.AllOneSuit) 
                             || handWorth.HandTypes.Contains(HandType.SmallFourWind)
                             || handWorth.HandTypes.Contains(HandType.BigFourWind))
@@ -143,15 +141,15 @@ namespace MahjongBuddy.Application.PlayerAction
                         {
                             //the loser that bao will pay the winning point times three
                             var winningPoint = cappedPoint * 3;
-                            winner.Points += winningPoint;
+                            roundPlayerWinner.Points += winningPoint;                            
                             winnerResult.Points = winningPoint;
 
-                            var loser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == baoPlayerUserName);
-                            loser.Points -= winningPoint;
-                            round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint * 3 });
+                            RoundPlayer roundPlayerloser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == baoPlayerUserName);
+                            roundPlayerloser.Points -= winningPoint;
+                            round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.LostWithPenalty, Player = roundPlayerloser.GamePlayer.Player, Points = losingPoint * 3 });
 
                             //record users that are tied
-                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != baoPlayerUserName && p.GamePlayer.Player.UserName != winner.GamePlayer.Player.UserName);
+                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != baoPlayerUserName && p.GamePlayer.Player.UserName != roundPlayerWinner.GamePlayer.Player.UserName);
                             tiedPlayers.ForEach(tp =>
                             {
                                 round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
@@ -164,7 +162,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                             //points will be times 3
                             var winningPoint = cappedPoint * 3;
-                            winner.Points += winningPoint;
+                            roundPlayerWinner.Points += winningPoint;
                             winnerResult.Points = winningPoint;
 
                             losers.ForEach(l =>
@@ -177,7 +175,7 @@ namespace MahjongBuddy.Application.PlayerAction
                     else
                     {
                         //otherwise there is only one loser that throw the tile to board
-                        winner.Points += cappedPoint;
+                        roundPlayerWinner.Points += cappedPoint;
                         winnerResult.Points = cappedPoint;
 
                         var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
@@ -186,7 +184,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint });
 
                         //check for multiple winners. If player has a valid win and already recorded as tie
-                        var tieResultCouldWin = round.RoundResults.FirstOrDefault(rr => rr.PlayResult == PlayResult.Tie && rr.Player.UserName == winner.GamePlayer.Player.UserName);
+                        var tieResultCouldWin = round.RoundResults.FirstOrDefault(rr => rr.PlayResult == PlayResult.Tie && rr.Player.UserName == roundPlayerWinner.GamePlayer.Player.UserName);
 
                         if (tieResultCouldWin != null)
                         {
@@ -196,7 +194,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         else
                         {
                             //record users that are tied
-                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != loser.GamePlayer.Player.UserName && p.GamePlayer.Player.UserName != winner.GamePlayer.Player.UserName);
+                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != loser.GamePlayer.Player.UserName && p.GamePlayer.Player.UserName != roundPlayerWinner.GamePlayer.Player.UserName);
                             tiedPlayers.ForEach(tp =>
                             {
                                 round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
@@ -205,6 +203,12 @@ namespace MahjongBuddy.Application.PlayerAction
 
                     }
                     round.RoundResults.Add(winnerResult);
+
+                    //tally the point in gameplayer
+                    round.RoundPlayers.ForEach(rp =>
+                    {
+                        rp.GamePlayer.Points = rp.Points;
+                    });
 
                     var success = await _context.SaveChangesAsync() > 0;
 

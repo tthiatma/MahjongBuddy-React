@@ -8,6 +8,8 @@ import {
   Segment,
   Container,
   Loader,
+  List,
+  Icon,
 } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
@@ -25,6 +27,7 @@ import ResultModal from "./ResultModal";
 import { Link } from "react-router-dom";
 import { IRoundTile } from "../../../app/models/tile";
 import RulesModal from "./RulesModal";
+import { IPayPoint } from "../../../app/models/game";
 
 interface DetailParams {
   roundId: string;
@@ -63,10 +66,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     hubLoading,
     createHubConnection,
     leaveGroup,
-    hubActionLoading
+    hubActionLoading,
   } = rootStore.hubStore;
 
-  //currently only support one winner
   const square = { width: 50, height: 50, padding: "0.5em" };
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "",
@@ -140,8 +142,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   };
 
   const doThrowTile = (tileId: string) => {
-    if(gameIsOver){
-      toast.warn("Can't throw because host ended this game")
+    if (gameIsOver) {
+      toast.warn("Can't throw because host ended this game");
       return;
     }
 
@@ -213,6 +215,98 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         beforeOrderingManualSortValue
       );
     }
+  };
+
+  //there gotta be more elegant way to do this lol
+  const getCalculationResult = (): IPayPoint[] => {
+    //if there is no player with negative points then there gotta be something wrong lol
+    let bodyResult: IPayPoint[] = [];
+
+    const tiePlayers = game.gamePlayers.slice().filter((p) => p.points === 0);
+    const gameWinners = Array.from(
+      toJS(game.gamePlayers.filter((p) => p.points > 0)!, {
+        recurseEverything: true,
+      })
+    );
+    const gameLosers = Array.from(
+      toJS(game.gamePlayers.filter((p) => p.points < 0)!, {
+        recurseEverything: true,
+      })
+    );
+
+    if (gameLosers.length === 1) {
+      //then 1 person pays to all the winners
+      var sadLoserName = gameLosers[0].displayName;
+      gameWinners.forEach((w) => {
+        const res: IPayPoint = {
+          from: sadLoserName,
+          to: w.displayName,
+          point: w.points,
+        };
+        bodyResult.push(res);
+      });
+    } else if (
+      gameLosers.length === 3 ||
+      (gameLosers.length === 2 && tiePlayers.length > 0)
+    ) {
+      let proWinnerName = gameWinners[0].displayName;
+      gameLosers.forEach((l) => {
+        const res: IPayPoint = {
+          from: l.displayName,
+          to: proWinnerName,
+          point: l.points * -1,
+        };
+        bodyResult.push(res);
+      });
+    } else if (gameLosers.length === 2) {
+      //there should be 2 winners and 2 losers here
+      //calculate with least amount of transaction
+      const sortedLosersLessToMore = gameLosers
+        .slice()
+        .sort((a, b) => b.points - a.points);
+
+      const sortedWinners = gameWinners
+        .slice()
+        .sort((a, b) => a.points - b.points);
+      if (sortedLosersLessToMore[0].points * -1 === sortedWinners[0].points) {
+        for (let i = 0; i < 2; i++) {
+          const transfer: IPayPoint = {
+            from: sortedLosersLessToMore[i].displayName,
+            to: sortedWinners[i].displayName,
+            point: sortedWinners[i].points,
+          };
+          bodyResult.push(transfer);
+        }
+      } else {
+        //there will be 3 transaction here
+        const remainder =
+          sortedWinners[1].points - sortedLosersLessToMore[0].points * -1;
+        const firstTransaction: IPayPoint = {
+          from: sortedLosersLessToMore[0].displayName,
+          to: sortedWinners[1].displayName,
+          point: sortedLosersLessToMore[0].points * -1,
+        };
+        bodyResult.push(firstTransaction);
+
+        const secondTransaction: IPayPoint = {
+          from: sortedLosersLessToMore[1].displayName,
+          to: sortedWinners[1].displayName,
+          point: remainder,
+        };
+        bodyResult.push(secondTransaction);
+
+        const lastRemainder = sortedLosersLessToMore[1].points * -1 - remainder;
+        const thirdTransaction: IPayPoint = {
+          from: sortedLosersLessToMore[1].displayName,
+          to: sortedWinners[0].displayName,
+          point: lastRemainder,
+        };
+        bodyResult.push(thirdTransaction);
+      }
+    } else {
+      //game over and no points lol
+    }
+    return bodyResult;
   };
 
   return (
@@ -329,43 +423,58 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     activeTileAnimation={getActiveTileAnimation()}
                   />
                   {gameIsOver && (
-                    <Segment textAlign="center">Host ended this game </Segment>
+                    <Segment>
+                      <Grid>
+                        <Grid.Column width="3"></Grid.Column>
+                        <Grid.Column width="4">
+                          <Header icon>
+                            <Icon name="calculator" />
+                            Game Over{" "}
+                          </Header>
+                        </Grid.Column>
+                        <Grid.Column width="6">
+                          <List>
+                            {getCalculationResult().map((r) => (
+                              <List.Item>
+                                <h3>
+                                  {r.from} {"->"} {r.to} : {r.point} pts{" "}
+                                </h3>
+                              </List.Item>
+                            ))}
+                          </List>
+                        </Grid.Column>
+                        <Grid.Column width="3"></Grid.Column>
+                      </Grid>
+                    </Segment>
                   )}
 
-                  {
-                    hubActionLoading && (
-                      <Loader active inline='centered' />
-                    )
-                  }
+                  {hubActionLoading && <Loader active inline="centered" />}
 
-
-                  {mainPlayer?.mustThrow &&
-                    !gameIsOver &&
-                    !round.isOver && (
-                      <Droppable droppableId="board">
-                        {(provided, snapshot) => (
+                  {mainPlayer?.mustThrow && !gameIsOver && !round.isOver && (
+                    <Droppable droppableId="board">
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          style={getStyle(snapshot.isDraggingOver)}
+                          {...provided.droppableProps}
+                        >
                           <div
-                            ref={provided.innerRef}
-                            style={getStyle(snapshot.isDraggingOver)}
-                            {...provided.droppableProps}
+                            style={{
+                              paddingTop: "10px",
+                              height: "45px",
+                            }}
                           >
-                            <div
-                              style={{
-                                paddingTop: "10px",
-                                height: "45px",
-                              }}
-                            >
-                              <Header
-                                as="h3"
-                                style={{ color: "#d4d4d5" }}
-                                content={`Throw tile by double clicking/drag and drop it here`}
-                              />
-                            </div>
-                            {provided.placeholder}
+                            <Header
+                              as="h3"
+                              style={{ color: "#d4d4d5" }}
+                              content={`Throw tile by double clicking/drag and drop it here`}
+                            />
                           </div>
-                        )}
-                      </Droppable>
-                    )}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  )}
                 </Grid.Column>
 
                 {/* Right Player */}

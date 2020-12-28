@@ -3,15 +3,16 @@ import { SeatOrientation } from "./seatOrientationEnum";
 import { IRoundTile } from "./tile";
 import { WindDirection } from "./windEnum";
 
-export interface IPlayer {
+export interface IGamePlayer {
   userName: string;
   displayName: string;
+  points: number;
   initialSeatWind: WindDirection | undefined;
   image: string;
   isHost: boolean;
 }
 
-export interface IRoundPlayer extends IPlayer {
+export interface IRoundPlayer extends IGamePlayer {
   isDealer: boolean;
   isInitialDealer: boolean;
   isMyTurn: boolean;
@@ -23,7 +24,7 @@ export interface IRoundPlayer extends IPlayer {
   playerTiles: IRoundTile[];
 }
 
-export interface IRoundOtherPlayer extends IPlayer {
+export interface IRoundOtherPlayer extends IGamePlayer {
   isDealer: boolean;
   isInitialDealer: boolean;
   isMyTurn: boolean;

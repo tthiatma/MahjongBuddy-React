@@ -15,14 +15,14 @@ namespace MahjongBuddy.Application.Games
 {
     public class Sit
     {
-        public class Command : IRequest<PlayerDto>
+        public class Command : IRequest<GamePlayerDto>
         {
             public int GameId { get; set; }
             public string UserName { get; set; }
             public WindDirection InitialSeatWind { get; set; }
 
         }
-        public class Handler : IRequestHandler<Command, PlayerDto>
+        public class Handler : IRequestHandler<Command, GamePlayerDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -32,7 +32,7 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<PlayerDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<GamePlayerDto> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.FindAsync(request.GameId);
 
@@ -53,7 +53,7 @@ namespace MahjongBuddy.Application.Games
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return _mapper.Map<PlayerDto>(playerInGame);
+                if (success) return _mapper.Map<GamePlayerDto>(playerInGame);
 
                 throw new Exception("Problem sitting to game");
             }

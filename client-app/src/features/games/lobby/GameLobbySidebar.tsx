@@ -12,10 +12,10 @@ import { observer } from "mobx-react-lite";
 import { WindDirection } from "../../../app/models/windEnum";
 import GameLobbySeat from "./GameLobbySeat";
 import { Link } from "react-router-dom";
-import { IPlayer } from "../../../app/models/player";
+import { IGamePlayer } from "../../../app/models/player";
 
 interface IProps {
-  players: IPlayer[];
+  players: IGamePlayer[];
 }
 
 const GameLobbySidebar: React.FC<IProps> = ({ players }) => {

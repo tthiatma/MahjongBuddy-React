@@ -99,7 +99,7 @@ const HomePage = () => {
                         <Table.Cell>{format(new Date(game.date), "MMM do, yyyy")}</Table.Cell>
                         <Table.Cell>{game.title} </Table.Cell>
                         <Table.Cell>
-                          {game.players.map((p) => (
+                          {game.gamePlayers.map((p) => (
                             <Label key={p.userName}>{p.displayName}</Label>
                           ))}
                         </Table.Cell>

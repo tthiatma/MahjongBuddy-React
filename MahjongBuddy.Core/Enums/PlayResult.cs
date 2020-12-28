@@ -4,6 +4,7 @@
     {
         Win,
         Tie,
-        Lost
+        Lost,
+        LostWithPenalty
     }
 }

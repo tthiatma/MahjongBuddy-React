@@ -71,19 +71,19 @@ export const combineDateAndTime = (date: Date, time: Date) => {
 
 export const setGameProps = (game: IGame, user: IUser) => {
     
-  let currentPlayer = game.players.find(
+  let currentPlayer = game.gamePlayers.find(
     p => p.userName === user.userName
   );
   game.date = new Date(game.date);
     
-    game.isCurrentPlayerConnected = game.players.some(
+    game.isCurrentPlayerConnected = game.gamePlayers.some(
       p => p.userName === user.userName
     )
 
     game.isHost = game.hostUserName === user.userName;
 
     if(currentPlayer?.initialSeatWind !== undefined){
-      game.initialSeatWind = game.players.find(
+      game.initialSeatWind = game.gamePlayers.find(
         p => p.userName === user.userName
       )!.initialSeatWind        
     }else{

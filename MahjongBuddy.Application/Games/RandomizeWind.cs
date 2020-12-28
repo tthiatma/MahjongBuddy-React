@@ -18,13 +18,13 @@ namespace MahjongBuddy.Application.Games
 {
     public class RandomizeWind
     {
-        public class Command : IRequest<IEnumerable<PlayerDto>>
+        public class Command : IRequest<IEnumerable<GamePlayerDto>>
         {
             public int GameId { get; set; }
             public string UserName { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, IEnumerable<PlayerDto>>
+        public class Handler : IRequestHandler<Command, IEnumerable<GamePlayerDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -34,7 +34,7 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<IEnumerable<PlayerDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<GamePlayerDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var game = await _context.Games.FindAsync(request.GameId);
 
@@ -70,7 +70,7 @@ namespace MahjongBuddy.Application.Games
                 try
                 {
                     await _context.SaveChangesAsync();
-                    return _mapper.Map<IEnumerable<GamePlayer>, IEnumerable<PlayerDto>>(userInGames);
+                    return _mapper.Map<IEnumerable<GamePlayer>, IEnumerable<GamePlayerDto>>(userInGames);
                 }
                 catch (Exception)
                 {

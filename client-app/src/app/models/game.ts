@@ -1,7 +1,7 @@
 import { WindDirection } from "./windEnum";
 import { GameStatus } from "./gameStatusEnum";
 import { IChatMsg } from "./chatMsg";
-import { IPlayer } from "./player";
+import { IGamePlayer } from "./player";
 
 export interface IGamesEnvelope {
     games: IGame[];
@@ -19,8 +19,14 @@ export interface IGame{
     status: GameStatus;
     initialSeatWind?: WindDirection;
     isCurrentPlayerConnected: boolean;
-    players: IPlayer[];
+    gamePlayers: IGamePlayer[];
     chatMsgs: IChatMsg[];
+}
+
+export interface IPayPoint{
+    from: string,
+    to: string,
+    point: number
 }
 
 export interface IGameFormValues extends Partial<IGame> {

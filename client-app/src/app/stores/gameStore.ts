@@ -74,8 +74,8 @@ export default class GameStore {
   }
 
   @computed get getMainUser() {
-    return this.game && this.game.players
-      ? this.game.players.find(
+    return this.game && this.game.gamePlayers
+      ? this.game.gamePlayers.find(
           (p) => p.userName === this.rootStore.userStore.user!.userName
         )
       : null;
@@ -92,7 +92,7 @@ export default class GameStore {
 
   @computed get userNoWind() {
     return this.game
-      ? this.game.players.some(
+      ? this.game.gamePlayers.some(
           (p) => p.initialSeatWind === null || p.initialSeatWind === undefined
         )
       : false;
@@ -176,7 +176,7 @@ export default class GameStore {
         this.gameRegistry.set(newGame.id, newGame);
         this.game = newGame;
         //when creating a new game, there will be one user in the game
-        var player = newGame.players[0];
+        var player = newGame.gamePlayers[0];
         if (this.game) {
           if (this.rootStore.userStore.user?.userName === player.userName) {
             this.game.initialSeatWind = player.initialSeatWind;

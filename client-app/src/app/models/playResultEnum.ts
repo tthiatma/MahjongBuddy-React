@@ -2,5 +2,6 @@ export enum PlayResult
 {
     Win,
     Tie,
-    Lost
+    Lost,
+    LostWithPenalty
 }

@@ -14,7 +14,7 @@ import { IRoundTile, TileType, TileValue } from "../models/tile";
 import RoundStore from "./roundStore";
 import GameStore from "./gameStore";
 import UserStore from "./userStore";
-import { IPlayer, IRoundOtherPlayer } from "../models/player";
+import { IGamePlayer, IRoundOtherPlayer } from "../models/player";
 import { GameStatus } from "../models/gameStatusEnum";
 import { IGame } from "../models/game";
 import { TileStatus } from "../models/tileStatus";
@@ -52,10 +52,10 @@ export default class HubStore {
 
   addHubConnectionHandler() {
     if (this.hubConnection) {
-      this.hubConnection.on("UpdatePlayersWind", (players: IPlayer[]) => {
+      this.hubConnection.on("UpdatePlayersWind", (players: IGamePlayer[]) => {
         runInAction(() => {
           players.forEach((p) => {
-            let curPlayer = this.rootStore.gameStore.game?.players.find(
+            let curPlayer = this.rootStore.gameStore.game?.gamePlayers.find(
               (x) => x.userName === p.userName
             );
             if (curPlayer) {
@@ -82,18 +82,18 @@ export default class HubStore {
         });
       });
 
-      this.hubConnection.on("PlayerStoodUp", (player: IPlayer) => {
+      this.hubConnection.on("PlayerStoodUp", (player: IGamePlayer) => {
         runInAction(() => {
-          let curPlayer = this.rootStore.gameStore.game?.players.find(
+          let curPlayer = this.rootStore.gameStore.game?.gamePlayers.find(
             (x) => x.userName === player.userName
           );
           if (curPlayer) curPlayer.initialSeatWind = undefined;
         });
       });
 
-      this.hubConnection.on("PlayerSat", (player: IPlayer) => {
+      this.hubConnection.on("PlayerSat", (player: IGamePlayer) => {
         runInAction(() => {
-          let curPlayer = this.rootStore.gameStore.game?.players.find(
+          let curPlayer = this.rootStore.gameStore.game?.gamePlayers.find(
             (x) => x.userName === player.userName
           );
           if (curPlayer) curPlayer.initialSeatWind = player.initialSeatWind;
@@ -168,7 +168,7 @@ export default class HubStore {
       this.hubConnection.on("PlayerDisconnected", (player) =>
         runInAction(() => {
           if (this.gameStore.game) {
-            this.gameStore.game.players = this.gameStore.game.players.filter(
+            this.gameStore.game.gamePlayers = this.gameStore.game.gamePlayers.filter(
               (p) => p.userName !== player?.userName
             );
             if (this.rootStore.userStore.user?.userName === player.userName) {
@@ -188,14 +188,14 @@ export default class HubStore {
         })
       );
 
-      this.hubConnection.on("PlayerConnected", (player: IPlayer) => {
+      this.hubConnection.on("PlayerConnected", (player: IGamePlayer) => {
         runInAction(() => {
           if (this.gameStore.game) {
-            const exist = this.gameStore.game.players.find(
+            const exist = this.gameStore.game.gamePlayers.find(
               (p) => p.userName === player.userName
             );
             if (!exist) {
-              this.gameStore.game.players.push(player);
+              this.gameStore.game.gamePlayers.push(player);
 
               if (this.rootStore.userStore.user?.userName !== player.userName)
                 toast.info(`${player.displayName} has joined the Game`);
@@ -485,9 +485,11 @@ export default class HubStore {
           this.getGameAndRoundProps()
         ).catch(() => {
           toast.error(`can't win`);
-        });
-        runInAction(() => {
-          this.hubActionLoading = false;
+        }).then(() => {
+          runInAction(() => {
+            this.roundStore.showResult = true;
+            this.hubActionLoading = false;
+          });  
         });
       } else {
         toast.error("disconnected from the game, please try to refresh your browser");

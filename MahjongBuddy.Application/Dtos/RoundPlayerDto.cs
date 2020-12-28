@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MahjongBuddy.Application.Dtos
 {
-    public class RoundPlayerDto : PlayerDto
+    public class RoundPlayerDto : GamePlayerDto
     {
         public bool IsDealer { get; set; }
 
