@@ -31,7 +31,7 @@ import { IPayPoint } from "../../../app/models/game";
 
 interface DetailParams {
   roundId: string;
-  id: string;
+  code: string;
 }
 
 //https://github.com/clauderic/react-sortable-hoc
@@ -82,11 +82,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   });
 
   useEffect(() => {
-    createHubConnection(match.params.id);
+    createHubConnection(match.params.code);
     return () => {
-      leaveGroup(match.params.id);
+      leaveGroup(match.params.code);
     };
-  }, [createHubConnection, leaveGroup, match.params.id]);
+  }, [createHubConnection, leaveGroup, match.params.code]);
 
   useEffect(() => {
     runInAction(() => {
@@ -102,12 +102,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [rootStore.commonStore.showNavBar, rootStore.commonStore.showFooter]);
 
   useEffect(() => {
-    loadGame(match.params.id);
-  }, [loadGame, match.params.id]);
+    loadGame(match.params.code);
+  }, [loadGame, match.params.code]);
 
   useEffect(() => {
-    loadRound(match.params.roundId, match.params.id);
-  }, [loadRound, match.params.roundId, match.params.id]);
+    loadRound(match.params.roundId, match.params.code);
+  }, [loadRound, match.params.roundId, match.params.code]);
 
   if (
     loadingGameInitial ||

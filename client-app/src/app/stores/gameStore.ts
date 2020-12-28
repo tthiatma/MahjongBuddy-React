@@ -120,10 +120,10 @@ export default class GameStore {
     }
   };
 
-  @action getLatestRound = async (id: string) => {
+  @action getLatestRound = async (code: string) => {
     this.loadingLatestRoundInitial = true;
     try {
-      const latestRound = await agent.Games.latestRound(id);
+      const latestRound = await agent.Games.latestRound(code);
       runInAction("getting latest round", () => {
         this.latestRound = latestRound;
         this.loadingLatestRoundInitial = false;
@@ -137,15 +137,15 @@ export default class GameStore {
     }
   };
 
-  @action loadGame = async (id: string) => {
-    let game = this.getGame(id);
+  @action loadGame = async (code: string) => {
+    let game = this.getGame(code);
     if (game) {
       this.game = game;
       return toJS(game);
     } else {
       this.loadingGameInitial = true;
       try {
-        game = await agent.Games.detail(id);
+        game = await agent.Games.detailByCode(code);
         runInAction("getting game", () => {
           setGameProps(game, this.rootStore.userStore.user!);
           this.game = game;
@@ -162,9 +162,8 @@ export default class GameStore {
     }
   };
 
-  @action joinGameById = async (gameId: string) => {
-    await agent.Games.detail(gameId);
-    history.push(`/games/${gameId}`);
+  @action joinGameByCode = async (gameCode: string) => {
+    history.push(`/games/${gameCode}`);
     this.rootStore.modalStore.closeModal();
   };
 

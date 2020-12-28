@@ -21,7 +21,7 @@ namespace MahjongBuddy.Application.Rounds
     {
         public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
@@ -37,7 +37,7 @@ namespace MahjongBuddy.Application.Rounds
 
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                Game game = await _context.Games.SingleOrDefaultAsync(x => x.Id == request.GameId);
+                Game game = await _context.Games.SingleOrDefaultAsync(x => x.Code == request.GameCode);
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "Game does not exist" });
@@ -49,7 +49,7 @@ namespace MahjongBuddy.Application.Rounds
 
                 var newRound = new Round
                 {
-                    GameId = request.GameId,
+                    GameId = game.Id,
                     DateCreated = DateTime.Now,
                     RoundTiles = RoundTileHelper.CreateTiles(_context).Shuffle(),
                     RoundPlayers = new List<RoundPlayer>(),
@@ -123,7 +123,7 @@ namespace MahjongBuddy.Application.Rounds
                 var dealerId = theDealer.GamePlayerId;
 
                 //for debugging
-                //RoundTileHelper.SetupForLastTileWin(newRound.RoundTiles);
+                //RoundTileHelper.SetupForWinPongChowPriority(newRound.RoundTiles);
 
                 //tiles assignment and sorting
                 foreach (var gamePlayer in game.GamePlayers)

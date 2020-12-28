@@ -5,9 +5,7 @@ using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using System;
 using System.Linq;
 using System.Net;
@@ -20,7 +18,7 @@ namespace MahjongBuddy.Application.Games
     {
         public class Command : IRequest<GamePlayerDto>
         {
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
             public string UserName { get; set; }
             public string ConnectionId { get; set; }
             public string UserAgent { get; set; }
@@ -37,7 +35,7 @@ namespace MahjongBuddy.Application.Games
             }
             public async Task<GamePlayerDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode);
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });

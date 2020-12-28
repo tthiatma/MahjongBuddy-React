@@ -73,7 +73,7 @@ namespace MahjongBuddy.Application.Tests.PlayerActions
 
             var winCommand = new Win.Command
             {
-                GameId = _f.GameId,
+                GameCode = _f.GameId,
                 RoundId = _f.RoundId,
                 UserName = _f.MainPlayerUserName
             };

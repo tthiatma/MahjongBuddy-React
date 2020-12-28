@@ -17,7 +17,7 @@ namespace MahjongBuddy.Application.Games
     {
         public class Command: IRequest<GameDto>
         {
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
         }
 
         public class Handler : IRequestHandler<Command, GameDto>
@@ -35,7 +35,7 @@ namespace MahjongBuddy.Application.Games
 
             public async Task<GameDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.SingleOrDefaultAsync(x => x.Id == request.GameId);
+                var game = await _context.Games.SingleOrDefaultAsync(x => x.Code == request.GameCode);
                 if(game == null)
                     throw new Exception("Could not find game");
 

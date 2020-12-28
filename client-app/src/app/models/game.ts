@@ -11,6 +11,7 @@ export interface IGamesEnvelope {
 export interface IGame{
     id: string;
     title: string;
+    code: string;
     date: Date;
     minPoint: string;
     maxPoint: string;

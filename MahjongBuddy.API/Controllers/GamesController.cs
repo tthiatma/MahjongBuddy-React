@@ -28,16 +28,22 @@ namespace MahjongBuddy.API.Controllers
                 offset, isInGame, isHost, startDate));
         }
 
+        [HttpGet("code/{code}")]
+        public async Task<ActionResult<GameDto>> DetailsByCode(string code)
+        {
+            return await Mediator.Send(new DetailByCode.Query { GameCode = code });
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<GameDto>> Details(int id)
         {
             return await Mediator.Send(new Detail.Query { Id = id });
         }
 
-        [HttpGet("{id}/latestRound")]
-        public async Task<ActionResult<RoundDto>> LatestRound(int id)
+        [HttpGet("code/{code}/latestRound")]
+        public async Task<ActionResult<RoundDto>> LatestRound(string code)
         {
-            return await Mediator.Send(new LatestRound.Query { Id = id });
+            return await Mediator.Send(new LatestRound.Query { Code = code });
         }
 
         [HttpPost]
@@ -56,18 +62,18 @@ namespace MahjongBuddy.API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "IsGameHost")]
-        public async Task<ActionResult<Unit>> Delete(int id)
+        public async Task<ActionResult<Unit>> Delete(string gameCode)
         {
-            var cancelGame = await Mediator.Send(new Delete.Command { Id = id });
-            await _hubContext.Clients.Group(id.ToString()).SendAsync("GameCancelled", id.ToString());
+            var cancelGame = await Mediator.Send(new Delete.Command { GameCode = gameCode });
+            await _hubContext.Clients.Group(gameCode).SendAsync("GameCancelled", gameCode);
             return cancelGame;
         }
 
         [HttpPost("{id}/end")]
         [Authorize(Policy = "IsGameHost")]
-        public async Task<ActionResult<GameDto>> End(int id)
+        public async Task<ActionResult<GameDto>> End(string gameCode)
         {
-            var game = await Mediator.Send(new End.Command { GameId = id });
+            var game = await Mediator.Send(new End.Command { GameCode = gameCode });
             await _hubContext.Clients.Group(game.Id.ToString()).SendAsync("GameEnded", game);
             return game;
         }

@@ -10,7 +10,7 @@ import GameLobbySidebar from "./GameLobbySidebar";
 import GameLobbyInfo from "./GameLobbyInfo";
 
 interface DetailParams {
-  id: string;
+  code: string;
 }
 
 const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
@@ -28,17 +28,17 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     const { createHubConnection, hubLoading, leaveGroup } = rootStore.hubStore;
 
   useEffect(() => {
-    getLatestRound(match.params.id);
-  }, [getLatestRound, match.params.id]);
+    getLatestRound(match.params.code);
+  }, [getLatestRound, match.params.code]);
 
   useEffect(() => {
-    loadGame(match.params.id).then(() => {
-      createHubConnection(match.params.id);
+    loadGame(match.params.code).then(() => {
+      createHubConnection(match.params.code);
     });
     return () => {
-      leaveGroup(match.params.id);
+      leaveGroup(match.params.code);
     }
-  }, [loadGame,createHubConnection, leaveGroup, match.params.id]);
+  }, [loadGame,createHubConnection, leaveGroup, match.params.code]);
 
   if (loadingGameInitial || loadingLatestRoundInitial || !game || hubLoading)
     return <LoadingComponent content="Loading game..." />;

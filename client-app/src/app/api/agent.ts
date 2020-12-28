@@ -25,7 +25,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(undefined, (error) => {
   if (error.message === "Network Error" && !error.response) {
-    toast.error("Network error - make sure API is running!");
+    toast.error("Network error - refresh your browser.");
   }
   const { status, data, config, headers } = error.response;
   if (status === 404) {
@@ -46,7 +46,7 @@ axios.interceptors.response.use(undefined, (error) => {
     history.push("/notfound");
   }
   if (status === 500) {
-    toast.error("Server error - check the terminal for more info!");
+    toast.error("Server error!");
   }
   throw error.response;
 });
@@ -74,20 +74,21 @@ const requests = {
 
 const Games = {
   list: (params: URLSearchParams): Promise<IGamesEnvelope> =>
-   axios.get("/games", {params: params}).then(responseBody),
+  axios.get("/games", {params: params}).then(responseBody),
+  detailByCode: (code: string) => requests.get(`/games/code/${code}`),
   detail: (id: string) => requests.get(`/games/${id}`),
   create: (game: IGame) => requests.post("games", game),
   update: (game: IGame) => requests.put(`/games/${game.id}`, game),
   delete: (id: string) => requests.del(`/games/${id}`),
   end:(id: string) => requests.post(`/games/${id}/end`, {}),
-  latestRound: (id: string) => requests.get(`/games/${id}/latestround`),
+  latestRound: (code: string) => requests.get(`/games/code/${code}/latestround`),
 };
 
 const Rounds = {
-  detail: (id: string, gameId: string, userName: string) =>
+  detail: (id: string, gameCode: string, userName: string) =>
     requests.post(`/rounds/Details`, {
       id: id,
-      gameId: gameId,
+      gameCode: gameCode,
       userName: userName,
     }),
 };

@@ -109,8 +109,8 @@ export default class HubStore {
       //   });
       // });
 
-      this.hubConnection.on("GameCancelled", (gameId: string) => {
-        toast.info(`Host cancelled game #${gameId}`);
+      this.hubConnection.on("GameCancelled", (gameCode: string) => {
+        toast.info(`Host cancelled game ${gameCode}`);
         history.push(`/`);
       });
 
@@ -153,7 +153,7 @@ export default class HubStore {
           this.roundStore.round = round;
         });
         history.push(
-          `/games/${this.rootStore.gameStore.game!.id}/rounds/${
+          `/games/${this.rootStore.gameStore.game!.code}/rounds/${
             this.roundStore.round!.id
           }`
         );
@@ -220,24 +220,15 @@ export default class HubStore {
     }
   }
 
-  // @action loadRoundDetail = async (id: string, gameId: string) => {
-  //   if (this.hubConnection!.state === "Connected"){
-  //     let values: any = {};
-  //     values.id = id;
-  //     values.gameId = gameId;
-  //     this.hubConnection!.invoke("DetailRound", values);
-  //   }
-  // };
-
-  @action leaveGroup = (gameId: string) => {
+  @action leaveGroup = (gameCode: string) => {
     if (this.hubConnection!.state === "Connected")
-      this.hubConnection!.invoke("RemoveFromGroup", gameId);
+      this.hubConnection!.invoke("RemoveFromGroup", gameCode);
   };
 
-  @action createHubConnection = async (gameId: string) => {
+  @action createHubConnection = async (gameCode: string) => {
     if (this.hubConnection == null) {
       this.hubConnection = new HubConnectionBuilder()
-        .withUrl(`${process.env.REACT_APP_API_GAME_HUB_URL!}/?gid=${gameId}`, {
+        .withUrl(`${process.env.REACT_APP_API_GAME_HUB_URL!}/?gcode=${gameCode}`, {
           accessTokenFactory: () => this.rootStore.commonStore.token!,
         })
         .withAutomaticReconnect()
@@ -256,7 +247,7 @@ export default class HubStore {
         .start()
         .then(() => {
           if (this.hubConnection!.state === "Connected")
-            this.hubConnection?.invoke("JoinGame", gameId);
+            this.hubConnection?.invoke("JoinGame", gameCode);
         })
         .then(() => {
           runInAction(() => {
@@ -270,12 +261,12 @@ export default class HubStore {
           console.log("Error establishing connection", error);
         });
     } else if (this.hubConnection!.state === "Connected") {
-      this.hubConnection?.invoke("JoinGame", gameId);
+      this.hubConnection?.invoke("JoinGame", gameCode);
     }
   };
 
   @action addChatMsg = async (values: any) => {
-    values.gameId = this.gameStore.game!.id;
+    values.gameCode = this.gameStore.game!.code;
     try {
       this.hubConnection!.invoke("SendChatMsg", values).catch(() => {
         toast.error("Unable to send chat message");
@@ -290,9 +281,9 @@ export default class HubStore {
       this.hubLoading = true;
     });
     try {
-      const currentGameId = this.rootStore.gameStore.game?.id;
-      if(currentGameId){
-        this.hubConnection!.invoke("EndGame", currentGameId.toString()).then(() => {
+      const currentGameCode = this.rootStore.gameStore.game?.code;
+      if(currentGameCode){
+        this.hubConnection!.invoke("EndGame", currentGameCode).then(() => {
           runInAction(() => {
             this.hubLoading = false;
           });  
@@ -306,13 +297,13 @@ export default class HubStore {
     }
   };
 
-  @action cancelGame = async(gameId: string) => {
+  @action cancelGame = async(gameCode: string) => {
     //actually deleting game lol
     runInAction(() => {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("CancelGame", gameId.toString());
+      this.hubConnection!.invoke("CancelGame", gameCode);
       runInAction(() => {
         this.hubLoading = false;
       });
@@ -325,12 +316,13 @@ export default class HubStore {
   }
 
   @action joinGame = async () => {
-    const gameId = this.gameStore.game!.id;
+    const gameCode = this.gameStore.game!.code;
+    debugger;
     runInAction(() => {
       this.hubLoading = true;
     });
     try {
-      this.hubConnection!.invoke("JoinGame", gameId.toString());
+      this.hubConnection!.invoke("JoinGame", gameCode);
       runInAction(() => {
         this.hubLoading = false;
       });
@@ -344,7 +336,7 @@ export default class HubStore {
 
   @action leaveGame = async () => {
     let values: any = {};
-    values.gameId = this.gameStore.game!.id;
+    values.gameCode = this.gameStore.game!.code;
     runInAction(() => {
       this.hubLoading = true;
     });
@@ -362,7 +354,7 @@ export default class HubStore {
   };
   @action sitGame = async (seat: WindDirection) => {
     let values: any = {};
-    values.gameId = this.gameStore.game!.id;
+    values.gameCode = this.gameStore.game!.code;
     values.InitialSeatWind = seat;
     runInAction(() => {
       this.hubLoading = true;
@@ -382,7 +374,7 @@ export default class HubStore {
 
   @action standUpGame = async () => {
     let values: any = {};
-    values.gameId = this.gameStore.game!.id;
+    values.gameCode = this.gameStore.game!.code;
     runInAction(() => {
       this.hubLoading = true;
     });
@@ -401,7 +393,7 @@ export default class HubStore {
 
   @action randomizeWind = async () => {
     let values: any = {};
-    values.gameId = this.gameStore.game!.id;
+    values.gameCode = this.gameStore.game!.code;
     runInAction(() => {
       this.hubLoading = true;
     });
@@ -458,7 +450,8 @@ export default class HubStore {
 
   @action startRound = async () => {
     let values: any = {};
-    values.gameId = parseInt(this.gameStore.game!.id);
+    values.gameCode = this.gameStore.game!.code;
+    debugger;
     runInAction(() => {
       this.hubLoading = true;
     });
@@ -774,6 +767,7 @@ export default class HubStore {
   getGameAndRoundProps = () => {
     let values: any = {};
     values.gameId = this.gameStore.game?.id;
+    values.gameCode = this.gameStore.game?.code;
     values.roundId = this.roundStore.round?.id;
     return values;
   };

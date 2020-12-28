@@ -20,7 +20,6 @@ namespace MahjongBuddy.Application.PlayerAction
     {
         public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public Guid TileId { get; set; }
             public string UserName { get; set; }
@@ -40,10 +39,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
-                if (game == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });

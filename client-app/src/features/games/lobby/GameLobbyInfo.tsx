@@ -11,8 +11,8 @@ const GameLobbyInfo: React.FC<{ game: IGame }> = ({ game }) => {
             <Icon size="large" color="teal" name="info" />
           </Grid.Column>
           <Grid.Column width={15}>
-            <Label>Game# {game.id}</Label> tell your buddies to enter{" "}
-            <strong>{game.id}</strong> to join your game
+            <Label> {game.code}</Label> tell your buddies to enter{" "}
+            <strong>{game.code}</strong> to join your game
           </Grid.Column>
         </Grid>
       </Segment>

@@ -98,7 +98,7 @@ const GameLobbyHeader: React.FC<{
           <Button
             as={Link}
             loading={hubLoading}
-            to={`/games/${game.id}/rounds/${latestRound.id}`}
+            to={`/games/${game.code}/rounds/${latestRound.id}`}
             color="blue"
             floated="right"
           >
@@ -146,7 +146,7 @@ const GameLobbyHeader: React.FC<{
             <Button
               floated="right"
               loading={hubLoading}
-              onClick={() => cancelGame(game.id)}
+              onClick={() => cancelGame(game.code)}
               color="violet"
             >
               Cancel Game

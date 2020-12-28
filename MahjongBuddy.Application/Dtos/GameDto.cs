@@ -11,6 +11,8 @@ namespace MahjongBuddy.Application.Dtos
         
         public string Title { get; set; }
 
+        public string Code { get; set; }
+
         public int MinPoint { get; set; }
 
         public int MaxPoint { get; set; }
