@@ -54,7 +54,9 @@ namespace MahjongBuddy.Application.Users
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-                var verifyUrl = $"{request.Origin}/user/resetPassword?token={token}&email={request.Email}";
+                var mjUrl = string.IsNullOrEmpty(request.Origin) ? "https://mahjongbuddy.com" : request.Origin;
+
+                var verifyUrl = $"{mjUrl}/user/resetPassword?token={token}&email={request.Email}";
 
                 var message = $"<p>Please click the below link to reset your password:</p><p><a href='{verifyUrl}'>{verifyUrl}</a></p>";
 

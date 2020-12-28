@@ -1,5 +1,5 @@
 import React, { useContext, Fragment } from "react";
-import { Container, Segment, Divider, List, Icon } from "semantic-ui-react";
+import { Container, Segment, Divider, List, Image, Icon } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import { NavLink } from "react-router-dom";
@@ -34,6 +34,13 @@ const Footer: React.FC = () => {
                 <List.Content verticalAlign="top">
                   <Icon name="facebook" size="large" color="blue" />
                 </List.Content>
+              </List.Item>
+              <List.Item
+                as="a"
+                href="https://ko-fi.com/P5P030YCN"
+                target="_blank"
+              >
+                <Image src="/assets/ko-fi_support.png" alt="ko-fi support" />
               </List.Item>
             </List>
           </Container>

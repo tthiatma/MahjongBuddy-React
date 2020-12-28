@@ -13,7 +13,7 @@ body {
 
 /*home page styles*/
 .mainContent{
-  min-height: calc(100vh - 5em);
+  min-height: calc(100vh - 8em);
 }
 
 .masthead {
@@ -29,7 +29,7 @@ body {
 }
 
 .mastfooter{
-  min-height: 5em;
+  min-height: 8em;
   display: flex;
   align-items: center;
   background-image: linear-gradient(
