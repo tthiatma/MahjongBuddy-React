@@ -179,6 +179,7 @@ namespace MahjongBuddy.EntityFramework.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(nullable: true),
+                    Code = table.Column<string>(nullable: true),
                     MinPoint = table.Column<int>(nullable: false),
                     MaxPoint = table.Column<int>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
@@ -562,6 +563,13 @@ namespace MahjongBuddy.EntityFramework.Migrations
                 name: "IX_GamePlayers_PlayerId",
                 table: "GamePlayers",
                 column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Games_Code",
+                table: "Games",
+                column: "Code",
+                unique: true,
+                filter: "[Code] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_HostId",

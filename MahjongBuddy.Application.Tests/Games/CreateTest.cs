@@ -24,6 +24,7 @@ namespace MahjongBuddy.Application.Tests.Games
         {
             var userAccessor = new Mock<IUserAccessor>();
             var userManager = new Mock<UserManager<Player>>();
+            var gameCodeGenerator = new Mock<IGameCodeGenerator>();
             userAccessor.Setup(u => u.GetCurrentUserName()).Returns("mainplayer");
 
             var context = GetDbContext();
@@ -43,7 +44,7 @@ namespace MahjongBuddy.Application.Tests.Games
                 MaxPoint = "10"
             };
 
-            var sut = new Create.Handler(context, userAccessor.Object, _mapper, userManager.Object);
+            var sut = new Create.Handler(context, userAccessor.Object, _mapper, userManager.Object, gameCodeGenerator.Object);
             var result = sut.Handle(gameCommand, CancellationToken.None).Result;
 
             Assert.Equal("Game1", result.Title);

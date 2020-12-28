@@ -85,7 +85,7 @@ const HomePage = () => {
                 <Table basic="very">
                   <Table.Header>
                     <Table.Row>
-                      <Table.HeaderCell>#</Table.HeaderCell>
+                      <Table.HeaderCell>Code</Table.HeaderCell>
                       <Table.HeaderCell>Date</Table.HeaderCell>
                       <Table.HeaderCell>Title</Table.HeaderCell>
                       <Table.HeaderCell>Players</Table.HeaderCell>
@@ -95,7 +95,7 @@ const HomePage = () => {
                   <Table.Body>
                     {gamesByDate.map((game) => (
                       <Table.Row key={game.id}>
-                        <Table.Cell>#{game.id}</Table.Cell>
+                        <Table.Cell>{game.code}</Table.Cell>
                         <Table.Cell>{format(new Date(game.date), "MMM do, yyyy")}</Table.Cell>
                         <Table.Cell>{game.title} </Table.Cell>
                         <Table.Cell>
@@ -108,7 +108,7 @@ const HomePage = () => {
                             color="blue"
                             size="mini"
                             as={Link}
-                            to={`/games/${game.id}`}
+                            to={`/games/${game.code}`}
                           >
                             Go
                           </Button>

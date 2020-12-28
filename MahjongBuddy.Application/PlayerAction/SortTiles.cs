@@ -21,7 +21,6 @@ namespace MahjongBuddy.Application.PlayerAction
     {
         public class Command : IRequest<RoundDto>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
             public bool IsManualSort { get; set; }

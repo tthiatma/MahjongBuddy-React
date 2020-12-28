@@ -26,6 +26,7 @@ using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Application.Rounds.Scorings.Builder;
 using MahjongBuddy.Infrastructure.Photos;
 using MahjongBuddy.Infrastructure.Email;
+using MahjongBuddy.Infrastructure.Randomizer;
 
 namespace MahjongBuddy.API
 {
@@ -134,6 +135,7 @@ namespace MahjongBuddy.API
             services.AddScoped<HandTypeBuilder, HandTypeBuilder>();
             services.AddScoped<ExtraPointBuilder, ExtraPointBuilder>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
+            services.AddScoped<IGameCodeGenerator, GameCodeGenerator>();
             services.Configure<FacebookAppSettings>(Configuration.GetSection("Authentication:Facebook"));
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
             services.Configure<SmtpSettings>(Configuration.GetSection("Smtp"));

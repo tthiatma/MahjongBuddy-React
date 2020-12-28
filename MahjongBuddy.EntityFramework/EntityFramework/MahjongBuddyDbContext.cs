@@ -76,6 +76,10 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 
             ConvertEnum(builder);
 
+            builder.Entity<Game>()
+                .HasIndex(g => g.Code)
+                .IsUnique();
+
             builder.Entity<GamePlayer>(x => x.HasKey(gp => new { gp.Id }));
             builder.Entity<GamePlayer>()
                 .HasOne(u => u.Player)
@@ -98,13 +102,11 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 .HasForeignKey(u => u.GamePlayerId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-
             builder.Entity<RoundPlayer>()
                 .HasOne(r => r.Round)
                 .WithMany(u => u.RoundPlayers)
                 .HasForeignKey(r => r.RoundId)
                 .OnDelete(DeleteBehavior.NoAction);
-
         }
 
         private void ConvertEnum(ModelBuilder builder)

@@ -20,7 +20,6 @@ namespace MahjongBuddy.Application.PlayerAction
     {
         public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }

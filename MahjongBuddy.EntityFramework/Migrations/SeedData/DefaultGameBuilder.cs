@@ -31,6 +31,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                 new Game
                 {
                     Title = "Game 1",
+                    Code = "RAWRR",
                     Date = DateTime.Now,
                     HostId = "a",
                     MinPoint = 3,

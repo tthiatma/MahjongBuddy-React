@@ -31,13 +31,19 @@ namespace MahjongBuddy.Application.Games
             private readonly IUserAccessor _userAccessor;
             private readonly IMapper _mapper;
             private readonly UserManager<Player> _userManager;
+            private readonly IGameCodeGenerator _gameCodeGenerator;
 
-            public Handler(MahjongBuddyDbContext context, IUserAccessor userAccessor, IMapper mapper, UserManager<Player> userManager)
+            public Handler(MahjongBuddyDbContext context
+                , IUserAccessor userAccessor
+                , IMapper mapper
+                , UserManager<Player> userManager
+                ,IGameCodeGenerator gameCodeGenerator)
             {
                 _context = context;
                 _userAccessor = userAccessor;
                 _mapper = mapper;
                 _userManager = userManager;
+                _gameCodeGenerator = gameCodeGenerator;
             }
 
             public async Task<GameDto> Handle(Command request, CancellationToken cancellationToken)
@@ -58,12 +64,15 @@ namespace MahjongBuddy.Application.Games
                     throw new RestException(HttpStatusCode.Unauthorized);
                 }
 
+                var gameCode = _gameCodeGenerator.CreateCode();
+
                 var minPoint = int.Parse(request.MinPoint);
                 var maxPoint = int.Parse(request.MaxPoint);
                 //TODO don't hard code min and maxpoint
                 var game = new Game
                 {
                     Title = request.Title,
+                    Code = _gameCodeGenerator.CreateCode(),
                     Date = DateTime.Now,
                     Host = user,
                     Status = GameStatus.Created,
