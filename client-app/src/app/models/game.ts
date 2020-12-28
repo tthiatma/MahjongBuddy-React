@@ -36,6 +36,7 @@ export interface IGameFormValues extends Partial<IGame> {
 
 export class GameFormValues implements IGameFormValues {
     id?: string = undefined;
+    gameCode?: string = undefined;
     title: string = '';
     minPoint: string = '';
     maxPoint: string = '';

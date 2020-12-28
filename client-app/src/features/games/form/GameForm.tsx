@@ -127,7 +127,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   <Button
                     onClick={
                       game.id
-                        ? () => history.push(`/games/${game.id}`)
+                        ? () => history.push(`/games/${game.gameCode}`)
                         : () => history.push("/")
                     }
                     disabled={loading}

@@ -15,8 +15,6 @@ namespace MahjongBuddy.Application.Dtos
 
         public WindDirection Wind { get; set; }
 
-        public int Points { get; set; }
-
         public bool IsManualSort { get; set; }
 
         public ICollection<RoundPlayerActionDto> RoundPlayerActiveActions { get; set; }

@@ -37,7 +37,7 @@ namespace MahjongBuddy.Application.Rounds
 
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                Game game = await _context.Games.SingleOrDefaultAsync(x => x.Code == request.GameCode);
+                var game = await _context.Games.FirstOrDefaultAsync(x => x.Code == request.GameCode.ToUpper());
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Game = "Game does not exist" });

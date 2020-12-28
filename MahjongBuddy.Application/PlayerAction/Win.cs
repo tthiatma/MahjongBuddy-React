@@ -7,6 +7,7 @@ using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using MoreLinq;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameCode);
+                var game = await _context.Games.FirstOrDefaultAsync(x => x.Code == request.GameCode.ToUpper());
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 

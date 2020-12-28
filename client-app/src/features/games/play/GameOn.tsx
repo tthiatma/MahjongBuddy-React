@@ -324,7 +324,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     circular
                     icon="arrow circle left"
                     as={Link}
-                    to={`/games/${game.id}`}
+                    to={`/games/${game.code}`}
                   />
                 </Grid.Column>
                 <Grid.Column width={10}>
@@ -434,8 +434,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                         </Grid.Column>
                         <Grid.Column width="6">
                           <List>
-                            {getCalculationResult().map((r) => (
-                              <List.Item>
+                            {getCalculationResult().map((r, i) => (
+                              <List.Item key={`ptresult${i}`}>
                                 <h3>
                                   {r.from} {"->"} {r.to} : {r.point} pts{" "}
                                 </h3>

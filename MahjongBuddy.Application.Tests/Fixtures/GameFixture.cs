@@ -15,6 +15,7 @@ namespace MahjongBuddy.Application.Tests.Fixtures
         public string MainPlayerUserName { get; set; }
         public string OtherPlayerName { get; set; }
         public int GameId { get; set; }
+        public string GameCode { get; set; }
         public RoundPlayer MainPlayerRound { get; set; }
         public RoundPlayer OtherPlayerRound { get; set; }
         public int RoundId { get; set; }

@@ -19,7 +19,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
               style={{ marginBottom: 3 }}
             />
             <Item.Content>
-              <Item.Header as={Link} to={`/games/${game.id}`}>
+              <Item.Header as={Link} to={`/games/${game.code}`}>
                 {game.title}
               </Item.Header>
               <Item.Description>
@@ -63,7 +63,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
       <Segment clearing>
         <Button
           as={Link}
-          to={`/games/${game.id}`}
+          to={`/games/${game.code}`}
           floated="right"
           content="View"
           color="blue"

@@ -185,7 +185,7 @@ export default class GameStore {
 
         this.submitting = false;
       });
-      history.push(`/games/${newGame.id}`);
+      history.push(`/games/${newGame.code}`);
     } catch (error) {
       runInAction("creating game error", () => {
         this.submitting = false;
@@ -203,7 +203,7 @@ export default class GameStore {
         this.gameRegistry.set(game.id, game);
         this.game = game;
         this.submitting = false;
-        history.push(`/games/${game.id}`);
+        history.push(`/games/${game.code}`);
       });
     } catch (error) {
       runInAction("editing game error", () => {

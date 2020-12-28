@@ -38,7 +38,7 @@ namespace MahjongBuddy.Application.Games
 
             public async Task<GameDto> Handle(Query request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode);
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode.ToUpper());
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { game = "Not Found" });

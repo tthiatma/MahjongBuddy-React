@@ -35,7 +35,7 @@ namespace MahjongBuddy.Application.Games
 
             public async Task<GameDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.SingleOrDefaultAsync(x => x.Code == request.GameCode);
+                var game = await _context.Games.FirstOrDefaultAsync(x => x.Code == request.GameCode.ToUpper());
                 if(game == null)
                     throw new Exception("Could not find game");
 

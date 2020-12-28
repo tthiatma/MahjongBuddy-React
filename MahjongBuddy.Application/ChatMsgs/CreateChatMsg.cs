@@ -33,7 +33,7 @@ namespace MahjongBuddy.Application.ChatMsgs
 
             public async Task<ChatMsgDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode);
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode.ToUpper());
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new {Game = "Game not found" });

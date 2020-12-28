@@ -317,7 +317,6 @@ export default class HubStore {
 
   @action joinGame = async () => {
     const gameCode = this.gameStore.game!.code;
-    debugger;
     runInAction(() => {
       this.hubLoading = true;
     });
@@ -451,7 +450,6 @@ export default class HubStore {
   @action startRound = async () => {
     let values: any = {};
     values.gameCode = this.gameStore.game!.code;
-    debugger;
     runInAction(() => {
       this.hubLoading = true;
     });
