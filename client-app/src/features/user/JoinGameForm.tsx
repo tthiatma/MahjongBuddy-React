@@ -40,12 +40,13 @@ const JoinGameForm = () => {
             textAlign="center"
           />
           <Field
+            uppercase={true}
             name="gameCode"
             component={TextInput}
             placeholder="Enter Game code"
           />
           {submitError && !dirtySinceLastSubmit && (
-            <ErrorMessage error={submitError} text="Invalid Game#" />
+            <ErrorMessage error={submitError} text="Invalid Game Code" />
           )}
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}

@@ -7,7 +7,7 @@ const DataDeletion = () => {
       <Segment>
         <h1>Data Deletion Instruction</h1>
 
-        <p>Last updated: December 8, 2020</p>
+        <p>Last updated: December 28, 2020</p>
 
         <p>
           Please send email to <a href="mailto:info@mahjongbuddy.com">info@mahjongbuddy.com</a> for data deletion request.

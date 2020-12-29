@@ -25,7 +25,7 @@ export default class HubStore {
   roundStore: RoundStore;
   gameStore: GameStore;
   userStore: UserStore;
-  cooldownTime: number = 2800;
+  cooldownTime: number = 1500;
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     this.hubStore = this.rootStore.hubStore;
@@ -76,7 +76,10 @@ export default class HubStore {
             this.rootStore.gameStore.game.id === game.id
           ){
             this.rootStore.gameStore.game = game;
-            toast.info(`Game #${game.id} has ended`);
+            const gameHost = game.gamePlayers.find(p => p.isHost);
+            if(this.rootStore.userStore.user?.userName !== gameHost?.userName){
+              toast.info(`Game ${game.code} has ended`);
+            }
             this.rootStore.roundStore.closeResultModal();
           }
         });

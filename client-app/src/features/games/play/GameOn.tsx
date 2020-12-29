@@ -7,7 +7,6 @@ import {
   Divider,
   Segment,
   Container,
-  Loader,
   List,
   Icon,
 } from "semantic-ui-react";
@@ -66,7 +65,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     hubLoading,
     createHubConnection,
     leaveGroup,
-    hubActionLoading,
   } = rootStore.hubStore;
 
   const square = { width: 50, height: 50, padding: "0.5em" };
@@ -120,24 +118,27 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   const getActiveTileAnimation = (): string => {
     let animationStyle: string = "";
-    switch (boardActiveTile?.thrownBy) {
-      case leftPlayer?.userName: {
-        animationStyle = "fly right";
-        break;
-      }
-      case rightPlayer?.userName: {
-        animationStyle = "fly left";
-        break;
-      }
-      case topPlayer?.userName: {
-        animationStyle = "fly down";
-        break;
-      }
-      case mainPlayer?.userName: {
-        animationStyle = "fly up";
-        break;
+    if (!gameIsOver) {
+      switch (boardActiveTile?.thrownBy) {
+        case leftPlayer?.userName: {
+          animationStyle = "fly right";
+          break;
+        }
+        case rightPlayer?.userName: {
+          animationStyle = "fly left";
+          break;
+        }
+        case topPlayer?.userName: {
+          animationStyle = "fly down";
+          break;
+        }
+        case mainPlayer?.userName: {
+          animationStyle = "fly up";
+          break;
+        }
       }
     }
+
     return animationStyle;
   };
 
@@ -303,8 +304,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
         };
         bodyResult.push(thirdTransaction);
       }
-    } else {
-      //game over and no points lol
     }
     return bodyResult;
   };
@@ -433,22 +432,24 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                           </Header>
                         </Grid.Column>
                         <Grid.Column width="6">
-                          <List>
-                            {getCalculationResult().map((r, i) => (
-                              <List.Item key={`ptresult${i}`}>
-                                <h3>
-                                  {r.from} {"->"} {r.to} : {r.point} pts{" "}
-                                </h3>
-                              </List.Item>
-                            ))}
-                          </List>
+                          {getCalculationResult().length > 0 ? (
+                            <List>
+                              {getCalculationResult().map((r, i) => (
+                                <List.Item key={`ptresult${i}`}>
+                                  <h3>
+                                    {r.from} {"->"} {r.to} : {r.point} pts{" "}
+                                  </h3>
+                                </List.Item>
+                              ))}
+                            </List>
+                          ) : (
+                            <h3>Hmmm... play more maybe? nothing to calculate</h3>
+                          )}
                         </Grid.Column>
                         <Grid.Column width="3"></Grid.Column>
                       </Grid>
                     </Segment>
                   )}
-
-                  {hubActionLoading && <Loader active inline="centered" />}
 
                   {mainPlayer?.mustThrow && !gameIsOver && !round.isOver && (
                     <Droppable droppableId="board">

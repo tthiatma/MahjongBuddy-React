@@ -21,7 +21,7 @@ export default class RoundStore {
     reaction(
       () => this.round?.isOver,
       () => {
-        if(this.round?.isOver){
+        if(this.round?.isOver && !rootStore.gameStore.gameIsOver){
           this.showResult = true;
         }
       }

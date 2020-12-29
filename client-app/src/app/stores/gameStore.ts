@@ -163,7 +163,8 @@ export default class GameStore {
   };
 
   @action joinGameByCode = async (gameCode: string) => {
-    history.push(`/games/${gameCode}`);
+    await agent.Games.detailByCode(gameCode);
+    history.push(`/games/${gameCode.toUpperCase()}`);
     this.rootStore.modalStore.closeModal();
   };
 

@@ -58,7 +58,7 @@ const ResultModal: React.FC = () => {
             <h3>
               {winners.map((w) => (
                 <Fragment key={`winner-${w.userName}`}>
-                  Winner : {w.displayName}: {w.points} pts
+                  {`${w.displayName} ${PlayResult[w.playResult]} ${w.points} pts`}
                   <ul>
                     {w.roundResultHands.map((h, i) => (
                       <li key={i}>
@@ -111,7 +111,7 @@ const ResultModal: React.FC = () => {
                 <ul>
                   {lostList.map((l,i) => (
                     <li key={`lost-${i}-${l.userName}`}>
-                      Loser : {l.displayName}: {l.points}
+                      {`${l.displayName} ${PlayResult[l.playResult]} ${l.points} pts`}
                     </li>
                   ))}
                   {lostList[0].playerTiles!.slice().sort(sortTiles).map((rt) => (

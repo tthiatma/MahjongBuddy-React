@@ -21,6 +21,7 @@ import { PlayResult } from "../../../app/models/playResultEnum";
 
 const PlayerAction: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
+  const {gameIsOver} = rootStore.gameStore
   const {
     openResultModal,
     showResult,
@@ -173,7 +174,7 @@ const PlayerAction: React.FC = () => {
         <Card.Group centered itemsPerRow={3} items={chowOptions} />
       )}
 
-      {(hasWinAction || hasSelfWinAction) && !isWinner && (
+      {(hasWinAction || hasSelfWinAction) && !gameIsOver && !isWinner && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -191,7 +192,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {hasAction && hasChowAction && chowOptions.length === 0 && (
+      {!gameIsOver && hasAction && hasChowAction && chowOptions.length === 0 && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -217,7 +218,7 @@ const PlayerAction: React.FC = () => {
         <Button onClick={clearKongOptions} content="Cancel KONG" />
       )}
 
-      {hasAction && hasPongAction && (
+      {!gameIsOver && hasAction && hasPongAction && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -235,7 +236,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {((hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
+      {((hasAction && hasKongAction) || hasSelfKongAction) && !gameIsOver && !round!.isEnding && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -253,7 +254,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {hasAction && !hasGiveUpAction && !mainPlayer!.mustThrow && (
+      {!gameIsOver && hasAction && !hasGiveUpAction && !mainPlayer!.mustThrow && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -269,7 +270,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {hasGiveUpAction && !round!.isEnding && !mainPlayer!.mustThrow && (
+      {!gameIsOver && hasGiveUpAction && !round!.isEnding && !mainPlayer!.mustThrow && (
         <Button.Group>
           <Button
             circular
@@ -292,7 +293,7 @@ const PlayerAction: React.FC = () => {
       )}
 
       {!showResult && round!.isOver && (
-        <Button onClick={openResultModal}>Result</Button>
+        <Button onClick={openResultModal}>Round Result</Button>
       )}
     </Container>
   );

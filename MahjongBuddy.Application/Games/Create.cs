@@ -50,10 +50,10 @@ namespace MahjongBuddy.Application.Games
             {
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == _userAccessor.GetCurrentUserName());
 
-                //check if user spamming create game, if there is more than 10 games created within one minutes return 401 and lock user out lol
+                //check if user spamming create game, if there is more than 5 games created within one minutes return 401 and lock user out lol
                 var gamesWithinOneMin = _context.Games.Where(g => g.HostId == user.Id && g.Date > DateTime.Now.AddMinutes(-1));
 
-                if(gamesWithinOneMin != null && gamesWithinOneMin.Count() > 10)
+                if(gamesWithinOneMin != null && gamesWithinOneMin.Count() > 5)
                 {
                     user.LockoutEnd = DateTime.Now.AddMonths(1);
                     foreach (var rt in user.RefreshTokens)

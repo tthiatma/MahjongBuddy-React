@@ -1,14 +1,12 @@
-import React, { useContext, Fragment, useEffect } from "react";
+import React, { useContext, Fragment } from "react";
 import {
   Container,
   Segment,
   Header,
   Button,
   Image,
-  Label,
-  Table,
 } from "semantic-ui-react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import LoginForm from "../user/LoginForm";
 import { RegisterForm } from "../user/RegisterForm";
@@ -16,22 +14,18 @@ import JoinGameForm from "../user/JoinGameForm";
 import NavBar from "../nav/NavBar";
 import Footer from "../footer/Footer";
 import { observer } from "mobx-react-lite";
-import { format } from "date-fns";
 
 const HomePage = () => {
   const token = window.localStorage.getItem("jwt");
   const rootStore = useContext(RootStoreContext);
   const { isLoggedIn, user } = rootStore.userStore;
-  const { setPredicate, gamesByDate } = rootStore.gameStore;
   const { openModal } = rootStore.modalStore;
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      setPredicate("isInGame", "true");
-    } else {
-      console.log("not logged in");
-    }
-  }, [isLoggedIn, setPredicate]);
+  // useEffect(() => {
+  //   if (isLoggedIn) {
+  //     setPredicate("isInGame", "true");
+  //   } 
+  // }, [isLoggedIn, setPredicate]);
 
   return (
     <Fragment>
@@ -73,7 +67,7 @@ const HomePage = () => {
                 to="/createGame"
                 content="Create Game"
               />{" "}
-              <Segment
+              {/* <Segment
                 attached="top"
                 inverted
                 color="teal"
@@ -117,7 +111,7 @@ const HomePage = () => {
                     ))}
                   </Table.Body>
                 </Table>
-              </Segment>
+              </Segment> */}
             </Fragment>
           ) : (
             <Fragment>

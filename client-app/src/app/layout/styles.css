@@ -222,3 +222,7 @@ body {
 .ruleList > .item{
   padding-bottom: 15px !important;
 }
+
+.toUpper{
+  text-transform: uppercase;
+}

@@ -35,6 +35,11 @@ const Footer: React.FC = () => {
                   <Icon name="facebook" size="large" color="blue" />
                 </List.Content>
               </List.Item>
+              <List.Item as="a" target="_blank" href="https://www.twitter.com/MahjongBuddy">
+                <List.Content verticalAlign="top">
+                  <Icon name="twitter square" size="large" color="blue" />
+                </List.Content>
+              </List.Item>
               <List.Item
                 as="a"
                 href="https://ko-fi.com/P5P030YCN"

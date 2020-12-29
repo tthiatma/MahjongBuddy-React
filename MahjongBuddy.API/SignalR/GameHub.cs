@@ -28,7 +28,7 @@ namespace MahjongBuddy.API.SignalR
         {
             var userName = GetUserName();
             var requestContext = Context.GetHttpContext().Request;
-            var gameCode = requestContext.Query["gcode"].ToString();
+            var gameCode = requestContext.Query["gcode"].ToString().ToUpper();
             var connectionId = Context.ConnectionId;
             var userAgent = requestContext.Headers["User-Agent"];
             var player = await _mediator.Send(new Join.Command { ConnectionId = connectionId, UserAgent = userAgent, UserName = userName, GameCode = gameCode });
@@ -85,8 +85,8 @@ namespace MahjongBuddy.API.SignalR
 
         public async Task EndGame(string gameCode)
         {
-            var game = await _mediator.Send(new End.Command { GameCode = gameCode });
-            await Clients.Group(gameCode).SendAsync("GameEnded", game);
+            var game = await _mediator.Send(new End.Command { GameCode = gameCode.ToUpper() });
+            await Clients.Group(gameCode.ToUpper()).SendAsync("GameEnded", game);
         }
 
         public async Task CancelGame(string gameCode)
@@ -94,23 +94,23 @@ namespace MahjongBuddy.API.SignalR
             var userName = GetUserName();
             await _mediator.Send(new Delete.Command
             {
-                GameCode = gameCode,
+                GameCode = gameCode.ToUpper(),
                 UserName = userName
             });
-            await Clients.Group(gameCode).SendAsync("GameCancelled", gameCode);
+            await Clients.Group(gameCode.ToUpper()).SendAsync("GameCancelled", gameCode.ToUpper());
         }
 
         public async Task JoinGame(string gameCode)
         {
             var player = await _mediator.Send(new Join.Command
             {
-                GameCode = gameCode,
+                GameCode = gameCode.ToUpper(),
                 UserName = GetUserName(),
                 ConnectionId = Context.ConnectionId,
                 UserAgent = Context.GetHttpContext().Request.Headers["User-Agent"]
             });
             await Groups.AddToGroupAsync(Context.ConnectionId, gameCode);
-            await Clients.Group(gameCode).SendAsync("PlayerConnected", player);
+            await Clients.Group(gameCode.ToUpper()).SendAsync("PlayerConnected", player);
         }
 
         public async Task LeaveGame(Leave.Command command)
@@ -119,7 +119,7 @@ namespace MahjongBuddy.API.SignalR
 
             var player = await _mediator.Send(command);
 
-            await Clients.Group(command.GameCode).SendAsync("PlayerDisconnected", player);
+            await Clients.Group(command.GameCode.ToUpper()).SendAsync("PlayerDisconnected", player);
         }
 
         public async Task StandUpGame(StandUp.Command command)
@@ -128,7 +128,7 @@ namespace MahjongBuddy.API.SignalR
 
             var player = await _mediator.Send(command);
 
-            await Clients.Group(command.GameCode).SendAsync("PlayerStoodUp", player);
+            await Clients.Group(command.GameCode.ToUpper()).SendAsync("PlayerStoodUp", player);
         }
 
         public async Task SitGame(Sit.Command command)
@@ -137,7 +137,7 @@ namespace MahjongBuddy.API.SignalR
 
             var player = await _mediator.Send(command);
 
-            await Clients.Group(command.GameCode).SendAsync("PlayerSat", player);
+            await Clients.Group(command.GameCode.ToUpper()).SendAsync("PlayerSat", player);
         }
 
         public async Task RandomizeWind(RandomizeWind.Command command)
@@ -146,7 +146,7 @@ namespace MahjongBuddy.API.SignalR
 
             var players = await _mediator.Send(command);
 
-            await Clients.Group(command.GameCode).SendAsync("UpdatePlayersWind", players);
+            await Clients.Group(command.GameCode.ToUpper()).SendAsync("UpdatePlayersWind", players);
         }
 
         public async Task SendChatMsg(CreateChatMsg.Command command)
@@ -157,12 +157,12 @@ namespace MahjongBuddy.API.SignalR
 
             var chatMsg = await _mediator.Send(command);
 
-            await Clients.Group(command.GameCode).SendAsync("ReceiveChatMsg", chatMsg);
+            await Clients.Group(command.GameCode.ToUpper()).SendAsync("ReceiveChatMsg", chatMsg);
         }
 
         public async Task RemoveFromGroup(string gameCode)
         {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameCode);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameCode.ToUpper());
         }
 
         public async Task ThrowAllTiles(ThrowAll.Command command)
