@@ -50,6 +50,9 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (playerThatSkippedAction == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
+                if(!playerThatSkippedAction.HasAction)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Action = "no action to skip" });
+
                 playerThatSkippedAction.HasAction = false;
                 playerThatSkippedAction.RoundPlayerActions.Clear();
 

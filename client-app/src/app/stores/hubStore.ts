@@ -781,10 +781,11 @@ export default class HubStore {
             this.hubActionLoading = false;
           });
           toast.error(`can't skip`);
-        });
-        runInAction(() => {
-          this.roundStore.mainPlayer!.hasAction = false;
-          this.hubActionLoading = false;
+        }).then(() => {
+          runInAction(() => {
+            this.roundStore.mainPlayer!.hasAction = false;
+            this.hubActionLoading = false;
+          });  
         });
       } else {
         toast.error("not connected to hub");
