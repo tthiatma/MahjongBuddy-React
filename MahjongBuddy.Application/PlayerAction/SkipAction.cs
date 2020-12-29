@@ -47,6 +47,9 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (playerThatSkippedAction == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
+                if(!playerThatSkippedAction.HasAction)
+                    throw new RestException(HttpStatusCode.BadRequest, new { Action = "no action to skip" });
+
                 playerThatSkippedAction.RoundPlayerActions.Where(a => a.ActionStatus == ActionStatus.Active).ForEach(ac => ac.ActionStatus = ActionStatus.Skipped);
 
                 //check in case of multiple winner and this winner skip the option to win because too greedy!
