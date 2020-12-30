@@ -71,6 +71,9 @@ const GameLobbyHeader: React.FC<{
         {game.gamePlayers.length < 4 && (
           <p>Waiting for 4 players to be in the game...</p>
         )}
+        {game.gamePlayers.length === 4 && userNoWind && (
+          <p>Waiting for players to take their seat...</p>
+        )}
         {game.status === GameStatus.Created &&
           game.isHost &&
           game.gamePlayers.length === 4 &&

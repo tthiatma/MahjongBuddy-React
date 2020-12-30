@@ -5,6 +5,9 @@ import {
   Header,
   Button,
   Image,
+  List,
+  Icon,
+  Message,
 } from "semantic-ui-react";
 import { NavLink } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
@@ -24,7 +27,7 @@ const HomePage = () => {
   // useEffect(() => {
   //   if (isLoggedIn) {
   //     setPredicate("isInGame", "true");
-  //   } 
+  //   }
   // }, [isLoggedIn, setPredicate]);
 
   return (
@@ -37,6 +40,11 @@ const HomePage = () => {
       >
         <NavBar />
         <Container text>
+          <Message size="small" color="teal" info compact>
+            <Message.Content>
+              <p>New Update! Go to <NavLink to="/changelog">Change Log</NavLink> to see what's new</p>
+            </Message.Content>
+          </Message>
           <Header as="h1" inverted>
             <Image
               size="massive"
@@ -46,6 +54,28 @@ const HomePage = () => {
             />
             MahjongBuddy
           </Header>
+          <div>
+            <List horizontal>
+              <List.Item
+                as="a"
+                target="_blank"
+                href="https://www.facebook.com/MahjongBuddyFB"
+              >
+                <List.Content verticalAlign="top">
+                  <Icon name="facebook" size="huge" color="blue" />
+                </List.Content>
+              </List.Item>
+              <List.Item
+                as="a"
+                target="_blank"
+                href="https://www.twitter.com/MahjongBuddy"
+              >
+                <List.Content verticalAlign="top">
+                  <Icon name="twitter square" size="huge" color="blue" />
+                </List.Content>
+              </List.Item>
+            </List>
+          </div>
           {isLoggedIn && user && token ? (
             <Fragment>
               <Header

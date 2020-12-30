@@ -1,5 +1,5 @@
 import React, { useContext, Fragment } from "react";
-import { Container, Segment, Divider, List, Image, Icon } from "semantic-ui-react";
+import { Container, Segment, Divider, List, Image } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import { NavLink } from "react-router-dom";
@@ -28,16 +28,6 @@ const Footer: React.FC = () => {
               <List.Item as={NavLink} to="/changelog">
                 <List.Content verticalAlign="bottom">
                   Change Log
-                </List.Content>
-              </List.Item>
-              <List.Item as="a" target="_blank" href="https://www.facebook.com/MahjongBuddyFB">
-                <List.Content verticalAlign="top">
-                  <Icon name="facebook" size="large" color="blue" />
-                </List.Content>
-              </List.Item>
-              <List.Item as="a" target="_blank" href="https://www.twitter.com/MahjongBuddy">
-                <List.Content verticalAlign="top">
-                  <Icon name="twitter square" size="large" color="blue" />
                 </List.Content>
               </List.Item>
               <List.Item
