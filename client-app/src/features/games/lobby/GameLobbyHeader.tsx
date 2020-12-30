@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import { Segment, Item, Header, Button, Image, Icon } from "semantic-ui-react";
 import { IGame } from "../../../app/models/game";
 import { observer } from "mobx-react-lite";
@@ -144,8 +144,9 @@ const GameLobbyHeader: React.FC<{
         <Segment clearing attached="bottom">
           <Icon size="large" color="teal" name="cogs" />
           {gameIsOver && <span>Game Over</span>}
-          Cancel game if not enough player
           {!gameIsOver && game.status === GameStatus.Created && (
+            <Fragment>
+            Cancel game if you no longer need the game. 
             <Button
               floated="right"
               loading={hubLoading}
@@ -154,8 +155,12 @@ const GameLobbyHeader: React.FC<{
             >
               Cancel Game
             </Button>
+
+            </Fragment>
           )}
           {game.isHost && !gameIsOver && game.status === GameStatus.Playing && (
+            <Fragment>
+              End game when you are done
             <Button
               floated="right"
               loading={hubLoading}
@@ -164,6 +169,8 @@ const GameLobbyHeader: React.FC<{
             >
               End game
             </Button>
+
+            </Fragment>
           )}
         </Segment>
       )}
