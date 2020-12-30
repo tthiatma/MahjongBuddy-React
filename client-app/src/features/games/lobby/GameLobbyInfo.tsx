@@ -1,8 +1,24 @@
-import React from "react";
-import { Segment, Grid, Icon, Label } from "semantic-ui-react";
+import React, { useState } from "react";
+import { Segment, Grid, Icon, Label, Button, Popup } from "semantic-ui-react";
 import { IGame } from "../../../app/models/game";
+import copy from "clipboard-copy";
 
 const GameLobbyInfo: React.FC<{ game: IGame }> = ({ game }) => {
+  const [isOpen, setIsOpen ] = useState(false);
+  const timeoutLength = 2500;
+  let timeout: any;
+
+  const handleOpen = () => {
+    setIsOpen(true)
+    timeout = setTimeout(() => {
+      setIsOpen(false)
+    }, timeoutLength)
+  }
+
+  const handleClose = () => {
+    setIsOpen(false)
+    clearTimeout(timeout)
+  }
   return (
     <Segment.Group>
       <Segment attached="top">
@@ -11,7 +27,16 @@ const GameLobbyInfo: React.FC<{ game: IGame }> = ({ game }) => {
             <Icon size="large" color="teal" name="info" />
           </Grid.Column>
           <Grid.Column width={15}>
-            <Label> {game.code}</Label> tell your buddies to enter{" "}
+          <Popup
+            trigger={<Button onClick={() => copy(game.code)} icon labelPosition='right'><Icon name='clipboard' />{game.code}</Button>}
+            content={`Successfully copied to clipboard!`}
+            on='click'
+            open={isOpen}
+            onClose={handleClose}
+            onOpen={handleOpen}
+            position='top right'
+          />
+            {" "}Tell your buddies to enter{" "}
             <strong>{game.code}</strong> to join your game
           </Grid.Column>
         </Grid>

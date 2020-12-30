@@ -1,7 +1,7 @@
-import React, { useContext, Fragment } from "react";
+import React, { useContext, Fragment, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundResult } from "../../../app/models/round";
-import { Modal, Header, Button, Icon } from "semantic-ui-react";
+import { Modal, Header, Button, Icon, Confirm } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { TileStatus } from "../../../app/models/tileStatus";
@@ -9,6 +9,8 @@ import { ExtraPoint } from "../../../app/models/extraPointEnum";
 import { PlayResult } from "../../../app/models/playResultEnum";
 
 const ResultModal: React.FC = () => {
+  const [confirmOpen, setConfirmOpen] = useState(false);  
+  const handleCancel = () => setConfirmOpen(false);
   const rootStore = useContext(RootStoreContext);
   const { startRound, endGame } = rootStore.hubStore;
   const { getMainUser, gameIsOver } = rootStore.gameStore;
@@ -47,7 +49,8 @@ const ResultModal: React.FC = () => {
   }
 
   return (
-    <Modal closeIcon open={showResult} onClose={closeResultModal} size="small">
+    <Fragment>
+      <Modal closeIcon open={showResult} onClose={closeResultModal} size="small">
       <Header icon="bullhorn" content="Result" />
 
       <Modal.Content>
@@ -141,7 +144,7 @@ const ResultModal: React.FC = () => {
       </Modal.Content>
       {!gameIsOver && isHost && (
         <Modal.Actions>
-          <Button color="red" onClick={endGame} inverted>
+          <Button color="red" onClick={ () => setConfirmOpen(true)} inverted>
             <Icon name="handshake" /> End Game
           </Button>
           <Button color="blue" onClick={startRound} inverted>
@@ -150,6 +153,14 @@ const ResultModal: React.FC = () => {
         </Modal.Actions>
       )}
     </Modal>
+      <Confirm
+          open={confirmOpen}
+          content='Are you sure you want to end the game?'
+          onCancel={handleCancel}
+          onConfirm={endGame}
+        />
+    </Fragment>
+    
   );
 };
 export default observer(ResultModal);

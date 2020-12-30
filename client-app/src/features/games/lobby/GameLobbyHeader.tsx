@@ -137,11 +137,11 @@ const GameLobbyHeader: React.FC<{
           </Button>
         )} */}
       </Segment>
-      {game.isHost && (
+      {game.isHost && !gameIsOver && (
         <Segment clearing attached="bottom">
           <Icon size="large" color="teal" name="cogs" />
           {gameIsOver && <span>Game Over</span>}
-          Cancel/end your game when you're done
+          Cancel game if not enough player
           {!gameIsOver && game.status === GameStatus.Created && (
             <Button
               floated="right"
