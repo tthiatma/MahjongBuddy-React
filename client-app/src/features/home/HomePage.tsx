@@ -1,5 +1,13 @@
 import React, { useContext, Fragment } from "react";
-import { Container, Segment, Header, Button, Image } from "semantic-ui-react";
+import {
+  Container,
+  Segment,
+  Header,
+  Button,
+  Image,
+  Message,
+  Icon,
+} from "semantic-ui-react";
 import { NavLink } from "react-router-dom";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import LoginForm from "../user/LoginForm";
@@ -16,9 +24,30 @@ const HomePage = () => {
 
   return (
     <Fragment>
-      <Segment inverted textAlign="center" vertical className="masthead mainContent">
+      <Segment
+        inverted
+        textAlign="center"
+        vertical
+        className="masthead mainContent"
+      >
         <NavBar />
         <Container text>
+          <Message icon>
+            <Icon name="archive" />
+            <Message.Content>
+              <Message.Header>Game restart and update</Message.Header>
+              <Message.List>
+                <Message.Item>
+                  There will be maintenance on <strong>January 4th, 2021 at 11:00 PM - 11:30 MST</strong>.
+                </Message.Item>
+                <Message.Item>
+                  If you are playing on above day, please finish your game
+                  before the maintenance time to avoid losing your game
+                  progress
+                </Message.Item>
+              </Message.List>
+            </Message.Content>
+          </Message>
           <Header as="h1" inverted>
             <Image
               size="massive"
