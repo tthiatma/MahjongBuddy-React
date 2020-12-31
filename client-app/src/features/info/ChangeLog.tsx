@@ -20,7 +20,7 @@ const ChangeLog = () => {
         <List divided>
           <List.Item>
             <p>
-              <strong>1/2/2021 update</strong>
+              <strong>1/4/2021 update</strong>
             </p>
             <p>
               - Joining game now use 5 letters code instead of number eg. RAWRR
