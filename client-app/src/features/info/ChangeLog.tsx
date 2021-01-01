@@ -68,6 +68,9 @@ const ChangeLog = () => {
               game).
             </p>
             <p>
+              - Added min and max point information in the game. Limited the max point value to be 0-100 when creating a game.   
+            </p>
+            <p>
               - I have created Facebook and twitter page. Share your experience
               with me :){" "}
               <List horizontal>
