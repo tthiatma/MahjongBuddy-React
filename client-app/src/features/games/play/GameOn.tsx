@@ -9,6 +9,7 @@ import {
   Container,
   List,
   Icon,
+  Popup,
 } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
@@ -359,48 +360,78 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       <Grid.Column width={6} />
                       <Grid.Column width={4}>
                         <Grid.Row>
-                          <Segment circular style={square}>
-                            <Item.Group>
-                              <Item>
-                                <Item.Image
-                                  size="mini"
-                                  src="/assets/tiles/50px/face-down.png"
-                                />
-                                <Item.Content
-                                  verticalAlign="middle"
-                                  className="remainingTileHeader"
-                                >
-                                  <Item.Header>{`${remainingTiles}`}</Item.Header>
-                                </Item.Content>
-                              </Item>
-                            </Item.Group>
-                          </Segment>
-                          <Segment circular style={square}>
-                            {round.wind === WindDirection.East && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-east.png"
-                                alt="wind-east"
-                              />
-                            )}
-                            {round.wind === WindDirection.South && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-south.png"
-                                alt="wind-south"
-                              />
-                            )}
-                            {round.wind === WindDirection.West && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-west.png"
-                                alt="wind-west"
-                              />
-                            )}
-                            {round.wind === WindDirection.North && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-north.png"
-                                alt="wind-north"
-                              />
-                            )}
-                          </Segment>
+                          <Popup
+                            content="Remaining unopen tiles"
+                            trigger={
+                              <Segment circular style={square}>
+                                <Item.Group>
+                                  <Item>
+                                    <Item.Image
+                                      size="mini"
+                                      src="/assets/tiles/50px/face-down.png"
+                                    />
+                                    <Item.Content
+                                      verticalAlign="middle"
+                                      className="remainingTileHeader"
+                                    >
+                                      <Item.Header>{`${remainingTiles}`}</Item.Header>
+                                    </Item.Content>
+                                  </Item>
+                                </Item.Group>
+                              </Segment>
+                            }
+                          />
+                          <Popup
+                            content="Current prevailing wind. get 1 extra point if you have 3 or 4 of this tile"
+                            trigger={
+                              <Segment circular style={square}>
+                                {round.wind === WindDirection.East && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-east.png"
+                                    alt="wind-east"
+                                  />
+                                )}
+                                {round.wind === WindDirection.South && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-south.png"
+                                    alt="wind-south"
+                                  />
+                                )}
+                                {round.wind === WindDirection.West && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-west.png"
+                                    alt="wind-west"
+                                  />
+                                )}
+                                {round.wind === WindDirection.North && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-north.png"
+                                    alt="wind-north"
+                                  />
+                                )}
+                              </Segment>
+                            }
+                          />
+
+                          <Popup
+                            content={`Minimum of ${game.minPoint} pts for the win button to appear. Maximum of ${game.maxPoint} pts per round.`}
+                            trigger={
+                              <Segment circular style={square}>
+                                <Item.Group>
+                                  <Item>
+                                    <Item.Content
+                                      verticalAlign="middle"
+                                      className="remainingTileHeader"
+                                    >
+                                      {`Min:${game.minPoint}pts`}
+                                      <br />
+                                      {`Max:${game.minPoint}pts`}
+                                    </Item.Content>
+                                  </Item>
+                                </Item.Group>
+                              </Segment>
+                            }
+                          />
                           {round.isEnding && (
                             <Segment circular style={square}>
                               <Header as="h3">
@@ -443,7 +474,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                               ))}
                             </List>
                           ) : (
-                            <h3>Hmmm... play more maybe? nothing to calculate</h3>
+                            <h3>
+                              Hmmm... play more maybe? nothing to calculate
+                            </h3>
                           )}
                         </Grid.Column>
                         <Grid.Column width="3"></Grid.Column>

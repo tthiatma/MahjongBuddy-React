@@ -45,7 +45,8 @@ const validate = combineValidators({
   maxPoint: composeValidators(
     isRequired,
     isNumeric,
-    isGreaterThan(0)
+    isGreaterThan(0),
+    isLessThan(101),
   )("maxPoint"),
 });
 

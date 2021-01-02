@@ -23,7 +23,7 @@ const ChangeLog = () => {
               <strong>1/4/2021 update</strong>
             </p>
             <p>
-              - Joining game now use 5 letters code instead of number eg. RAWRR
+              - Joining game now use 5 letters code instead of number eg. RAWRR.
             </p>
             <p>
               - Added player's picture in the game. Go to "My Profile" (top
@@ -32,26 +32,26 @@ const ChangeLog = () => {
             </p>
             <p>
               - Added different color highlight in player's turn. Green when
-              user's turn but have not thrown a tile and light green when player
-              thrown a tile
+              it's player's turn but have not thrown a tile, and light green when player has
+              thrown a tile.
             </p>
             <p>
               - Reduce delay after throwing tile to 1.5 seconds.
             </p>
             <p>
               - Allow more than one winners. Player can now declare win after
-              another player declared win by dismissing the result and click on
+              another player declared win by dismissing the result modal and click on
               the win button.
             </p>
             <p>
               - Added <Icon name="book" /> in the game (located in the top right
               when playing) so that player can easily access list of supported
-              hand types and supported extra points
+              hand types and supported extra points.
             </p>
             <p>
               - When a round is finished, game host now has an option to either
-              end the game or continue to next round. If host decided to end the
-              game, there will be simple calculation on points
+              end the game or continue to a next round. If host decided to end the
+              game, there will be points calculation displayed.
             </p>
             <p>
               - Added pop over(hover your mouse on the icon) to explain{" "}
@@ -65,10 +65,13 @@ const ChangeLog = () => {
                 trigger={<Icon name="star" />}
               />{" "}
               icon (I promise I will use better image when I start styling the
-              game)
+              game).
             </p>
             <p>
-              - I've created Facebook and twitter page. Share your experience
+              - Added min and max point information in the game. Limited the max point value to be 0-100 when creating a game.   
+            </p>
+            <p>
+              - I have created Facebook and twitter page. Share your experience
               with me :){" "}
               <List horizontal>
                 <List.Item
