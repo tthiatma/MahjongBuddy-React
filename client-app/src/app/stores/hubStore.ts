@@ -103,15 +103,6 @@ export default class HubStore {
         });
       });
 
-      // this.hubConnection.on("LoadRound", (round: IRound) => {
-      //   runInAction("getting round", () => {
-      //     setRoundProps(round, this.rootStore.userStore.user!, this.roundStore);
-      //     this.roundStore.roundSimple = round;
-      //     this.roundStore.roundTiles = round.roundTiles;
-      //     this.roundStore.loadingRoundInitial = false;
-      //   });
-      // });
-
       this.hubConnection.on("GameCancelled", (gameCode: string) => {
         toast.info(`Host cancelled game ${gameCode}`);
         history.push(`/`);
