@@ -148,7 +148,7 @@ export default class HubStore {
         });
         history.push(
           `/games/${this.rootStore.gameStore.game!.code}/rounds/${
-            this.roundStore.round!.id
+            this.roundStore.round!.roundCounter
           }`
         );
       });
@@ -761,6 +761,7 @@ export default class HubStore {
     values.gameId = this.gameStore.game?.id;
     values.gameCode = this.gameStore.game?.code;
     values.roundId = this.roundStore.round?.id;
+    values.roundCounter = this.roundStore.round?.roundCounter;
     return values;
   };
 }

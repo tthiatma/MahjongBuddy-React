@@ -30,7 +30,7 @@ import RulesModal from "./RulesModal";
 import { IPayPoint } from "../../../app/models/game";
 
 interface DetailParams {
-  roundId: string;
+  roundCounter: string;
   code: string;
 }
 
@@ -105,8 +105,8 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [loadGame, match.params.code]);
 
   useEffect(() => {
-    loadRound(match.params.roundId, match.params.code);
-  }, [loadRound, match.params.roundId, match.params.code]);
+    loadRound(match.params.roundCounter, match.params.code);
+  }, [loadRound, match.params.roundCounter, match.params.code]);
 
   if (
     loadingGameInitial ||

@@ -85,9 +85,9 @@ const Games = {
 };
 
 const Rounds = {
-  detail: (id: string, gameCode: string, userName: string) =>
+  detail: (roundCounter: string, gameCode: string, userName: string) =>
     requests.post(`/rounds/Details`, {
-      id: id,
+      roundCounter: roundCounter,
       gameCode: gameCode,
       userName: userName,
     }),

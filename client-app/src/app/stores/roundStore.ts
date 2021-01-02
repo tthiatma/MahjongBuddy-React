@@ -222,12 +222,12 @@ export default class RoundStore {
     });
   };
 
-  @action loadRound = async (id: string, gameCode: string) => {
+  @action loadRound = async (roundCounter: string, gameCode: string) => {
     let round: IRound;
     this.loadingRoundInitial = true;
     const currentUserName = this.rootStore.userStore.user!.userName;
     try {
-      round = await agent.Rounds.detail(id, gameCode, currentUserName);
+      round = await agent.Rounds.detail(roundCounter, gameCode, currentUserName);
       runInAction("getting round", () => {
         this.round = round;
         this.loadingRoundInitial = false;

@@ -3,6 +3,7 @@
     public enum ActionStatus
     {
         Active,
+        Activated,
         Inactive,
         Skipped,
     }

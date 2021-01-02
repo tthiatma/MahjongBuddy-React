@@ -60,11 +60,19 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 if (handWorth.Points >= game.MinPoint)
                 {
+                    var winAction = roundPlayerWinner.RoundPlayerActions.FirstOrDefault(a => a.ActionType == ActionType.Win);
+                    if (winAction != null) winAction.ActionStatus = ActionStatus.Activated;
+
                     bool isSelfPick = false;
 
-                    //set the game as over
-                    round.IsOver = true;
-                    round.IsEnding = false;
+                    //set the game as over if all win action is settled
+                    var playerWithUnsettledWin = round.RoundPlayers.Where(p => p.RoundPlayerActions.Any(pa => pa.ActionType == ActionType.Win && pa.ActionStatus == ActionStatus.Active));
+
+                    if(playerWithUnsettledWin.Count() == 0)
+                    {
+                        round.IsOver = true;
+                        round.IsEnding = false;
+                    }
 
                     //create the result and record who win and who lost 
                     RoundResult winnerResult = new RoundResult

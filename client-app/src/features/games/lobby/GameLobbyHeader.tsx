@@ -101,7 +101,7 @@ const GameLobbyHeader: React.FC<{
           <Button
             as={Link}
             loading={hubLoading}
-            to={`/games/${game.code}/rounds/${latestRound.id}`}
+            to={`/games/${game.code}/rounds/${latestRound.roundCounter}`}
             color="blue"
             floated="right"
           >

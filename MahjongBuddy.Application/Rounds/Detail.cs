@@ -16,7 +16,7 @@ namespace MahjongBuddy.Application.Rounds
     {
         public class Query : IRequest<RoundDto>
         {
-            public string Id { get; set; }
+            public string RoundCounter { get; set; }
             public string GameCode { get; set; }
             public string UserName { get; set; }
         }
@@ -37,7 +37,7 @@ namespace MahjongBuddy.Application.Rounds
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
-                var round = game.Rounds.FirstOrDefault(r => r.Id == int.Parse(request.Id));
+                var round = game.Rounds.FirstOrDefault(r => r.RoundCounter == int.Parse(request.RoundCounter));
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { round = "Could Not find round" });
 

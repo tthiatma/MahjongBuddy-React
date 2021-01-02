@@ -69,35 +69,45 @@ namespace MahjongBuddy.Application.PlayerAction
                 }
                 else
                 {
-                    //prioritize user that has pong or kong action 
-                    var pongOrKongActionPlayer = round.RoundPlayers.FirstOrDefault( rp => 
-                        rp.RoundPlayerActions.Any(
-                        rpa => (rpa.ActionType == ActionType.Pong && rpa.ActionStatus == ActionStatus.Inactive)
-                        ||  (rpa.ActionType == ActionType.Kong && rpa.ActionStatus == ActionStatus.Inactive)));
-
-                    if (pongOrKongActionPlayer != null)
+                    //weird case when multiple winner, there is one declared win but somehow other player can win but skip lol wth then just set the round to be over
+                    var activatedWin = round.RoundPlayers.Where(p => p.RoundPlayerActions.Any(a => a.ActionType == ActionType.Win && a.ActionStatus == ActionStatus.Activated));
+                    if (activatedWin.Count() > 0)
                     {
-                        pongOrKongActionPlayer.RoundPlayerActions
-                            .Where(rpa => rpa.ActionType == ActionType.Pong || rpa.ActionType == ActionType.Kong)
-                            .ForEach(a => a.ActionStatus = ActionStatus.Active);
+                        round.IsOver = true;
+                        round.IsEnding = false;
                     }
                     else
                     {
-                        //now check other player that has chow action
-                        var chowActionPlayer = round.RoundPlayers.FirstOrDefault(u =>
-                        u.RoundPlayerActions.Any(a => a.ActionType == ActionType.Chow && a.ActionStatus == ActionStatus.Inactive));
+                        //prioritize user that has pong or kong action 
+                        var pongOrKongActionPlayer = round.RoundPlayers.FirstOrDefault(rp =>
+                           rp.RoundPlayerActions.Any(
+                           rpa => (rpa.ActionType == ActionType.Pong && rpa.ActionStatus == ActionStatus.Inactive)
+                           || (rpa.ActionType == ActionType.Kong && rpa.ActionStatus == ActionStatus.Inactive)));
 
-                        if (chowActionPlayer != null)
+                        if (pongOrKongActionPlayer != null)
                         {
-                            chowActionPlayer.RoundPlayerActions
-                                .Where(rpa => rpa.ActionType == ActionType.Chow)
+                            pongOrKongActionPlayer.RoundPlayerActions
+                                .Where(rpa => rpa.ActionType == ActionType.Pong || rpa.ActionType == ActionType.Kong)
                                 .ForEach(a => a.ActionStatus = ActionStatus.Active);
                         }
                         else
                         {
-                            RoundHelper.SetNextPlayer(round, _pointCalculator);
+                            //now check other player that has chow action
+                            var chowActionPlayer = round.RoundPlayers.FirstOrDefault(u =>
+                            u.RoundPlayerActions.Any(a => a.ActionType == ActionType.Chow && a.ActionStatus == ActionStatus.Inactive));
+
+                            if (chowActionPlayer != null)
+                            {
+                                chowActionPlayer.RoundPlayerActions
+                                    .Where(rpa => rpa.ActionType == ActionType.Chow)
+                                    .ForEach(a => a.ActionStatus = ActionStatus.Active);
+                            }
+                            else
+                            {
+                                RoundHelper.SetNextPlayer(round, _pointCalculator);
+                            }
                         }
-                    }
+                    }                    
                 }
 
                 var success = await _context.SaveChangesAsync() > 0;
