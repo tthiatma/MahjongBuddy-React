@@ -43,11 +43,11 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
-                if (currentPlayer == null)
+                var currentRoundPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
+                if (currentRoundPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
-                currentPlayer.IsManualSort = request.IsManualSort;
+                currentRoundPlayer.IsManualSort = request.IsManualSort;
                 //update the activetilecounter
                 foreach (var t in request.RoundTiles)
                 {
@@ -58,7 +58,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 try
                 {
                     var success = await _context.SaveChangesAsync() > 0;
-                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = currentRoundPlayer);
                     
                     if (success) return roundToReturn;
                 }

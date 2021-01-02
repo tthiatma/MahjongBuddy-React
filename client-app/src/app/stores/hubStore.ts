@@ -421,7 +421,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -440,7 +440,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -486,7 +486,7 @@ export default class HubStore {
           });  
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -530,7 +530,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -573,7 +573,7 @@ export default class HubStore {
           });  
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -605,7 +605,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -629,7 +629,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -656,7 +656,7 @@ export default class HubStore {
           this.roundStore.pickCounter = 0;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -685,7 +685,7 @@ export default class HubStore {
           this.roundStore.pickCounter = 0;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -712,7 +712,7 @@ export default class HubStore {
           this.roundStore.pickCounter = 0;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
@@ -744,7 +744,7 @@ export default class HubStore {
           this.hubActionLoading = false;
         });
       } else {
-        toast.error("disconnected from the game, please try to refresh your browser");
+        toast.error("disconnected from the game, please refresh your browser");
       }
     } catch (error) {
       runInAction(() => {
