@@ -28,6 +28,8 @@ import { Link } from "react-router-dom";
 import { IRoundTile } from "../../../app/models/tile";
 import RulesModal from "./RulesModal";
 import { IPayPoint } from "../../../app/models/game";
+// import useSound from "use-sound";
+// import tileThrowSfx from "../../../app/common/sounds/tileThrow.mp3";
 
 interface DetailParams {
   roundCounter: string;
@@ -37,12 +39,16 @@ interface DetailParams {
 //https://github.com/clauderic/react-sortable-hoc
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
+  // const [play] = useSound(tileThrowSfx);
   const rootStore = useContext(RootStoreContext);
   const {
     loadingGameInitial,
     loadGame,
     game,
     gameIsOver,
+    // soundOff,
+    // soundOn,
+    // gameSound,
   } = rootStore.gameStore;
   const {
     loadingRoundInitial,
@@ -79,6 +85,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     justifyContent: "center",
     height: "45px",
   });
+
+  // useEffect(() => {
+  //   if(gameSound) play();
+
+  // }, [gameSound, boardActiveTile, play]);
+
 
   useEffect(() => {
     createHubConnection(match.params.code);
@@ -160,6 +172,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
           (t) => t.id === tileId
         )!;
       });
+      // play();
       throwTile();
     } else {
       toast.warn("Can't throw");
@@ -338,6 +351,24 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     icon="book"
                     onClick={openRulesModal}
                   />
+                  {/* {gameSound ? (
+                    <Button
+                      basic
+                      size="small"
+                      circular
+                      icon="unmute"
+                      onClick={soundOff}
+                    />
+                  ) : (
+                    <Button
+                      basic
+                      size="small"
+                      circular
+                      icon="mute"
+                      onClick={soundOn}
+                    />
+                  )} */}
+
                   <RulesModal />
                 </Grid.Column>
               </Grid.Row>

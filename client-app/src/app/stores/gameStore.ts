@@ -33,6 +33,7 @@ export default class GameStore {
     );
   }
 
+  @observable gameSound = true;
   @observable gameRegistry = new Map();
   @observable game: IGame | null = null;
   @observable loadingGameInitial = false;
@@ -43,6 +44,18 @@ export default class GameStore {
   @observable page = 0;
   @observable latestRound: IRound | null = null;
   @observable predicate = new Map();
+
+  @action soundOn = () =>{
+    runInAction(() => {
+      this.gameSound = true;
+    })
+  }
+
+  @action soundOff = () =>{
+    runInAction(() => {
+      this.gameSound = false;
+    })
+  }
 
   @action setPredicate = (predicate: string, value: string | Date) => {
     this.predicate.clear();
