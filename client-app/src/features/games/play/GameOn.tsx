@@ -425,7 +425,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                                     >
                                       {`Min:${game.minPoint}pts`}
                                       <br />
-                                      {`Max:${game.minPoint}pts`}
+                                      {`Max:${game.maxPoint}pts`}
                                     </Item.Content>
                                   </Item>
                                 </Item.Group>
