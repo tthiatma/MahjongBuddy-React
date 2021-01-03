@@ -8,7 +8,7 @@ import {
 } from "react-beautiful-dnd";
 import { TileStatus } from "../../../app/models/tileStatus";
 import useSound from 'use-sound';
-// import selectSfx from '../../../app/common/sounds/select.mp3';
+import tileSelectSfx from '../../../app/common/sounds/tileSelect.mp3';
 
 interface IProps {
   containerStyleName: string;
@@ -28,7 +28,7 @@ const DraggableTile: React.FC<IProps> = ({
   const getListStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "",
   });
-  // const [play, { stop }] = useSound(selectSfx);
+  const [play, { stop }] = useSound(tileSelectSfx);
 
   return (
     <span
@@ -47,7 +47,7 @@ const DraggableTile: React.FC<IProps> = ({
               className={containerStyleName}
             >
               <div 
-                // onMouseEnter={() => play()}
+                onMouseEnter={() => play()}
                 style={{
                   backgroundImage: `url(${rt.tile.image}`,
                 }}
