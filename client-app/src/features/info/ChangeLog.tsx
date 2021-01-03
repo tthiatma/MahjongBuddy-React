@@ -40,8 +40,7 @@ const ChangeLog = () => {
             </p>
             <p>
               - Allow more than one winners. Player can now declare win after
-              another player declared win by dismissing the result modal and click on
-              the win button.
+              another player declared win.
             </p>
             <p>
               - Added <Icon name="book" /> in the game (located in the top right
@@ -50,8 +49,8 @@ const ChangeLog = () => {
             </p>
             <p>
               - When a round is finished, game host now has an option to either
-              end the game or continue to a next round. If host decided to end the
-              game, there will be points calculation displayed.
+              end the game or continue to the next round. If game host decided to end the
+              game, there will be a points calculation.
             </p>
             <p>
               - Added pop over(hover your mouse on the icon) to explain{" "}

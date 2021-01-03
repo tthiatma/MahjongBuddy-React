@@ -382,7 +382,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                             }
                           />
                           <Popup
-                            content="Current prevailing wind. get 1 extra point if you have 3 or 4 of this tile"
+                            content="Current prevailing wind"
                             trigger={
                               <Segment circular style={square}>
                                 {round.wind === WindDirection.East && (
