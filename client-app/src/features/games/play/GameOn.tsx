@@ -46,9 +46,9 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     loadGame,
     game,
     gameIsOver,
-    // soundOff,
-    // soundOn,
-    // gameSound,
+    soundOff,
+    soundOn,
+    gameSound,
   } = rootStore.gameStore;
   const {
     loadingRoundInitial,
@@ -85,12 +85,6 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     justifyContent: "center",
     height: "45px",
   });
-
-  // useEffect(() => {
-  //   if(gameSound) play();
-
-  // }, [gameSound, boardActiveTile, play]);
-
 
   useEffect(() => {
     createHubConnection(match.params.code);
@@ -351,12 +345,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     icon="book"
                     onClick={openRulesModal}
                   />
-                  {/* {gameSound ? (
+                  {gameSound ? (
                     <Button
                       basic
                       size="small"
                       circular
-                      icon="unmute"
+                      icon="volume up"
                       onClick={soundOff}
                     />
                   ) : (
@@ -364,10 +358,10 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       basic
                       size="small"
                       circular
-                      icon="mute"
+                      icon="volume off"
                       onClick={soundOn}
                     />
-                  )} */}
+                  )}
 
                   <RulesModal />
                 </Grid.Column>

@@ -26,7 +26,7 @@ const PlayerStatus: React.FC<IProps> = ({ player }) => {
                   : "black",
             }}
           >
-            {player.points > 0 && "+"} {player.points} pts
+            <strong>{player.points > 0 && "+"} {player.points} pts</strong>
           </span>
         </Fragment>
       )}

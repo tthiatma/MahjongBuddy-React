@@ -183,7 +183,7 @@ body {
 }
 
 .playerTurn{
-  background-color: #9ec79f !important;
+  background-color: #dbf1dc !important;
 }
 
 .playerTurn.mustThrow > span {

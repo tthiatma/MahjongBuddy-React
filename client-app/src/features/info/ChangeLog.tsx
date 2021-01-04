@@ -70,6 +70,9 @@ const ChangeLog = () => {
               - Added min and max point information in the game. Limited the max point value to be 0-100 when creating a game.   
             </p>
             <p>
+              - Added sound effect when hovering on tile and when there's a new tile thrown to board (more sound effects are in progress). Also added <Icon name="volume up" /> icon in the game to turn on/off the sound.   
+            </p>
+            <p>
               - I have created Facebook and twitter page. Share your experience
               with me :){" "}
               <List horizontal>
