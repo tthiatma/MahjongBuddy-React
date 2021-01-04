@@ -33,7 +33,7 @@ const DraggableTile: React.FC<IProps> = ({
   const {
     gameSound,
   } = rootStore.gameStore;
-  const [play] = useSound(tileSelectSfx, { volume: 0.25 });
+  const [play, {stop}] = useSound(tileSelectSfx, { volume: 0.25 });
 
   return (
     <span
@@ -52,7 +52,7 @@ const DraggableTile: React.FC<IProps> = ({
               className={containerStyleName}
             >
               <div 
-                {...(gameSound && {onMouseEnter:() => play()})}
+                {...(gameSound && {onMouseEnter:() => play(), onMouseLeave: () => stop()})}
                 style={{
                   backgroundImage: `url(${rt.tile.image}`,
                 }}
