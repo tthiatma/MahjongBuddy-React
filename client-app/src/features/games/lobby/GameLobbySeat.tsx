@@ -13,7 +13,7 @@ const GameLobbySeat: React.FC<IProps> = ({ wind }) => {
   const rootStore = useContext(RootStoreContext);
   const { game, getMainUser } = rootStore.gameStore;
   const { sitGame, standUpGame, hubLoading } = rootStore.hubStore;
-  const playerWind = game?.players.find((p) => p.initialSeatWind === wind);
+  const playerWind = game?.gamePlayers.find((p) => p.initialSeatWind === wind);
 
   return (
     <Item>

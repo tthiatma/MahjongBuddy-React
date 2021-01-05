@@ -5,11 +5,9 @@ namespace MahjongBuddy.Core
 {
     public class RoundPlayer
     {
-        public int Id { get; set; }
+        public int GamePlayerId { get; set; }
 
-        public string AppUserId { get; set; }
-
-        public virtual AppUser AppUser { get; set; }
+        public virtual GamePlayer GamePlayer { get; set; }
 
         public int RoundId { get; set; }
 
@@ -23,8 +21,6 @@ namespace MahjongBuddy.Core
         public bool IsManualSort { get; set; }
 
         public bool IsMyTurn { get; set; }
-
-        public bool HasAction { get; set; }
 
         public bool MustThrow { get; set; }
 

@@ -30,6 +30,9 @@ import { ForgotPasswordForm } from "../../features/user/ForgotPasswordForm";
 import ForgotPasswordSuccess from "../../features/user/ForgotPasswordSuccess";
 import ResetPasswordForm from "../../features/user/ResetPasswordForm";
 import ResetPasswordSuccess from "../../features/user/ResetPasswordSuccess";
+import DataDeletion from "../../features/legals/DataDeletion";
+import About from "../../features/info/About";
+import ChangeLog from "../../features/info/ChangeLog";
 
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext);
@@ -38,12 +41,12 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
   const { getUser } = rootStore.userStore;
 
   useEffect(() => {
-    if (token) {
+    if (token && !appLoaded) {
       getUser().finally(() => setAppLoaded());
     } else {
       setAppLoaded();
     }
-  }, [getUser, setAppLoaded, token]);
+  }, [getUser, setAppLoaded, token, appLoaded]);
 
   if (!appLoaded) return <LoadingComponent content="Loading App..." />;
 
@@ -59,15 +62,18 @@ const App: React.FC<RouteComponentProps> = ({ location }) => {
             <NavBar />
             <Container className='mainContent'  style={{paddingTop: showNavBar ? "5em" : "0" }}>
               <Switch>
+                <Route exact path="/changelog" component={ChangeLog} />
+                <Route exact path="/about" component={About} />
+                <Route exact path="/datadeletion" component={DataDeletion} />
                 <Route exact path="/privacypolicy" component={PrivacyPolicy} />
                 <Route exact path="/termsandconditions" component={TermsAndConditions} />
                 <Route exact path="/rules" component={RulesPage} />
                 <PrivateRoute exact path="/games" component={GameDashboard} />
                 <PrivateRoute
-                  path="/games/:id/rounds/:roundId"
+                  path="/games/:code/rounds/:roundCounter"
                   component={GameOn}
                 />
-                <PrivateRoute path="/games/:id" component={GameLobby} />
+                <PrivateRoute path="/games/:code" component={GameLobby} />
                 <PrivateRoute
                   key={location.key}
                   path={["/createGame", "/manage/:id"]}

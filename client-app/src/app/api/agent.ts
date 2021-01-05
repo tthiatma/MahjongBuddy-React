@@ -1,12 +1,16 @@
 import axios, { AxiosResponse } from "axios";
-import { ITile } from "../models/tile";
 import { history } from "../..";
-import { IGame } from "../models/game";
-import { IResetPasswordFormValues, IUser, IUserFormValues } from "../models/user";
+import { IGame, IGamesEnvelope } from "../models/game";
+import {
+  IResetPasswordFormValues,
+  IUser,
+  IUserFormValues,
+} from "../models/user";
 import { toast } from "react-toastify";
 import { IProfile, IPhoto } from "../models/profile";
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
   (config) => {
@@ -20,41 +24,20 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.response.use(undefined, (error) => {
-  const originalRequest = error.config;
-
   if (error.message === "Network Error" && !error.response) {
-    toast.error("Network error - make sure API is running!");
+    toast.error("Network error - refresh your browser.");
   }
-  const { status, data, config } = error.response;
+  const { status, data, config, headers } = error.response;
   if (status === 404) {
     history.push("/notfound");
   }
 
-  if (status === 401 && originalRequest.url.endsWith("refresh")) {
+  if (status === 401 && headers['www-authenticate'] === 'Bearer error="invalid_token", error_description="The token is expired"') {
     window.localStorage.removeItem("jwt");
-    window.localStorage.removeItem("refreshToken");
     history.push("/");
     toast.info("Your session has expired, please login again");
-    return Promise.reject(error);
   }
 
-  if (status === 401 && !originalRequest._retry) {
-    originalRequest._retry = true;
-
-    return axios
-      .post("user/refresh", {
-        token: window.localStorage.getItem("jwt"),
-        refreshToken: window.localStorage.getItem("refreshToken"),
-      })
-      .then((res) => {
-        window.localStorage.setItem("jwt", res.data.token);
-        window.localStorage.setItem("refreshToken", res.data.refreshToken);
-        axios.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${res.data.token}`;
-        return axios(originalRequest);
-      });
-  }
   if (
     status === 400 &&
     config.method === "get" &&
@@ -63,7 +46,7 @@ axios.interceptors.response.use(undefined, (error) => {
     history.push("/notfound");
   }
   if (status === 500) {
-    toast.error("Server error - check the terminal for more info!");
+    toast.error("Server error!");
   }
   throw error.response;
 });
@@ -89,26 +72,25 @@ const requests = {
   },
 };
 
-const Tiles = {
-  list: (): Promise<ITile[]> => requests.get("/tiles"),
-  detail: (id: string) => requests.get(`/tiles/${id}`),
-  create: (tile: ITile) => requests.post("tiles", tile),
-  update: (tile: ITile) => requests.put(`/tiles/${tile.id}`, tile),
-  delete: (id: string) => requests.del(`/tiles/${id}`),
-};
-
 const Games = {
-  list: (): Promise<IGame[]> => requests.get("/games"),
+  list: (params: URLSearchParams): Promise<IGamesEnvelope> =>
+  axios.get("/games", {params: params}).then(responseBody),
+  detailByCode: (code: string) => requests.get(`/games/code/${code}`),
   detail: (id: string) => requests.get(`/games/${id}`),
   create: (game: IGame) => requests.post("games", game),
   update: (game: IGame) => requests.put(`/games/${game.id}`, game),
   delete: (id: string) => requests.del(`/games/${id}`),
-  latestRound: (id: string) => requests.get(`/games/${id}/latestround`),
+  end:(id: string) => requests.post(`/games/${id}/end`, {}),
+  latestRound: (code: string) => requests.get(`/games/code/${code}/latestround`),
 };
 
 const Rounds = {
-  detail: (id: string, gameId: string) =>
-    requests.post(`/rounds/Details`, { id: id, gameId: gameId }),
+  detail: (roundCounter: string, gameCode: string, userName: string) =>
+    requests.post(`/rounds/Details`, {
+      roundCounter: roundCounter,
+      gameCode: gameCode,
+      userName: userName,
+    }),
 };
 
 const User = {
@@ -119,26 +101,17 @@ const User = {
     requests.post(`/user/register/`, user),
   fblogin: (accessToken: string) =>
     requests.post(`/user/facebook`, { accessToken }),
-  refreshToken: (token: string, refreshToken: string) => {
-    return axios.post(`/user/refresh`, { token, refreshToken }).then((res) => {
-      window.localStorage.setItem("jwt", res.data.token);
-      window.localStorage.setItem("refreshToken", res.data.refreshToken);
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${res.data.token}`;
-      return res.data.token;
-    });
-  },
+  refreshToken: (): Promise<IUser> => requests.post(`/user/refreshToken`, {}),
   verifyEmail: (token: string, email: string): Promise<void> =>
     requests.post(`/user/verifyEmail`, { token, email }),
   resendVerifyEmailConfirm: (email: string): Promise<void> =>
     requests.get(`/user/resendEmailVerification?email=${email}`),
-  forgotPassword:(reset: IResetPasswordFormValues): Promise<void> => {
-    return requests.post(`/user/forgotPassword`, reset)
+  forgotPassword: (reset: IResetPasswordFormValues): Promise<void> => {
+    return requests.post(`/user/forgotPassword`, reset);
   },
-  resetPassword:(reset: IResetPasswordFormValues): Promise<void> =>
+  resetPassword: (reset: IResetPasswordFormValues): Promise<void> =>
     requests.post(`/user/resetPassword`, reset),
-  resendForgotPassword: (email: string) : Promise<void> =>
+  resendForgotPassword: (email: string): Promise<void> =>
     requests.get(`/user/resendForgotPasswordVerification?email=${email}`),
 };
 
@@ -154,7 +127,6 @@ const Profiles = {
 };
 
 export default {
-  Tiles,
   Games,
   User,
   Rounds,

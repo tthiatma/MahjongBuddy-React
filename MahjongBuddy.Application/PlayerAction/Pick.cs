@@ -18,13 +18,12 @@ namespace MahjongBuddy.Application.PlayerAction
 {
     public class Pick
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -36,22 +35,18 @@ namespace MahjongBuddy.Application.PlayerAction
                 _mapper = mapper;
                 _pointCalculator = pointCalculator;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
                 //Note to consider when picking tile:
                 //-tile is flower
                 //-no more tile to pick
                 //-only 1 more tile to pick because player have an option not to take the last tile.
-
-                var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
 
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
@@ -60,7 +55,7 @@ namespace MahjongBuddy.Application.PlayerAction
 
                 //TODO only allow pick tile when it's player's turn
 
-                var newTiles = RoundTileHelper.PickTile(round, request.UserName, ref updatedTiles);
+                var newTiles = RoundTileHelper.PickTile(round, request.UserName);
 
                 if (newTiles == null)
                     round.IsEnding = true;
@@ -71,25 +66,24 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (remainingTiles == null)
                 {
                     currentPlayer.RoundPlayerActions.Clear();
-                    currentPlayer.HasAction = false;
                     if (RoundHelper.DetermineIfUserCanWin(round, currentPlayer, _pointCalculator))
                     {
-                        currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { PlayerAction = ActionType.Win });
+                        currentPlayer.RoundPlayerActions.Add(new RoundPlayerAction { ActionType = ActionType.Win });
                     }
                 }
-                updatedPlayers.Add(currentPlayer);
 
                 try
                 {
                     var success = await _context.SaveChangesAsync() > 0;
 
-                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                    List<RoundDto> results = new List<RoundDto>();
 
-                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
-                    roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
+                    foreach (var p in round.RoundPlayers)
+                    {
+                        results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                    }
 
-                    if (success)
-                        return roundToReturn;
+                    if (success) return results;
                 }
                 catch (DbUpdateConcurrencyException)
                 {

@@ -5,9 +5,9 @@ using System.Collections.ObjectModel;
 
 namespace MahjongBuddy.Core
 {
-    public class AppUser : IdentityUser
+    public class Player : IdentityUser
     {
-        public AppUser()
+        public Player()
         {
             Photos = new Collection<Photo>();
         }
@@ -16,14 +16,12 @@ namespace MahjongBuddy.Core
 
         public string Bio { get; set; }
 
-        public virtual ICollection<UserGame> UserGames { get; set; }
+        public DateTime DateCreated { get; set; }
 
-        public virtual ICollection<RoundPlayer> UserRounds { get; set; }
+        public virtual ICollection<GamePlayer> GamePlayers { get; set; }
 
         public virtual ICollection<Photo> Photos { get; set; }
 
-        public string RefreshToken { get; set; }
-
-        public DateTime RefreshTokenExpiry { get; set; }
+        public virtual ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 }

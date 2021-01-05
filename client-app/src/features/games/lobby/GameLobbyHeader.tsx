@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { Fragment, useContext } from "react";
 import { Segment, Item, Header, Button, Image, Icon } from "semantic-ui-react";
 import { IGame } from "../../../app/models/game";
 import { observer } from "mobx-react-lite";
@@ -26,18 +26,21 @@ const GameLobbyHeader: React.FC<{
   latestRound: IRound | null;
 }> = ({ game, latestRound }) => {
   const rootStore = useContext(RootStoreContext);
+  const { userNoWind, gameIsOver } = rootStore.gameStore;
   const {
     hubLoading,
     startRound,
     joinGame,
+    endGame,
+    cancelGame,
     leaveGame,
     randomizeWind,
   } = rootStore.hubStore;
-  const host = game.players.filter((p) => p.isHost)[0];
-  const userNoWind = game.players.some((p) => p.initialSeatWind === undefined);
+  const host = game.gamePlayers.filter((p) => p.isHost)[0];
 
   return (
     <Segment.Group>
+      
       <Segment basic attached="top" style={{ padding: "0" }}>
         <Image src={`/assets/mahjong-tiles.jpg`} fluid style={gameImageStyle} />
         <Segment style={gameImageTextStyle} basic>
@@ -52,7 +55,7 @@ const GameLobbyHeader: React.FC<{
                 <p>{format(new Date(game.date), "MMMM do, yyyy")}</p>
                 {host && (
                   <p>
-                    Hosted by {" "}
+                    Hosted by{" "}
                     <Link to={`/profile/${host.userName}`}>
                       <strong>{host.displayName}</strong>
                     </Link>
@@ -63,29 +66,42 @@ const GameLobbyHeader: React.FC<{
           </Item.Group>
         </Segment>
       </Segment>
+      
       <Segment clearing attached="bottom">
-        {game.players.length < 4 && <p>Waiting for 4 players to be in the game...</p>}
+        {game.gamePlayers.length < 4 && (
+          <p>Waiting for 4 players to be in the game...</p>
+        )}
+        {game.gamePlayers.length === 4 && userNoWind && (
+          <p>Waiting for players to take their seat...</p>
+        )}
         {game.status === GameStatus.Created &&
           game.isHost &&
-          game.players.length === 4 &&
+          game.gamePlayers.length === 4 &&
           !userNoWind && (
-            <Button icon labelPosition='right' floated="right" color="blue" loading={hubLoading} onClick={startRound}>
+            <Button
+              icon
+              labelPosition="right"
+              floated="right"
+              color="blue"
+              loading={hubLoading}
+              onClick={startRound}
+            >
               Start Game
-              <Icon name='play' />
+              <Icon name="play" />
             </Button>
           )}
         {game.status === GameStatus.Created &&
           game.isHost &&
-          game.players.length === 4 && (
+          game.gamePlayers.length === 4 && (
             <Button color="orange" loading={hubLoading} onClick={randomizeWind}>
               Shuffle Seat
             </Button>
           )}
-        {game.status === GameStatus.Playing && latestRound !== null && (
+        {latestRound && (
           <Button
             as={Link}
             loading={hubLoading}
-            to={`/games/${game.id}/rounds/${latestRound.id}`}
+            to={`/games/${game.code}/rounds/${latestRound.roundCounter}`}
             color="blue"
             floated="right"
           >
@@ -124,6 +140,40 @@ const GameLobbyHeader: React.FC<{
           </Button>
         )} */}
       </Segment>
+      {game.isHost && !gameIsOver && (
+        <Segment clearing attached="bottom">
+          <Icon size="large" color="teal" name="cogs" />
+          {gameIsOver && <span>Game Over</span>}
+          {!gameIsOver && game.status === GameStatus.Created && (
+            <Fragment>
+            Cancel game if you no longer need the game. 
+            <Button
+              floated="right"
+              loading={hubLoading}
+              onClick={() => cancelGame(game.code)}
+              color="violet"
+            >
+              Cancel Game
+            </Button>
+
+            </Fragment>
+          )}
+          {game.isHost && !gameIsOver && game.status === GameStatus.Playing && (
+            <Fragment>
+              End game when you are done
+            <Button
+              floated="right"
+              loading={hubLoading}
+              onClick={endGame}
+              color="red"
+            >
+              End game
+            </Button>
+
+            </Fragment>
+          )}
+        </Segment>
+      )}
     </Segment.Group>
   );
 };

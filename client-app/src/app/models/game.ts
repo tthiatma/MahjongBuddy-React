@@ -1,9 +1,17 @@
 import { WindDirection } from "./windEnum";
 import { GameStatus } from "./gameStatusEnum";
+import { IChatMsg } from "./chatMsg";
+import { IGamePlayer } from "./player";
+
+export interface IGamesEnvelope {
+    games: IGame[];
+    gameCount: number;
+  }
 
 export interface IGame{
     id: string;
     title: string;
+    code: string;
     date: Date;
     minPoint: string;
     maxPoint: string;
@@ -12,17 +20,14 @@ export interface IGame{
     status: GameStatus;
     initialSeatWind?: WindDirection;
     isCurrentPlayerConnected: boolean;
-    players: IPlayer[];
+    gamePlayers: IGamePlayer[];
     chatMsgs: IChatMsg[];
 }
 
-export interface IChatMsg {
-    id: string;
-    createdAt: Date;
-    body: string;
-    userName: string;
-    displayName: string;
-    image: string;
+export interface IPayPoint{
+    from: string,
+    to: string,
+    point: number
 }
 
 export interface IGameFormValues extends Partial<IGame> {
@@ -31,6 +36,7 @@ export interface IGameFormValues extends Partial<IGame> {
 
 export class GameFormValues implements IGameFormValues {
     id?: string = undefined;
+    gameCode?: string = undefined;
     title: string = '';
     minPoint: string = '';
     maxPoint: string = '';
@@ -42,12 +48,4 @@ export class GameFormValues implements IGameFormValues {
         }  
         Object.assign(this, init);
     }
-}
-
-export interface IPlayer{
-    userName: string;
-    displayName: string;
-    image: string;
-    isHost: boolean;
-    initialSeatWind: WindDirection | undefined;
 }

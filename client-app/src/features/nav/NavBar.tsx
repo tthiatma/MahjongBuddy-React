@@ -33,6 +33,7 @@ const NavBar: React.FC = () => {
               </Fragment>
             )}
             <Menu.Item as={NavLink} name="Rules" to="/rules" />
+            {/* <Menu.Item as={NavLink} name="About" to="/about" /> */}
 
             {user && (
               <Menu.Item position="right">

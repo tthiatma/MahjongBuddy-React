@@ -7,6 +7,9 @@ import {
   Divider,
   Segment,
   Container,
+  List,
+  Icon,
+  Popup,
 } from "semantic-ui-react";
 import { toast } from "react-toastify";
 import { observer } from "mobx-react-lite";
@@ -23,26 +26,34 @@ import TileListOtherPlayerVertical from "./TileListOtherPlayerVertical";
 import ResultModal from "./ResultModal";
 import { Link } from "react-router-dom";
 import { IRoundTile } from "../../../app/models/tile";
+import RulesModal from "./RulesModal";
+import { IPayPoint } from "../../../app/models/game";
+// import useSound from "use-sound";
+// import tileThrowSfx from "../../../app/common/sounds/tileThrow.mp3";
 
 interface DetailParams {
-  roundId: string;
-  id: string;
+  roundCounter: string;
+  code: string;
 }
 
 //https://github.com/clauderic/react-sortable-hoc
 
 const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
+  // const [play] = useSound(tileThrowSfx);
   const rootStore = useContext(RootStoreContext);
   const {
     loadingGameInitial,
     loadGame,
     game,
-    getMainUser,
+    gameIsOver,
+    soundOff,
+    soundOn,
+    gameSound,
   } = rootStore.gameStore;
   const {
     loadingRoundInitial,
-    roundSimple: round,
-    roundPlayers,
+    round,
+    loadRound,
     mainPlayer,
     leftPlayer,
     rightPlayer,
@@ -51,26 +62,18 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     mainPlayerGraveYardTiles,
     boardActiveTile,
     boardGraveyardTiles,
-    leftPlayerTiles,
-    topPlayerTiles,
-    rightPlayerTiles,
-    roundTiles,
     remainingTiles,
-    roundResults,
-    roundEndingCounter,    
+    roundEndingCounter,
+    openRulesModal,
   } = rootStore.roundStore;
   const {
-    loadRoundDetail,
     throwTile,
     orderTiles,
     hubLoading,
     createHubConnection,
-    stopHubConnection,
     leaveGroup,
-    hubConnection
   } = rootStore.hubStore;
 
-  //currently only support one winner
   const square = { width: 50, height: 50, padding: "0.5em" };
   const getStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "",
@@ -84,15 +87,11 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   });
 
   useEffect(() => {
-    createHubConnection(match.params!.id);
+    createHubConnection(match.params.code);
     return () => {
-      leaveGroup(match.params.id);
+      leaveGroup(match.params.code);
     };
-  }, [createHubConnection, loadRoundDetail, stopHubConnection, leaveGroup, match.params]);
-
-  useEffect(() => {
-    loadRoundDetail(match.params.roundId, match.params!.id);
-  }, [loadRoundDetail, hubConnection?.state]);
+  }, [createHubConnection, leaveGroup, match.params.code]);
 
   useEffect(() => {
     runInAction(() => {
@@ -108,8 +107,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
   }, [rootStore.commonStore.showNavBar, rootStore.commonStore.showFooter]);
 
   useEffect(() => {
-    loadGame(match.params!.id);
-  }, [loadGame]);
+    loadGame(match.params.code);
+  }, [loadGame, match.params.code]);
+
+  useEffect(() => {
+    loadRound(match.params.roundCounter, match.params.code);
+  }, [loadRound, match.params.roundCounter, match.params.code]);
 
   if (
     loadingGameInitial ||
@@ -122,48 +125,49 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
   const getActiveTileAnimation = (): string => {
     let animationStyle: string = "";
-
-    switch (boardActiveTile?.thrownBy) {
-      case leftPlayer?.userName: {
-        animationStyle = "fly right";
-        break;
-      }
-      case rightPlayer?.userName: {
-        animationStyle = "fly left";
-        break;
-      }
-      case topPlayer?.userName: {
-        animationStyle = "fly down";
-        break;
-      }
-      case mainPlayer?.userName: {
-        animationStyle = "fly up";
-        break;
+    if (!gameIsOver) {
+      switch (boardActiveTile?.thrownBy) {
+        case leftPlayer?.userName: {
+          animationStyle = "fly right";
+          break;
+        }
+        case rightPlayer?.userName: {
+          animationStyle = "fly left";
+          break;
+        }
+        case topPlayer?.userName: {
+          animationStyle = "fly down";
+          break;
+        }
+        case mainPlayer?.userName: {
+          animationStyle = "fly up";
+          break;
+        }
       }
     }
+
     return animationStyle;
   };
 
   const doThrowTile = (tileId: string) => {
-    if (mainPlayer!.isMyTurn && mainPlayer!.mustThrow && !round.isOver) {
-      const tempPlayerAction = Array.from(mainPlayer!.roundPlayerActions);
+    if (gameIsOver) {
+      toast.warn("Can't throw because host ended this game");
+      return;
+    }
+
+    if (
+      mainPlayer!.isMyTurn &&
+      mainPlayer!.mustThrow &&
+      !round.isOver &&
+      !round.isEnding
+    ) {
       runInAction("throwingtile", () => {
-        rootStore.roundStore.selectedTile = roundTiles!.find(
+        rootStore.roundStore.selectedTile = mainPlayerAliveTiles?.find(
           (t) => t.id === tileId
         )!;
       });
-      try {
-        runInAction(() => {
-          mainPlayer!.mustThrow = false;
-          mainPlayer!.roundPlayerActions = [];
-        });
-        throwTile();
-      } catch {
-        runInAction(() => {
-          mainPlayer!.mustThrow = true;
-          mainPlayer!.roundPlayerActions = tempPlayerAction;
-        });
-      }
+      // play();
+      throwTile();
     } else {
       toast.warn("Can't throw");
     }
@@ -222,6 +226,96 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
     }
   };
 
+  //there gotta be more elegant way to do this lol
+  const getCalculationResult = (): IPayPoint[] => {
+    //if there is no player with negative points then there gotta be something wrong lol
+    let bodyResult: IPayPoint[] = [];
+
+    const tiePlayers = game.gamePlayers.slice().filter((p) => p.points === 0);
+    const gameWinners = Array.from(
+      toJS(game.gamePlayers.filter((p) => p.points > 0)!, {
+        recurseEverything: true,
+      })
+    );
+    const gameLosers = Array.from(
+      toJS(game.gamePlayers.filter((p) => p.points < 0)!, {
+        recurseEverything: true,
+      })
+    );
+
+    if (gameLosers.length === 1) {
+      //then 1 person pays to all the winners
+      var sadLoserName = gameLosers[0].displayName;
+      gameWinners.forEach((w) => {
+        const res: IPayPoint = {
+          from: sadLoserName,
+          to: w.displayName,
+          point: w.points,
+        };
+        bodyResult.push(res);
+      });
+    } else if (
+      gameLosers.length === 3 ||
+      (gameLosers.length === 2 && tiePlayers.length > 0)
+    ) {
+      let proWinnerName = gameWinners[0].displayName;
+      gameLosers.forEach((l) => {
+        const res: IPayPoint = {
+          from: l.displayName,
+          to: proWinnerName,
+          point: l.points * -1,
+        };
+        bodyResult.push(res);
+      });
+    } else if (gameLosers.length === 2) {
+      //there should be 2 winners and 2 losers here
+      //calculate with least amount of transaction
+      const sortedLosersLessToMore = gameLosers
+        .slice()
+        .sort((a, b) => b.points - a.points);
+
+      const sortedWinners = gameWinners
+        .slice()
+        .sort((a, b) => a.points - b.points);
+      if (sortedLosersLessToMore[0].points * -1 === sortedWinners[0].points) {
+        for (let i = 0; i < 2; i++) {
+          const transfer: IPayPoint = {
+            from: sortedLosersLessToMore[i].displayName,
+            to: sortedWinners[i].displayName,
+            point: sortedWinners[i].points,
+          };
+          bodyResult.push(transfer);
+        }
+      } else {
+        //there will be 3 transaction here
+        const remainder =
+          sortedWinners[1].points - sortedLosersLessToMore[0].points * -1;
+        const firstTransaction: IPayPoint = {
+          from: sortedLosersLessToMore[0].displayName,
+          to: sortedWinners[1].displayName,
+          point: sortedLosersLessToMore[0].points * -1,
+        };
+        bodyResult.push(firstTransaction);
+
+        const secondTransaction: IPayPoint = {
+          from: sortedLosersLessToMore[1].displayName,
+          to: sortedWinners[1].displayName,
+          point: remainder,
+        };
+        bodyResult.push(secondTransaction);
+
+        const lastRemainder = sortedLosersLessToMore[1].points * -1 - remainder;
+        const thirdTransaction: IPayPoint = {
+          from: sortedLosersLessToMore[1].displayName,
+          to: sortedWinners[0].displayName,
+          point: lastRemainder,
+        };
+        bodyResult.push(thirdTransaction);
+      }
+    }
+    return bodyResult;
+  };
+
   return (
     <Fragment>
       <Container>
@@ -237,26 +331,51 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     circular
                     icon="arrow circle left"
                     as={Link}
-                    to={`/games/${game.id}`}
+                    to={`/games/${game.code}`}
                   />
                 </Grid.Column>
                 <Grid.Column width={10}>
-                  <TileListOtherPlayer
-                    player={topPlayer!}
-                    roundTiles={topPlayerTiles!}
-                  />
+                  {topPlayer && <TileListOtherPlayer player={topPlayer!} />}
                 </Grid.Column>
-                <Grid.Column width={3} />
+                <Grid.Column textAlign="right" width={3}>
+                  <Button
+                    basic
+                    size="small"
+                    circular
+                    icon="book"
+                    onClick={openRulesModal}
+                  />
+                  {gameSound ? (
+                    <Button
+                      basic
+                      size="small"
+                      circular
+                      icon="volume up"
+                      onClick={soundOff}
+                    />
+                  ) : (
+                    <Button
+                      basic
+                      size="small"
+                      circular
+                      icon="volume off"
+                      onClick={soundOn}
+                    />
+                  )}
+
+                  <RulesModal />
+                </Grid.Column>
               </Grid.Row>
 
               <Grid.Row>
                 {/* Left Player */}
                 <Grid.Column width={3}>
-                  <TileListOtherPlayerVertical
-                    player={leftPlayer!}
-                    roundTiles={leftPlayerTiles!}
-                    isReversed={false}
-                  />
+                  {leftPlayer && (
+                    <TileListOtherPlayerVertical
+                      player={leftPlayer}
+                      isReversed={false}
+                    />
+                  )}
                 </Grid.Column>
 
                 {/* Board */}
@@ -266,48 +385,78 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                       <Grid.Column width={6} />
                       <Grid.Column width={4}>
                         <Grid.Row>
-                          <Segment circular style={square}>
-                            <Item.Group>
-                              <Item>
-                                <Item.Image
-                                  size="mini"
-                                  src="/assets/tiles/50px/face-down.png"
-                                />
-                                <Item.Content
-                                  verticalAlign="middle"
-                                  className="remainingTileHeader"
-                                >
-                                  <Item.Header>{`${remainingTiles}`}</Item.Header>
-                                </Item.Content>
-                              </Item>
-                            </Item.Group>
-                          </Segment>
-                          <Segment circular style={square}>
-                            {round.wind === WindDirection.East && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-east.png"
-                                alt="wind-east"
-                              />
-                            )}
-                            {round.wind === WindDirection.South && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-south.png"
-                                alt="wind-south"
-                              />
-                            )}
-                            {round.wind === WindDirection.West && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-west.png"
-                                alt="wind-west"
-                              />
-                            )}
-                            {round.wind === WindDirection.North && (
-                              <img
-                                src="/assets/tiles/50px/wind/wind-north.png"
-                                alt="wind-north"
-                              />
-                            )}
-                          </Segment>
+                          <Popup
+                            content="Remaining unopen tiles"
+                            trigger={
+                              <Segment circular style={square}>
+                                <Item.Group>
+                                  <Item>
+                                    <Item.Image
+                                      size="mini"
+                                      src="/assets/tiles/50px/face-down.png"
+                                    />
+                                    <Item.Content
+                                      verticalAlign="middle"
+                                      className="remainingTileHeader"
+                                    >
+                                      <Item.Header>{`${remainingTiles}`}</Item.Header>
+                                    </Item.Content>
+                                  </Item>
+                                </Item.Group>
+                              </Segment>
+                            }
+                          />
+                          <Popup
+                            content="Current prevailing wind"
+                            trigger={
+                              <Segment circular style={square}>
+                                {round.wind === WindDirection.East && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-east.png"
+                                    alt="wind-east"
+                                  />
+                                )}
+                                {round.wind === WindDirection.South && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-south.png"
+                                    alt="wind-south"
+                                  />
+                                )}
+                                {round.wind === WindDirection.West && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-west.png"
+                                    alt="wind-west"
+                                  />
+                                )}
+                                {round.wind === WindDirection.North && (
+                                  <img
+                                    src="/assets/tiles/50px/wind/wind-north.png"
+                                    alt="wind-north"
+                                  />
+                                )}
+                              </Segment>
+                            }
+                          />
+
+                          <Popup
+                            content={`Minimum of ${game.minPoint} pts for the win button to appear. Maximum of ${game.maxPoint} pts per round.`}
+                            trigger={
+                              <Segment circular style={square}>
+                                <Item.Group>
+                                  <Item>
+                                    <Item.Content
+                                      verticalAlign="middle"
+                                      className="remainingTileHeader"
+                                    >
+                                      {`Min:${game.minPoint}pts`}
+                                      <br />
+                                      {`Max:${game.maxPoint}pts`}
+                                    </Item.Content>
+                                  </Item>
+                                </Item.Group>
+                              </Segment>
+                            }
+                          />
                           {round.isEnding && (
                             <Segment circular style={square}>
                               <Header as="h3">
@@ -328,7 +477,39 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     activeTile={boardActiveTile!}
                     activeTileAnimation={getActiveTileAnimation()}
                   />
-                  {mainPlayer?.mustThrow && !round.isOver && (
+                  {gameIsOver && (
+                    <Segment>
+                      <Grid>
+                        <Grid.Column width="3"></Grid.Column>
+                        <Grid.Column width="4">
+                          <Header icon>
+                            <Icon name="calculator" />
+                            Game Over{" "}
+                          </Header>
+                        </Grid.Column>
+                        <Grid.Column width="6">
+                          {getCalculationResult().length > 0 ? (
+                            <List>
+                              {getCalculationResult().map((r, i) => (
+                                <List.Item key={`ptresult${i}`}>
+                                  <h3>
+                                    {r.from} {"->"} {r.to} : {r.point} pts{" "}
+                                  </h3>
+                                </List.Item>
+                              ))}
+                            </List>
+                          ) : (
+                            <h3>
+                              Hmmm... play more maybe? nothing to calculate
+                            </h3>
+                          )}
+                        </Grid.Column>
+                        <Grid.Column width="3"></Grid.Column>
+                      </Grid>
+                    </Segment>
+                  )}
+
+                  {mainPlayer?.mustThrow && !gameIsOver && !round.isOver && (
                     <Droppable droppableId="board">
                       {(provided, snapshot) => (
                         <div
@@ -357,11 +538,12 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
 
                 {/* Right Player */}
                 <Grid.Column width={3}>
-                  <TileListOtherPlayerVertical
-                    player={rightPlayer!}
-                    roundTiles={rightPlayerTiles!}
-                    isReversed={true}
-                  />
+                  {rightPlayer && (
+                    <TileListOtherPlayerVertical
+                      player={rightPlayer}
+                      isReversed={true}
+                    />
+                  )}
                 </Grid.Column>
               </Grid.Row>
 
@@ -379,12 +561,7 @@ const GameOn: React.FC<RouteComponentProps<DetailParams>> = ({ match }) => {
                     />
                   </Grid.Row>
                   <Grid.Row centered>
-                    <ResultModal
-                      roundResults={roundResults}
-                      roundPlayers={roundPlayers}
-                      roundTiles={roundTiles}
-                      isHost={getMainUser!.isHost}
-                    />
+                    <ResultModal />
                   </Grid.Row>
                 </Grid.Column>
               </Grid.Row>

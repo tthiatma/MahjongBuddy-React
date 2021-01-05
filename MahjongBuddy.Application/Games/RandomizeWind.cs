@@ -18,13 +18,13 @@ namespace MahjongBuddy.Application.Games
 {
     public class RandomizeWind
     {
-        public class Command : IRequest<IEnumerable<PlayerDto>>
+        public class Command : IRequest<IEnumerable<GamePlayerDto>>
         {
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
             public string UserName { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, IEnumerable<PlayerDto>>
+        public class Handler : IRequestHandler<Command, IEnumerable<GamePlayerDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -34,9 +34,9 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<IEnumerable<PlayerDto>> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<GamePlayerDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode.ToUpper());
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
@@ -44,14 +44,14 @@ namespace MahjongBuddy.Application.Games
                 if (game.Status == GameStatus.Playing || game.Status == GameStatus.Over)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Can't randomize wind to a game that's already started/over" });
 
-                var userInGames = game.UserGames.ToArray();
+                var userInGames = game.GamePlayers.ToArray();
 
                 if (userInGames.Count() != 4)
                     throw new RestException(HttpStatusCode.BadRequest, new { players = "not enough player in the game" });
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
 
                 if (playerInGame == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { player = "user not in the game" });
@@ -70,7 +70,7 @@ namespace MahjongBuddy.Application.Games
                 try
                 {
                     await _context.SaveChangesAsync();
-                    return _mapper.Map<IEnumerable<UserGame>, IEnumerable<PlayerDto>>(userInGames);
+                    return _mapper.Map<IEnumerable<GamePlayer>, IEnumerable<GamePlayerDto>>(userInGames);
                 }
                 catch (Exception)
                 {

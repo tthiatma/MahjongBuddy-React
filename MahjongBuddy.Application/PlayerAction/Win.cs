@@ -7,7 +7,8 @@ using MahjongBuddy.Core;
 using MahjongBuddy.Core.Enums;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
-using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore;
+using MoreLinq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,13 +20,13 @@ namespace MahjongBuddy.Application.PlayerAction
 {
     public class Win
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -37,11 +38,9 @@ namespace MahjongBuddy.Application.PlayerAction
                 _mapper = mapper;
                 _pointCalculator = pointCalculator;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedPlayers = new List<RoundPlayer>();
-
-                var game = await _context.Games.FindAsync(request.GameId);
+                var game = await _context.Games.FirstOrDefaultAsync(x => x.Code == request.GameCode.ToUpper());
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
 
@@ -49,34 +48,41 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var winner = round.RoundPlayers.FirstOrDefault(u => u.AppUser.UserName == request.UserName);
+                RoundPlayer roundPlayerWinner = round.RoundPlayers.FirstOrDefault(u => u.GamePlayer.Player.UserName == request.UserName);
 
-                if (winner == null)
+                if (roundPlayerWinner == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Player = "Could not find player" });
 
-                //if its a valid win:
+                //check for valid win:
                 HandWorth handWorth = _pointCalculator.Calculate(round, request.UserName);
-
                 if (handWorth == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Win = "Invalid combination hand" });
 
                 if (handWorth.Points >= game.MinPoint)
                 {
-                    //set the game as over
-                    round.IsOver = true;
-                    round.IsEnding = false;
-                    //create the result
-                    //record who win and who lost 
+                    var winAction = roundPlayerWinner.RoundPlayerActions.FirstOrDefault(a => a.ActionType == ActionType.Win);
+                    if (winAction != null) winAction.ActionStatus = ActionStatus.Activated;
+
+                    bool isSelfPick = false;
+
+                    //set the game as over if all win action is settled
+                    var playerWithUnsettledWin = round.RoundPlayers.Where(p => p.RoundPlayerActions.Any(pa => pa.ActionType == ActionType.Win && pa.ActionStatus == ActionStatus.Active));
+
+                    if(playerWithUnsettledWin.Count() == 0)
+                    {
+                        round.IsOver = true;
+                        round.IsEnding = false;
+                    }
+
+                    //create the result and record who win and who lost 
                     RoundResult winnerResult = new RoundResult
                     {
-                        AppUser = winner.AppUser,
-                        IsWinner = true,
+                        Player = roundPlayerWinner.GamePlayer.Player,
+                        PlayResult = PlayResult.Win,
                     };
 
                     if (round.RoundResults == null)
                         round.RoundResults = new List<RoundResult>();
-
-                    bool isSelfPick = false;
 
                     //record hand type and extra points
                     foreach (var h in handWorth.HandTypes)
@@ -94,7 +100,6 @@ namespace MahjongBuddy.Application.PlayerAction
                         winnerResult.RoundResultExtraPoints.Add(new RoundResultExtraPoint { ExtraPoint = e, Point = point, Name = e.ToString() });
                     }
 
-
                     //now that we have the winner hand type and extra point recorded, let's calculate the points
 
                     //if the handworth exceed game max point, cap the point to game's max point 
@@ -110,7 +115,7 @@ namespace MahjongBuddy.Application.PlayerAction
                         bool isLoserBao = false;
                         string baoPlayerUserName = string.Empty;
                         //check for allonesuit
-                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == winner.AppUser.UserName);
+                        var winnerTiles = round.RoundTiles.Where(t => t.Owner == roundPlayerWinner.GamePlayer.Player.UserName);
                         if (handWorth.HandTypes.Contains(HandType.AllOneSuit) 
                             || handWorth.HandTypes.Contains(HandType.SmallFourWind)
                             || handWorth.HandTypes.Contains(HandType.BigFourWind))
@@ -145,59 +150,86 @@ namespace MahjongBuddy.Application.PlayerAction
                         {
                             //the loser that bao will pay the winning point times three
                             var winningPoint = cappedPoint * 3;
-                            winner.Points += winningPoint;
-                            winnerResult.PointsResult = winningPoint;
+                            roundPlayerWinner.Points += winningPoint;                            
+                            winnerResult.Points = winningPoint;
 
-                            var loser = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == baoPlayerUserName);
-                            loser.Points -= winningPoint;
-                            updatedPlayers.Add(loser);
+                            RoundPlayer roundPlayerloser = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == baoPlayerUserName);
+                            roundPlayerloser.Points -= winningPoint;
+                            round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.LostWithPenalty, Player = roundPlayerloser.GamePlayer.Player, Points = losingPoint * 3 });
 
-                            round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint * 3 });
+                            //record users that are tied
+                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != baoPlayerUserName && p.GamePlayer.Player.UserName != roundPlayerWinner.GamePlayer.Player.UserName);
+                            tiedPlayers.ForEach(tp =>
+                            {
+                                round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
+                            });
                         }
                         else
                         {
                             //if its self pick, and no bao, then all 3 other players needs to record the loss
-                            var losers = round.RoundPlayers.Where(u => u.AppUser.UserName != request.UserName);
+                            var losers = round.RoundPlayers.Where(u => u.GamePlayer.Player.UserName != request.UserName);
 
                             //points will be times 3
                             var winningPoint = cappedPoint * 3;
-                            winner.Points += winningPoint;
-                            winnerResult.PointsResult = winningPoint;
+                            roundPlayerWinner.Points += winningPoint;
+                            winnerResult.Points = winningPoint;
 
-                            updatedPlayers.AddRange(losers);
-
-                            foreach (var l in losers)
+                            losers.ForEach(l =>
                             {
                                 l.Points -= cappedPoint;
-                                round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = l.AppUser, PointsResult = losingPoint });
-                            }
+                                round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = l.GamePlayer.Player, Points = losingPoint });
+                            });
                         }
                     }
                     else
                     {
                         //otherwise there is only one loser that throw the tile to board
-                        winner.Points += cappedPoint;
-                        winnerResult.PointsResult = cappedPoint;
+                        roundPlayerWinner.Points += cappedPoint;
+                        winnerResult.Points = cappedPoint;
 
                         var boardTile = round.RoundTiles.First(t => t.Owner == DefaultValue.board && t.Status == TileStatus.BoardActive);
-                        var loser = round.RoundPlayers.First(u => u.AppUser.UserName == boardTile.ThrownBy);
+                        var loser = round.RoundPlayers.First(u => u.GamePlayer.Player.UserName == boardTile.ThrownBy);
                         loser.Points -= cappedPoint;
-                        round.RoundResults.Add(new RoundResult { IsWinner = false, AppUser = loser.AppUser, PointsResult = losingPoint });
+                        round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Lost, Player = loser.GamePlayer.Player, Points = losingPoint });
 
-                        updatedPlayers.Add(loser);
+                        //check for multiple winners. If player has a valid win and already recorded as tie
+                        var tieResultCouldWin = round.RoundResults.FirstOrDefault(rr => rr.PlayResult == PlayResult.Tie && rr.Player.UserName == roundPlayerWinner.GamePlayer.Player.UserName);
+
+                        if (tieResultCouldWin != null)
+                        {
+                            //remove record that the player tie
+                            round.RoundResults.Remove(tieResultCouldWin);
+                        }
+                        else
+                        {
+                            //record users that are tied
+                            var tiedPlayers = round.RoundPlayers.Where(p => p.GamePlayer.Player.UserName != loser.GamePlayer.Player.UserName && p.GamePlayer.Player.UserName != roundPlayerWinner.GamePlayer.Player.UserName);
+                            tiedPlayers.ForEach(tp =>
+                            {
+                                round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = tp.GamePlayer.Player, Points = 0 });
+                            });
+                        }
+
                     }
-                    updatedPlayers.Add(winner);
                     round.RoundResults.Add(winnerResult);
 
-                    //TODO implement more than one winner
+                    //tally the point in gameplayer
+                    round.RoundPlayers.ForEach(rp =>
+                    {
+                        rp.GamePlayer.Points = rp.Points;
+                    });
 
                     var success = await _context.SaveChangesAsync() > 0;
 
                     if (success)
                     {
-                        var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-                        roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
-                        return roundToReturn;
+                        List<RoundDto> results = new List<RoundDto>();
+
+                        foreach (var p in round.RoundPlayers)
+                        {
+                            results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                        }
+                        return results;
                     }
                 }
                 else

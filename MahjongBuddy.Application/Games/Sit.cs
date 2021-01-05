@@ -15,14 +15,14 @@ namespace MahjongBuddy.Application.Games
 {
     public class Sit
     {
-        public class Command : IRequest<PlayerDto>
+        public class Command : IRequest<GamePlayerDto>
         {
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
             public string UserName { get; set; }
             public WindDirection InitialSeatWind { get; set; }
 
         }
-        public class Handler : IRequestHandler<Command, PlayerDto>
+        public class Handler : IRequestHandler<Command, GamePlayerDto>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -32,9 +32,9 @@ namespace MahjongBuddy.Application.Games
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<PlayerDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<GamePlayerDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode.ToUpper());
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
@@ -44,7 +44,7 @@ namespace MahjongBuddy.Application.Games
 
                 var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == request.UserName);
 
-                var playerInGame = await _context.UserGames.SingleOrDefaultAsync(x => x.GameId == game.Id && x.AppUserId == user.Id);
+                var playerInGame = await _context.GamePlayers.SingleOrDefaultAsync(x => x.GameId == game.Id && x.PlayerId == user.Id);
 
                 if(playerInGame == null)
                     throw new RestException(HttpStatusCode.BadRequest, new { Connect = "Player not in the game" });
@@ -53,7 +53,7 @@ namespace MahjongBuddy.Application.Games
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return _mapper.Map<PlayerDto>(playerInGame);
+                if (success) return _mapper.Map<GamePlayerDto>(playerInGame);
 
                 throw new Exception("Problem sitting to game");
             }

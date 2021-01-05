@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import {
@@ -7,6 +7,9 @@ import {
   DroppableStateSnapshot,
 } from "react-beautiful-dnd";
 import { TileStatus } from "../../../app/models/tileStatus";
+import useSound from 'use-sound';
+import tileSelectSfx from '../../../app/common/sounds/tileSelect.mp3';
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 interface IProps {
   containerStyleName: string;
@@ -26,6 +29,11 @@ const DraggableTile: React.FC<IProps> = ({
   const getListStyle = (isDraggingOver: boolean) => ({
     background: isDraggingOver ? "lightblue" : "",
   });
+  const rootStore = useContext(RootStoreContext);
+  const {
+    gameSound,
+  } = rootStore.gameStore;
+  const [play, {stop}] = useSound(tileSelectSfx, { volume: 0.25 });
 
   return (
     <span
@@ -43,7 +51,8 @@ const DraggableTile: React.FC<IProps> = ({
               {...provided.dragHandleProps}
               className={containerStyleName}
             >
-              <div
+              <div 
+                {...(gameSound && {onMouseEnter:() => play(), onMouseLeave: () => stop()})}
                 style={{
                   backgroundImage: `url(${rt.tile.image}`,
                 }}

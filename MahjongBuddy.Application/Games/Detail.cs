@@ -45,7 +45,7 @@ namespace MahjongBuddy.Application.Games
 
                 if(game.Status == GameStatus.Playing)
                 {
-                    bool inTheGame = game.UserGames.Any(p => p.AppUser.UserName == _userAccessor.GetCurrentUserName());
+                    bool inTheGame = game.GamePlayers.Any(p => p.Player.UserName == _userAccessor.GetCurrentUserName());
                     if(!inTheGame)
                         throw new RestException(HttpStatusCode.BadRequest, new { game = "This is not the game that you are looking for" });
                 }

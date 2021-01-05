@@ -1,21 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MahjongBuddy.API.SignalR;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Games;
-using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MahjongBuddy.API.Controllers
 {
     public class GamesController : BaseController
     {
-        [HttpGet]
-        public async Task<ActionResult<List<GameDto>>> List()
+        private readonly IHubContext<GameHub> _hubContext;
+
+        public GamesController(IHubContext<GameHub> hubContext)
         {
-            return await Mediator.Send(new List.Query());
+            _hubContext = hubContext;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List.GamesEnvelope>> List(int? limit,
+            int? offset, bool isInGame, bool isHost, DateTime? startDate)
+        {
+            return await Mediator.Send(new List.Query(limit,
+                offset, isInGame, isHost, startDate));
+        }
+
+        [HttpGet("code/{code}")]
+        public async Task<ActionResult<GameDto>> DetailsByCode(string code)
+        {
+            return await Mediator.Send(new DetailByCode.Query { GameCode = code });
         }
 
         [HttpGet("{id}")]
@@ -24,10 +40,10 @@ namespace MahjongBuddy.API.Controllers
             return await Mediator.Send(new Detail.Query { Id = id });
         }
 
-        [HttpGet("{id}/latestRound")]
-        public async Task<ActionResult<RoundDto>> LatestRound(int id)
+        [HttpGet("code/{code}/latestRound")]
+        public async Task<ActionResult<RoundDto>> LatestRound(string code)
         {
-            return await Mediator.Send(new LatestRound.Query { Id = id });
+            return await Mediator.Send(new LatestRound.Query { GameCode = code });
         }
 
         [HttpPost]
@@ -46,9 +62,20 @@ namespace MahjongBuddy.API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Policy = "IsGameHost")]
-        public async Task<ActionResult<Unit>> Delete(int id)
+        public async Task<ActionResult<Unit>> Delete(string gameCode)
         {
-            return await Mediator.Send(new Delete.Command { Id = id });
+            var cancelGame = await Mediator.Send(new Delete.Command { GameCode = gameCode });
+            await _hubContext.Clients.Group(gameCode).SendAsync("GameCancelled", gameCode);
+            return cancelGame;
+        }
+
+        [HttpPost("{id}/end")]
+        [Authorize(Policy = "IsGameHost")]
+        public async Task<ActionResult<GameDto>> End(string gameCode)
+        {
+            var game = await Mediator.Send(new End.Command { GameCode = gameCode });
+            await _hubContext.Clients.Group(game.Id.ToString()).SendAsync("GameEnded", game);
+            return game;
         }
     }
 }

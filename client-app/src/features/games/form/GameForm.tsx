@@ -45,7 +45,8 @@ const validate = combineValidators({
   maxPoint: composeValidators(
     isRequired,
     isNumeric,
-    isGreaterThan(0)
+    isGreaterThan(0),
+    isLessThan(101),
   )("maxPoint"),
 });
 
@@ -97,7 +98,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
               initialValues={game}
               onSubmit={handleFinalFormSubmit}
               render={({ handleSubmit, invalid, pristine }) => (
-                <Form onSubmit={handleSubmit} loading={loading}>
+                <Form onSubmit={handleSubmit} loading={loading} autoComplete="off">
                   <Field
                     name="title"
                     placeholder="Game Title"
@@ -106,13 +107,13 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   />
                   <Field
                     name="minPoint"
-                    placeholder="Minimum points to win: eg. 0 for beginner 3 for advanced"
+                    placeholder="Minimum points to win: eg. 0 for beginner, 3 for advanced"
                     value={game.minPoint}
                     component={TextInput}
                   />
                   <Field
                     name="maxPoint"
-                    placeholder="Maximum points player can win: eg. 10"
+                    placeholder="Maximum points player can win from other player: eg. 10 "
                     value={game.maxPoint}
                     component={TextInput}
                   />
@@ -127,7 +128,7 @@ const GameForm: React.FC<RouteComponentProps<DetailParams>> = ({
                   <Button
                     onClick={
                       game.id
-                        ? () => history.push(`/games/${game.id}`)
+                        ? () => history.push(`/games/${game.gameCode}`)
                         : () => history.push("/")
                     }
                     disabled={loading}

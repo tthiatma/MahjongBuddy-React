@@ -6,7 +6,7 @@ import GameListItemPlayers from "./GameListItemPlayers";
 import { format } from "date-fns";
 
 const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
-  const host = game.players.filter((p) => p.isHost)[0];
+  const host = game.gamePlayers.filter((p) => p.isHost)[0];
   return (
     <Segment.Group>
       <Segment>
@@ -19,7 +19,7 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
               style={{ marginBottom: 3 }}
             />
             <Item.Content>
-              <Item.Header as={Link} to={`/games/${game.id}`}>
+              <Item.Header as={Link} to={`/games/${game.code}`}>
                 {game.title}
               </Item.Header>
               <Item.Description>
@@ -58,12 +58,12 @@ const GameListItem: React.FC<{ game: IGame }> = ({ game }) => {
         <Icon name="clock" /> {format(game.date, "h:mm a")}
       </Segment>
       <Segment secondary>
-        <GameListItemPlayers players={game.players} />
+        <GameListItemPlayers players={game.gamePlayers} />
       </Segment>
       <Segment clearing>
         <Button
           as={Link}
-          to={`/games/${game.id}`}
+          to={`/games/${game.code}`}
           floated="right"
           content="View"
           color="blue"

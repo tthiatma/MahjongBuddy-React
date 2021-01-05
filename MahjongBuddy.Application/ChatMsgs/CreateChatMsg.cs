@@ -17,7 +17,7 @@ namespace MahjongBuddy.Application.ChatMsgs
         public class Command : IRequest<ChatMsgDto>
         {
             public string Body { get; set; }
-            public int GameId { get; set; }
+            public string GameCode { get; set; }
             public string UserName { get; set; }
         }
         public class Handler : IRequestHandler<Command, ChatMsgDto>
@@ -33,7 +33,7 @@ namespace MahjongBuddy.Application.ChatMsgs
 
             public async Task<ChatMsgDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Code == request.GameCode.ToUpper());
 
                 if (game == null)
                     throw new RestException(HttpStatusCode.NotFound, new {Game = "Game not found" });

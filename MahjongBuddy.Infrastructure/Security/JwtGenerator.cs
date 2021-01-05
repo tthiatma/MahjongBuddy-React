@@ -18,7 +18,7 @@ namespace MahjongBuddy.Infrastructure.Security
         {
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]));
         }
-        public string CreateToken(AppUser user)
+        public string CreateToken(Player user)
         {
             var claims = new List<Claim>
             {
@@ -42,13 +42,15 @@ namespace MahjongBuddy.Infrastructure.Security
             return tokenHandler.WriteToken(token);
         }
 
-        public string GenerateRefreshToken()
+        public RefreshToken GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
-
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(randomNumber)
+            };
         }
     }
 }

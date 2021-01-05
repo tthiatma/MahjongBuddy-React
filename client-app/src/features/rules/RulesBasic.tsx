@@ -6,7 +6,7 @@ const RulesBasic = () => {
     <Container>
       <Segment>
         <Header size="medium">Supported Rule type</Header>
-        <p>Hongkong Mahjong rule</p>
+        <p>Hong Kong Mahjong rule</p>
       </Segment>
 
       <Segment>
@@ -23,15 +23,15 @@ const RulesBasic = () => {
           <List.Item>
             <p>Host</p>
             <p>
-              -Invite your buddy to your game by letting them know of the Game#
+              -Invite your buddy to your game by letting them know of the Game code
             </p>
             <p>
               -Once there are four players joined the game, you can either
               shuffle the players into random seats or ask them to pick a seat.
             </p>
             <p>
-              -Everytime a round is over, the result of the round will be shown
-              and only the host can move the game to the next round.
+              -Everytime a round is over, the result of the round will be shown.
+              Host can either move the game to the next round or end the game.
             </p>
           </List.Item>
         </List>

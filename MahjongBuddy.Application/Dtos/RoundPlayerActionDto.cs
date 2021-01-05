@@ -6,6 +6,6 @@ namespace MahjongBuddy.Application.Dtos
     {
         public int Id { get; set; }
 
-        public ActionType PlayerAction { get; set; }
+        public ActionType ActionType { get; set; }
     }
 }

@@ -2,6 +2,7 @@ import React, { useContext, Fragment } from "react";
 import { Container, Segment, Divider, List, Image } from "semantic-ui-react";
 import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../app/stores/rootStore";
+import { NavLink } from "react-router-dom";
 
 const Footer: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
@@ -14,13 +15,20 @@ const Footer: React.FC = () => {
           <Container textAlign="center">
             <Divider fitted />
             <List horizontal inverted divided link size="small">
-              <List.Item as="a" href="/termsandconditions">
-                <List.Content verticalAlign="middle">
+              <List.Item as={NavLink} to="/termsandconditions">
+                <List.Content verticalAlign="bottom">
                   Terms and Conditions
                 </List.Content>
               </List.Item>
-              <List.Item as="a" href="/privacypolicy">
-                Privacy Policy
+              <List.Item as={NavLink} to="/privacypolicy">
+                <List.Content verticalAlign="bottom">
+                  Privacy Policy
+                </List.Content>
+              </List.Item>
+              <List.Item as={NavLink} to="/changelog">
+                <List.Content verticalAlign="bottom">
+                  Change Log
+                </List.Content>
               </List.Item>
               <List.Item
                 as="a"

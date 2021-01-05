@@ -15,13 +15,12 @@ namespace MahjongBuddy.Application.PlayerAction
 {
     public class ThrowAll
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -31,16 +30,14 @@ namespace MahjongBuddy.Application.PlayerAction
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedTiles = new List<RoundTile>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
+                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
 
                 if (currentPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
@@ -50,7 +47,6 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (existingActiveTileOnBoard != null)
                 {
                     existingActiveTileOnBoard.Status = TileStatus.BoardGraveyard;
-                    updatedTiles.Add(existingActiveTileOnBoard);
                 }
 
                 var userJustPickedTile = round.RoundTiles.Where(t => t.Owner == request.UserName && t.Status == TileStatus.UserJustPicked);
@@ -59,7 +55,6 @@ namespace MahjongBuddy.Application.PlayerAction
                     foreach (var t in userJustPickedTile)
                     {
                         t.Status = TileStatus.UserActive;
-                        updatedTiles.Add(t);
                     }
                 }
                 var unopenTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
@@ -74,17 +69,18 @@ namespace MahjongBuddy.Application.PlayerAction
                     tileToThrow.Status = TileStatus.BoardGraveyard;
                     tileToThrow.BoardGraveyardCounter = round.TileCounter;
                     round.TileCounter++;
-                    updatedTiles.Add(tileToThrow);
                 }
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                var roundToReturn = _mapper.Map<Round, RoundDto>(round);
+                List<RoundDto> results = new List<RoundDto>();
 
-                roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                foreach (var p in round.RoundPlayers)
+                {
+                    results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                }
 
-                if (success)
-                    return roundToReturn;
+                if (success) return results;
 
                 throw new Exception("Problem throwing all tile");
             }

@@ -7,14 +7,12 @@ using System.Net;
 using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
-using System;
-using System.Linq;
 
 namespace MahjongBuddy.Application.Users
 {
     public class Login
     {
-        public class Query : IRequest<User> 
+        public class Query : IRequest<User>
         {
             public string Email { get; set; }
 
@@ -32,10 +30,10 @@ namespace MahjongBuddy.Application.Users
 
         public class Handler : IRequestHandler<Query, User>
         {
-            private readonly UserManager<AppUser> _userManager;
-            private readonly SignInManager<AppUser> _signInManager;
+            private readonly UserManager<Player> _userManager;
+            private readonly SignInManager<Player> _signInManager;
             private readonly IJwtGenerator _jwtGenerator;
-            public Handler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IJwtGenerator jwtGenerator)
+            public Handler(UserManager<Player> userManager, SignInManager<Player> signInManager, IJwtGenerator jwtGenerator)
             {
                 _userManager = userManager;
                 _signInManager = signInManager;
@@ -54,21 +52,12 @@ namespace MahjongBuddy.Application.Users
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
-                    user.RefreshToken = _jwtGenerator.GenerateRefreshToken();
-                    user.RefreshTokenExpiry = DateTime.Now.AddDays(30);
-
+                    var refreshToken = _jwtGenerator.GenerateRefreshToken();
+                    user.RefreshTokens.Add(refreshToken);
                     await _userManager.UpdateAsync(user);
-
-                    return new User
-                    { 
-                        DisplayName = user.DisplayName,
-                        Token = _jwtGenerator.CreateToken(user),
-                        RefreshToken = user.RefreshToken,
-                        UserName = user.UserName,
-                        Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
-                    };                            
+                    return new User(user, _jwtGenerator, refreshToken.Token);
                 }
 
                 throw new RestException(HttpStatusCode.Unauthorized);

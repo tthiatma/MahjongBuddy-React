@@ -1,15 +1,10 @@
 ﻿using MahjongBuddy.Application.Users;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-
 
 namespace MahjongBuddy.API.Controllers
 {
@@ -21,11 +16,14 @@ namespace MahjongBuddy.API.Controllers
         {
             _config = config;
         }
+
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(Login.Query query)
         {
-            return await Mediator.Send(query);
+            var user = await Mediator.Send(query);
+            SetTokenCookie(user.RefreshToken);
+            return user;
         }
 
         [AllowAnonymous]
@@ -40,23 +38,27 @@ namespace MahjongBuddy.API.Controllers
         [HttpGet]
         public async Task<ActionResult<User>> CurrentUser()
         {
-            return await Mediator.Send(new CurrentUser.Query());
+            var user = await Mediator.Send(new CurrentUser.Query());
+            SetTokenCookie(user.RefreshToken);
+            return user;
         }
 
         [AllowAnonymous]
         [HttpPost("facebook")]
         public async Task<ActionResult<User>> FacebookLogin(ExternalLogin.Query query)
         {
-            return await Mediator.Send(query);
+            var user = await Mediator.Send(query);
+            SetTokenCookie(user.RefreshToken);
+            return user;
         }
 
-        [AllowAnonymous]
-        [HttpPost("refresh")]
-        public async Task<ActionResult<User>> Refresh(RefreshToken.Query query)
+        [HttpPost("refreshToken")]
+        public async Task<ActionResult<User>> RefreshToken(RefreshToken.Command command)
         {
-            var principal = GetPrincipalFromExpiredToken(query.Token);
-            query.UserName = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            return await Mediator.Send(query);
+            command.RefreshToken = Request.Cookies["refreshToken"];
+            var user = await Mediator.Send(command);
+            SetTokenCookie(user.RefreshToken);
+            return user;
         }
 
         [AllowAnonymous]
@@ -108,29 +110,16 @@ namespace MahjongBuddy.API.Controllers
             return Ok("Password Reset link sent - please check email");
         }
 
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        private void SetTokenCookie(string refreshToken)
         {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["TokenKey"])),
-                ValidateLifetime = false
+            var cookieOptions = new CookieOptions
+            {               
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(7),
+                IsEssential = true,
+                SameSite = SameSiteMode.Strict
             };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
-
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Invalid Token");
-            }
-
-            return principal;
+            Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
         }
     }
 }

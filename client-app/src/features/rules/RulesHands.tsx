@@ -8,8 +8,8 @@ const RulesHands = () => {
         <Header>Supported Hands Type</Header>
         <List bulleted className="ruleList">
           <List.Item>
-            <Header size="medium">Chicken - 0 pt</Header>
-            <p>Meld is combination of pong/kong and chow</p>
+            <Header size="medium">Chicken (雞糊) - 0 pt</Header>
+            <p>Meld (winning hand) it’s a combination of pong/kong and chow that is NOT in a same suit.</p>
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo2.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo3.png" />
@@ -31,7 +31,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">Straight - 1 pt</Header>
+            <Header size="medium">Straight (平糊) - 1 pt</Header>
             <p>Every meld is a chow</p>
 
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
@@ -55,7 +55,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">Triplets - 3 pt</Header>
+            <Header size="medium">Triplets (對對糊) - 3 pt</Header>
             <p>Every meld is either a pong or kong</p>
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
@@ -78,7 +78,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">MixedOneSuit - 3 pt</Header>
+            <Header size="medium">MixedOneSuit (清一色) - 3 pt</Header>
             <p>Mix of tiles from one suit and honor tiles</p>
             <Image src="/assets/tiles/50px/pin/pin1.png" />
             <Image src="/assets/tiles/50px/pin/pin1.png" />
@@ -101,7 +101,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">AllOneSuit - 7 pt</Header>
+            <Header size="medium">AllOneSuit (全清一色) - 7 pt</Header>
             <p>All tiles are from one suit</p>
             <Image src="/assets/tiles/50px/pin/pin1.png" />
             <Image src="/assets/tiles/50px/pin/pin1.png" />
@@ -124,7 +124,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">SevenPairs - 6 pt</Header>
+            <Header size="medium">SevenPairs (七對) - 6 pt</Header>
             <p>All tiles containing seven pairs</p>
 
             <Image src="/assets/tiles/50px/pin/pin1.png" />
@@ -150,8 +150,8 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">ThirteenOrphans - 13 pt</Header>
-            <p>One of each 1, 9, wind, and dragon, and a 14th tile</p>
+            <Header size="medium">ThirteenOrphans (十三腰) - 13 pt</Header>
+            <p>One of each 1, 9, wind, and dragon, and a 14th tile forming a pair with any of these.</p>
             <Image src="/assets/tiles/50px/pin/pin1.png" />
             <Image src="/assets/tiles/50px/pin/pin9.png" />
 
@@ -174,7 +174,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">SmallDragon - 5 pt</Header>
+            <Header size="medium">SmallDragon (小三完) - 5 pt</Header>
             <p>Melds of 2 dragons and a pair of the 3rd dragon</p>
 
             <Image src="/assets/tiles/50px/pin/pin1.png" />
@@ -198,7 +198,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">BigDragon - 10 pt</Header>
+            <Header size="medium">BigDragon (大三完) - 10 pt</Header>
             <p>Melds of all 3 dragons</p>
             <Image src="/assets/tiles/50px/pin/pin1.png" />
             <Image src="/assets/tiles/50px/pin/pin1.png" />
@@ -221,7 +221,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">SmallFourWind - 13 pt</Header>
+            <Header size="medium">SmallFourWind (小四喜) - 13 pt</Header>
             <p>Melds of 3 winds and a pair of the 4th wind</p>
             <Image src="/assets/tiles/50px/man/man6.png" />
             <Image src="/assets/tiles/50px/man/man7.png" />
@@ -244,7 +244,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">BigFourWind - 13 pt</Header>
+            <Header size="medium">BigFourWind (大四喜) - 13 pt</Header>
             <p>Melds of all 4 winds</p>
 
             <Image src="/assets/tiles/50px/man/man8.png" />
@@ -269,7 +269,7 @@ const RulesHands = () => {
 
           <List.Item>
             <Header size="medium">HiddenTreasure - 13 pt</Header>
-            <p>Four pong and all concealed</p>
+            <p>Four pong and all concealed and win by Self-Drawn</p>
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
@@ -291,7 +291,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">AllTerminals - 13 pt</Header>
+            <Header size="medium">AllTerminals (全腰九) - 13 pt</Header>
             <p>Hand containing Pongs/Kongs of Ones and Nines only</p>
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
@@ -314,7 +314,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">MixedTerminals - 7 pt</Header>
+            <Header size="medium">MixedTerminals (半腰九) - 7 pt</Header>
             <p>Hand containing Pongs/Kongs of Ones and Nines and honor tiles</p>
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
             <Image src="/assets/tiles/50px/bamboo/bamboo1.png" />
@@ -337,7 +337,7 @@ const RulesHands = () => {
           </List.Item>
 
           <List.Item>
-            <Header size="medium">AllHonors - 10 pt</Header>
+            <Header size="medium">AllHonors (全番子) - 10 pt</Header>
             <p>All honor tiles</p>
             <Image src="/assets/tiles/50px/wind/wind-west.png" />
             <Image src="/assets/tiles/50px/wind/wind-west.png" />

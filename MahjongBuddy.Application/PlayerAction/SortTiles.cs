@@ -21,7 +21,6 @@ namespace MahjongBuddy.Application.PlayerAction
     {
         public class Command : IRequest<RoundDto>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
             public bool IsManualSort { get; set; }
@@ -39,39 +38,28 @@ namespace MahjongBuddy.Application.PlayerAction
             }
             public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
             {
-                var updatedTiles = new List<RoundTile>();
-                var updatedPlayers = new List<RoundPlayer>();
-
                 var round = await _context.Rounds.FindAsync(request.RoundId);
 
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                var currentPlayer = round.RoundPlayers.FirstOrDefault(p => p.AppUser.UserName == request.UserName);
-                if (currentPlayer == null)
+                var currentRoundPlayer = round.RoundPlayers.FirstOrDefault(p => p.GamePlayer.Player.UserName == request.UserName);
+                if (currentRoundPlayer == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find current player" });
 
-                currentPlayer.IsManualSort = request.IsManualSort;
-                updatedPlayers.Add(currentPlayer);
-
+                currentRoundPlayer.IsManualSort = request.IsManualSort;
                 //update the activetilecounter
                 foreach (var t in request.RoundTiles)
                 {
                     var updatedTile = round.RoundTiles.First(rt => rt.Id == t.Id);
                     updatedTile.ActiveTileCounter = t.ActiveTileCounter;
-                    updatedTiles.Add(updatedTile);
                 }
 
                 try
                 {
                     var success = await _context.SaveChangesAsync() > 0;
-                    var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-
-                    roundToReturn.UpdatedRoundTiles = _mapper.Map<ICollection<RoundTile>, ICollection<RoundTileDto>>(updatedTiles);
+                    var roundToReturn = _mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = currentRoundPlayer);
                     
-                    if(updatedPlayers.Count() > 0)
-                        roundToReturn.UpdatedRoundPlayers = _mapper.Map<ICollection<RoundPlayer>, ICollection<RoundPlayerDto>>(updatedPlayers);
-
                     if (success) return roundToReturn;
                 }
                 catch (DbUpdateConcurrencyException)

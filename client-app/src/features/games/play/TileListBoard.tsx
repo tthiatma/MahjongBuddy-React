@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile } from "../../../app/models/tile";
 import { Transition, Image, Container } from "semantic-ui-react";
+import useSound from "use-sound";
+import tileThrowSfx from "../../../app/common/sounds/tileThrow.mp3";
+import { RootStoreContext } from "../../../app/stores/rootStore";
 
 interface IProps {
   graveyardTiles: IRoundTile[];
@@ -9,7 +12,22 @@ interface IProps {
   activeTileAnimation: string;
 }
 
-const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile, activeTileAnimation }) => {
+const TileListBoard: React.FC<IProps> = ({
+  graveyardTiles,
+  activeTile,
+  activeTileAnimation,
+}) => {
+  const rootStore = useContext(RootStoreContext);
+  const { gameSound } = rootStore.gameStore;
+  const [playTileThrownSfx] = useSound(tileThrowSfx);
+  const prevActiveTile = useRef<IRoundTile>();
+  useEffect(() => {
+    if (activeTile?.id && prevActiveTile.current?.id !== activeTile?.id && gameSound) {
+       playTileThrownSfx();
+    }
+    prevActiveTile.current = activeTile;
+  },[playTileThrownSfx, activeTile, gameSound]);
+  
   return (
     <Container>
       <div
@@ -21,16 +39,22 @@ const TileListBoard: React.FC<IProps> = ({ graveyardTiles, activeTile, activeTil
           alignContent: "flex-start",
         }}
       >
-        {graveyardTiles
-          .sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter)
-          .map((rt) => (
-            <div style={{ paddingRight: "2px" }} key={rt.id}>
-              <img src={rt.tile.imageSmall} alt="tile" />
-            </div>
-          ))}
+        {graveyardTiles &&
+          graveyardTiles
+            .sort((a, b) => a.boardGraveyardCounter - b.boardGraveyardCounter)
+            .map((rt) => (
+              <div style={{ paddingRight: "2px" }} key={rt.id}>
+                <img src={rt.tile.imageSmall} alt="tile" />
+              </div>
+            ))}
 
         {activeTile && (
-          <Transition transitionOnMount={true} animation={activeTileAnimation} duration={1000}>
+          <Transition
+            key={activeTile.id}
+            transitionOnMount={true}
+            animation={activeTileAnimation}
+            duration={1000}
+          >
             <Image src={activeTile.tile.image} alt="tile" />
           </Transition>
         )}

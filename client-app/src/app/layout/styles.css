@@ -158,11 +158,12 @@ body {
   background-color: #eee;
   height: 40px;
   margin-top: 10px;
+  padding-top:5px;
   text-align: center;
 }
 
 .playerStatusContainerVertical {
-  min-width: 30px;
+  max-width: 40px;
   border: 1px solid #ddd;
   background-color: #eee;
   display: flex;
@@ -177,14 +178,18 @@ body {
   border-radius: 25px;
 }
 
-.playerTurn{
+.mustThrow{
   background-color: #09840b !important;
 }
 
-.playerTurn > span {
+.playerTurn{
+  background-color: #dbf1dc !important;
+}
+
+.playerTurn.mustThrow > span {
   color: #fff;
 }
-.playerTurn > div > span {
+.playerTurn.mustThrow > div > span {
   color: #fff;
 }
 
@@ -216,4 +221,8 @@ body {
 
 .ruleList > .item{
   padding-bottom: 15px !important;
+}
+
+.toUpper{
+  text-transform: uppercase;
 }

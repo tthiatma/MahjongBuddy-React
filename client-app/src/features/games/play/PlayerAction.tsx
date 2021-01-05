@@ -17,15 +17,16 @@ import {
   Transition,
   Container,
 } from "semantic-ui-react";
+import { PlayResult } from "../../../app/models/playResultEnum";
 
 const PlayerAction: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
+  const {gameIsOver} = rootStore.gameStore
   const {
-    openModal,
+    openResultModal,
     showResult,
-    roundSimple: round,
+    round,
     mainPlayer,
-    mainPlayerTiles,
     boardActiveTile,
     hasChowAction,
     hasPongAction,
@@ -49,10 +50,16 @@ const PlayerAction: React.FC = () => {
 
   const [kongOptions, setKongOptions] = useState<any[]>([]);
   const [chowOptions, setChowOptions] = useState<any[]>([]);
-
+  let isWinner = false;
+  if(round!.roundResults){
+    const currentPlayerWin = round!.roundResults?.find((r) => r.playResult === PlayResult.Win && r.userName === mainPlayer?.userName)!;
+    if(currentPlayerWin)
+      isWinner = true
+  }
   const buttonAnimation = "jiggle";
   const buttonAnimationDuration = 500;
 
+  const hasAction = mainPlayer!.roundPlayerActiveActions.length > 0;
   const clearKongOptions = () => {
     setKongOptions([]);
   };
@@ -133,7 +140,7 @@ const PlayerAction: React.FC = () => {
   const doKong = () => {
     let validTileForKongs: IRoundTile[] = GetPossibleKong(
       mainPlayer!.isMyTurn,
-      mainPlayerTiles!,
+      mainPlayer?.playerTiles!,
       boardActiveTile!
     );
     clearChowOptions();
@@ -167,7 +174,7 @@ const PlayerAction: React.FC = () => {
         <Card.Group centered itemsPerRow={3} items={chowOptions} />
       )}
 
-      {(hasWinAction || hasSelfWinAction) && (
+      {(hasWinAction || hasSelfWinAction) && !gameIsOver && !isWinner && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -177,7 +184,7 @@ const PlayerAction: React.FC = () => {
             className="actionButton"
             circular
             color="green"
-            disabled={round!.isOver}
+            disabled={round!.isOver && isWinner}
             loading={hubActionLoading}
             onClick={winRound}
             content="WIN"
@@ -185,7 +192,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {mainPlayer?.hasAction && hasChowAction && chowOptions.length === 0 && (
+      {!gameIsOver && hasAction && hasChowAction && chowOptions.length === 0 && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -211,7 +218,7 @@ const PlayerAction: React.FC = () => {
         <Button onClick={clearKongOptions} content="Cancel KONG" />
       )}
 
-      {mainPlayer?.hasAction && hasPongAction && (
+      {!gameIsOver && hasAction && hasPongAction && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -229,7 +236,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {((mainPlayer!.hasAction && hasKongAction) || hasSelfKongAction) && !round!.isEnding && (
+      {((hasAction && hasKongAction) || hasSelfKongAction) && !gameIsOver && !round!.isEnding && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -247,7 +254,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {mainPlayer?.hasAction && !mainPlayer!.mustThrow && (
+      {!gameIsOver && hasAction && !hasGiveUpAction && !mainPlayer!.mustThrow && (
         <Transition
           transitionOnMount={true}
           animation={buttonAnimation}
@@ -263,7 +270,7 @@ const PlayerAction: React.FC = () => {
         </Transition>
       )}
 
-      {hasGiveUpAction && !round!.isEnding && !mainPlayer!.mustThrow && (
+      {!gameIsOver && hasGiveUpAction && !round!.isEnding && !mainPlayer!.mustThrow && (
         <Button.Group>
           <Button
             circular
@@ -286,7 +293,7 @@ const PlayerAction: React.FC = () => {
       )}
 
       {!showResult && round!.isOver && (
-        <Button onClick={openModal}>Result</Button>
+        <Button onClick={openResultModal}>Round Result</Button>
       )}
     </Container>
   );

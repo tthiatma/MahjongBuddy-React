@@ -42,14 +42,16 @@ namespace MahjongBuddy.Application.Users
         public class Handler : IRequestHandler<Command>
         {
             private readonly MahjongBuddyDbContext _context;
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IEmailSender _emailSender;
+            private readonly IJwtGenerator _jwtGenerator;
 
-            public Handler(MahjongBuddyDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender)
+            public Handler(MahjongBuddyDbContext context, UserManager<Player> userManager, IEmailSender emailSender, IJwtGenerator jwtGenerator)
             {
                 _context = context;
                 _userManager = userManager;
                 _emailSender = emailSender;
+                _jwtGenerator = jwtGenerator;
             }
 
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
@@ -60,16 +62,20 @@ namespace MahjongBuddy.Application.Users
                 if (await _context.Users.Where(u => u.UserName == request.UserName).AnyAsync())
                     throw new RestException(HttpStatusCode.BadRequest, new { UserName = "UserName already exist" });
 
-                var user = new AppUser
+                var user = new Player
                 {
                     DisplayName = request.DisplayName,
                     Email = request.Email,
                     UserName = request.UserName,
+                    DateCreated = DateTime.Now
                 };
 
-                var result = await _userManager.CreateAsync(user, request.Password);
 
-                if(!result.Succeeded)
+                //var refreshToken = _jwtGenerator.GenerateRefreshToken();
+                //user.RefreshTokens.Add(refreshToken);
+
+                var result = await _userManager.CreateAsync(user, request.Password);
+                if (!result.Succeeded)
                     throw new Exception("Problem creating user!");
 
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);

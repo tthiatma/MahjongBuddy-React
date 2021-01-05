@@ -7,52 +7,52 @@ using MahjongBuddy.Application.Errors;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using System;
+using System.Linq;
 
 namespace MahjongBuddy.Application.Users
 {
     public class RefreshToken
     {
-        public class Query : IRequest<User> 
+        public class Command : IRequest<User> 
         {
-            public string UserName { get; set; }
-
-            public string Token { get; set; }
-
             public string RefreshToken { get; set; }
         }
 
-        public class Handler : IRequestHandler<Query, User>
+        public class Handler : IRequestHandler<Command, User>
         {
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IJwtGenerator _jwtGenerator;
+            private readonly IUserAccessor _userAccessor;
 
-            public Handler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator)
+
+            public Handler(UserManager<Player> userManager, IJwtGenerator jwtGenerator, IUserAccessor userAccessor)
             {
+                _userAccessor = userAccessor;
                 _userManager = userManager;
                 _jwtGenerator = jwtGenerator;
             }
 
-            public async Task<User> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<User> Handle(Command request, CancellationToken cancellationToken)
             {
-                var user = await _userManager.FindByNameAsync(request.UserName);
+                if(string.IsNullOrEmpty(request.RefreshToken)) throw new RestException(HttpStatusCode.Unauthorized);
 
-                if(user == null || user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiry < DateTime.Now)
+                var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
+
+                var oldToken = user.RefreshTokens.SingleOrDefault(x => x.Token == request.RefreshToken);
+
+                if (oldToken != null && !oldToken.IsActive) throw new RestException(HttpStatusCode.Unauthorized);
+
+                if (oldToken != null)
                 {
-                    throw new RestException(HttpStatusCode.Unauthorized);
+                    oldToken.Revoked = DateTime.UtcNow;
                 }
 
-                user.RefreshToken = _jwtGenerator.GenerateRefreshToken();
-                user.RefreshTokenExpiry = DateTime.Now.AddDays(30);
+                var newRefreshToken = _jwtGenerator.GenerateRefreshToken();
+                user.RefreshTokens.Add(newRefreshToken);
+
                 await _userManager.UpdateAsync(user);
 
-                return new User
-                {
-                    DisplayName = user.DisplayName,
-                    Token = _jwtGenerator.CreateToken(user),
-                    RefreshToken = user.RefreshToken,
-                    UserName = user.UserName,
-                    //Image = user.Photos.FirstOrDefault(x => x.IsMain)?.url
-                };
+                return new User(user, _jwtGenerator, newRefreshToken.Token);
             }
         }
     }

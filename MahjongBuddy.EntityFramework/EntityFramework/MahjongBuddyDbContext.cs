@@ -6,7 +6,7 @@ using System;
 
 namespace MahjongBuddy.EntityFramework.EntityFramework
 {
-    public class MahjongBuddyDbContext : IdentityDbContext<AppUser>
+    public class MahjongBuddyDbContext : IdentityDbContext<Player>
     {
         //dotnet ef migrations add "InitialCreate" -p MahjongBuddy.EntityFramework/ -s MahjongBuddy.API/
 
@@ -63,42 +63,50 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
         public DbSet<Round> Rounds { get; set; }
         public DbSet<RoundResult> RoundResults { get; set; }
         public DbSet<Tile> Tiles { get; set; }
-        public DbSet<UserGame> UserGames { get; set; }
+        public DbSet<GamePlayer> GamePlayers { get; set; }
         public DbSet<RoundPlayer> RoundPlayers { get; set; }
         public DbSet<RoundResultHand> RoundHands { get; set; }
         public DbSet<RoundResultExtraPoint> RoundExtraPoints { get; set; }
+        public DbSet<RoundPlayerAction> RoundPlayerActions { get; set; }
         public DbSet<Photo> Photos { get; set; }
-
+        public DbSet<Connection> Connections { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
             ConvertEnum(builder);
 
-            builder.Entity<UserGame>(x => x.HasKey(ug => new { ug.GameId, ug.AppUserId }));
-            builder.Entity<UserGame>()
-                .HasOne(u => u.AppUser)
-                .WithMany(g => g.UserGames)
-                .HasForeignKey(u => u.AppUserId);
-            builder.Entity<UserGame>()
+            builder.Entity<Game>()
+                .HasIndex(g => g.Code)
+                .IsUnique();
+
+            builder.Entity<GamePlayer>(x => x.HasKey(gp => new { gp.Id }));
+            builder.Entity<GamePlayer>()
+                .HasOne(u => u.Player)
+                .WithMany(g => g.GamePlayers)
+                .HasForeignKey(u => u.PlayerId);
+
+            builder.Entity<GamePlayer>()
                 .HasOne(g => g.Game)
-                .WithMany(u => u.UserGames)
+                .WithMany(u => u.GamePlayers)
                 .HasForeignKey(g => g.GameId);
 
             builder.Entity<RoundTile>().Property(x => x.Timestamp)
             .IsConcurrencyToken(true)
             .ValueGeneratedOnAddOrUpdate();
 
-
-            builder.Entity<RoundPlayer>(x => x.HasKey(ur => new { ur.RoundId, ur.AppUserId }));
+            builder.Entity<RoundPlayer>(x => x.HasKey(rp => new { rp.RoundId, rp.GamePlayerId }));
             builder.Entity<RoundPlayer>()
-                .HasOne(u => u.AppUser)
-                .WithMany(r => r.UserRounds)
-                .HasForeignKey(u => u.AppUserId);
+                .HasOne(u => u.GamePlayer)
+                .WithMany(r => r.RoundPlayers)
+                .HasForeignKey(u => u.GamePlayerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<RoundPlayer>()
                 .HasOne(r => r.Round)
                 .WithMany(u => u.RoundPlayers)
-                .HasForeignKey(r => r.RoundId);
+                .HasForeignKey(r => r.RoundId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         private void ConvertEnum(ModelBuilder builder)
@@ -145,6 +153,12 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 v => v.ToString(),
                 v => (TileValue)Enum.Parse(typeof(TileValue), v));
 
+            builder.Entity<RoundResult>()
+                .Property(e => e.PlayResult)
+                .HasConversion(
+                v => v.ToString(),
+                v => (PlayResult)Enum.Parse(typeof(PlayResult), v));
+
             builder.Entity<RoundResultHand>()
                 .Property(e => e.HandType)
                 .HasConversion(
@@ -158,10 +172,16 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
                 v => (ExtraPoint)Enum.Parse(typeof(ExtraPoint), v));
 
             builder.Entity<RoundPlayerAction>()
-                .Property(e => e.PlayerAction)
+                .Property(e => e.ActionType)
                 .HasConversion(
                 v => v.ToString(),
                 v => (ActionType)Enum.Parse(typeof(ActionType), v));
+
+            builder.Entity<RoundPlayerAction>()
+                .Property(e => e.ActionStatus)
+                .HasConversion(
+                v => v.ToString(),
+                v => (ActionStatus)Enum.Parse(typeof(ActionStatus), v));
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,8 +11,8 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
     public class DefaultUserBuilder
     {
         private readonly MahjongBuddyDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
-        public DefaultUserBuilder(MahjongBuddyDbContext context, UserManager<AppUser> userManager)
+        private readonly UserManager<Player> _userManager;
+        public DefaultUserBuilder(MahjongBuddyDbContext context, UserManager<Player> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -21,13 +22,14 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
         {
             if (!_context.Users.Any())
             {
-                var mainPlayer = new AppUser
+                var mainPlayer = new Player
                 {
                     Id = "a",
                     DisplayName = "Tonny",
                     UserName = "Tonny",
                     Email = "tonny@gmail.com",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    DateCreated = DateTime.Now                    
                 };
                 mainPlayer.Photos.Add(new Photo
                 {
@@ -36,13 +38,14 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     IsMain = true
                 });
 
-                var rightPlayer = new AppUser
+                var rightPlayer = new Player
                 {
                     Id = "b",
                     DisplayName = "Mei",
                     UserName = "Mei",
                     Email = "mei@gmail.com",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    DateCreated = DateTime.Now
                 };
                 rightPlayer.Photos.Add(new Photo
                 {
@@ -51,13 +54,14 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     IsMain = true
                 });
 
-                var topPlayer = new AppUser
+                var topPlayer = new Player
                 {
                     Id = "c",
                     DisplayName = "Peter",
                     UserName = "Peter",
                     Email = "peter@gmail.com",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    DateCreated = DateTime.Now
                 };
                 topPlayer.Photos.Add(new Photo
                 {
@@ -66,13 +70,14 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     IsMain = true
                 });
 
-                var leftPlayer = new AppUser
+                var leftPlayer = new Player
                 {
                     Id = "d",
                     DisplayName = "Jason",
                     UserName = "Jason",
                     Email = "jason@gmail.com",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    DateCreated = DateTime.Now
                 };
                 leftPlayer.Photos.Add(new Photo
                 {
@@ -81,7 +86,7 @@ namespace MahjongBuddy.EntityFramework.Migrations.SeedData
                     IsMain = true
                 });
 
-                var users = new List<AppUser>
+                var users = new List<Player>
                 {
                     mainPlayer,
                     leftPlayer,

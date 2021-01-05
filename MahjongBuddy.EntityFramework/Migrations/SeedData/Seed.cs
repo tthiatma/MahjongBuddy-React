@@ -7,7 +7,7 @@ namespace MahjongBuddy.EntityFramework.EntityFramework
 {
     public class Seed
     {
-        public static async Task SeedData(MahjongBuddyDbContext context, UserManager<AppUser> userManager)
+        public static async Task SeedData(MahjongBuddyDbContext context, UserManager<Player> userManager)
         {
             var userBuilder = new DefaultUserBuilder(context, userManager);
             await userBuilder.Build();

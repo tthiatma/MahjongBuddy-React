@@ -1,28 +1,28 @@
 ﻿using AutoMapper;
 using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Errors;
-using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
 using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-
+using MoreLinq;
+using MahjongBuddy.Core.Enums;
 
 namespace MahjongBuddy.Application.Rounds
 {
     public class Tied
     {
-        public class Command : IRequest<RoundDto>
+        public class Command : IRequest<IEnumerable<RoundDto>>
         {
-            public int GameId { get; set; }
             public int RoundId { get; set; }
             public string UserName { get; set; }
         }
-        public class Handler : IRequestHandler<Command, RoundDto>
+        public class Handler : IRequestHandler<Command, IEnumerable<RoundDto>>
         {
             private readonly MahjongBuddyDbContext _context;
             private readonly IMapper _mapper;
@@ -32,18 +32,14 @@ namespace MahjongBuddy.Application.Rounds
                 _context = context;
                 _mapper = mapper;
             }
-            public async Task<RoundDto> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<IEnumerable<RoundDto>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var game = await _context.Games.FindAsync(request.GameId);
-                if (game == null)
-                    throw new RestException(HttpStatusCode.NotFound, new { Game = "Could not find game" });
-
-                var round = game.Rounds.FirstOrDefault(r => r.Id == request.RoundId);
+                var round = await _context.Rounds.FindAsync(request.RoundId);
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
                 var remainingTiles = round.RoundTiles.Where(t => string.IsNullOrEmpty(t.Owner));
-                //can only call end game when only 1 tile left or no more tile
+                //can only call end round when only 1 tile left or no more tile
 
                 if (remainingTiles.Count() <= 1)
                 {
@@ -51,12 +47,22 @@ namespace MahjongBuddy.Application.Rounds
                     round.IsTied = true;
                     round.IsEnding = false;
 
+                    round.RoundPlayers.ForEach(rp =>
+                    {
+                        round.RoundResults.Add(new RoundResult { PlayResult = PlayResult.Tie, Player = rp.GamePlayer.Player, Points = 0 });
+                    });
+
                     var success = await _context.SaveChangesAsync() > 0;
 
                     if (success)
                     {
-                        var roundToReturn = _mapper.Map<Round, RoundDto>(round);
-                        return roundToReturn;
+                        List<RoundDto> results = new List<RoundDto>();
+
+                        foreach (var p in round.RoundPlayers)
+                        {
+                            results.Add(_mapper.Map<Round, RoundDto>(round, opt => opt.Items["MainRoundPlayer"] = p));
+                        }
+                        return results;
                     }
                 }
                 else

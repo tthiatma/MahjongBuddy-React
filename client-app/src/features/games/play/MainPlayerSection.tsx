@@ -2,17 +2,22 @@ import React, { Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import { IRoundTile, TileType, TileValue } from "../../../app/models/tile";
 import { Droppable } from "react-beautiful-dnd";
-import { IRoundPlayer } from "../../../app/models/round";
-import { Grid, Button, Transition, Image } from "semantic-ui-react";
+import {
+  Grid,
+  Button,
+  Transition,
+  Image,
+} from "semantic-ui-react";
 import PlayerAction from "./PlayerAction";
 import PlayerStatus from "./PlayerStatus";
 import DraggableTile from "./DraggableTile";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { runInAction, toJS } from "mobx";
 import { sortTiles } from "../../../app/common/util/util";
+import { IRoundPlayer } from "../../../app/models/player";
 
 interface IProps {
-  mainPlayer: IRoundPlayer | null;
+  mainPlayer: IRoundPlayer | undefined;
   containerStyleName: string;
   tileStyleName: string;
   mainPlayerAliveTiles: IRoundTile[] | null;
@@ -65,6 +70,7 @@ const MainPlayerSection: React.FC<IProps> = ({
   doThrowTile,
 }) => {
   const rootStore = useContext(RootStoreContext);
+  const { user } = rootStore.userStore;
   const { isManualSort } = rootStore.roundStore;
   const { orderTiles } = rootStore.hubStore;
 
@@ -79,12 +85,14 @@ const MainPlayerSection: React.FC<IProps> = ({
     const sortedTile = mainPlayerAliveTiles!;
     sortedTile.sort(sortTiles);
     for (let i = 0; i < sortedTile.length; i++) {
-      let objIndex = rootStore.roundStore.roundTiles!.findIndex(
+      let objIndex = rootStore.roundStore.mainPlayer!.playerTiles!.findIndex(
         (obj) => obj.id === sortedTile[i].id
       );
 
       runInAction("updating reordered tile", () => {
-        rootStore.roundStore.roundTiles![objIndex].activeTileCounter = i;
+        rootStore.roundStore.mainPlayer!.playerTiles![
+          objIndex
+        ].activeTileCounter = i;
       });
     }
     runInAction("autosort", () => {
@@ -152,35 +160,53 @@ const MainPlayerSection: React.FC<IProps> = ({
           </Droppable>
         </Grid.Row>
         <Grid.Row>
-          <div
-            style={{ borderRadius: "25px" }}
-            className="playerStatusContainer"
-            {...(mainPlayer!.isMyTurn && {
-              className: "playerTurn playerStatusContainer",
-            })}
-          >
-            {mainPlayer && (
-              <span
-                style={{
-                  width: "100%",
-                  textAlign: "center",
-                  lineHeight: "40px",
-                }}
+          <Grid>
+            <Grid.Column width={3}>
+              <Image 
+              floated="right"
+              style={{ width: "50%"}}
+              circular src={user!.image || "/assets/user.png"} />
+            </Grid.Column>
+            <Grid.Column width={10}>
+              <div
+                style={{ borderRadius: "25px" }}
+                className="playerStatusContainer"
+                {...(mainPlayer!.isMyTurn &&
+                  mainPlayer!.mustThrow && {
+                    className: "mustThrow playerStatusContainer",
+                  })}
+                {...(mainPlayer!.isMyTurn &&
+                  !mainPlayer!.mustThrow && {
+                    className: "playerTurn playerStatusContainer",
+                  })}
               >
-                {isManualSort && (
-                  <Button
-                    className="actionButton"
-                    circular
-                    color="green"
-                    onClick={autoSort}
-                    content="SORT"
-                  />
-                )}
+                {mainPlayer && (
+                  <Fragment>
+                    <span
+                      style={{
+                        width: "100%",
+                        textAlign: "center",
+                      }}
+                    >
+                      {isManualSort && (
+                        <Button
+                          className="actionButton"
+                          circular
+                          size="tiny"
+                          color="green"
+                          onClick={autoSort}
+                          content="SORT"
+                        />
+                      )}
 
-                <PlayerStatus player={mainPlayer} />
-              </span>
-            )}
-          </div>
+                      <PlayerStatus player={mainPlayer} />
+                    </span>
+                  </Fragment>
+                )}
+              </div>
+            </Grid.Column>
+            <Grid.Column width={3}></Grid.Column>
+          </Grid>
         </Grid.Row>
       </Grid.Column>
       <Grid.Column width={3}>

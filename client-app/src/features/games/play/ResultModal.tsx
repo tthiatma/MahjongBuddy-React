@@ -1,171 +1,166 @@
-import React, { useContext, Fragment } from "react";
+import React, { useContext, Fragment, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { IRoundTile } from "../../../app/models/tile";
-import { IRoundResult, IRoundPlayer } from "../../../app/models/round";
-import { Modal, Header, Button, Icon } from "semantic-ui-react";
+import { IRoundResult } from "../../../app/models/round";
+import { Modal, Header, Button, Icon, Confirm } from "semantic-ui-react";
 import { sortTiles } from "../../../app/common/util/util";
 import { RootStoreContext } from "../../../app/stores/rootStore";
 import { TileStatus } from "../../../app/models/tileStatus";
 import { ExtraPoint } from "../../../app/models/extraPointEnum";
+import { PlayResult } from "../../../app/models/playResultEnum";
 
-interface IProps {
-  roundResults: IRoundResult[] | null;
-  roundTiles: IRoundTile[] | null;
-  isHost: boolean;
-  roundPlayers: IRoundPlayer[] | null;
-}
-
-const ResultModal: React.FC<IProps> = ({
-  roundResults,
-  roundTiles,
-  isHost,
-  roundPlayers,
-}) => {
+const ResultModal: React.FC = () => {
+  const [confirmOpen, setConfirmOpen] = useState(false);  
+  const handleCancel = () => setConfirmOpen(false);
   const rootStore = useContext(RootStoreContext);
-  const { startRound } = rootStore.hubStore;
-  const { showResult, closeModal } = rootStore.roundStore;
+  const { startRound, endGame } = rootStore.hubStore;
+  const { getMainUser, gameIsOver } = rootStore.gameStore;
+  const {
+    round,
+    showResult,
+    closeResultModal,
+    boardActiveTile,
+  } = rootStore.roundStore;
 
-  let winner: IRoundResult | null = null;
+  let winners: IRoundResult[] | null = null;
   let losers: IRoundResult[] | null = null;
-  let tiePlayers: IRoundPlayer[] | undefined = undefined;
-  let winnerTiles: IRoundTile[] | null = null;
-  let boardTile: IRoundTile | null = null;
+  let tiePlayers: IRoundResult[] | null = null;
+  let groupedLosers;
+
+  const roundResults = round!.roundResults;
+  const isHost = getMainUser?.isHost;
+  const activeBoardTile = boardActiveTile;
+
+  const groupLosersByName = (losers: IRoundResult[]) => {
+    return Object.entries(
+      losers.reduce((llist, l) => {
+        llist[l.displayName] = llist[l.displayName]
+          ? [...llist[l.displayName], l]
+          : [l];
+        return llist;
+      }, {} as { [key: string]: IRoundResult[] })
+    );
+  };
 
   if (roundResults) {
-    winner = roundResults?.find((r) => r.isWinner === true)!;
-    losers = roundResults!.filter((r) => r.isWinner === false);
-    if (!winner) tiePlayers = roundPlayers!;
-
-    if (losers && losers.length === 1) {
-      tiePlayers = roundPlayers?.filter(
-        (p) =>
-          p.userName !== winner?.userName && p.userName !== losers![0].userName
-      );
-    }
-    winnerTiles = roundTiles!
-      .filter((t) => t.owner === winner?.userName)!
-      .sort(sortTiles);
-
-    boardTile = roundTiles!.find((t) => t.status === TileStatus.BoardActive)!;
+    winners = roundResults?.filter((r) => r.playResult === PlayResult.Win)!;
+    losers = roundResults?.filter((r) => r.playResult === PlayResult.Lost || r.playResult === PlayResult.LostWithPenalty);
+    tiePlayers = roundResults!.filter((r) => r.playResult === PlayResult.Tie);
+    groupedLosers = groupLosersByName(losers);
   }
 
   return (
-    <Modal open={showResult} onClose={closeModal} size="small">
+    <Fragment>
+      <Modal closeIcon open={showResult} onClose={closeResultModal} size="small">
       <Header icon="bullhorn" content="Result" />
 
-      {roundResults !== null && roundResults.length > 0 ? (
-        <Modal.Content>
-          <h3>
-            Winner : {winner?.displayName}: {winner?.pointsResult} pts
-            <ul>
-              {winner?.roundResultHands.map((h, i) => (
-                <li key={i}>
-                  {h.name} : {h.point}
-                </li>
+      <Modal.Content>
+        {round?.isTied && <h3>booooo it's a tie. nobody win</h3>}
+
+        {winners && (
+          <Fragment>
+            <h3>
+              {winners.map((w) => (
+                <Fragment key={`winner-${w.userName}`}>
+                  {`${w.displayName} ${PlayResult[w.playResult].toLowerCase()} ${w.points} pts`}
+                  <ul>
+                    {w.roundResultHands.map((h, i) => (
+                      <li key={i}>
+                        {h.name} : {h.point}
+                      </li>
+                    ))}
+                    {w.roundResultExtraPoints.map((e, i) => (
+                      <li key={i}>
+                        {e.name} : {e.point}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flexTilesContainer">
+                    {w.playerTiles.slice().sort(sortTiles).map((rt) => (
+                        <div
+                          key={rt.id}
+                          style={{
+                            backgroundImage: `url(${rt.tile.imageSmall}`,
+                          }}
+                          className={
+                            rt.status === TileStatus.UserJustPicked
+                              ? "flexTilesSmall justPickedTile"
+                              : "flexTilesSmall"
+                          }
+                        />
+                      ))}
+                    {!w.roundResultExtraPoints.some(
+                      (ep) => ep.extraPoint === ExtraPoint.SelfPick
+                    ) &&
+                      activeBoardTile && (
+                        <div
+                          style={{
+                            backgroundImage: `url(${
+                              activeBoardTile!.tile.imageSmall
+                            }`,
+                          }}
+                          className="flexTilesSmall justPickedTile"
+                        />
+                      )}
+                  </div>
+                </Fragment>
               ))}
-              {winner?.roundResultExtraPoints.map((e, i) => (
-                <li key={i}>
-                  {e.name} : {e.point}
-                </li>
+            </h3>
+          </Fragment>
+        )}
+        {groupedLosers && (
+          <h3>
+            {groupedLosers.map(([lname, lostList]) => (
+              <Fragment key={lname}>
+                <ul>
+                  {lostList.map((l,i) => (
+                    <li key={`lost-${i}-${l.userName}`}>
+                      {`${l.displayName} ${PlayResult[l.playResult].toLowerCase()} ${l.points} pts`}
+                    </li>
+                  ))}
+                  {lostList[0].playerTiles!.slice().sort(sortTiles).map((rt) => (
+                    <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                  ))}
+                </ul>
+              </Fragment>
+            ))}
+          </h3>
+        )}
+        {tiePlayers && (
+          <h3>
+            <ul>
+              {tiePlayers.map((p) => (
+                <Fragment key={p.userName}>
+                  <li>{p.displayName}</li>
+                  {p.playerTiles.slice().sort(sortTiles).map((rt) => (
+                    <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
+                  ))}
+                  <br />
+                  <br />
+                </Fragment>
               ))}
             </ul>
           </h3>
-          <div className="flexTilesContainer">
-            {winnerTiles &&
-              winnerTiles.map((rt) => (
-                <div
-                  key={rt.id}
-                  style={{
-                    backgroundImage: `url(${rt.tile.imageSmall}`,
-                  }}
-                  className={
-                    rt.status === TileStatus.UserJustPicked
-                      ? "flexTilesSmall justPickedTile"
-                      : "flexTilesSmall"
-                  }
-                />
-              ))}
-            {!winner!.roundResultExtraPoints.some((ep) => ep.extraPoint === ExtraPoint.SelfPick) && boardTile && (
-              <div
-                style={{
-                  backgroundImage: `url(${boardTile.tile.imageSmall}`,
-                }}
-                className="flexTilesSmall justPickedTile"
-              />
-            )}
-          </div>
-          <h3>
-            {losers && (
-              <ul>
-                {losers.map((l, i) => (
-                  <Fragment key={l.userName}>
-                    <li>
-                      Loser : {l.displayName}: {l.pointsResult}
-                    </li>
-                    {roundTiles!
-                      .filter((t) => t.owner === l.userName)!
-                      .sort(sortTiles)
-                      .map((rt) => (
-                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
-                      ))}
-                  </Fragment>
-                ))}
-              </ul>
-            )}
-            {tiePlayers && (
-              <ul>
-                {tiePlayers.map((p, i) => (
-                  <Fragment key={p.userName}>
-                    <li>{p.displayName}</li>
-                    {roundTiles!
-                      .filter((t) => t.owner === p.userName)!
-                      .sort(sortTiles)
-                      .map((rt) => (
-                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
-                      ))}
-                    <br />
-                    <br />
-                  </Fragment>
-                ))}
-              </ul>
-            )}
-          </h3>
-        </Modal.Content>
-      ) : (
-        <Modal.Content>
-          <h3>
-            booooo it's a tie. nobody win
-            {tiePlayers && (
-              <ul>
-                {tiePlayers.map((p, i) => (
-                  <Fragment key={p.userName}>
-                    <li>{p.displayName}</li>
-                    {roundTiles!
-                      .filter((t) => t.owner === p.userName)!
-                      .sort(sortTiles)
-                      .map((rt) => (
-                        <img key={rt.id} src={rt.tile.imageSmall} alt="tile" />
-                      ))}
-                    <br />
-                    <br />
-                  </Fragment>
-                ))}
-              </ul>
-            )}
-          </h3>
-        </Modal.Content>
-      )}
-      <Modal.Actions>
-        <Button color="green" onClick={closeModal} inverted>
-          <Icon name="checkmark" /> Got it
-        </Button>
-        {isHost && (
+        )}
+      </Modal.Content>
+      {!gameIsOver && isHost && (
+        <Modal.Actions>
+          <Button color="red" onClick={ () => setConfirmOpen(true)} inverted>
+            <Icon name="handshake" /> End Game
+          </Button>
           <Button color="blue" onClick={startRound} inverted>
             <Icon name="play" /> Next Round
           </Button>
-        )}
-      </Modal.Actions>
+        </Modal.Actions>
+      )}
     </Modal>
+      <Confirm
+          open={confirmOpen}
+          content='Are you sure you want to end the game?'
+          onCancel={handleCancel}
+          onConfirm={endGame}
+        />
+    </Fragment>
+    
   );
 };
 export default observer(ResultModal);

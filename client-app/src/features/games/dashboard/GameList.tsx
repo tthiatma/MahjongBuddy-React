@@ -6,10 +6,10 @@ import { RootStoreContext } from "../../../app/stores/rootStore";
 
 const GameList: React.FC = () => {
   const rootStore = useContext(RootStoreContext);
-  const { gamesByDate } = rootStore.gameStore;
+  const { gamesGroupByDate } = rootStore.gameStore;
   return (
     <Fragment>
-      {gamesByDate.map(([group, games]) => (
+      {gamesGroupByDate.map(([group, games]) => (
         <Fragment key={group}>
           <Label size="large" color="blue">
             {group}

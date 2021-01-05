@@ -10,7 +10,7 @@ import GameLobbySidebar from "./GameLobbySidebar";
 import GameLobbyInfo from "./GameLobbyInfo";
 
 interface DetailParams {
-  id: string;
+  code: string;
 }
 
 const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
@@ -25,22 +25,20 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
     loadingLatestRoundInitial,
     loadingGameInitial,
   } = rootStore.gameStore;
-  const { createHubConnection, hubLoading, leaveGroup } = rootStore.hubStore;
+    const { createHubConnection, hubLoading, leaveGroup } = rootStore.hubStore;
 
   useEffect(() => {
-    createHubConnection(match.params!.id);
+    getLatestRound(match.params.code);
+  }, [getLatestRound, match.params.code]);
+
+  useEffect(() => {
+    loadGame(match.params.code).then(() => {
+      createHubConnection(match.params.code);
+    });
     return () => {
-      leaveGroup(match.params.id);
-    };
-  }, [createHubConnection, leaveGroup, match.params]);
-
-  useEffect(() => {
-    getLatestRound(match.params!.id);
-  }, [getLatestRound, match.params, match.params.id]);
-
-  useEffect(() => {
-    loadGame(match.params!.id);
-  }, [loadGame, match.params, match.params.id]);
+      leaveGroup(match.params.code);
+    }
+  }, [loadGame,createHubConnection, leaveGroup, match.params.code]);
 
   if (loadingGameInitial || loadingLatestRoundInitial || !game || hubLoading)
     return <LoadingComponent content="Loading game..." />;
@@ -56,9 +54,9 @@ const GameLobby: React.FC<RouteComponentProps<DetailParams>> = ({
           <GameLobbyChat />
         </Grid.Column>
         <Grid.Column width={8}>
-          <GameLobbySidebar players={game.players} />
+          <GameLobbySidebar players={game.gamePlayers} />
         </Grid.Column>
-      </Grid>{" "}
+      </Grid>
     </Fragment>
   );
 };

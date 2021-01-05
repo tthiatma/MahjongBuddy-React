@@ -1,8 +1,11 @@
-﻿using MahjongBuddy.Application.Interfaces;
+﻿using MahjongBuddy.Application.Errors;
+using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,11 +17,11 @@ namespace MahjongBuddy.Application.Users
 
         public class Handler : IRequestHandler<Query, User>
         {
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IJwtGenerator _jwtGenerator;
             private readonly IUserAccessor _userAccessor;
 
-            public Handler(UserManager<AppUser> userManager, IJwtGenerator jwtGenerator, IUserAccessor userAccessor)
+            public Handler(UserManager<Player> userManager, IJwtGenerator jwtGenerator, IUserAccessor userAccessor)
             {
                 _userManager = userManager;
                 _jwtGenerator = jwtGenerator;
@@ -28,16 +31,12 @@ namespace MahjongBuddy.Application.Users
             public async Task<User> Handle(Query request, CancellationToken cancellationToken)
             {
                 var user = await _userManager.FindByNameAsync(_userAccessor.GetCurrentUserName());
+                if(user == null)
+                    throw new RestException(HttpStatusCode.Unauthorized);
 
-                return new User
-                {
-                    Id = user.Id,
-                    DisplayName = user.DisplayName,
-                    UserName = user.UserName,
-                    Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
-                    Token = _jwtGenerator.CreateToken(user),
-                    RefreshToken = user.RefreshToken
-                };
+                var oldToken = user.RefreshTokens.FirstOrDefault(x => x.IsActive);
+                if (oldToken == null) throw new RestException(HttpStatusCode.Unauthorized);
+                return new User(user, _jwtGenerator, oldToken.Token);
             }
         }
     }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { List, Image, Popup } from 'semantic-ui-react';
-import { IPlayer } from '../../../app/models/game';
+import { IGamePlayer } from '../../../app/models/player';
 
 interface IProps {
-    players: IPlayer[]
+    players: IGamePlayer[]
 }
 
 const GameListItemPlayers : React.FC<IProps> = ({players}) => {  

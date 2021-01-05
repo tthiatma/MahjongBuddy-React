@@ -28,9 +28,9 @@ namespace MahjongBuddy.Application.Users
 
         public class Handler : IRequestHandler<Command, IdentityResult>
         {
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
 
-            public Handler(UserManager<AppUser> userManager)
+            public Handler(UserManager<Player> userManager)
             {
                 _userManager = userManager;
             }

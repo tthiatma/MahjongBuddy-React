@@ -2,38 +2,37 @@ import { WindDirection } from "./windEnum";
 import { IRoundTile } from "./tile";
 import { HandType } from "./handTypeEnum";
 import { ExtraPoint } from "./extraPointEnum";
-import { ActionType } from "./actionTypeEnum";
+import { IRoundOtherPlayer, IRoundPlayer } from "./player";
+import { PlayResult } from "./playResultEnum";
 
-export interface IRoundSimple {
+export interface IRound {
+
   id: number;
   roundCounter: number;
   tileConter: number;
+  remainingTiles: number;
   wind: WindDirection;
   dateCreated: Date;
-  isHalted: boolean;
   isEnding: boolean;
   isOver: boolean;
   isPaused: boolean;
   isTied: boolean;
-  isWinnerSelfPicked: boolean;
-  gameId: number;
-}
-export interface IRound extends IRoundSimple {
-  roundTiles: IRoundTile[];
-  updatedRoundTiles?: IRoundTile[];
-  updatedRoundPlayers?: IRoundPlayer[];
-  roundPlayers: IRoundPlayer[];
-  roundResults: IRoundResult[];
+  gameId: number;  
+  roundResults: IRoundResult[] | null;
+  boardTiles: IRoundTile[];
+  mainPlayer: IRoundPlayer;
+  otherPlayers: IRoundOtherPlayer[];
 }
 
 export interface IRoundResult {
   id: number;
-  isWinner: boolean;
+  playResult: PlayResult;
   userName: string;
   displayName: string;
   roundResultHands: IRoundResultHand[];
   roundResultExtraPoints: IRoundResultExtraPoint[];
-  pointsResult: number;
+  playerTiles: IRoundTile[];
+  points: number;
 }
 
 export interface IRoundResultHand {
@@ -48,25 +47,4 @@ export interface IRoundResultExtraPoint {
     name: string;
     extraPoint: ExtraPoint;
     point: number;
-}
-
-export interface IRoundPlayerAction{
-  id: number;
-  playerAction: ActionType;
-}
-
-export interface IRoundPlayer {
-  userName: string;
-  displayName: string;
-  image: string;
-  isInitialDealer: boolean;
-  isDealer: boolean;
-  isMyTurn: boolean;
-  isManualSort: boolean;
-  hasAction: boolean;
-  roundPlayerActions: IRoundPlayerAction[];
-  mustThrow: boolean;
-  canDoNoFlower: boolean;
-  wind: WindDirection;
-  points: number;
 }

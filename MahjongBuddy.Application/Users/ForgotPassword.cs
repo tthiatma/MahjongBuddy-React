@@ -32,10 +32,10 @@ namespace MahjongBuddy.Application.Users
         public class Handler : IRequestHandler<Command>
         {
             private readonly MahjongBuddyDbContext _context;
-            private readonly UserManager<AppUser> _userManager;
+            private readonly UserManager<Player> _userManager;
             private readonly IEmailSender _emailSender;
 
-            public Handler(MahjongBuddyDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender)
+            public Handler(MahjongBuddyDbContext context, UserManager<Player> userManager, IEmailSender emailSender)
             {
                 _context = context;
                 _userManager = userManager;

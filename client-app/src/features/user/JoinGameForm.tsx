@@ -4,22 +4,22 @@ import { Form, Button, Header } from "semantic-ui-react";
 import TextInput from "../../app/common/form/TextInput";
 import { RootStoreContext } from "../../app/stores/rootStore";
 import { FORM_ERROR } from "final-form";
-import { combineValidators, isRequired, composeValidators, isNumeric } from "revalidate";
+import { combineValidators, isRequired, composeValidators, isAlphabetic } from "revalidate";
 import { ErrorMessage } from "../../app/common/form/ErrorMessage";
 import { observer } from "mobx-react-lite";
 
 const validate = combineValidators({
-  gameId: composeValidators(isRequired,isNumeric)("gameId"),
+  gameCode: composeValidators(isRequired,isAlphabetic)("gameCode"),
 });
 
 const JoinGameForm = () => {
   const rootStore = useContext(RootStoreContext);
-  const {joinGameById} = rootStore.gameStore;
+  const {joinGameByCode} = rootStore.gameStore;
 
   return (
     <FinalForm 
       onSubmit={(values: any) =>
-        joinGameById(values.gameId).catch((error) => ({
+        joinGameByCode(values.gameCode).catch((error) => ({
           [FORM_ERROR]: error,
         }))
       }
@@ -40,12 +40,13 @@ const JoinGameForm = () => {
             textAlign="center"
           />
           <Field
-            name="gameId"
+            uppercase={true}
+            name="gameCode"
             component={TextInput}
-            placeholder="Game #"
+            placeholder="Enter Game code"
           />
           {submitError && !dirtySinceLastSubmit && (
-            <ErrorMessage error={submitError} text="Invalid Game#" />
+            <ErrorMessage error={submitError} text="Invalid Game Code" />
           )}
           <Button
             disabled={(invalid && !dirtySinceLastSubmit) || pristine}

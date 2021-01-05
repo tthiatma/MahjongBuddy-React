@@ -26,6 +26,7 @@ using MahjongBuddy.Application.Rounds.Scorings;
 using MahjongBuddy.Application.Rounds.Scorings.Builder;
 using MahjongBuddy.Infrastructure.Photos;
 using MahjongBuddy.Infrastructure.Email;
+using MahjongBuddy.Infrastructure.Randomizer;
 
 namespace MahjongBuddy.API
 {
@@ -70,7 +71,7 @@ namespace MahjongBuddy.API
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .WithExposedHeaders("WWW-Authenticate")
-                    .WithOrigins("http://localhost:3000", "http://192.168.86.167:3000", "http://192.168.86.26")
+                    .WithOrigins("https://localhost:3000", "http://localhost:3000", "http://192.168.86.167:3000", "http://192.168.86.26")
                     .AllowCredentials();
                 });
             });
@@ -79,14 +80,14 @@ namespace MahjongBuddy.API
             services.AddMediatR(typeof(Create.Handler).Assembly);
             services.AddAutoMapper(typeof(Create.Handler));
             services.AddSignalR();
-            var builder = services.AddIdentityCore<AppUser>(options =>
+            var builder = services.AddIdentityCore<Player>(options =>
             {
                 options.SignIn.RequireConfirmedEmail = true;
             });
 
             var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);
             identityBuilder.AddEntityFrameworkStores<MahjongBuddyDbContext>();
-            identityBuilder.AddSignInManager<SignInManager<AppUser>>();
+            identityBuilder.AddSignInManager<SignInManager<Player>>();
             identityBuilder.AddDefaultTokenProviders();
 
             services.AddAuthorization(opt =>
@@ -109,7 +110,7 @@ namespace MahjongBuddy.API
                         ValidateAudience = false,
                         ValidateIssuer = false,
                         ValidateLifetime = true,
-                        ClockSkew = TimeSpan.FromMinutes(3)
+                        ClockSkew = TimeSpan.Zero
                     };
                     opt.Events = new JwtBearerEvents
                     {
@@ -134,6 +135,7 @@ namespace MahjongBuddy.API
             services.AddScoped<HandTypeBuilder, HandTypeBuilder>();
             services.AddScoped<ExtraPointBuilder, ExtraPointBuilder>();
             services.AddScoped<IEmailSender, SmtpEmailSender>();
+            services.AddScoped<IGameCodeGenerator, GameCodeGenerator>();
             services.Configure<FacebookAppSettings>(Configuration.GetSection("Authentication:Facebook"));
             services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
             services.Configure<SmtpSettings>(Configuration.GetSection("Smtp"));
