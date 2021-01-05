@@ -179,8 +179,8 @@ namespace MahjongBuddy.API.SignalR
             foreach (var u in updates)
             {
                 //check if there's action
-                //we do delay/lag for self win to avoid confusion
-                var hasAction = u.MainPlayer.RoundPlayerActiveActions.Where(a => a.ActionType != Core.ActionType.SelfWin).Count() > 0;
+                //we do delay for self win and selfkong to avoid confusion
+                var hasAction = u.MainPlayer.RoundPlayerActiveActions.Where(a => a.ActionType != Core.ActionType.SelfWin && a.ActionType != Core.ActionType.SelfKong).Count() > 0;
                 var roundUpdateMethod = hasAction ? "UpdateRoundNoLag" : "UpdateRound";
 
                 if (u.MainPlayer.Connections != null)
