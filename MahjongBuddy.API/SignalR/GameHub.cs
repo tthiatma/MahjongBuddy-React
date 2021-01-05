@@ -176,11 +176,21 @@ namespace MahjongBuddy.API.SignalR
         {
             command.UserName = GetUserName();
             var updates = await _mediator.Send(command);
-            //check if there's action
+            foreach (var u in updates)
+            {
+                //check if there's action
+                //we do delay/lag for self win to avoid confusion
+                var hasAction = u.MainPlayer.RoundPlayerActiveActions.Where(a => a.ActionType != Core.ActionType.SelfWin).Count() > 0;
+                var roundUpdateMethod = hasAction ? "UpdateRoundNoLag" : "UpdateRound";
 
-            var hasAction = updates.FirstOrDefault(r => r.MainPlayer.RoundPlayerActiveActions.Count() > 0);
-            var roundUpdateMethod = hasAction == null ? "UpdateRound" : "UpdateRoundNoLag";
-            await SendClientRoundUpdates(updates, roundUpdateMethod);
+                if (u.MainPlayer.Connections != null)
+                {
+                    foreach (var c in u.MainPlayer.Connections)
+                    {
+                        await Clients.Client(c.Id).SendAsync(roundUpdateMethod, u);
+                    }
+                }
+            }
         }
 
         public async Task SortTiles(SortTiles.Command command)
