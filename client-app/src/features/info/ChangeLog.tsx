@@ -27,8 +27,7 @@ const ChangeLog = () => {
             </p>
             <p>
               - Added player's picture in the game. Go to "My Profile" (top
-              right navigation bar), and add your photo if you want to display
-              your picture in the game.
+              right navigation bar) to add/change your photo and set it as main picture.
             </p>
             <p>
               - Added different color highlight in player's turn. Green when
@@ -70,11 +69,11 @@ const ChangeLog = () => {
               - Added min and max point information in the game. Limited the max point value to be 0-100 when creating a game.   
             </p>
             <p>
-              - Added sound effect when hovering on tile and when there's a new tile thrown to board (more sound effects are in progress). Also added <Icon name="volume up" /> icon in the game to turn on/off the sound.   
+              - Added sound effect when hovering on tile and when there's a new tile thrown to board (more sound effects are coming in the next update). Also added <Icon name="volume up" /> icon in the game to turn on/off the sound.   
             </p>
             <p>
               - I have created Facebook and twitter page. Share your experience
-              with me :){" "}
+              with me {" "}
               <List horizontal>
                 <List.Item
                   as="a"
@@ -95,6 +94,7 @@ const ChangeLog = () => {
                   </List.Content>
                 </List.Item>
               </List>
+              or email me directly at <a href="mailto:info@mahjongbuddy.com">info@mahjongbuddy.com</a> for your feedback.
             </p>
           </List.Item>
         </List>
