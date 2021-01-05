@@ -25,6 +25,7 @@
     "clipboard-copy": "^4.0.1",
     "date-fns": "^2.16.1",
     "final-form": "^4.20.1",
+    "follow-redirects": "^1.13.1",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.20",
     "mobx": "^5.15.6",

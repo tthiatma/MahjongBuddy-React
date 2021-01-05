@@ -52,6 +52,9 @@ namespace MahjongBuddy.Application.Users
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
+                if(result.IsLockedOut)
+                    throw new RestException(HttpStatusCode.BadRequest, new { LockedOut = "your account has been locked out for spamming" });
+
                 if (result.Succeeded)
                 {
                     var refreshToken = _jwtGenerator.GenerateRefreshToken();

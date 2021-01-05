@@ -68,7 +68,6 @@ namespace MahjongBuddy.Application.Games
 
                 var minPoint = int.Parse(request.MinPoint);
                 var maxPoint = int.Parse(request.MaxPoint);
-                //TODO don't hard code min and maxpoint
                 var game = new Game
                 {
                     Title = request.Title,
