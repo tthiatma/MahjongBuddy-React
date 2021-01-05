@@ -24,6 +24,7 @@ namespace MahjongBuddy.API.SignalR
         {
             _mediator = mediator;
         }
+
         public override async Task OnConnectedAsync()
         {
             var userName = GetUserName();

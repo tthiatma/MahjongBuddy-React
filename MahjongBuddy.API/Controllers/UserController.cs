@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
@@ -10,13 +9,6 @@ namespace MahjongBuddy.API.Controllers
 {
     public class UserController : BaseController
     {
-        private readonly IConfiguration _config;
-
-        public UserController(IConfiguration config)
-        {
-            _config = config;
-        }
-
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(Login.Query query)

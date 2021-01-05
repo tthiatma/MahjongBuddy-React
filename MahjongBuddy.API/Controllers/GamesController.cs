@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using MahjongBuddy.API.SignalR;
 using MahjongBuddy.Application.Dtos;
