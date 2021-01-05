@@ -21,7 +21,7 @@
     "@types/react-widgets": "^4.4.2",
     "@types/revalidate": "^1.1.2",
     "@types/uuid": "^8.3.0",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "clipboard-copy": "^4.0.1",
     "date-fns": "^2.16.1",
     "final-form": "^4.20.1",
