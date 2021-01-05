@@ -10,6 +10,7 @@ namespace MahjongBuddy.Core
         public Player()
         {
             Photos = new Collection<Photo>();
+            RefreshTokens = new Collection<RefreshToken>();
         }
 
         public string DisplayName { get; set; }

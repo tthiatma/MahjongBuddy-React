@@ -47,6 +47,8 @@ namespace MahjongBuddy.Application.Users
                 if (user != null)
                 {
                     user.RefreshTokens.Add(refreshToken);
+                    var fbPhoto = user.Photos.FirstOrDefault(p => !p.Url.Contains("cloudinary"));
+                    fbPhoto.Url = userInfo.Picture.Data.Url;
                     await _userManager.UpdateAsync(user);
                     return new User(user, _jwtGenerator, refreshToken.Token);
                 }

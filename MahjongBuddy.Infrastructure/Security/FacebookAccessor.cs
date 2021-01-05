@@ -33,7 +33,7 @@ namespace MahjongBuddy.Infrastructure.Security
             if (!verifyToken.IsSuccessStatusCode)
                 return null;
 
-            var result = await GetAsync<FacebookUserInfo>(accessToken, "me", "fields=name,email,picture.width(100).height(100)");
+            FacebookUserInfo result = await GetAsync<FacebookUserInfo>(accessToken, "me", "fields=name,email,picture.width(100).height(100)");
 
             return result;
         }
