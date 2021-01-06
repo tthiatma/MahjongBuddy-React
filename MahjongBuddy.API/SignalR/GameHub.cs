@@ -166,12 +166,13 @@ namespace MahjongBuddy.API.SignalR
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameCode.ToUpper());
         }
 
-        public async Task ThrowAllTiles(ThrowAll.Command command)
-        {
-            command.UserName = GetUserName();
-            var updates = await _mediator.Send(command);
-            await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
-        }
+        //for debugging
+        //public async Task ThrowAllTiles(ThrowAll.Command command)
+        //{
+        //    command.UserName = GetUserName();
+        //    var updates = await _mediator.Send(command);
+        //    await SendClientRoundUpdates(updates, "UpdateRoundNoLag");
+        //}
 
         public async Task ThrowTile(Throw.Command command)
         {

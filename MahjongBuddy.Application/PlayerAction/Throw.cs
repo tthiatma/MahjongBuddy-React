@@ -162,7 +162,6 @@ namespace MahjongBuddy.Application.PlayerAction
 
             private bool AssignPlayerActions(Round round, RoundPlayer throwerPlayer)
             {
-                //TODO: Support multiple winner 
                 bool foundActionForUser = false;
                 var roundTiles = round.RoundTiles;
 

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using MahjongBuddy.Application.Dtos;
 using MahjongBuddy.Application.Interfaces;
 using MahjongBuddy.Core;
 using MahjongBuddy.EntityFramework.EntityFramework;
@@ -19,7 +18,6 @@ namespace MahjongBuddy.Application.Photos
         public class Command : IRequest<Photo>
         {
             public IFormFile File { get; set; }
-
         }
         public class Handler : IRequestHandler<Command, Photo>
         {

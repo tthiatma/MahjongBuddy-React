@@ -45,7 +45,7 @@ namespace MahjongBuddy.Application.PlayerAction
                 if (round == null)
                     throw new RestException(HttpStatusCode.NotFound, new { Round = "Could not find round" });
 
-                //TODO only allow chow when it's user's turn
+                //TODO only allow chow when the user that requested chow is after the player that has turn
 
                 if (request.ChowTiles == null || request.ChowTiles.Count() != 2)
                     throw new RestException(HttpStatusCode.BadRequest, new { Round = "invalid data to chow tiles" });
