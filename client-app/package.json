@@ -25,7 +25,7 @@
     "clipboard-copy": "^4.0.1",
     "date-fns": "^2.16.1",
     "final-form": "^4.20.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.20",
     "mobx": "^5.15.6",
     "mobx-react-lite": "^2.2.1",
